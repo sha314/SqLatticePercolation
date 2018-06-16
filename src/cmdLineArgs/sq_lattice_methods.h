@@ -1,0 +1,8 @@
+//
+// Created by shahnoor on 02-Apr-18.
+//
+
+#ifndef PERCOLATION_SQ_LATTICE_METHODS_H
+#define PERCOLATION_SQ_LATTICE_METHODS_H
+
+#endif //PERCOLATION_SQ_LATTICE_METHODS_H

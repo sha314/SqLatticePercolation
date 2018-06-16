@@ -1,0 +1,10 @@
+convention:
+1. private data member identifiers starts with an underscore, i.e., '_name'
+2. public data member identifiers ends with an underscore, i.e., 'name_'
+3. protected data member identifiers starts and ends with an underscore, i.e., '_name_'
+
+
+for struct
+1. public data members ends with an underscore
+
+

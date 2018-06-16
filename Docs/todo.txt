@@ -1,0 +1,28 @@
+
+# cluster cannot be found using cluster id after merging.
+ because when two cluster becomes one cluster one of them looses it's own id and get a common id.
+ In function SitePercolation_ps_v4::put_values_to_the_cluster()
+
+
+
+# spanning probability
+
+
+
+
+# using _cluster_index_from_id std::map to keep track of cluster id and cluster index
+when merging two cluster, first erase previous keys from _cluster_index_from_id if it is the merging cluster
+then assign new key and value to _cluster_index_from_id
+
+
+
+
+# One Time data generation
+Generate data once and write it to a file and analyze that data using python
+
+
+2017.12.25
+# remove as much as possible the debug flags
+************************
+# instead of erasing one site (that is placed) each time. randomize the site placing order then use that order
+    to place site. This way we can minimize erasing one site each time.

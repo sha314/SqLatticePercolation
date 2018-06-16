@@ -1,0 +1,78 @@
+Percolation on a Square Lattice
+
+Available Argument
+
+-h      Help
+-l      Length of the lattice. Default value is 5
+-r      Range of length. No default value
+-n      Ensemble size. Default value is 1
+-i      Number of impure sites. Default value is 0
+-m      only counted for explosive percolation. default value is 0
+        0   ->  sum rule
+        1   ->  product rule
+
+-p      place sites for
+            0   ->  Just place all the sites and printout the result in the commandline only once to see
+                    what's going on there and how much time it requires.
+
+            1   ->  Place sites until first spanning. Without periodicity.
+
+            2   ->  MicroCanonical Ensemble data of Site percolation
+                        Number of occupied sites,
+                        Entropy,
+                        number of bonds in the largest cluster
+                    Other quantities can be calculated from these data
+                    This option writes all data of every realization separately
+                    option '4' does the same thing but writes only the ensemble average.
+
+            3   ->  Normal percolation
+                    Data of the following quantity at threshold, i.e., when spanning occurs.
+                        p_c = critical occupation probability
+                        id_sc = id of the spanning cluster
+                        b_t_sc = birth time of the spanning cluster
+                        sites_sc = number of sites of the spanning cluster
+                        bonds_sc = number of bonds of the spanning cluster
+
+            4   ->  MicroCanonical Ensemble data of Site percolation
+                        Number of occupied sites,
+                        Entropy,
+                        number of bonds in the largest cluster
+                    writes only the ensemble average of the above quantity.
+
+            5   ->  explosive percolation
+                    Data of the following quantity at threshold, i.e., when spanning occurs.
+                        p_c = critical occupation probability
+                        id_sc = id of the spanning cluster
+                        b_t_sc = birth time of the spanning cluster
+                        sites_sc = number of sites of the spanning cluster
+                        bonds_sc = number of bonds of the spanning cluster
+
+            6   ->  MicroCanonical Ensemble data of explosive Site percolation
+                        Number of occupied sites,
+                        Entropy,
+                        number of bonds in the largest cluster
+                    writes only the ensemble average of the above quantity.
+
+            7   ->  MicroCanonical Ensemble data of Site percolation
+                        Occupation Probability,
+                        Temperature
+                        Entropy,
+                        Order Parameter,
+                        Specific heat
+                        Susceptibility
+
+                    writes only the ensemble average of the above quantity.
+
+            8   ->  MicroCanonical Ensemble data of explosive Site percolation
+                        Occupation Probability,
+                        Temperature
+                        Entropy,
+                        Order Parameter,
+                        Specific heat
+                        Susceptibility
+
+                    writes only the ensemble average of the above quantity.
+
+            9   ->  Box counting data for global fractal dimension and spanning fractal dimension
+
+            10  ->  Cluster length data by bonds and sites

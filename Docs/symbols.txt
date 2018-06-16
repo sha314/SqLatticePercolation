@@ -1,0 +1,7 @@
+
+occupation probability, p       // lower case
+Spanning probability, w(p)
+Order parameter     , P         // upper case
+Entropy             , H or S
+Specific heat       , C
+
