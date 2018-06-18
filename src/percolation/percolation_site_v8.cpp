@@ -1710,7 +1710,10 @@ bool SitePercolation_ps_v8::occupy() {
 //    placeSite_v7(); // ok
 //    placeSite_weighted_v8(); // on test
 //    placeSiteWeightedRelabeling_v9(); // on test
-    placeSite_v10(); // on test
+//    placeSite_v10(); // added 2018.05.01 or so
+
+    Index site = selectSite(); // added 2018.06.18
+    placeSite_v11(site); // added 2018.06.18
 
 
 //    cout << "_number_of_occupied_sites " << _number_of_occupied_sites << endl;
@@ -2112,7 +2115,8 @@ value_type SitePercolation_ps_v8::placeSite_weighted_v8() {
 
 
 /**
- *
+ * Wrapping detection is suitable is this function is used
+ * since RelativeIndex is ordered accordingly
  * @return
  */
 value_type SitePercolation_ps_v8::placeSite_v10() {
@@ -2155,6 +2159,107 @@ value_type SitePercolation_ps_v8::placeSite_v10() {
 }
 
 
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ *
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v8::placeSite_v11(Index current_site) {
+    // randomly choose a site
+    if (_index_sequence_position == _length_squared) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+
+    _lattice.activate_site(current_site);
+
+    ++_number_of_occupied_sites;
+
+
+    // find the bonds for this site
+    vector<BondIndex> bonds;
+    vector<Index>     sites;
+
+//    connection_v1(current_site, sites, bonds);
+    connection2(current_site, sites, bonds);
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
+
+//    cout << "Found indices " << found_index_set << endl;
+
+    subtract_entropy_for(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters_v10(
+            found_index_set, bonds, current_site
+    );
+    add_entropy_for(merged_cluster_index); // tracking entropy change
+
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+
+    return merged_cluster_index;
+}
+
+
+
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ *
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v8::placeSite_v12(
+        Index current_site,
+        vector<Index>& neighbor_sites,
+        vector<BondIndex>& neighbor_bonds
+){
+    // randomly choose a site
+    if (_index_sequence_position == _length_squared) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+
+    _lattice.activate_site(current_site);
+    ++_number_of_occupied_sites;
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbor_sites);
+
+//    cout << "Found indices " << found_index_set << endl;
+
+    subtract_entropy_for(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters_v10(
+            found_index_set, neighbor_bonds, current_site
+    );
+    add_entropy_for(merged_cluster_index); // tracking entropy change
+
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of neighbor_bonds in the largest cluster
+
+    return merged_cluster_index;
+}
+/**
+ *
+ * @return
+ */
+Index SitePercolation_ps_v8::selectSite(){
+    Index current_site = randomized_index_sequence[_index_sequence_position];
+    ++_index_sequence_position;
+
+    return current_site;
+}
 
 /**
  * 
@@ -2561,6 +2666,15 @@ void SitePercolation_ps_v8::spanningIndices() const {
     }
 }
 
+void SitePercolation_ps_v8::wrappingIndices() const {
+    cout << "Wrapping Index : id : relative index" << endl;
+    for(auto i: _wrapping_sites){
+        cout << "Index " << i << " : id "
+             << _lattice.getSite(i).groupID()
+             << " relative index : " << _lattice.getSite(i).relativeIndex() << endl;
+    }
+}
+
 /****************************
  * Spanning methods
  *
@@ -2914,9 +3028,10 @@ bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
         }
     }
 
+//    cout << "wrapping sites " << _wrapping_sites << endl;
     // if %_wrapping_sites is not empty but wrapping is not detected for the current site (%site)
     // that means there is wrapping but not for the %site
-    return false || !_wrapping_sites.empty();
+    return !_wrapping_sites.empty();
 }
 
 
@@ -2926,8 +3041,6 @@ bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
  * Distributions
  *
  **************************************************/
-
-
 
 std::vector<value_type> SitePercolation_ps_v8::number_of_site_in_clusters() {
     vector<value_type> x;
@@ -3725,6 +3838,43 @@ std::string SitePercolation_ps_v8::getSignature() {
     return s;
 }
 
+/**
+ *
+ * @param filename
+ * @param only_spanning
+ */
+void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool only_spanning) {
+    std::ofstream fout(filename);
+    fout << "{\"length]\":" << _length << "}" << endl;
+//        fout << "#" << getSignature() << endl;
+    fout << "#<x>,<y>,<color>" << endl;
+    fout << "# color=0 -means-> unoccupied site" << endl;
+    int id{-1};
+    if(!_spanning_sites.empty()){
+        id = _lattice.getSite(_spanning_sites.front()).groupID();
+    }
+    else if(!_wrapping_sites.empty()){
+        id = _lattice.getSite(_wrapping_sites.front()).groupID();
+    }
+
+    if(only_spanning){
+        vector<Index> sites = _clusters[_cluster_index_from_id[id]].getSiteIndices();
+        for(auto s: sites){
+            fout << s.col_ << ',' << s.row_ << ',' << id << endl;
+        }
+    }
+    else {
+        for (value_type y{}; y != _length; ++y) {
+            for (value_type x{}; x != _length; ++x) {
+                id = _lattice.getSite({y, x}).groupID();
+                if(id != -1) {
+                    fout << x << ',' << y << ',' << id << endl;
+                }
+            }
+        }
+    }
+    fout.close();
+}
 
 
 

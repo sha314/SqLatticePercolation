@@ -11,6 +11,7 @@
 #include <unordered_set>
 #include <map>
 #include <climits>
+#include <fstream>
 
 #include "../flags.h"
 #include "../types.h"
@@ -75,7 +76,6 @@ public:
     SqLatticePercolation(value_type length);
 
     bool occupy();
-
 
     /*********
      *  I/O functions
@@ -267,6 +267,7 @@ public:
      ************************************************/
     void logging_flag(bool f){_logging_flag = f;};
     void periodicityFlag(bool p){ cout << "deprecated : line " << __LINE__ << endl; _periodicity = p;};
+    bool periodicity() const {return _periodicity;}
 
 //    void measureSpanningClusterByBond(bool flag){_measure_spanning_cluster_by_bond = flag;};
 
@@ -327,6 +328,12 @@ public:
     value_type placeSite_weighted_v8();    // does not erase any element of untouched_site_index
     value_type placeSiteWeightedRelabeling_v9();
     value_type placeSite_v10();    // implementing for wrapping
+    value_type placeSite_v11(Index site);
+    value_type placeSite_v12(Index site,
+                             vector<Index>& neighbor_sites,
+                             vector<BondIndex>& neighbor_bonds);
+
+    Index selectSite(); // selecting site
 
     bool placeSiteForSpanning();
 
@@ -372,7 +379,7 @@ public:
 
     value_type relabel(value_type index_1, value_type index_2);
     void relabel_sites(const Cluster_v2&  clstr, int id);  // todo pass cluster as reference
-    void relabel_sites_v4(Index root_a, const Cluster_v2& clstr_b);
+    void relabel_sites_v4(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
     void relabel_bonds(const Cluster_v2&  clstr, int id);  // todo
 
 
@@ -453,6 +460,7 @@ public:
     void periodicity_status();
 
     void spanningIndices() const;
+    void wrappingIndices() const;
 
 
     /*****************************
@@ -474,7 +482,11 @@ public:
      */
     void check(Index current_site);
 
-    // temporary public
+    /***********************************************
+     * Visual data for plotting
+     *********************************************/
+    // lattice visual data for python
+    void writeVisualLatticeData(const string& filename, bool only_spanning=true);
 protected:
     void initialize();
     void initialize_index_sequence();
@@ -568,10 +580,14 @@ public:
 class SitePercolationBallisticDeposition: public SitePercolation_ps_v8{
 protected:
     // elements of @indices_tmp will be erased if needed but not of @indices
-    std::vector<value_type> indices, indices_tmp;
+    std::vector<value_type> indices;
+    std::vector<value_type> indices_tmp;
 public:
     static constexpr const char* signature = "SitePercolation_BallisticDeposition_v1";
-    ~SitePercolationBallisticDeposition() = default;
+    virtual ~SitePercolationBallisticDeposition(){
+        indices.clear();
+        indices_tmp.clear();
+    };
     SitePercolationBallisticDeposition(value_type length, bool periodicity);
 
     virtual bool occupy();
@@ -614,6 +630,7 @@ public:
      */
     value_type placeSite_1nn_v0(); // debugging version
     value_type placeSite_1nn_v1();
+    value_type placeSite_1nn_v2();
 
 
     /*********************************
@@ -626,6 +643,7 @@ public:
      */
 
     value_type placeSite_2nn_v0();
+    value_type placeSite_2nn_v1();
 
 };
 
@@ -647,7 +665,7 @@ public:
 
         try {
 //        value_type v = placeSite_1nn_v0(); // debugging version
-            value_type v = placeSite_1nn_v1();
+            value_type v = placeSite_1nn_v2();
 
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
@@ -687,7 +705,8 @@ public:
 
         try {
 
-            value_type v = placeSite_2nn_v0();
+//            value_type v = placeSite_2nn_v0();
+            value_type v = placeSite_2nn_v1();
 
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){

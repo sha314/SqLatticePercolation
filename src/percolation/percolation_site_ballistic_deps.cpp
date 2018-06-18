@@ -195,7 +195,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
 
     Index central_site = index_sequence[indices_tmp[r]];
     Index selected_site;
-    cout << "current site " << central_site << endl;
+//    cout << "current site " << central_site << endl;
     // find the bonds for this site
 
 
@@ -206,16 +206,16 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
 
         bool flag_nn1 = true; // true means all first nearest neighbors are occupied
         bool flag_nn2 = true;
-        cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
+//        cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
         for(auto s : sites){
-            cout << s << "->";
+//            cout << s << "->";
             if(!_lattice.getSite(s).isActive()){
                 // if one of the neighber is unoccupied then
                 flag_nn1 = false;
-                cout << " inactive" << endl;
+//                cout << " inactive" << endl;
                 break;
             }
-            cout << " active"<< endl;
+//            cout << " active"<< endl;
         }
 
         value_type r2 = std::rand() % (sites.size());
@@ -233,7 +233,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
                 for(auto x: nn2_sites){
                     if(!_lattice.getSite(x).isActive()){
                         flag_nn2 = false;
-                        cout << "inactive";
+//                        cout << "inactive";
                         break;
                     }
                 }
@@ -251,7 +251,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
             selected_site = nn1;
         }
 
-        cout << "choosing " << selected_site << " out of the neighbors : line " << __LINE__ << endl;
+//        cout << "choosing " << selected_site << " out of the neighbors : line " << __LINE__ << endl;
         sites.clear();
         bonds.clear();
 
@@ -431,6 +431,28 @@ value_type SitePercolationBallisticDeposition::placeSite_1nn_v1() {
 
 
 
+/**
+ *
+ * 1. Randomly select a site from all sites
+ * 2. If it is not occupied occupy it.
+ * 3. If it is occupied select one of the 4 neighbor to occupy
+ * 4. If the selected neighbor is also occupied cancel current step
+ * 4. form cluster and track all informations
+ * 5. go to step 1
+ * 6. untill spanning cluster appears or no unoccupied site
+ */
+value_type SitePercolationBallisticDeposition::placeSite_1nn_v2() {
+
+    vector<BondIndex> bonds;
+    vector<Index>     sites;
+
+    _last_placed_site = select_site_upto_1nn(sites, bonds);
+
+    return placeSite_v12(_last_placed_site, sites, bonds);
+}
+
+
+
 
 /**
  *
@@ -440,16 +462,11 @@ value_type SitePercolationBallisticDeposition::placeSite_2nn_v0() {
     vector<BondIndex> bonds;
     vector<Index>     sites;
 
-    // randomly choose a site
-
-
     _last_placed_site = select_site_upto_2nn(sites, bonds);
-
 
     _lattice.activate_site(_last_placed_site);
 
     ++_number_of_occupied_sites;
-//    ++_index_sequence_position;
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
@@ -468,4 +485,18 @@ value_type SitePercolationBallisticDeposition::placeSite_2nn_v0() {
     return merged_cluster_index;
 }
 
+
+
+/**
+ *
+ * @return
+ */
+value_type SitePercolationBallisticDeposition::placeSite_2nn_v1() {
+    vector<BondIndex> bonds;
+    vector<Index>     sites;
+
+    _last_placed_site = select_site_upto_2nn(sites, bonds);
+    return placeSite_v12(_last_placed_site, sites, bonds);
+//    return placeSite_v11(_last_placed_site);
+}
 

@@ -99,7 +99,7 @@ public:
         _relative_index = {x,y};
     }
 
-    IndexRelative relativeIndex(){return _relative_index;}
+    IndexRelative relativeIndex() const {return _relative_index;}
 
 };
 

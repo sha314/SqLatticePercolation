@@ -16,8 +16,9 @@
 #include <string>
 
 // defined on 07 June 2018
-void percolation_sq_lattice_periodic(value_type length, value_type ensembleSize);
-void percolation_sq_lattice_non_periodic(value_type length, value_type ensembleSize);
+void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize); // defined on 2018.06.17
+//void percolation_sq_lattice_periodic(value_type length, value_type ensembleSize);
+//void percolation_sq_lattice_non_periodic(value_type length, value_type ensembleSize);
 
 void write_percolation_data_json(
         value_type length,
@@ -45,8 +46,12 @@ void percolation_sq_lattice_periodic_g(value_type length, value_type ensembleSiz
 template <class PERCOLATION>
 void percolation_sq_lattice_non_periodic_g(value_type length, value_type ensembleSize);
 
+
 template <class PERCOLATION>
-void simulate(int p, value_type length, value_type ensembleSize);
+void percolation_sq_lattice_g(value_type length, bool periodicity, value_type ensembleSize); // defined on 2018.06.17
+
+template <class PERCOLATION>
+void simulate(value_type length, int p, value_type ensembleSize);
 
 void cmd_args_json_g(int argc, char **argv);
 

@@ -404,33 +404,76 @@ void test_site_percolation(){
 }
 
 
-void test_ballistic_deposition(){
+void test_ballistic_deposition(size_t seed){
+    value_type length = 100;
+    srand(seed); ///// seeding
+    SitePercolation_ps_v8 sp(length, true);
 
-    SitePercolationBallisticDeposition spbd(6, false);
-//    spbd.periodicityFlag(false);
-    value_type i = 0;
-    bool flag{};
-    while(true){
-        flag = spbd.occupy();
-        if(flag){
-            ++i;
+    cout << "Signature : " << sp.signature << endl;
+
+    size_t length_squared = length * length;
+    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
+    size_t j{};
+    bool wrapping_occured{false};
+
+    sp.reset();
+    j = 0;
+    wrapping_occured = false;
+    bool successful = false;
+    double pc{};
+    while (true) {
+        successful = sp.occupy();
+        if (successful) {
+            if(sp.periodicity()) {
+//                cout << "last site " << sp.lastPlacedSite() << endl;
+//                sp.viewSiteByRelativeIndex();
+//                if(sp.detectWrapping_v1(sp.lastPlacedSite())){
+//                    sp.viewSiteByRelativeIndex();
+//                    cout << "***********************Wrapping ************************" << endl;
+//                    sp.wrappingIndices();
+//                    return;
+//                }
+                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                    wrapping_occured = true;
+                    pc = sp.occupationProbability();
+                    sp.writeVisualLatticeData("lattice-visual-data-"+to_string(length)+".txt", false);
+                    sp.viewSiteByID();
+                    sp.viewClusterExtended();
+
+                }
+                if (wrapping_occured) {
+                    nob2[j] += sp.numberOfBondsInTheWrappingClusters();
+                }
+            }
+            else{
+                if (!wrapping_occured && sp.detectSpanning_v6(sp.lastPlacedSite())) {
+                    wrapping_occured = true;
+                    pc = sp.occupationProbability();
+
+                }
+                if (wrapping_occured) {
+                    nob2[j] += sp.numberOfBondsInTheSpanningClusters_v2();
+                }
+            }
+            nos[j] += sp.numberOfOccupiedSite();
+            nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
+//            entrpy[j] += sp.entropy();  // old method and takes long time
+            entrpy[j] += sp.entropy_v3(); // faster method
+            ++j;
         }
-
-        if(i >= spbd.length()){
-            break;
-        }
-
-        if(spbd.detectSpanning_v6(spbd.lastPlacedSite())){
-            cout << "Spanning at " << spbd.occupationProbability() << endl;
+        if (j >= length_squared) { // length_squared is the number of site
             break;
         }
     }
+//    return;
+//    cout << "p\tH\tP\tP" << endl;
+//    for (value_type i{}; i != length_squared; ++i){
+//        cout << nos[i] << "\t" << entrpy[i] << "\t" << nob1[i] << "\t" << nob2[i] << endl;
+//    }
+//    cout << "pc = " << pc << endl;
 
 
-//    cout << "total number of sites " << spbd.numberOfBondsInTheLargestCluster_v2() << endl;
-    spbd.viewClusterExtended();
-    spbd.viewSiteByID();
-    cout << "iteration needed " << i << endl;
+
 }
 
 
@@ -474,7 +517,7 @@ int main(int argc, char** argv) {
 //    test_Fractal_2d();
 
 //    test_bond_percolation();
-//    test_ballistic_deposition();
+//    test_ballistic_deposition(1);
 //    test_site_percolation();
 
 //    cout << "Seed " << seed << endl;

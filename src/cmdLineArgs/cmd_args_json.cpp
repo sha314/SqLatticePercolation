@@ -19,8 +19,8 @@ using namespace std;
  * @param length
  * @param ensembleSize
  */
-void percolation_sq_lattice_periodic(value_type length, value_type ensembleSize) {
-    SitePercolation_ps_v8 sp(length, true);
+void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) {
+    SitePercolation_ps_v8 sp(length, p);
     cout << "Signature " << sp.signature << endl;
 
     clock_t t;
@@ -39,89 +39,22 @@ void percolation_sq_lattice_periodic(value_type length, value_type ensembleSize)
         while (true){
             successful = sp.occupy();
             if(successful) {
-                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
-                    wrapping_occured = true;
-                    pcs[i] = sp.occupationProbability();
-                }
-                if (wrapping_occured) {
-                    nob2[j] += sp.numberOfBondsInTheWrappingClusters();
-                }
-                nos[j] += sp.numberOfOccupiedSite();
-                nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
-//            entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
-                ++j;
-            }
-            if(j >= length_squared){ // length_squared is the number of site
-                break;
-            }
-        }
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    // Taking Average
-    for(size_t i{}; i!= length_squared ; ++i){
-        nos[i] /= double(ensembleSize);
-        entrpy[i] /= double(ensembleSize);
-        nob1[i] /= double(ensembleSize);
-        nob2[i] /= double(ensembleSize);
-    }
-
-    // calculating and writing to a file
-    ostringstream header_info;
-    header_info << "{"
-                << "\"length\":" << length
-                << ", \"ensemble_size\":" << ensembleSize
-                << ", \"signature\":" << sp.getSignature()
-                << "}" << endl;
-
-
-    string tm = currentTime();
-    string filename = sp.getSignature() + "_" + to_string(length) + "_" + tm;
-    filename += ".txt";
-    write_percolation_data_json(length, nob1, nob2, entrpy, filename, header_info.str());
-
-    filename = sp.getSignature() + "_critical_" + to_string(length) + "_" + tm;
-    filename += ".txt";
-    write_critical_data_json(pcs, filename, header_info.str());
-}
-
-
-/**
- * Calculates the following with non-periodic bounding condition
- *  1. critical occupation probability, p_c
- *  2. Order Parameter, P(p,L)
- *  3. Entropy, H(p,L)
- * @param length
- * @param ensembleSize
- */
-void percolation_sq_lattice_non_periodic(value_type length, value_type ensembleSize) {
-    SitePercolation_ps_v8 sp(length, false);
-    cout << "Signature " << sp.signature << endl;
-
-    clock_t t;
-    size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
-    size_t j{};
-    bool spanning_occured {false};
-    std::vector<double> pcs(ensembleSize);
-    bool successful{false};
-    for(value_type i{} ; i != ensembleSize ; ++i){
-
-        t = clock();
-        sp.reset();
-        j = 0;
-        spanning_occured = false;
-        successful = false;
-        while (true){
-            successful = sp.occupy();
-            if(successful) {
-                if (!spanning_occured && sp.detectSpanning_v6(sp.lastPlacedSite())) {
-                    spanning_occured = true;
-                    pcs[i] = sp.occupationProbability();
-                }
-                if (spanning_occured) {
-                    nob2[j] += sp.numberOfBondsInTheSpanningClusters();
+                if(sp.periodicity()) {
+                    if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                        wrapping_occured = true;
+                        pcs[i] = sp.occupationProbability();
+                    }
+                    if (wrapping_occured) {
+                        nob2[j] += sp.numberOfBondsInTheWrappingClusters();
+                    }
+                }else{
+                    if (!wrapping_occured && sp.detectSpanning_v6(sp.lastPlacedSite())) {
+                        wrapping_occured = true;
+                        pcs[i] = sp.occupationProbability();
+                    }
+                    if (wrapping_occured) {
+                        nob2[j] += sp.numberOfBondsInTheSpanningClusters_v2();
+                    }
                 }
                 nos[j] += sp.numberOfOccupiedSite();
                 nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
@@ -163,7 +96,156 @@ void percolation_sq_lattice_non_periodic(value_type length, value_type ensembleS
     write_critical_data_json(pcs, filename, header_info.str());
 }
 
-////////////// Generic
+//
+//////////////// Generic
+///**
+// * Calculates the following with periodic bounding condition
+// *  1. critical occupation probability, p_c
+// *  2. Order Parameter, P(p,L)
+// *  3. Entropy, H(p,L)
+// * @param length
+// * @param ensembleSize
+// */
+//template <class PERCOLATION>
+//void percolation_sq_lattice_periodic_g(value_type length, value_type ensembleSize) {
+//    PERCOLATION sp(length, true);
+//    cout << "Signature " << sp.signature << endl;
+//
+//    clock_t t;
+//    size_t length_squared = length*length;
+//    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
+//    size_t j{};
+//    bool wrapping_occured {false};
+//    std::vector<double> pcs(ensembleSize);
+//    for(value_type i{} ; i != ensembleSize ; ++i){
+//
+//        t = clock();
+//        sp.reset();
+//        j = 0;
+//        wrapping_occured = false;
+//        bool successful = false;
+//        while (true){
+//            successful = sp.occupy();
+//            if(successful) {
+//                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+//                    wrapping_occured = true;
+//                    pcs[i] = sp.occupationProbability();
+//                }
+//                if (wrapping_occured) {
+//                    nob2[j] += sp.numberOfBondsInTheWrappingClusters();
+//                }
+//                nos[j] += sp.numberOfOccupiedSite();
+//                nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
+////            entrpy[j] += sp.entropy();  // old method and takes long time
+//                entrpy[j] += sp.entropy_v3(); // faster method
+//                ++j;
+//            }
+//            if(j >= length_squared){ // length_squared is the number of site
+//                break;
+//            }
+//        }
+//        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+//    }
+//
+//    // Taking Average
+//    for(size_t i{}; i!= length_squared ; ++i){
+//        nos[i] /= double(ensembleSize);
+//        entrpy[i] /= double(ensembleSize);
+//        nob1[i] /= double(ensembleSize);
+//        nob2[i] /= double(ensembleSize);
+//    }
+//
+//    // calculating and writing to a file
+//    ostringstream header_info;
+//    header_info << "{"
+//                << "\"length\":" << length
+//                << ", \"ensemble_size\":" << ensembleSize
+//                << ", \"signature\":" << sp.getSignature()
+//                << "}" << endl;
+//
+//
+//    string tm = currentTime();
+//    string filename = sp.getSignature() + "_" + to_string(length) + "_" + tm;
+//    filename += ".txt";
+//    write_percolation_data_json(length, nob1, nob2, entrpy, filename, header_info.str());
+//
+//    filename = sp.getSignature() + "_critical_" + to_string(length) + "_" + tm;
+//    filename += ".txt";
+//    write_critical_data_json(pcs, filename, header_info.str());
+//}
+//
+//
+///**
+// * Calculates the following with non-periodic bounding condition
+// *  1. critical occupation probability, p_c
+// *  2. Order Parameter, P(p,L)
+// *  3. Entropy, H(p,L)
+// * @param length
+// * @param ensembleSize
+// */
+//template <class PERCOLATION>
+//void percolation_sq_lattice_non_periodic_g(value_type length, value_type ensembleSize) {
+//    PERCOLATION sp(length, false);
+//    cout << "Signature " << sp.signature << endl;
+//
+//    clock_t t;
+//    size_t length_squared = length*length;
+//    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
+//    size_t j{};
+//    bool spanning_occured {false};
+//    std::vector<double> pcs(ensembleSize);
+//    for(value_type i{} ; i != ensembleSize ; ++i){
+//
+//        t = clock();
+//        sp.reset();
+//        j = 0;
+//        spanning_occured = false;
+//        while (sp.occupy()){
+//            if(!spanning_occured && sp.detectSpanning_v6(sp.lastPlacedSite())){
+//                spanning_occured = true;
+//                pcs[i] = sp.occupationProbability();
+//
+////                cout << sp.occupationProbability();
+//            }
+//            if(spanning_occured){
+//                nob2[j] += sp.numberOfBondsInTheSpanningClusters();
+//            }
+//            nos[j] += sp.numberOfOccupiedSite();
+//            nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
+////            entrpy[j] += sp.entropy();  // old method and takes long time
+//            entrpy[j] += sp.entropy_v3(); // faster method
+//            ++j;
+//        }
+//        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+//    }
+//
+//    // Taking Average
+//    for(size_t i{}; i!= length_squared ; ++i){
+//        nos[i] /= double(ensembleSize);
+//        entrpy[i] /= double(ensembleSize);
+//        nob1[i] /= double(ensembleSize);
+//        nob2[i] /= double(ensembleSize);
+//    }
+//
+//    // calculating and writing to a file
+//    ostringstream header_info;
+//    header_info << "{"
+//                << "\"length\":" << length
+//                << ", \"ensemble_size\":" << ensembleSize
+//                << ", \"signature\":" << sp.getSignature()
+//                << "}" << endl;
+//
+//
+//    string tm = currentTime();
+//    string filename = sp.getSignature() + "_" + to_string(length) + "_" + tm;
+//    filename += ".txt";
+//    write_percolation_data_json(length, nob1, nob2, entrpy, filename, header_info.str());
+//
+//    filename = sp.getSignature() + "_critical_" + to_string(length) + "_" + tm;
+//    filename += ".txt";
+//    write_critical_data_json(pcs, filename, header_info.str());
+//}
+
 /**
  * Calculates the following with periodic bounding condition
  *  1. critical occupation probability, p_c
@@ -173,8 +255,8 @@ void percolation_sq_lattice_non_periodic(value_type length, value_type ensembleS
  * @param ensembleSize
  */
 template <class PERCOLATION>
-void percolation_sq_lattice_periodic_g(value_type length, value_type ensembleSize) {
-    PERCOLATION sp(length, true);
+void percolation_sq_lattice_g(value_type length, bool periodicity, value_type ensembleSize) {
+    PERCOLATION sp(length, periodicity);
     cout << "Signature " << sp.signature << endl;
 
     clock_t t;
@@ -193,12 +275,23 @@ void percolation_sq_lattice_periodic_g(value_type length, value_type ensembleSiz
         while (true){
             successful = sp.occupy();
             if(successful) {
-                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
-                    wrapping_occured = true;
-                    pcs[i] = sp.occupationProbability();
-                }
-                if (wrapping_occured) {
-                    nob2[j] += sp.numberOfBondsInTheWrappingClusters();
+                if(periodicity) {
+                    if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                        wrapping_occured = true;
+                        pcs[i] = sp.occupationProbability();
+                    }
+                    if (wrapping_occured) {
+                        nob2[j] += sp.numberOfBondsInTheWrappingClusters();
+                    }
+                }else{
+                    if (!wrapping_occured && sp.detectSpanning_v6(sp.lastPlacedSite())) {
+                        wrapping_occured = true;
+                        pcs[i] = sp.occupationProbability();
+
+                    }
+                    if (wrapping_occured) {
+                        nob2[j] += sp.numberOfBondsInTheSpanningClusters_v2();
+                    }
                 }
                 nos[j] += sp.numberOfOccupiedSite();
                 nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
@@ -239,79 +332,6 @@ void percolation_sq_lattice_periodic_g(value_type length, value_type ensembleSiz
     filename += ".txt";
     write_critical_data_json(pcs, filename, header_info.str());
 }
-
-
-/**
- * Calculates the following with non-periodic bounding condition
- *  1. critical occupation probability, p_c
- *  2. Order Parameter, P(p,L)
- *  3. Entropy, H(p,L)
- * @param length
- * @param ensembleSize
- */
-template <class PERCOLATION>
-void percolation_sq_lattice_non_periodic_g(value_type length, value_type ensembleSize) {
-    PERCOLATION sp(length, false);
-    cout << "Signature " << sp.signature << endl;
-
-    clock_t t;
-    size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
-    size_t j{};
-    bool spanning_occured {false};
-    std::vector<double> pcs(ensembleSize);
-    for(value_type i{} ; i != ensembleSize ; ++i){
-
-        t = clock();
-        sp.reset();
-        j = 0;
-        spanning_occured = false;
-        while (sp.occupy()){
-            if(!spanning_occured && sp.detectSpanning_v6(sp.lastPlacedSite())){
-                spanning_occured = true;
-                pcs[i] = sp.occupationProbability();
-
-//                cout << sp.occupationProbability();
-            }
-            if(spanning_occured){
-                nob2[j] += sp.numberOfBondsInTheSpanningClusters();
-            }
-            nos[j] += sp.numberOfOccupiedSite();
-            nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
-//            entrpy[j] += sp.entropy();  // old method and takes long time
-            entrpy[j] += sp.entropy_v3(); // faster method
-            ++j;
-        }
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    // Taking Average
-    for(size_t i{}; i!= length_squared ; ++i){
-        nos[i] /= double(ensembleSize);
-        entrpy[i] /= double(ensembleSize);
-        nob1[i] /= double(ensembleSize);
-        nob2[i] /= double(ensembleSize);
-    }
-
-    // calculating and writing to a file
-    ostringstream header_info;
-    header_info << "{"
-                << "\"length\":" << length
-                << ", \"ensemble_size\":" << ensembleSize
-                << ", \"signature\":" << sp.getSignature()
-                << "}" << endl;
-
-
-    string tm = currentTime();
-    string filename = sp.getSignature() + "_" + to_string(length) + "_" + tm;
-    filename += ".txt";
-    write_percolation_data_json(length, nob1, nob2, entrpy, filename, header_info.str());
-
-    filename = sp.getSignature() + "_critical_" + to_string(length) + "_" + tm;
-    filename += ".txt";
-    write_critical_data_json(pcs, filename, header_info.str());
-}
-
 
 
 /**
@@ -406,9 +426,14 @@ Available Argument
                     neighbor along the first nearest neighbor only if
                     the selected site and first nearest neighbor is occupied. L0 and L1 is included here)
 
--p      place sites for. Default value is 0
-            0   ->  Just place all the sites and printout the result in the commandline only once to see
-                    what's going on there and how much time it requires.
+-p      place sites for. Default value is -1
+
+            0   ->  MicroCanonical Ensemble data of Site percolation (Non-Periodic)
+                        Occupation Probability, p
+                        Entropy, H = sum u_i log(u_i)
+                        Order Parameter, P_1 =(bonds in the largest cluster) / (total bonds)
+                        Order Parameter, P_2 =(bonds in the spanning cluster) / (total bonds)
+                    And Critical Occupation Probabilities (pc) data
 
             1   ->  MicroCanonical Ensemble data of Site percolation (Periodic)
                         Occupation Probability, p
@@ -417,12 +442,10 @@ Available Argument
                         Order Parameter, P_2 =(bonds in the wrapping cluster) / (total bonds)
                     And Critical Occupation Probabilities (pc) data
 
-            2   ->  MicroCanonical Ensemble data of Site percolation (Non-Periodic)
-                        Occupation Probability, p
-                        Entropy, H = sum u_i log(u_i)
-                        Order Parameter, P_1 =(bonds in the largest cluster) / (total bonds)
-                        Order Parameter, P_2 =(bonds in the spanning cluster) / (total bonds)
-                    And Critical Occupation Probabilities (pc) data
+            -1   ->  Just place all the sites and printout the result in the commandline only once to see
+                    what's going on there and how much time it requires.
+
+
 
     )***";
     std::cout << hlp << std::endl;
@@ -489,14 +512,8 @@ void cmd_args_json(int argc, char **argv) {
     cout << "Length of the Square Lattice " << length << endl;
     cout << "Ensemble size " << ensembleSize << endl;
 
-    if(place_sites_for == 0) {
-        cout << "Placing all the sites" << endl;
-    }else{
-        cout << "Placing sites until the spanning" << endl;
-    }
 
-
-    if(place_sites_for == 0) {
+    if(place_sites_for == -1) {
         clock_t t0 = clock();
         SitePercolation_ps_v8 sp(length, true);
         cout << "Signature " << sp.signature << endl;
@@ -507,16 +524,12 @@ void cmd_args_json(int argc, char **argv) {
             sp.viewClusterExtended();
             sp.viewCluster_id_index();
         }
-    }else if(place_sites_for == 1) {
-        // place sites until first spanning and generate all data possible
-        // can generate several gigabytes of data
-        percolation_sq_lattice_periodic(length, ensembleSize);
+        return;
     }
-    else if(place_sites_for == 2) {
-        // place sites until first spanning and generate all data possible
-        // can generate several gigabytes of data
-        percolation_sq_lattice_non_periodic(length, ensembleSize);
-    }
+    bool periodicity = (place_sites_for == 1);
+    cout << "Periodicity " << periodicity << endl;
+    percolation_sq_lattice(length, periodicity, ensembleSize);
+
 }
 
 
@@ -587,13 +600,13 @@ void cmd_args_json_g(int argc, char **argv) {
 
     if(percolation_type == 0){
         // regular site percolation
-        simulate <SitePercolation_ps_v8> (place_sites_for, length, ensembleSize);
+        simulate <SitePercolation_ps_v8> (length, place_sites_for, ensembleSize);
     }
     else if(percolation_type == 1){
-        simulate <SitePercolationBallisticDeposition_L1> (place_sites_for, length, ensembleSize);
+        simulate <SitePercolationBallisticDeposition_L1>(length, place_sites_for, ensembleSize);
     }
     else if(percolation_type == 2){
-        simulate <SitePercolationBallisticDeposition_L2> (place_sites_for, length, ensembleSize);
+        simulate <SitePercolationBallisticDeposition_L2> (length, place_sites_for, ensembleSize);
     }
 }
 
@@ -606,9 +619,9 @@ void cmd_args_json_g(int argc, char **argv) {
  * @param ensembleSize
  */
 template <class PERCOLATION>
-void simulate(int p, value_type length, value_type ensembleSize){
+void simulate(value_type length, int p, value_type ensembleSize){
 
-    if(p == 0) {
+    if(p == -1) {
         clock_t t0 = clock();
         PERCOLATION sp(length, true);
         cout << "Signature " << sp.signature << endl;
@@ -619,14 +632,9 @@ void simulate(int p, value_type length, value_type ensembleSize){
             sp.viewClusterExtended();
             sp.viewCluster_id_index();
         }
-    }else if(p == 1) {
-        // place sites until first spanning and generate all data possible
-        // can generate several gigabytes of data
-        percolation_sq_lattice_periodic_g<PERCOLATION>(length, ensembleSize);
     }
-    else if(p == 2) {
-        // place sites until first spanning and generate all data possible
-        // can generate several gigabytes of data
-        percolation_sq_lattice_non_periodic_g<PERCOLATION>(length, ensembleSize); // todo stackdump occurs
-    }
+
+    bool periodicity = (p == 1);
+    percolation_sq_lattice_g<PERCOLATION>(length, periodicity, ensembleSize);
+
 }
