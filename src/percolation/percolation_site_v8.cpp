@@ -3845,7 +3845,7 @@ std::string SitePercolation_ps_v8::getSignature() {
  */
 void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool only_spanning) {
     std::ofstream fout(filename);
-    fout << "{\"length]\":" << _length << "}" << endl;
+    fout << "{\"length\":" << _length << "}" << endl;
 //        fout << "#" << getSignature() << endl;
     fout << "#<x>,<y>,<color>" << endl;
     fout << "# color=0 -means-> unoccupied site" << endl;
