@@ -60,6 +60,17 @@ struct OccupiedNeighbor{
     }
 };
 
+/**
+ * If the 1st or the 2nd nearest neighbor is not valid
+ */
+struct InvalidNeighbor{
+    std::string msg_;
+    InvalidNeighbor(std::string msg)  :msg_{msg}  {}
+
+    void what() const {
+        std::cout << msg_ << std::endl;
+    }
+};
 
 
 

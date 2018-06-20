@@ -405,9 +405,9 @@ void test_site_percolation(){
 
 
 void test_ballistic_deposition(size_t seed){
-    value_type length = 100;
+    value_type length = 10;
     srand(seed); ///// seeding
-    SitePercolation_ps_v8 sp(length, true);
+    SitePercolationBallisticDeposition_L2 sp(length, false);
 
     cout << "Signature : " << sp.signature << endl;
 
@@ -424,8 +424,9 @@ void test_ballistic_deposition(size_t seed){
     while (true) {
         successful = sp.occupy();
         if (successful) {
+            cout << "last site " << sp.lastPlacedSite() << endl;
+            sp.viewSiteByID();
             if(sp.periodicity()) {
-//                cout << "last site " << sp.lastPlacedSite() << endl;
 //                sp.viewSiteByRelativeIndex();
 //                if(sp.detectWrapping_v1(sp.lastPlacedSite())){
 //                    sp.viewSiteByRelativeIndex();
@@ -436,9 +437,9 @@ void test_ballistic_deposition(size_t seed){
                 if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
                     wrapping_occured = true;
                     pc = sp.occupationProbability();
-                    sp.writeVisualLatticeData("lattice-visual-data-"+to_string(length)+".txt", false);
-                    sp.viewSiteByID();
-                    sp.viewClusterExtended();
+//                    sp.writeVisualLatticeData("lattice-visual-data-"+to_string(length)+".txt", false);
+//                    sp.viewSiteByID();
+//                    sp.viewClusterExtended();
 
                 }
                 if (wrapping_occured) {
@@ -471,8 +472,6 @@ void test_ballistic_deposition(size_t seed){
 //        cout << nos[i] << "\t" << entrpy[i] << "\t" << nob1[i] << "\t" << nob2[i] << endl;
 //    }
 //    cout << "pc = " << pc << endl;
-
-
 
 }
 

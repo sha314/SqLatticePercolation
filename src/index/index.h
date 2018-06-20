@@ -106,6 +106,6 @@ bool operator<(BondIndex index1, BondIndex index2);
  *  Get 2nd nearest neightbor / sin the direction of 1st nearest neighbor, while @var center is the center
  */
 Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length);
-std::vector<Index> get_2nn_s_in_1nn_direction(Index center,const std::vector<Index>& nn_1, value_type length);
+std::vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const std::vector<Index> &nn_1, value_type length);
 
 #endif //SITEPERCOLATION_INDEX_H

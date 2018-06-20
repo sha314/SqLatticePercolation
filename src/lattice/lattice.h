@@ -116,8 +116,8 @@ public:
 //    std::vector<BondIndex> getNeighborBond(Index site, bool periodicity=false);
 //    std::vector<BondIndex> getNeighborBond(BondIndex site, bool periodicity=false);
 //
-//    void connection(Index site, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
-//    void connection(BondIndex bond, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
+//    void connection_v1(Index site, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
+//    void connection_v1(BondIndex bond, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
 
     void print_horizontal_separator() const;
 };

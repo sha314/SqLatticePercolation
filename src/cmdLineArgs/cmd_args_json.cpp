@@ -82,7 +82,7 @@ void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) 
     header_info << "{"
                 << "\"length\":" << length
                 << ", \"ensemble_size\":" << ensembleSize
-                << ", \"signature\":" << sp.getSignature()
+                << ", \"signature\":\"" << sp.getSignature() << "\""
                 << "}" << endl;
 
 
@@ -261,7 +261,8 @@ void percolation_sq_lattice_g(value_type length, bool periodicity, value_type en
 
     clock_t t;
     size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob1(length_squared), nob2(length_squared), entrpy(length_squared);
+    std::vector<double> nos(length_squared), nob1(length_squared),
+            nob2(length_squared), entrpy(length_squared);
     size_t j{};
     bool wrapping_occured {false};
     std::vector<double> pcs(ensembleSize);
@@ -319,7 +320,7 @@ void percolation_sq_lattice_g(value_type length, bool periodicity, value_type en
     header_info << "{"
                 << "\"length\":" << length
                 << ", \"ensemble_size\":" << ensembleSize
-                << ", \"signature\":" << sp.getSignature()
+                << ", \"signature\":\"" << sp.getSignature() << "\""
                 << "}" << endl;
 
 

@@ -341,8 +341,8 @@ public:
 
     void placeSite_sequentially(double p);  // used to calculate quantities using convolution process
 
-    void connection(Index site, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds);
-    void connection2(Index site, std::vector<Index>& site_neighbor, std::vector<BondIndex>& bond_neighbor);
+    void connection_v1(Index site, std::vector<Index> &neighbors, std::vector<BondIndex> &bonds);
+    void connection_v2(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
 
     /**
      * For explosive percolation

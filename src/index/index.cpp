@@ -62,7 +62,8 @@ bool operator<(BondIndex index1, BondIndex index2){
 
 
 /**
- *
+ * Get the 2nd nearest nearest neighbor in the direction of 1st nearest neighbor.
+ * Periodicity is not considered here.
  * @param center
  * @param nn_1
  * @param length
@@ -73,8 +74,10 @@ Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
     int delta_r = int(nn_1.row_) - int(center.row_);
     if (delta_c == 0 && delta_r == 0){
         cout << "Both indices are same : line " << __LINE__ << endl;
-    } else if(delta_c > 1 || delta_r > 1){
-        cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << endl;
+    }
+    else if(delta_c > 1 || delta_r > 1){
+        // meaning, the sites are on the opposite edges
+//        cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
     }
 
     return Index{(nn_1.row_ + delta_r + length) % length, (nn_1.col_ + delta_c + length) % length};
@@ -82,13 +85,14 @@ Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
 
 
 /**
- * Get second nearest neighbors based on the first nearest neighbors
+ * Get all second nearest neighbors based on the first nearest neighbors.
+ * Periodicity is not considered here
  * @param center
  * @param nn_1
  * @param length
  * @return
  */
-vector<Index> get_2nn_s_in_1nn_direction(Index center,const vector<Index>& nn_1, value_type length){
+vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const vector<Index> &nn_1, value_type length){
     vector<Index> nn_2(nn_1.size());
 
     for(size_t i{}; i != nn_1.size() ; ++i){
@@ -96,8 +100,11 @@ vector<Index> get_2nn_s_in_1nn_direction(Index center,const vector<Index>& nn_1,
         int delta_r = int(nn_1[i].row_) - int(center.row_);
         if (delta_c == 0 && delta_r == 0){
             cout << "Both indices are same : line " << __LINE__ << endl;
-        } else if(delta_c > 1 || delta_r > 1){
-            cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << endl;
+        }
+        else if(delta_c > 1 || delta_r > 1){
+            // meaning, the sites are on the opposite edges
+//            cout << "center " << center << " nn " << nn_1 << endl;
+//            cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
         }
 
         nn_2[i] =  Index{(nn_1[i].row_ + delta_r + length) % length, (nn_1[i].col_ + delta_c + length) % length};

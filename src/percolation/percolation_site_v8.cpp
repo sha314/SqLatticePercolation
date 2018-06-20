@@ -1206,7 +1206,7 @@ void SitePercolation_ps_v8::check(Index current_site){
  * @param neighbors
  * @param bonds
  */
-void SitePercolation_ps_v8::connection(Index site, vector<Index>& neighbors, vector<BondIndex>& bonds)
+void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, vector<BondIndex> &bonds)
 {
     clock_t t = clock();
     value_type prev_column  = (site.col_ + _length - 1) % _length;
@@ -1416,7 +1416,7 @@ void SitePercolation_ps_v8::connection(Index site, vector<Index>& neighbors, vec
  * @param site_neighbor
  * @param bond_neighbor
  */
-void SitePercolation_ps_v8::connection2(Index site, vector<Index>& site_neighbor, vector<BondIndex>& bond_neighbor)
+void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor)
 {
     clock_t t = clock();
 
@@ -1825,7 +1825,7 @@ void SitePercolation_ps_v8::placeSite_sequentially(double p) {
             vector<BondIndex> bonds;
             vector<Index>     neighbors;
     //    connection_v1(current_site, neighbors, bonds);
-            connection2(current_site, neighbors, bonds);
+            connection_v2(current_site, neighbors, bonds);
 
             // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
             set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
@@ -1907,7 +1907,7 @@ void SitePercolation_ps_v8::placeSites(value_type n, value_type step) {
 //    vector<BondIndex> bonds;
 //    vector<Index>     neighbors;
 ////    connection(current_site, neighbors, bonds);
-//    connection2(current_site, neighbors, bonds);
+//    connection_v2(current_site, neighbors, bonds);
 //
 //
 //    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
@@ -1985,7 +1985,7 @@ value_type SitePercolation_ps_v8::placeSite_v6() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
@@ -2051,7 +2051,7 @@ value_type SitePercolation_ps_v8::placeSite_v7() {
     vector<Index>     sites;
 
 //    connection_v1(current_site, sites, bonds);
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
@@ -2093,7 +2093,7 @@ value_type SitePercolation_ps_v8::placeSite_weighted_v8() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     vector<value_type> found_index = find_index_for_placing_new_bonds_v4(neighbors);
@@ -2139,7 +2139,7 @@ value_type SitePercolation_ps_v8::placeSite_v10() {
     vector<Index>     sites;
 
 //    connection_v1(current_site, sites, bonds);
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
@@ -2188,7 +2188,7 @@ value_type SitePercolation_ps_v8::placeSite_v11(Index current_site) {
     vector<Index>     sites;
 
 //    connection_v1(current_site, sites, bonds);
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
@@ -2269,7 +2269,7 @@ Index SitePercolation_ps_v8::selectSite(){
 value_type SitePercolation_ps_v8::cluster_length_for_placing_site_product_rule(Index site){
     vector<Index> neighbor_site;
     vector<BondIndex> neighbor_bond;
-    connection2(site, neighbor_site, neighbor_bond);
+    connection_v2(site, neighbor_site, neighbor_bond);
     value_type prod = 1;
     int id;
     size_t index;
@@ -2295,7 +2295,7 @@ value_type SitePercolation_ps_v8::cluster_length_for_placing_site_product_rule(I
 value_type SitePercolation_ps_v8::cluster_length_for_placing_site_sum_rule(Index site){
     vector<Index> neighbor_site;
     vector<BondIndex> neighbor_bond;
-    connection2(site, neighbor_site, neighbor_bond);
+    connection_v2(site, neighbor_site, neighbor_bond);
     value_type sum = 0;
     int id;
     size_t index;
@@ -2325,7 +2325,7 @@ value_type SitePercolation_ps_v8::cluster_length_for_placing_site_sum_rule(Index
 value_type SitePercolation_ps_v8::cluster_length_for_placing_site_product_rule_v2(Index site){
     vector<Index> neighbor_site;
     vector<BondIndex> neighbor_bond;
-    connection2(site, neighbor_site, neighbor_bond);
+    connection_v2(site, neighbor_site, neighbor_bond);
     value_type prod = 1;
     int id;
     size_t index;
@@ -2365,7 +2365,7 @@ value_type SitePercolation_ps_v8::cluster_length_for_placing_site_product_rule_v
 value_type SitePercolation_ps_v8::cluster_length_for_placing_site_sum_rule_v2(Index site){
     vector<Index> neighbor_site;
     vector<BondIndex> neighbor_bond;
-    connection2(site, neighbor_site, neighbor_bond);
+    connection_v2(site, neighbor_site, neighbor_bond);
     value_type sum = 0;
     int id;
     size_t index;
@@ -2447,7 +2447,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_prodduct_rule() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
@@ -2521,7 +2521,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_sum_rule() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
@@ -2601,7 +2601,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_test() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
@@ -3554,7 +3554,7 @@ value_type SitePercolation_ps_v8::numberOfSitesInTheSpanningClusters_v2() {
  */
 value_type SitePercolation_ps_v8::numberOfBondsInTheSpanningClusters_v2() {
     if(!_spanning_sites.empty()){
-        cout << "number of spanning sites " << _spanning_sites.size() << " : line " << __LINE__ << endl;
+//        cout << "number of spanning sites " << _spanning_sites.size() << " : line " << __LINE__ << endl;
         int id = _lattice.getSite(_spanning_sites.front()).groupID();
         return _clusters[_cluster_index_from_id[id]].numberOfBonds();
     }
@@ -3804,7 +3804,7 @@ value_type SitePercolation_ps_v8::placeSiteWeightedRelabeling_v9() {
     vector<BondIndex> bonds;
     vector<Index>     neighbors;
 //    connection_v1(current_site, neighbors, bonds);
-    connection2(current_site, neighbors, bonds);
+    connection_v2(current_site, neighbors, bonds);
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);

@@ -121,7 +121,7 @@ Index SitePercolationBallisticDeposition::select_site(vector<Index> &sites, vect
     cout << "choosing " << current_site << " out of the neighbors : line " << __LINE__ << endl;
     sites.clear();
     bonds.clear();
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
     return current_site;
 }
 
@@ -138,11 +138,11 @@ Index SitePercolationBallisticDeposition::select_site_upto_1nn(
     value_type r = std::rand() % (indices_tmp.size());
 
     Index current_site = index_sequence[indices_tmp[r]];
-    cout << "current site " << current_site << endl;
+//    cout << "current site " << current_site << endl;
     // find the bonds for this site
 
 //    connection_v1(current_site, sites, bonds);
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
 
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
         value_type r2 = std::rand() % (sites.size());
@@ -151,16 +151,16 @@ Index SitePercolationBallisticDeposition::select_site_upto_1nn(
         if(_lattice.getSite(current_site).isActive()){
             // if the neighbor is also occupied cancel current step
             bool flag = true;
-            cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
+//            cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
             for(auto s : sites){
-                cout << s << "->";
+//                cout << s << "->";
                 if(!_lattice.getSite(s).isActive()){
                     // if one of the neighber is unoccupied then
                     flag = false;
-                    cout << " inactive" << endl;
+//                    cout << " inactive" << endl;
                     break;
                 }
-                cout << " active"<< endl;
+//                cout << " active"<< endl;
             }
             if(flag){
                 // erase the index, since its four neighbors are occupied
@@ -171,10 +171,10 @@ Index SitePercolationBallisticDeposition::select_site_upto_1nn(
         }
     }
 
-    cout << "choosing " << current_site << " out of the neighbors : line " << __LINE__ << endl;
+//    cout << "choosing " << current_site << " out of the neighbors : line " << __LINE__ << endl;
     sites.clear();
     bonds.clear();
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
     return current_site;
 }
 
@@ -200,12 +200,13 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
 
 
 //    connection_v1(central_site, sites, bonds);
-    connection2(central_site, sites, bonds);
+    connection_v2(central_site, sites, bonds);
 
     if (_lattice.getSite(central_site).isActive()){
+//        cout << "selected " << central_site << " : line " << __LINE__ << endl;
 
-        bool flag_nn1 = true; // true means all first nearest neighbors are occupied
-        bool flag_nn2 = true;
+        bool flag_nn1 = true; // true means all 1st nearest neighbors are occupied
+        bool flag_nn2 = true; // true means all 2nd nearest neighbors are occupied
 //        cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
         for(auto s : sites){
 //            cout << s << "->";
@@ -220,16 +221,35 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
 
         value_type r2 = std::rand() % (sites.size());
         Index nn1 = sites[r2]; // select one of the neighbor randomly
+//        cout << "nn1 " << nn1 << " : line " << __LINE__ <<endl;
         Index nn2;
         if(_lattice.getSite(nn1).isActive()){
             // if the neighbor is also occupied then choose the 2nd nearest neighbor in the direction of motion
             nn2 = get_2nn_in_1nn_direction(central_site, nn1, _length);
-
+            if(!_periodicity){
+                // if periodic boundary condition is not enabled then sites on the opposite edges will not contribute
+                vector<Index> tmp_sites;
+                vector<BondIndex> tmp_bonds;
+                // will find all possible neighbors of the selected first nearest neighbor
+                connection_v2(nn1, tmp_sites, tmp_bonds);
+                bool valid{false};
+                for(auto s: tmp_sites){
+                    if(nn2 == s){
+//                        cout << "valid 2nd nearest neighbor : line " << __LINE__ << endl;
+                        valid = true;
+                        break;
+                    }
+                }
+                if(!valid){
+                    throw InvalidNeighbor{"invalid 2nd nearest neighbor : line " + std::to_string(__LINE__)};
+                }
+            }
+//            cout << "nn2 " << nn2 << " : line " << __LINE__ <<endl;
             // if it is also occupied the skip the step
             if(_lattice.getSite(nn2).isActive()) {
                 flag_nn2 = true;
 
-                vector<Index> nn2_sites = get_2nn_s_in_1nn_direction(central_site, sites, _length);
+                vector<Index> nn2_sites = get_2nn_s_in_1nn_s_direction(central_site, sites, _length);
                 for(auto x: nn2_sites){
                     if(!_lattice.getSite(x).isActive()){
                         flag_nn2 = false;
@@ -239,7 +259,9 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
                 }
 
                 if(flag_nn1 && flag_nn2){
-                    // erase the index, since its four neighbors are occupied
+                    // erase the index, since its 1st nearest neighbors are occupied
+                    // and 2nd nearest neighbors are also occupied
+//                    cout << "ignoring this step : line " << __LINE__ << endl;
                     indices_tmp.erase(indices_tmp.begin()+r);
                 }
 
@@ -255,7 +277,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
         sites.clear();
         bonds.clear();
 
-        connection2(selected_site, sites, bonds);
+        connection_v2(selected_site, sites, bonds);
     }else{
         selected_site = central_site;
     }
@@ -377,7 +399,7 @@ value_type SitePercolationBallisticDeposition::placeSite_1nn_v1() {
     // find the bonds for this site
 
 //    connection_v1(current_site, sites, bonds);
-    connection2(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
 
     if (_lattice.getSite(current_site).isActive()){
 
@@ -402,7 +424,7 @@ value_type SitePercolationBallisticDeposition::placeSite_1nn_v1() {
         }
         sites.clear();
         bonds.clear();
-        connection2(current_site, sites, bonds);
+        connection_v2(current_site, sites, bonds);
     }
 
     _last_placed_site = current_site;
@@ -495,8 +517,17 @@ value_type SitePercolationBallisticDeposition::placeSite_2nn_v1() {
     vector<BondIndex> bonds;
     vector<Index>     sites;
 
-    _last_placed_site = select_site_upto_2nn(sites, bonds);
-    return placeSite_v12(_last_placed_site, sites, bonds);
-//    return placeSite_v11(_last_placed_site);
+    try {
+        _last_placed_site = select_site_upto_2nn(sites, bonds);
+        return placeSite_v12(_last_placed_site, sites, bonds);
+        //    return placeSite_v11(_last_placed_site);
+    }catch (OccupiedNeighbor& e){
+//        cout << "Exception !!!!!!!!!!!!!!!!!!" << endl;
+//        e.what();
+    }catch (InvalidNeighbor& b){
+//        cout << "Exception !!!!!!!!!!!!!!!!!!" << endl;
+//        b.what();
+    }
+    return ULONG_MAX;
 }
 
