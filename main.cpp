@@ -487,7 +487,7 @@ int main(int argc, char** argv) {
     std::cout << "Percolation in a Square Lattice" << std::endl;
     clock_t t = clock();
     auto seed = time(NULL);
-//    srand(seed);    // seeding
+    srand(seed);    // seeding
 
 //    cmd_moment_conservation(argc, argv);
 
