@@ -177,7 +177,7 @@ void SqLattice::view_sites_extended()
         if(i!=0) std::cout << "  ";
         else std::cout << '{';
         for (value_type j{}; j != _length; ++j) {
-            std::cout << std::setw(3) <<  _sites[i][j].groupID() << ":";
+            std::cout << std::setw(3) << _sites[i][j].get_groupID() << ":";
 
             if(_sites[i][j].isActive()) {
                 cout << '(' << std::setw(2) << _sites[i][j]._id.row_ << ','
@@ -217,7 +217,7 @@ void SqLattice::view_sites_by_id() {
     for(value_type i{} ; i != _length; ++i){
         cout << setw(3) << i << "|";
         for(value_type j{} ; j != _length ; ++ j){
-            cout << setw(3) << _sites[i][j].groupID() << ' ';
+            cout << setw(3) << _sites[i][j].get_groupID() << ' ';
         }
         cout << endl;
     }
@@ -242,12 +242,12 @@ void SqLattice::view_sites_by_relative_index(){
     for(value_type i{} ; i != _length; ++i){
         cout << setw(3) << i << "|";
         for(value_type j{} ; j != _length ; ++ j){
-            if(_sites[i][j].groupID() == -1){
+            if(_sites[i][j].get_groupID() == -1){
                 // left blank
-                cout << setw(4) << _sites[i][j].groupID() << setw(9) << ' ';
+                cout << setw(4) << _sites[i][j].get_groupID() << setw(9) << ' ';
                 continue;
             }
-            cout << setw(4) << _sites[i][j].groupID() << _sites[i][j].relativeIndex();
+            cout << setw(4) << _sites[i][j].get_groupID() << _sites[i][j].relativeIndex();
         }
         cout << endl;
     }
@@ -462,19 +462,19 @@ const Site& SqLattice::getSite(Index index) const {
 }
 
 void SqLattice::GroupID(Index index, int group_id){
-    _sites[index.row_][index.col_].groupID(group_id);
+    _sites[index.row_][index.col_].set_groupID(group_id);
 }
 
 int SqLattice::GroupID(Index index){
-    return _sites[index.row_][index.col_].groupID();
+    return _sites[index.row_][index.col_].get_groupID();
 }
 
-//Bond Lattice::get_h_bond(Index ID) {
-//    return _h_bonds[id.x_][ID.y_];
+//Bond Lattice::get_h_bond(Index set_ID) {
+//    return _h_bonds[id.x_][set_ID.y_];
 //}
 //
-//Bond Lattice::get_v_bond(Index ID) {
-//    return _v_bonds[id.x_][ID.y_];
+//Bond Lattice::get_v_bond(Index set_ID) {
+//    return _v_bonds[id.x_][set_ID.y_];
 //}
 
 
@@ -514,8 +514,8 @@ void SqLattice::reset() {
 void SqLattice::reset_bonds() {
     for(value_type i{}; i != _h_bonds.size(); ++i){
         for (int j{}; j != _h_bonds[i].size(); ++j) {
-//            _h_bonds[i][j].groupID(-1);
-//            _v_bonds[i][j].groupID(-1);
+//            _h_bonds[i][j].set_groupID(-1);
+//            _v_bonds[i][j].set_groupID(-1);
 
             // setting group id = -1 and deactivating the bond
             _h_bonds[i][j].deactivate();
@@ -530,7 +530,7 @@ void SqLattice::reset_bonds() {
 void SqLattice::reset_sites() {
     for(value_type i{}; i != _sites.size(); ++i){
         for(value_type j{}; j != _sites[i].size(); ++j) {
-//            _sites[i][j].groupID(-1);
+//            _sites[i][j].set_groupID(-1);
             // setting group id = -1 and deactivating the site
             _sites[i][j].deactivate();
         }
@@ -547,7 +547,7 @@ string SqLattice::getLatticeIDs() {
     stringstream ss;
     for(value_type i{} ; i != _length ; ++i) {
         for (value_type j{}; j != _length; ++j) {
-            ss <<  _sites[i][j].groupID() << " ";
+            ss << _sites[i][j].get_groupID() << " ";
         }
         if(i != _length-1)
             ss << std::endl;

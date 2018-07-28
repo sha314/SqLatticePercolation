@@ -73,7 +73,7 @@ struct Bond{
                     _end2.col_ = end1.col_;
                 }
             }
-//            _id = ID<3>({0, _end1.x_, _end1.y_});
+//            _id = set_ID<3>({0, _end1.x_, _end1.y_});
         }
         else if(_end1.col_ == _end2.col_){
             bondType = BondType::Vertical;
@@ -99,13 +99,13 @@ struct Bond{
                     _end2.row_ = end1.row_;
                 }
             }
-//            _id = ID<3>({1, _end1.x_, _end1.y_});
+//            _id = set_ID<3>({1, _end1.x_, _end1.y_});
         }
         else{
             std::cout << '(' << _end1.row_ << ',' << _end1.col_ << ')' << "<->"
                     << '(' << _end2.row_ << ',' << _end2.col_ << ')'
                     << " is not a valid bond : line " << __LINE__ << std::endl;
-//            _id = ID<3>({-1, -1, -1});
+//            _id = set_ID<3>({-1, -1, -1});
         }
 
 //        _id = {(horizontal) ? 0ul : 1ul, _end1.x_, end1.y_};  // unsigned long
@@ -130,7 +130,7 @@ struct Bond{
     }
     bool isActive() const { return _status;}
 /*
-* Group ID is the ID of the cluster they are in
+* Group get_ID is the set_ID of the cluster they are in
 */
     int groupID() const {return _group_id;}
     void groupID(int  g_id) {_group_id = g_id;}

@@ -156,6 +156,17 @@ void Cluster_v2::insert_v2(const Cluster_v2 &cluster) {
 }
 
 
+void Cluster_v2::insert_with_id_v2(const Cluster_v2 &cluster, int id) {
+    _id = id;
+    // older time or smaller time is the creation birthTime of the cluster
+//    cout << "Comparing " << _creation_time << " and " << cluster._creation_time;
+    _creation_time = _creation_time < cluster._creation_time ? _creation_time : cluster._creation_time;
+//    cout << " Keeping " << _creation_time << endl;
+    _bond_index.insert(_bond_index.end(), cluster._bond_index.begin(), cluster._bond_index.end());
+    _site_index.insert(_site_index.end(), cluster._site_index.begin(), cluster._site_index.end());
+}
+
+
 std::ostream &operator<<(std::ostream &os, const Cluster_v2 &cluster) {
     os << "Sites : size (" << cluster._site_index.size() << ") : ";
     os << '{';
@@ -195,7 +206,7 @@ void Cluster_v3::addBonds(value_type count) {
 
 
 std::ostream &operator<<(std::ostream &os, const Cluster_v3 &cluster) {
-    os << "ID " << cluster._id << endl;
+    os << "set_ID " << cluster._id << endl;
     os << "Root site " << cluster._root_site_index << endl;
     os << "Root bond " << cluster._root_bond_index << endl;
     os << "Number of sites " << cluster._number_of_sites << endl;

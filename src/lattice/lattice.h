@@ -87,8 +87,8 @@ public:
     value_type length() const { return  _length;}
 
 //    Site getSite(Index index);
-//    Bond get_h_bond(Index ID);
-//    Bond get_v_bond(Index ID);
+//    Bond get_h_bond(Index set_ID);
+//    Bond get_v_bond(Index set_ID);
 
     Site& getSite(Index index);
 //    Site&& getSiteR(Index index);

@@ -22,7 +22,7 @@ struct ID{
 
     ID(std::vector<int> id){
         if(id.size() != N){
-            std::cout << "Cannot construct ID : numberOfBonds mismatched : line " << __LINE__ << std::endl;
+            std::cout << "Cannot construct set_ID : numberOfBonds mismatched : line " << __LINE__ << std::endl;
         }
         for(std::size_t i {} ; i != N ; ++ i){
             _id[i] = id[i];

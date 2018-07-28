@@ -6,6 +6,9 @@
 #include <iostream>
 #include <fstream>
 #include <ctime>
+#include <chrono>
+#include <thread>
+#include <mutex>
 
 #include "src/lattice/lattice.h"
 #include "src/tests/test_percolation.h"
@@ -32,6 +35,8 @@ void fractalDimension();
 
 
 void test_Fractal_2d();
+
+void cluster_size_threaded(int argc, char **argv);
 
 /**
  * data for log(Mass) vs log(Length) curve
@@ -299,9 +304,9 @@ void set_comparator(){
     Site a({0, 0}, 5);
     Site b({0, 2}, 5);
     Site c({0, 1}, 5);
-    a.groupID(0);
-    b.groupID(1);
-    c.groupID(2);
+    a.set_groupID(0);
+    b.set_groupID(1);
+    c.set_groupID(2);
 
     sets.insert(a);
     sets.insert(b);
@@ -476,25 +481,355 @@ void test_ballistic_deposition(size_t seed){
 }
 
 
-/**************************************
- *  The main function
- *
- ***************************************/
-int main(int argc, char** argv) {
-    cout << currentTime() << endl;
+void single_thread(
+        value_type length,
+        value_type ensemble_size,
+        value_type thread_id
+){
 
-    cout << "Compiled on " << __DATE__ << "\t at " << __TIME__ << endl;
-    std::cout << "Percolation in a Square Lattice" << std::endl;
-    clock_t t = clock();
-    auto seed = time(NULL);
-    srand(seed);    // seeding
+    SitePercolation_ps_v8 sp(length, true);
+
+    sp.simulate_periodic_critical(ensemble_size);
+
+    vector<vector<double>> critical(3);
+    critical[0] = sp.get_pcs();
+    critical[1] = sp.get_spanning_cluster_size_bonds();
+    critical[2] = sp.get_spanning_cluster_size_sites();
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << sp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename = sp.getSignature() + "_critical_" + to_string(length) + "_thread_" + to_string(thread_id) + '_' + tm;
+    filename += ".txt";
+    write_critical_data_json_v2(critical, filename, header_info.str());
+
+}
+
+
+void cluster_size_threaded(int argc, char **argv) {
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << length << ' ' << ensemble_size << endl;
+
+//    vector<vector<double>> _critical_data(3);
+//    single_thread(length, ensemble_size, _critical_data);
+
+    value_type number_of_threads = thread::hardware_concurrency();
+//    value_type number_of_threads = 1;
+//
+    cout << "number of threads " << number_of_threads << endl;
+//
+    vector<thread> threads(number_of_threads);
+//    vector<value_type> iterations(number_of_threads);
+//    vector<vector<vector<double>>> _critical_data(number_of_threads);
+//
+
+////    _critical_data[0].resize(ensemble_size);
+////    _critical_data[1].resize(ensemble_size);
+////    _critical_data[2].resize(ensemble_size);
+    value_type loops_per_thread = ensemble_size / number_of_threads;
+
+    for(value_type i{}; i != number_of_threads; ++ i){
+
+        threads[i] = thread(
+                single_thread,
+                length,
+                loops_per_thread,
+                i
+        );
+    }
+
+
+
+    for(value_type i{}; i != number_of_threads; ++ i){
+        if(threads[i].joinable()){
+            cout << " line : " << __LINE__ << endl;
+            threads[i].join();
+        }
+    }
+
+    cout << " line : " << __LINE__ << endl;
+
+    SitePercolation_ps_v8 sp(10, true);
+
+}
+
+
+
+void cluster_size(int argc, char **argv) {
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    vector<vector<double>> _critical_data(3);
+
+    SitePercolation_ps_v8 sp(length, true);
+
+    sp.simulate_periodic_critical(ensemble_size);
+
+    _critical_data[0] = sp.get_pcs();
+    _critical_data[1] = sp.get_spanning_cluster_size_bonds();
+    _critical_data[2] = sp.get_spanning_cluster_size_sites();
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << sp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename = sp.getSignature() + "_critical_" + to_string(length) + '_' + tm;
+    filename += ".txt";
+    write_critical_data_json_v2(_critical_data, filename, header_info.str());
+
+}
+
+void measure_entropy_by_site(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    vector<double> entropy(length_squared);
+//    vector<double> entropy2(length_squared);
+
+    SitePercolation_ps_v8 sp(length, true);
+    value_type j{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        sp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        j = 0;
+        while (true){
+            successful = sp.occupy();
+            if(successful) {
+//                entropy[j] += sp.entropy_v4(-2); // slower method
+                entropy[j] += sp.entropy_v5_site_threaded(); // slower method
+//                entropy2[j] += sp.entropy_v4(2); // faster method
+
+//                cout << '\t' << entropy[j]  << '\t' << entropy2[j] << endl;
+
+                ++j;
+            }
+            if(j >= length_squared){ // length_squared is the number of site
+                break;
+            }
+        }
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+//                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << sp.get_relabeling_time() << endl;
+    }
+
+    // Taking Average
+    double ensmbl = double(ensemble_size);
+    for(size_t i{}; i!= length_squared ; ++i){
+        entropy[i] /= ensmbl;
+//        entropy2[i] /= ensmbl;
+    }
+
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << sp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename = sp.getSignature() + "_entropy_by_site_" + to_string(length) + '_' + tm;
+    filename += ".txt";
+
+    ofstream fout(filename);
+    // JSON formated header
+    fout << header_info.str();
+    fout << "#p=Occupation probability" << endl;
+    fout << "#H=entropy" << endl;
+    fout << "#cluster length is measured by site" << endl;
+    fout << "#<p>\t<H>\t<H fast>\n";
+
+    for(value_type i{}; i != length_squared;++i){
+        fout << (i+1)/double(length_squared)
+             << '\t' << entropy[i]
+//             << '\t' << entropy2[i]
+             << endl;
+    }
+    fout.close();
+}
+
+/**
+ * For rank-size distribution
+ * @param argc
+ * @param argv
+ */
+void measure_clusters(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    SitePercolation_ps_v8 sp(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << sp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename_s = sp.getSignature() + "_cluster_by_site_" + to_string(length) + '_' + tm;
+    string filename_b = sp.getSignature() + "_cluster_by_bond_" + to_string(length) + '_' + tm;
+    filename_s += ".txt";
+    filename_b += ".txt";
+
+    ofstream fout_s(filename_s);
+    // JSON formated header
+    fout_s << header_info.str();
+    fout_s << "#each line is an independent realization" << endl;
+    fout_s << "#each line contains information about all clusters at critical point" << endl;
+    fout_s << "#cluster size is measured by number of sites in it" << endl;
+
+    ofstream fout_b(filename_b);
+    // JSON formated header
+    fout_b << header_info.str();
+    fout_b << "#each line is an independent realization" << endl;
+    fout_b << "#each line contains information about all clusters at critical point" << endl;
+    fout_b << "#cluster size is measured by number of bonds in it" << endl;
+
+
+    value_type counter{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        sp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = sp.occupy();
+            if(successful) {
+                if(sp.detectWrapping_v1(sp.lastPlacedSite())){
+                    vector<value_type> site, bond;
+                    value_type total_site, total_bond;
+                    sp.get_cluster_info(site, bond, total_site, total_bond);
+                    if(site.size() != bond.size()){
+                        cout << "Size mismatched : line " << __LINE__ << endl;
+                    }
+                    for(value_type j{}; j != site.size(); ++j){
+                        fout_s << site[j] << ',';
+                        fout_b << bond[j] <<',';
+                    }
+
+                    for(value_type j{total_bond}; j < twice_length_squared; ++j){
+                        fout_b << 1 << ','; // cluster of length 1
+                    }
+
+                    fout_s << endl;
+                    fout_b << endl;
+
+                    break;
+                }
+
+                ++counter;
+            }
+            if(counter >= length_squared){ // length_squared is the number of site
+                break;
+            }
+        }
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << sp.get_relabeling_time() << endl;
+    }
+
+
+
+
+
+    fout_b.close();
+    fout_s.close();
+}
+
+
+void weighted_relabeling_test(int argc, char** argv) {
+    value_type length = atoi(argv[1]);
+//    value_type ensemble_size = atoi(argv[2]);
+
+
+//    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+
+//    srand(5);    // seeding
+    srand(atoi(argv[2]));    // seeding from cmdl
+
+//    value_type length = 500;
+    value_type length_squared = length * length;
+    SitePercolation_ps_v8 sp(length, true);
+    value_type j{};
+    j = 0;
+
+    bool successful{false};
+    while (true) {
+        successful = sp.occupy();
+        if (successful) {
+            ++j;
+            auto index = sp.lastPlacedSite();
+
+//            cout << j << " th site" << index << endl;
+//            sp.viewSiteByID();
+//            sp.viewClusterExtended();
+        }
+        if (j >= length_squared) { // length_squared is the number of site
+            break;
+        }
+    }
+//    sp.viewSiteByID();
+//    sp.viewClusterExtended();
+    cout << sp.occupationProbability() << endl;
+
+}
+/****
+ *  All the function that is run in main
+ * @param argc
+ * @param argv
+ */
+void run_in_main(int argc, char** argv){
 
 //    cmd_moment_conservation(argc, argv);
 
 //    cmd_args_site_percolation(argc, argv); // 2017.12.22
 //    cmd_args_site_percolation_ballistic_deposition(argc, argv); // 2018.04.02
 
-    cmd_args_json_g(argc, argv); // 2018.06.11
+//    cmd_args_json_g(argc, argv); // 2018.06.11
 
 //    cout << "Finished cmd_args_site_percolation" << endl;
 
@@ -520,8 +855,38 @@ int main(int argc, char** argv) {
 //    test_site_percolation();
 
 //    cout << "Seed " << seed << endl;
-    std::cout << "Program Ended : Time elapsed "
-              << getFormattedTime((clock() - t) / double(CLOCKS_PER_SEC)) << std::endl;
+
+
+//    cluster_size_threaded(argc, argv);
+//    cluster_size(argc, argv);
+//    measure_entropy_by_site(argc, argv);
+//    measure_clusters(argc, argv);
+    weighted_relabeling_test(argc, argv);
+
+}
+
+
+/**************************************
+ *  The main function
+ *
+ ***************************************/
+int main(int argc, char** argv) {
+    cout << currentTime() << endl;
+
+    cout << "Compiled on " << __DATE__ << "\t at " << __TIME__ << endl;
+    std::cout << "Percolation in a Square Lattice" << std::endl;
+    auto t_start = std::chrono::system_clock::now();
+
+    time_t seed = time(NULL);
+//    srand(seed);    // seeding
+
+    run_in_main(argc, argv);
+
+    auto t_end= std::chrono::system_clock::now();
+    std::chrono::duration<double> drtion = t_end - t_start;
+    std::time_t end_time = std::chrono::system_clock::to_time_t(t_end);
+    cout << "Program finished at " << std::ctime(&end_time) << endl;
+    std::cout << "Time elapsed "   << getFormattedTime(drtion.count()) << std::endl;
     return 0;
 }
 

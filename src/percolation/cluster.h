@@ -85,6 +85,7 @@ public:
 
     void insert(const Cluster_v2& cluster);
     void insert_v2(const Cluster_v2& cluster);
+    void insert_with_id_v2(const Cluster_v2& cluster, int id);
 
 //    void insert_weighted_relabling(std::vector<Bond>& bonds);
 //    void insert_weighted_relabling(std::vector<Site>& sites);
@@ -102,8 +103,8 @@ public:
 
     value_type numberOfBonds() const { return _bond_index.size();}
     value_type numberOfSites() const { return _site_index.size();}
-    int ID() const { return _id;}
-    void ID(int id) { _id = id;}
+    int get_ID() const { return _id;}
+    void set_ID(int id) { _id = id;}
 
     int birthTime() const {return _creation_time;}
 

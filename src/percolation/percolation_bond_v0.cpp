@@ -227,7 +227,7 @@ void BondPercolation_pb_v0::relabel_sites(const Cluster_v2 &clstr, int id) {
 
     const vector<Index> sites = clstr.getSiteIndices();
     for (auto a: sites) {
-        _lattice.getSite(a).groupID(id);
+        _lattice.getSite(a).set_groupID(id);
     }
 
 }
@@ -301,11 +301,11 @@ value_type BondPercolation_pb_v0::placeBond_v0() {
 
 //    cout << "Found indices " << found_index_set << endl;
 
-//    subtract_entropy_for(found_index_set);  // tracking entropy change
+//    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters_v1(
             found_index_set, sites, current_bond
     );
-//    add_entropy_for(merged_cluster_index); // tracking entropy change
+//    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
 
     // running tracker
 //    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
@@ -321,14 +321,15 @@ value_type BondPercolation_pb_v0::placeBond_v0() {
  */
 void BondPercolation_pb_v0::mark_sites(vector<Index> &sites) {
     for (auto it{sites.begin()}; it < sites.end(); ++it) {
-        if (_lattice.getSite(*it).groupID() >= 0) {
+        if (_lattice.getSite(*it).get_groupID() >= 0) {
             // if id >= 0 then it is counted in the cluster so erase it
 //            sites.erase(it); // commenting for now.
         } else {
-            _lattice.getSite(*it).groupID(0); // else set id == 0
+            _lattice.getSite(*it).set_groupID(0); // else set id == 0
         }
     }
 }
+
 
 /***********************
  * new methods
@@ -356,7 +357,7 @@ value_type BondPercolation_pb_v0::manage_clusters_v1(
     if (found_index_set.size() > 0) {
         unsigned long &base = found_index[0];
         _clusters[base].addBondIndex(bond);
-        _lattice.getBond(bond).groupID(_clusters[base].ID()); // relabeling for 1 site
+        _lattice.getBond(bond).groupID(_clusters[base].get_ID()); // relabeling for 1 site
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(sites); // todo
@@ -364,10 +365,10 @@ value_type BondPercolation_pb_v0::manage_clusters_v1(
         int tmp_id;
         for (value_type k{1}; k != found_index.size(); ++k) {
 
-            tmp_id = _clusters[base].ID();
+            tmp_id = _clusters[base].get_ID();
 
             // erase the redundant cluster ids
-            int id_to_be_deleted = _clusters[found_index[k]].ID();
+            int id_to_be_deleted = _clusters[found_index[k]].get_ID();
             _cluster_index_from_id.erase(id_to_be_deleted); // first erase previous keys
 
             // perform relabeling on the sites
@@ -375,7 +376,7 @@ value_type BondPercolation_pb_v0::manage_clusters_v1(
 
 
             // since we use cluster id to relabel cluster when merging, cluster also need to be updated
-            _clusters[found_index[k]].ID(tmp_id);
+            _clusters[found_index[k]].set_ID(tmp_id);
 
             /// since all cluster will eventually get merged to cluster with
             /// index found_index[0] whatever the id is index must be found_index[0]
@@ -1307,21 +1308,21 @@ value_type BondPercolation_pb_v0::count_number_of_active_site() {
 //
 //    if(index.horizontal()) {
 //        // for horizontal bond, row remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).ID();
+//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
 //        auto c = (index.column_ + 1) % _length;
-//        connected_sites[1] = _lattice.getSite({index.x_, c}).ID();
+//        connected_sites[1] = _lattice.getSite({index.x_, c}).set_ID();
 //    }else{
 //        // for vertical bond, column remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).ID();
+//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
 //        auto r = (index.x_ + 1) % _length;
-//        connected_sites[1] = _lattice.getSite({r, index.column_}).ID();
+//        connected_sites[1] = _lattice.getSite({r, index.column_}).set_ID();
 //    }
 //
 //
 //    if (debug_get_Bond_for_site) {
 //        cout << "Bonds for untouched site " << index << endl;
 //        for (auto it = connected_sites.begin(); it != connected_sites.end(); ++it) {
-//            cout << "ID " << (*it) << " = " << *it << endl;
+//            cout << "set_ID " << (*it) << " = " << *it << endl;
 //        }
 //    }
 //    return connected_sites;
@@ -1333,7 +1334,7 @@ value_type BondPercolation_pb_v0::number_of_site_in_spanning_clusters(unordered_
     value_type nos{};   // number of sites
     for (auto b: g_ids) {
         for (auto a: _clusters) {
-            if (a.ID() == b) {
+            if (a.get_ID() == b) {
                 nos += a.numberOfSites();
             }
         }
@@ -1375,18 +1376,18 @@ bool BondPercolation_pb_v0::detectSpanning() {
     for (value_type i{}; i != _length; ++i) {
         // for rows
         if (_lattice.getSite({0, i}).isActive()) {
-            first_row_group_ids.insert(_lattice.getSite({0, i}).groupID());
+            first_row_group_ids.insert(_lattice.getSite({0, i}).get_groupID());
         }
         if (_lattice.getSite({_length - 1, i}).isActive()) {
-            last_row_group_ids.insert(_lattice.getSite({_length - 1, i}).groupID());
+            last_row_group_ids.insert(_lattice.getSite({_length - 1, i}).get_groupID());
         }
 
         // for columns
         if (_lattice.getSite({i, 0}).isActive()) {
-            first_column_group_ids.insert(_lattice.getSite({i, 0}).groupID());
+            first_column_group_ids.insert(_lattice.getSite({i, 0}).get_groupID());
         }
         if (_lattice.getSite({i, _length - 1}).isActive()) {
-            last_column_group_ids.insert(_lattice.getSite({i, _length - 1}).groupID());
+            last_column_group_ids.insert(_lattice.getSite({i, _length - 1}).get_groupID());
         }
 
     }

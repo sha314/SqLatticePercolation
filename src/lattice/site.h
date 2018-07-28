@@ -37,7 +37,7 @@ struct Site{
     IndexRelative _relative_index{0,0};
 
 //    std::vector<Index> _neighbor{};
-    // _connection[0] -> _connection between "ID" and "_neighbor[0]"
+    // _connection[0] -> _connection between "set_ID" and "_neighbor[0]"
 
     /**
      * using set gives following advantages
@@ -74,10 +74,10 @@ public:
     }
     Index ID() const { return  _id;}
     /*
-     * Group ID is the ID of the cluster they are in
+     * Group get_ID is the set_ID of the cluster they are in
      */
-    int     groupID() const {return _group_id;}
-    void    groupID(int  g_id) {_group_id = g_id;}
+    int     get_groupID() const {return _group_id;}
+    void    set_groupID(int g_id) {_group_id = g_id;}
 
     std::stringstream getSite() const {
         std::stringstream ss;

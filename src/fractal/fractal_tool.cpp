@@ -79,7 +79,7 @@ void Fractal_2d::divide_in_four_parts(value_type min, value_type max) {
     for(value_type i{x0}; i != x1; ++i){
         for(value_type j{x1}; j != x2; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
 
@@ -88,7 +88,7 @@ void Fractal_2d::divide_in_four_parts(value_type min, value_type max) {
     for(value_type i{x1}; i != x2; ++i){
         for(value_type j{x0}; j != x1; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
     // (x1, x1) to (x2, x2) -> activation, id = new id
@@ -96,7 +96,7 @@ void Fractal_2d::divide_in_four_parts(value_type min, value_type max) {
     for(value_type i{x1}; i != x2; ++i){
         for(value_type j{x1}; j != x2; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
 
@@ -144,7 +144,7 @@ void Fractal_2d::divide_in_four_parts(const Rectangle& rectangle) {
     for(value_type i{r0}; i != r1; ++i){
         for(value_type j{c1}; j != c2; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
 
@@ -153,7 +153,7 @@ void Fractal_2d::divide_in_four_parts(const Rectangle& rectangle) {
     for(value_type i{r1}; i != r2; ++i){
         for(value_type j{c0}; j != c1; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
     // (x1, x1) to (x2, x2) -> activation, id = new id
@@ -161,7 +161,7 @@ void Fractal_2d::divide_in_four_parts(const Rectangle& rectangle) {
     for(value_type i{r1}; i != r2; ++i){
         for(value_type j{c1}; j != c2; ++j){
             // upper left
-            grid.getSite({i, j}).groupID(id);
+            grid.getSite({i, j}).set_groupID(id);
         }
     }
 
@@ -273,7 +273,7 @@ bool boxCounting::anyActiveSite(const SqLattice& lattice, value_type row, value_
 bool boxCounting::anyActiveSpanningSite(const SqLattice& lattice, value_type row, value_type col, value_type delta) {
     for(value_type r{} ; r < delta ; ++r) {
         for (value_type c{}; c < delta; ++c) {
-            if(lattice.getSite({r+row, c + col}).groupID() == _first_spanning_cluster_id){
+            if(lattice.getSite({r + row, c + col}).get_groupID() == _first_spanning_cluster_id){
                 return true;
             }
         }

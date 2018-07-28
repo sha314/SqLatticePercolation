@@ -39,7 +39,7 @@ T sum(const std::vector<T>& vec){
 */
 struct ClusterIDComparator{
     bool operator()(const Site& s1, const Site& s2){
-        return s1.groupID() < s2.groupID();
+        return s1.get_groupID() < s2.get_groupID();
     }
 };
 
@@ -63,17 +63,34 @@ protected:
     // todo. root site or bond means the first one that is stored
 
     std::vector<Cluster_v2> _clusters;   // check and remove reapeted index manually
-    // every birthTime we create a cluster we assign an ID for them
+    // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
 
     value_type min_index{};
     value_type max_index{};
+
+    // Quanties to measure
+    std::vector<double> _pcs;
+    // critical occupation probabilities
+    std::vector<double> _spanning_cluster_size_sites;
+    std::vector<double> _spanning_cluster_size_bonds;
+    std::vector<double> _occupation_probabilities;
+    std::vector<double> _nob_spanning; // number of bonds in the spanning cluster
+    std::vector<double> _nob_largest;  // number of bonds in the largest cluster
+    std::vector<double> _nos_spanning; // number of sites in the spanning cluster
+    std::vector<double> _nos_largest;  // number of sites in the largest cluster
+    std::vector<double> _entropy_sites; // entropy measured by sites
+    std::vector<double> _entropy_bonds; // entropy measured by bonds
 
 public:
     static constexpr const char* signature = "SqLatticePercolation";
 
     virtual ~SqLatticePercolation() = default;
     SqLatticePercolation(value_type length);
+
+    void set_cluster_measuring_unit(int i){
+        cout << "Cluster measuring unit = " << ((i==0) ? "bond" : "site") << " : line " << __LINE__ <<endl;
+    }
 
     bool occupy();
 
@@ -119,6 +136,28 @@ public:
     void occupationProbability();
     void entropy();
     void orderParameter();
+
+
+    // getters
+    const vector<double> &get_pcs() const;
+
+    const vector<double> &get_spanning_cluster_size_sites() const;
+
+    const vector<double> &get_spanning_cluster_size_bonds() const;
+
+    const vector<double> &get_occupation_probabilities() const;
+
+    const vector<double> &get_nob_spanning() const;
+
+    const vector<double> &get_nob_largest() const;
+
+    const vector<double> &get_nos_spanning() const;
+
+    const vector<double> &get_nos_largest() const;
+
+    const vector<double> &get_entropy_sites() const;
+
+    const vector<double> &get_entropy_bonds() const;
 
 };
 
@@ -179,7 +218,7 @@ protected:
     value_type _index_sequence_position{}; // usually starts from 0. but when there is impurity it starts from non zer0
 
 
-    // every birthTime we create a cluster we assign an ID for them
+    // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
 //    int _impurity_id{-2};   // id of the impure sites
 
@@ -191,10 +230,10 @@ protected:
 
 
     //// quantity to calculate
-//    std::vector<double> _number_of_occupied_sites;
-//    std::vector<double> _entropy;
     // entropy
-    double _entropy{}, _entropy_to_add{}, _entropy_to_subtract{};
+    double _entropy_by_bond{}, _entropy_by_bond_to_add{}, _entropy_by_bond_to_subtract{};
+    double _entropy_by_site{}, _entropy_by_site_to_add{}, _entropy_by_site_to_subtract{};
+    double _entropy_by_site_would_be{};
 
     // entropy calculation ingrediants
     //
@@ -242,7 +281,6 @@ protected:
     std::vector<value_type> number_of_bonds_to_span;
 //    std::unordered_set<int> spanning_cluster_ids;
 //    vector<int> wrapping_cluster_ids; // todo make global to the class
-    value_type _sites_required_to_min_span;
 
 
     /*************************************
@@ -251,13 +289,26 @@ protected:
     bool _logging_flag{false};
     value_type _total_relabeling{};
 
+    /*****************************************
+     * Private Methods
+     ******************************************/
 
+    void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
+    value_type find_suitable_base_cluster(const vector<value_type> &found_index) const;
+
+    double time_relabel{};
 public:
     static constexpr const char* signature = "SitePercolation_ps_v8";
 
     ~SitePercolation_ps_v8() = default;
+    SitePercolation_ps_v8() = default;
+    SitePercolation_ps_v8(SitePercolation_ps_v8 & ) = default;
+    SitePercolation_ps_v8(SitePercolation_ps_v8 && ) = default;
     SitePercolation_ps_v8(value_type length, bool periodicity=true);
 
+    SitePercolation_ps_v8& operator=(SitePercolation_ps_v8 & ) = default;
+//    SitePercolation_ps_v8&& operator=(SitePercolation_ps_v8 && ) = default;
+    double get_relabeling_time() {return time_relabel;}
     virtual void reset();
     void configure(std::vector<Index> site_indices);
 //    void markImpureSites();
@@ -301,17 +352,21 @@ public:
     /****************************************************************
      * Calculations
      ***************************************************************/
-    void calculate_entropy();
-    void calculate_occupation_probability();
-    void calculate_spanning_probability_by_largest_cluster();
-    void calculation_short_cut();    // calculate entropy and order parameter
 
     value_type box_counting(value_type delta); // todo both at once
     value_type box_counting_spanning(value_type delta) ;
     array<value_type, 2> box_counting_v2(value_type delta);
-    void add_entropy_for(value_type index);
-    void subtract_entropy_for(const set<value_type>& found_index_set);
-    void subtract_entropy_for(const vector<value_type>& found_index);
+
+    void add_entropy_for_bond(value_type index);
+    void add_entropy_for_site(value_type index);
+    void add_entropy_for_full(value_type index);
+
+    void subtract_entropy_for_bond(const set<value_type> &found_index_set);
+    void subtract_entropy_for_bond(const vector<value_type> &found_index);
+    void subtract_entropy_for_site(const set<value_type> &found_index_set);
+    void subtract_entropy_for_site(const vector<value_type> &found_index);
+    void subtract_entropy_for_full(const set<value_type> &found_index_set);
+    void subtract_entropy_for_full(const vector<value_type> &found_index);
 
     /*************************************************
      * Site placing methods
@@ -332,6 +387,7 @@ public:
     value_type placeSite_v12(Index site,
                              vector<Index>& neighbor_sites,
                              vector<BondIndex>& neighbor_bonds);
+    value_type placeSite_v13(Index site);
 
     Index selectSite(); // selecting site
 
@@ -380,6 +436,8 @@ public:
     value_type relabel(value_type index_1, value_type index_2);
     void relabel_sites(const Cluster_v2&  clstr, int id);  // todo pass cluster as reference
     void relabel_sites_v4(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
+    void relabel_sites_v5(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
+    void relabel_sites_v6(Index root_a, const Cluster_v2& clstr_b, int id); // relative index is set accordingly
     void relabel_bonds(const Cluster_v2&  clstr, int id);  // todo
 
 
@@ -392,6 +450,8 @@ public:
     double entropy() const; // the shannon entropy
     double entropy_v2(); // the shannon entropy
     double entropy_v3() const;   // the shannon entropy
+    double entropy_v4(int i=0) const;   // the shannon entropy
+    double entropy_v5_site_threaded() const ;
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds
     double orderParameter_v2() const;  // number of bonds in the largest cluster / total number of bonds
 
@@ -411,12 +471,17 @@ public:
 
 
     double numberOfcluster() const { return _clusters.size();}
-    int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).groupID();}
+    int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).get_groupID();}
     int firstSpanningClusterID_v2() const {if(!_spanning_sites.empty()){
-            return _lattice.getSite(_spanning_sites[0]).groupID();
+            return _lattice.getSite(_spanning_sites[0]).get_groupID();
         }
         return -1;
     }
+
+    void get_cluster_info(        vector<value_type> &site,
+                                  vector<value_type> &bond,
+                                  value_type &total_site,
+                                  value_type &total_bond);
 
 
     /***********************************
@@ -487,6 +552,14 @@ public:
      *********************************************/
     // lattice visual data for python
     void writeVisualLatticeData(const string& filename, bool only_spanning=true);
+
+
+    /*********************************************
+     * Simulation methods
+     ********************************************/
+    void simulate_all(value_type ensemble_size);
+    void simulate_periodic_critical(value_type ensemble_size);
+
 protected:
     void initialize();
     void initialize_index_sequence();
@@ -495,37 +568,54 @@ protected:
     std::set<value_type> find_index_for_placing_new_bonds_v3(const vector<Index>& neighbors);
     std::vector<value_type> find_index_for_placing_new_bonds_v4(std::vector<Index> neighbors);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_weighted_v5(   // todo
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v4(
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v6(
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v7(
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_weighted_v8(    // suitable for spanning detection
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
+    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v9(
             const std::vector<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
-    value_type manage_clusters_v10(
+    // manage_cluster takes more than 85% of total time
+    value_type manage_clusters_v10( // successful
+            const set<value_type> &found_index_set,
+            vector<BondIndex> &hv_bonds,
+            Index &site);
+
+    value_type manage_clusters_v11( // experimental
+            const set<value_type> &found_index_set,
+            vector<BondIndex> &hv_bonds,
+            Index &site);
+
+    value_type manage_clusters_v12( // experimental
             const set<value_type> &found_index_set,
             vector<BondIndex> &hv_bonds,
             Index &site);
