@@ -817,6 +817,8 @@ void weighted_relabeling_test(int argc, char** argv) {
     cout << sp.occupationProbability() << endl;
 
 }
+
+
 /****
  *  All the function that is run in main
  * @param argc
