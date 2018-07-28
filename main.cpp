@@ -818,7 +818,6 @@ void weighted_relabeling_test(int argc, char** argv) {
 
 }
 
-
 /****
  *  All the function that is run in main
  * @param argc
