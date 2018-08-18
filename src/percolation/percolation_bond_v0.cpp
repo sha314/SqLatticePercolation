@@ -172,6 +172,7 @@ void BondPercolation_pb_v0::reset() {
     _lattice.reset();
     _clusters.clear();
     _cluster_index_from_id.clear();
+    _wrapping_indices.clear();
     initialize();
     randomize();  // randomize the untouched_site_indices
 }
@@ -2036,60 +2037,6 @@ bool BondPercolation_pb_v0::detectSpanning() {
 /***********************************
  * Wrapping Detection
  **********************************/
-/**
- *
- * @param bond  : last placed bond
- * @return
- */
-bool BondPercolation_pb_v0::detectWrapping_v1(Index site) {
-    // only possible if the cluster containing 'site' has bonds >= length of the lattice
-    if(_number_of_occupied_bonds < _length){
-        return false;
-    }
-
-    // check if it is already a wrapping site
-    int id = _lattice.getSite(site).get_groupID();
-    int tmp_id{};
-    for (auto i: _wrapping_indices){
-        tmp_id = _lattice.getSite(i).get_groupID();
-        if(id == tmp_id ){
-//            cout << "Already a wrappig cluster : line " << __LINE__ << endl;
-            return true;
-        }
-    }
-
-    // get four neighbors of site always. since wrapping is valid if periodicity is implied
-    vector<Index> sites = _lattice.get_neighbor_site_indices(site);
-
-
-    if(sites.size() < 2){ // at least two neighbor of  site is required
-        return false;
-    }else{
-        IndexRelative irel = _lattice.getSite(site).relativeIndex();
-//        cout << "pivot's " << site << " relative " << irel << endl;
-        IndexRelative b;
-        for (auto a:sites){
-            if(_lattice.getSite(a).get_groupID() != _lattice.getSite(site).get_groupID()){
-                // different cluster
-                continue;
-            }
-//            cout << "belongs to the same cluster : line " << __LINE__ << endl;
-
-            b = _lattice.getSite(a).relativeIndex();
-//            cout << "neibhbor " << a << " relative " << b << endl;
-            if(abs(irel.x_ - b.x_) > 1 || abs(irel.y_ - b.y_) > 1){
-//                cout << "Wrapping : line " << __LINE__ << endl;
-                _wrapping_indices.push_back(site);
-                return true;
-            }
-        }
-    }
-
-//    cout << "wrapping sites " << _wrapping_indices << endl;
-    // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
-    // that means there is wrapping but not for the %site
-    return !_wrapping_indices.empty();
-}
 
 /**
  *
@@ -2204,13 +2151,5 @@ double BondPercolation_pb_v0::entropy() const {
     return _entropy_by_site + H;
 }
 
-/**
- * Relative index relabeling according to bond
- * @param bond  : last placed bond
- * @param sites : sites with the last placed bond
- */
-void BondPercolation_pb_v0::relabel_sites_relative(BondIndex bond, const vector<Index> &sites) {
-
-}
 
 

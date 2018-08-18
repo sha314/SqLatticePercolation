@@ -906,48 +906,105 @@ void bond_percolation(int argc, char** argv) {
 
 
 void bond_percolation_wrapping(int argc, char** argv) {
-//    value_type length = atoi(argv[1]);
-//    value_type ensemble_size = atoi(argv[2]);
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
 
-    value_type length = 300;
-    BondPercolation_pb_v0 bp(length);
-    value_type total_bonds= 2*length*length;
-//    double length_squared = length*length;
 
-    size_t j=0;
-    bool successful{false};
-    while (true) {
-        successful = bp.occupy();
-        if (successful) {
-//            cout << "*******************************************" << endl;
-            auto index = bp.lastPlacedBond();
-            cout << j << " th bond" << index << endl;
-            auto neighbors = SqLattice::get_neighbor_indices(length, index);
-//            if(bp.detectWrapping_v1(neighbors[0]) || bp.detectWrapping_v1(neighbors[1])){
-            if(bp.detectWrapping_v2(index)){
-                cout << "wrapping " << endl;
-                cout << "pc = " << bp.occupationProbability() << endl;
-//                cout << bp.wrapping_indices() << endl;
-//                bp.viewBondByRelativeIndex();
-//                bp.viewSiteByRelativeIndex();
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    BondPercolation_pb_v0 bp(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << bp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename_s = bp.getSignature() + "_cluster_by_site_" + to_string(length) + '_' + tm;
+    string filename_b = bp.getSignature() + "_cluster_by_bond_" + to_string(length) + '_' + tm;
+    string filename_critical = bp.getSignature() + "_critical_" + to_string(length) + '_' + tm;
+    filename_s += ".txt";
+    filename_b += ".txt";
+    filename_critical += ".txt";
+
+    ofstream fout_s(filename_s);
+    // JSON formated header
+    fout_s << header_info.str();
+    fout_s << "#each line is an independent realization" << endl;
+    fout_s << "#each line contains information about all clusters at critical point" << endl;
+    fout_s << "#cluster size is measured by number of sites in it" << endl;
+
+    ofstream fout_b(filename_b);
+    // JSON formated header
+    fout_b << header_info.str();
+    fout_b << "#each line is an independent realization" << endl;
+    fout_b << "#each line contains information about all clusters at critical point" << endl;
+    fout_b << "#cluster size is measured by number of bonds in it" << endl;
+
+    ofstream fout_critical(filename_critical);
+    fout_critical << header_info.str();
+    fout_critical << "#critical occupation probability or pc" << endl;
+    fout_critical << "#<pc>" << endl;
+
+    value_type counter{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        bp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = bp.occupy();
+            if(successful) {
+                if(bp.detectWrapping_v2(bp.lastPlacedBond())){
+                    fout_critical << bp.occupationProbability() << endl;
+                    vector<value_type> site, bond;
+                    value_type total_site, total_bond;
+                    bp.get_cluster_info(site, bond, total_site, total_bond);
+                    if(site.size() != bond.size()){
+                        cout << "Size mismatched : line " << __LINE__ << endl;
+                    }
+                    for(value_type j{}; j != site.size(); ++j){
+                        fout_s << site[j] << ',';
+                        fout_b << bond[j] <<',';
+                    }
+
+                    for(value_type j{total_site}; j < length_squared; ++j){
+                        fout_s << 1 << ','; // cluster of length 1
+                    }
+
+                    fout_s << endl;
+                    fout_b << endl;
+
+                    break;
+                }
+
+                ++counter;
+            }
+            if(counter >= length_squared){ // length_squared is the number of site
                 break;
             }
-
-//            bp.viewBondByID();
-//            bp.viewClusterExtended();
-//            bp.viewBondByRelativeIndex();
-//            bp.viewByRelativeIndex();
-//            bp.viewSiteByRelativeIndex();
-//            if( j == 10){
-//                break;
-//            }
-            ++j;
         }
-        if (j >= total_bonds) { // length_squared is the number of site
-            break;
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
         }
+//        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
     }
 
+
+    fout_b.close();
+    fout_s.close();
+    fout_critical.close();
 }
 
 

@@ -173,6 +173,13 @@ public:
 //
 //    const vector<double> &get_entropy_bonds() const;
 
+    void get_cluster_info(
+            vector<value_type> &site,
+            vector<value_type> &bond,
+            value_type &total_site,
+            value_type &total_bond
+    );
+
 };
 
 
@@ -494,10 +501,10 @@ public:
         return -1;
     }
 
-    void get_cluster_info(        vector<value_type> &site,
-                                  vector<value_type> &bond,
-                                  value_type &total_site,
-                                  value_type &total_bond);
+//    void get_cluster_info(        vector<value_type> &site,
+//                                  vector<value_type> &bond,
+//                                  value_type &total_site,
+//                                  value_type &total_bond);
 
 
     /***********************************
@@ -980,7 +987,6 @@ public:
     value_type number_of_site_in_spanning_clusters(std::unordered_set<int> g_ids);
 
     bool detectSpanning();
-    bool detectWrapping_v1(Index bond);
     bool detectWrapping_v2(BondIndex bond);
 
     IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018

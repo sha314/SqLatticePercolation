@@ -88,6 +88,41 @@ void SqLatticePercolation::viewClusterExtended() {
     cout << "Total sites " << total_sites << endl;
 }
 
+/**
+ *
+ * @param site
+ * @param bond
+ * @param total_site
+ * @param total_bond
+ */
+void
+SqLatticePercolation::get_cluster_info(
+        vector<value_type> &site,
+        vector<value_type> &bond,
+        value_type &total_site,
+        value_type &total_bond
+) {
+
+    site.clear();
+    bond.clear();
+
+    unsigned long size = _clusters.size();
+    site.resize(size);
+    bond.resize(size);
+    total_site = 0;
+    total_bond = 0;
+    value_type a, b;
+    for(value_type i{}; i < size; ++i){
+        a = _clusters[i].numberOfSites();
+        b = _clusters[i].numberOfBonds();
+        site[i] = a;
+        bond[i] = b;
+        total_site += a;
+        total_bond += b;
+    }
+
+}
+
 
 
 //
