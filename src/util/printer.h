@@ -10,6 +10,8 @@
 #include <set>
 #include <unordered_set>
 #include <vector>
+#include <map>
+#include <initializer_list>
 
 
 template <typename T>
@@ -61,6 +63,34 @@ std::ostream& operator<<(std::ostream& os, const std::unordered_map<K, V> & m){
     return os << '}';
 };
 
+/**
+ * Prints a horizontal barrier in the console.
+ * @param n             : number of character on the barrier.
+ * @param common        : common character of the barrier.
+ * @param special       : special chatater of the barrier.
+ * @param special_pos   : where the special character should be placed
+ */
+void print_h_barrier(size_t n, char common, char special, const std::initializer_list<size_t>& special_pos);
+
+/**
+ * Prints a horizontal barrier in the console.
+ * @param n             : number of character on the barrier.
+ * @param common        : common character of the barrier.
+ * @param special       : special chatater of the barrier.
+ * @param initial_pos   : Initial posiiton of the special character
+ * @param period        : periodic position of the special character.
+ */
+void print_h_barrier(size_t n, char common, char special, size_t initial_pos, size_t period);
+
+/**
+ *
+ * Prints a horizontal barrier in the console.
+ * @param n             : how many time the middle string is repeated.
+ * @param initial       : string that is printed initially.
+ * @param middles       : middle string.
+ * @param end           : string that is printed at the end.
+ */
+void print_h_barrier(size_t n, const std::string& initial, const std::string& middles, const std::string& end="\n");
 
 #endif //PERCOLATION_PRINTER_H
 

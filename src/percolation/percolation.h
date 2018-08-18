@@ -51,7 +51,8 @@ class SqLatticePercolation{
 protected:
     value_type  _length;
     value_type  _length_squared;
-    value_type _max_bonds;
+    value_type _max_number_of_bonds;
+    value_type _max_number_of_sites;
 
     // structural variables of lattice
     SqLattice _lattice;
@@ -69,18 +70,18 @@ protected:
     value_type min_index{};
     value_type max_index{};
 
-    // Quanties to measure
-    std::vector<double> _pcs;
-    // critical occupation probabilities
-    std::vector<double> _spanning_cluster_size_sites;
-    std::vector<double> _spanning_cluster_size_bonds;
-    std::vector<double> _occupation_probabilities;
-    std::vector<double> _nob_spanning; // number of bonds in the spanning cluster
-    std::vector<double> _nob_largest;  // number of bonds in the largest cluster
-    std::vector<double> _nos_spanning; // number of sites in the spanning cluster
-    std::vector<double> _nos_largest;  // number of sites in the largest cluster
-    std::vector<double> _entropy_sites; // entropy measured by sites
-    std::vector<double> _entropy_bonds; // entropy measured by bonds
+//    // Quanties to measure
+//    std::vector<double> _pcs;
+//    // critical occupation probabilities
+//    std::vector<double> _spanning_cluster_size_sites;
+//    std::vector<double> _spanning_cluster_size_bonds;
+//    std::vector<double> _occupation_probabilities;
+//    std::vector<double> _nob_spanning; // number of bonds in the spanning cluster
+//    std::vector<double> _nob_largest;  // number of bonds in the largest cluster
+//    std::vector<double> _nos_spanning; // number of sites in the spanning cluster
+//    std::vector<double> _nos_largest;  // number of sites in the largest cluster
+//    std::vector<double> _entropy_sites; // entropy measured by sites
+//    std::vector<double> _entropy_bonds; // entropy measured by bonds
 
 public:
     static constexpr const char* signature = "SqLatticePercolation";
@@ -131,33 +132,46 @@ public:
         _lattice.view_bonds_by_id();
     }
 
-    virtual void viewSiteByRelativeIndex();
+    virtual void viewSiteByRelativeIndex(){
+        _lattice.view_sites_by_relative_index();
+    }
+    virtual void viewBondByRelativeIndex(){
+        _lattice.view_bonds_by_relative_index_v4();
+    }
+
+    virtual void viewByRelativeIndex(){
+        _lattice.view_by_relative_index();
+    }
+
+    virtual void view(){
+        _lattice.view();
+    }
 
     void occupationProbability();
     void entropy();
     void orderParameter();
 
 
-    // getters
-    const vector<double> &get_pcs() const;
-
-    const vector<double> &get_spanning_cluster_size_sites() const;
-
-    const vector<double> &get_spanning_cluster_size_bonds() const;
-
-    const vector<double> &get_occupation_probabilities() const;
-
-    const vector<double> &get_nob_spanning() const;
-
-    const vector<double> &get_nob_largest() const;
-
-    const vector<double> &get_nos_spanning() const;
-
-    const vector<double> &get_nos_largest() const;
-
-    const vector<double> &get_entropy_sites() const;
-
-    const vector<double> &get_entropy_bonds() const;
+//    // getters
+//    const vector<double> &get_pcs() const;
+//
+//    const vector<double> &get_spanning_cluster_size_sites() const;
+//
+//    const vector<double> &get_spanning_cluster_size_bonds() const;
+//
+//    const vector<double> &get_occupation_probabilities() const;
+//
+//    const vector<double> &get_nob_spanning() const;
+//
+//    const vector<double> &get_nob_largest() const;
+//
+//    const vector<double> &get_nos_spanning() const;
+//
+//    const vector<double> &get_nos_largest() const;
+//
+//    const vector<double> &get_entropy_sites() const;
+//
+//    const vector<double> &get_entropy_bonds() const;
 
 };
 
@@ -309,6 +323,8 @@ public:
     SitePercolation_ps_v8& operator=(SitePercolation_ps_v8 & ) = default;
 //    SitePercolation_ps_v8&& operator=(SitePercolation_ps_v8 && ) = default;
     double get_relabeling_time() {return time_relabel;}
+    value_type relabeling_count() const {return _total_relabeling;}
+
     virtual void reset();
     void configure(std::vector<Index> site_indices);
 //    void markImpureSites();
@@ -610,15 +626,22 @@ protected:
             vector<BondIndex> &hv_bonds,
             Index &site);
 
-    value_type manage_clusters_v11( // experimental
+    value_type manage_clusters_v11( // 2018.07.26
             const set<value_type> &found_index_set,
             vector<BondIndex> &hv_bonds,
             Index &site);
 
-    value_type manage_clusters_v12( // experimental
+    value_type manage_clusters_v12( // 2018.07.28
             const set<value_type> &found_index_set,
             vector<BondIndex> &hv_bonds,
             Index &site);
+
+    value_type manage_clusters_v13_test1( // experimental
+            const set<value_type> &found_index_set,
+            vector<BondIndex> &hv_bonds,
+            Index &site,
+            value_type base
+    );
 
     bool anyActiveSite(value_type r, value_type c, value_type delta);
     bool anyActiveSpanningSite(value_type row, value_type col, value_type delta);
@@ -853,7 +876,6 @@ class BondPercolation_pb_v0 : public SqLatticePercolation{
     BondIndex _last_placed_bond;
 
     double _total_number_of_active_bonds{};
-    double max_cluster_length;
 
 
     /// Cluster tracker
@@ -861,24 +883,35 @@ class BondPercolation_pb_v0 : public SqLatticePercolation{
     // value    -> index of cluster
 
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
-    value_type _bonds_in_cluster_with_size_two_or_more{};
+
 
     //// quantity to calculate
     value_type _number_of_occupied_bonds;
-    std::vector<double> _entropy;
+
     std::vector<value_type> number_of_bonds_to_span;
     std::vector<value_type> number_of_sites_to_span;
     value_type _sites_required_to_min_span;
-    std::vector<CalculationFlags> _calculation_flags;
 
 
     // first value the cluster id and second value is the cluster index
     std::vector<std::pair<value_type, value_type>> _spanning_cluster_indices;
 
+
+
+    // keeps track of entropy
+    double _entropy_by_site{};
+    double _entropy_by_site_to_add {};
+    double _entropy_by_site_to_subtract{};
+
+    value_type sites_in_cluster_with_size_greater_than_one{};
+
+    vector<Index> _wrapping_indices;
+
 public:
     static constexpr const char* signature = "BondPercolation_v1";
     ~BondPercolation_pb_v0() = default;
-    BondPercolation_pb_v0(value_type length, bool periodicity=true);
+
+    explicit BondPercolation_pb_v0(value_type length, bool periodicity=true);
 
     std::string getSignature() {
         string s = "sq_lattice_bond_percolation_";
@@ -898,11 +931,12 @@ public:
 
     void calculationFlags(std::vector<CalculationFlags> cf);
 
-    std::vector<double> entropy() const { return _entropy;}
+
     double occupationProbability() const ;
     std::vector<double> spanningProbability() const ;
 
-    void calculate_entropy();
+    double entropy() const;
+    double entropy_slow();
     void calculate_spanning_probability();
     void calculate_spanning_probability_by_largest_cluster();
 
@@ -914,22 +948,47 @@ public:
     value_type placeBond_v0();
     bool occupy();
 
+    /**********************
+     * Relabeling
+     */
     void relabel_sites(const Cluster_v2& clstr, int id);
     void relabel_bonds(const Cluster_v2& clstr, int id);
+    void relabel_bonds_v1(BondIndex site_a, const Cluster_v2 &clstr_b); // implemented on 17 Aug 2018
+    void relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
 
+    void relabel_v1(BondIndex last_bond, const Cluster_v2& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
+    void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
+
+    void relabel_sites_relative(BondIndex bond, const vector<Index> &sites);
+    void relabel_new_sites_relative(const vector<Index> &sites, int id);
+
+    // relabel sites and bonds in the cluster cluster
+    void relabel_cluster(BondIndex bond, const vector<Index>& sites);
+    void relabel_cluster(BondIndex bond, const Cluster_v2& clstr_b, size_t bond_pos, size_t site_pos);
 
     void numberOfActiveSites() const {std::cout << "Number of active sites " << _total_number_of_active_bonds << std::endl;}
     double activeSites() const { return _total_number_of_active_bonds;}
 
     value_type count_number_of_active_site();
 
+    void subtract_entropy_for_site(const set<value_type> &found_index_set);
+    void add_entropy_for_site(value_type found_index);
     /***********************************
-     * Spanning Detection
+     * Spanning and Wrapping
      **********************************/
 //    value_type numberOfSiteInSpanningClusters(std::vector<int> g_ids);
     value_type number_of_site_in_spanning_clusters(std::unordered_set<int> g_ids);
 
     bool detectSpanning();
+    bool detectWrapping_v1(Index bond);
+    bool detectWrapping_v2(BondIndex bond);
+
+    IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
+    IndexRelative getRelativeIndex(Index root, Index site_new);
+    IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
+
+//    const std::vector<BondIndex>& wrapping_bonds() const { return  _wrapping_indices;}
+    const std::vector<Index>& wrapping_indices() const { return  _wrapping_indices;}
 
     /*********************************
      * Printing Status
@@ -941,9 +1000,9 @@ public:
     BondIndex lastPlacedBond() {
         if (_index_sequence_position == 0) {
             cout << "Empty lattice : line " << __LINE__ << endl;
-            return randomized_index_sequence[_index_sequence_position];
+            return _last_placed_bond;
         }
-        return randomized_index_sequence[_index_sequence_position-1];
+        return _last_placed_bond;
     }
 
     // debuggind functions
@@ -968,6 +1027,13 @@ private:
             BondIndex &bond
     );
 
+
+    value_type manage_clusters_v3(
+            const set<value_type> &found_index_set,
+            vector<Index> &sites,
+            BondIndex &bond
+    );
+
     void connection_v1(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
     void connection_v2(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
     void mark_sites(vector<Index> &sites);
@@ -985,6 +1051,8 @@ private:
 
     void connection_2_periodic(const BondIndex &bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor,
                                value_type next_column, value_type prev_column, value_type prev_row, value_type next_row);
+
+
 };
 
 #endif //SITEPERCOLATION_PERCOLATION_H

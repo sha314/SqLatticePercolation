@@ -289,7 +289,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_bond(const set<value_type> &fou
     double nob, mu_bond;
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ _max_bonds;
+        mu_bond = nob/ _max_number_of_bonds;
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
     }
 }
@@ -298,7 +298,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_bond(const vector<value_type> &
     double nob, mu_bond;
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ _max_bonds;
+        mu_bond = nob/ _max_number_of_bonds;
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
     }
 }
@@ -328,7 +328,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const vector<value_type>& 
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ _max_bonds;
+        mu_bond = nob/ _max_number_of_bonds;
         mu_site = nos/_number_of_occupied_sites;
 
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
@@ -342,7 +342,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const set<value_type>& fou
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ _max_bonds;
+        mu_bond = nob/ _max_number_of_bonds;
         mu_site = nos/_number_of_occupied_sites;
 
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
@@ -358,7 +358,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const set<value_type>& fou
  */
 void SitePercolation_ps_v8::add_entropy_for_bond(value_type index){
     double nob = _clusters[index].numberOfBonds();
-    double mu_bond = nob / _max_bonds;
+    double mu_bond = nob / _max_number_of_bonds;
     _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
     _entropy_by_bond = _entropy_by_bond + _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
     _entropy_by_bond_to_subtract = 0;
@@ -400,7 +400,7 @@ void SitePercolation_ps_v8::add_entropy_for_full(value_type index){
 
     // by bond
     double nob = _clusters[index].numberOfBonds();
-    double mu_bond = nob / _max_bonds;
+    double mu_bond = nob / _max_number_of_bonds;
     _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
     _entropy_by_bond += _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
     _entropy_by_bond_to_subtract = 0;
@@ -439,7 +439,7 @@ void SitePercolation_ps_v8::track_numberOfSitesInLargestCluster(){
  * Condition: must be called each time a site is placed
  */
 void SitePercolation_ps_v8::track_entropy() {
-    double mu = _clusters[_index_last_modified_cluster].numberOfBonds() / double(_max_bonds);
+    double mu = _clusters[_index_last_modified_cluster].numberOfBonds() / double(_max_number_of_bonds);
     _cluster_entropy[_clusters[_index_last_modified_cluster].get_ID()] = mu * log(mu);
 }
 
@@ -1109,7 +1109,7 @@ value_type SitePercolation_ps_v8::manage_clusters_v9(
  */
 IndexRelative SitePercolation_ps_v8::getRelativeIndex(Index root, Index site_new){
 //    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
-    int delta_x = -int(root.col_) + int(site_new.col_); // if +1 then root is on the right ??
+    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
     int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
 
 
@@ -1153,17 +1153,18 @@ value_type SitePercolation_ps_v8::manage_clusters_v10(
     vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
     value_type merged_cluster_index{};
 
-    if (found_index_set.size() > 0) {
-        unsigned long &base = found_index[0];
+    if (!found_index_set.empty()) {
+        unsigned long base = found_index[0];
         Index root = _clusters[base].getRootSite(); // root index of the base cluster
-        int id = _clusters[base].get_ID();
+        int id_base = _clusters[base].get_ID();
+
         _clusters[base].addSiteIndex(site);
 
-        vector<Index> neibhgors = _lattice.getNeighbrs(site);
+        vector<Index> neibhgors = _lattice.get_neighbor_site_indices(site);
         // find which of the neighbors are of id as the base cluster
         IndexRelative r;
         for(auto n: neibhgors){
-            if(_lattice.getSite(n).get_groupID() == id){
+            if(_lattice.getSite(n).get_groupID() == id_base){
                 // find relative index with respect to this site
                 r = getRelativeIndex(n, site);
                 break; // since first time r is set tunning loop is doing no good
@@ -1171,15 +1172,16 @@ value_type SitePercolation_ps_v8::manage_clusters_v10(
         }
 
         _lattice.getSite(site).relativeIndex(r);
-        _lattice.getSite(site).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
+        _lattice.getSite(site).set_groupID(id_base); // relabeling for 1 site
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(hv_bonds);
         // merge clusters with common values from all other cluster
         int tmp_id;
         for (value_type k{1}; k != found_index.size(); ++k) {
+            _total_relabeling += _clusters[k].numberOfSites();
 
-            tmp_id = _clusters[base].get_ID();
+            tmp_id = id_base;
 
             // erase the redundant cluster ids
             int id_to_be_deleted = _clusters[found_index[k]].get_ID();
@@ -1252,17 +1254,18 @@ value_type SitePercolation_ps_v8::manage_clusters_v11(
     vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
     value_type merged_cluster_index{};
 
-    if (found_index_set.size() > 0) {
+    if (!found_index_set.empty()) {
         unsigned long base = found_index[0];
-        Index root = _clusters[base].getRootSite(); // root index of the base cluster
-        int id = _clusters[base].get_ID();
+//        Index root = _clusters[base].getRootSite(); // root index of the base cluster
+        int id_base = _clusters[base].get_ID();
+
         _clusters[base].addSiteIndex(site);
 
-        vector<Index> neibhgors = _lattice.getNeighbrs(site);
+        vector<Index> neibhgors = _lattice.get_neighbor_site_indices(site);
         // find which of the neighbors are of id as the base cluster
         IndexRelative r;
         for(auto n: neibhgors){
-            if(_lattice.getSite(n).get_groupID() == id){
+            if(_lattice.getSite(n).get_groupID() == id_base){
                 // find relative index with respect to this site
                 r = getRelativeIndex(n, site);
                 break; // since first time r is set tunning loop is doing no good
@@ -1270,21 +1273,18 @@ value_type SitePercolation_ps_v8::manage_clusters_v11(
         }
 
         _lattice.getSite(site).relativeIndex(r);
-        _lattice.getSite(site).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
+        _lattice.getSite(site).set_groupID(id_base); // relabeling for 1 site
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(hv_bonds);
         // merge clusters with common values from all other cluster
-        int tmp_id;
 
-        size_t base_size = _clusters[base].numberOfSites(), s, tmp;
         value_type ers{};
         for (value_type k{1}; k != found_index.size(); ++k) {
 
-            tmp_id = _clusters[base].get_ID();
-
             // erase the redundant cluster ids
             ers = found_index[k];
+            _total_relabeling += _clusters[ers].numberOfSites();    // keeps record of number of relabeling done
             // order of the code matters here
             int id_to_be_deleted = _clusters[ers].get_ID();
 //            cout << "Erasing cluster [" << ers << "] : ID " << id_to_be_deleted << endl;
@@ -1294,7 +1294,7 @@ value_type SitePercolation_ps_v8::manage_clusters_v11(
             relabel_sites_v5(site, _clusters[ers]);
 
             // since we use cluster id to relabel cluster when merging, cluster also need to be updated
-            _clusters[ers].set_ID(tmp_id);
+            _clusters[ers].set_ID(id_base);
 
             /// since all cluster will eventually get merged to cluster with
             /// index found_index[0] whatever the id is index must be found_index[0]
@@ -1302,15 +1302,26 @@ value_type SitePercolation_ps_v8::manage_clusters_v11(
             // store values of other found indices to the cluster
             _clusters[base].insert(_clusters[ers]);
 
+            // now erase the merged cluster
+//            if(ers != base){
+//
+//                auto it = _clusters.begin() + ers;
+//                _clusters.erase(it);
+//
+////                cout << "before reducing " << __LINE__ << endl;
+////                viewClusterExtended();
+//                for(value_type m{k+1}; m < found_index.size(); ++m){
+//                    --found_index[m];
+//                }
+////                cout << "After reducing " << __LINE__ << endl;
+////                viewClusterExtended();
+//            }
         }
 
-//        cout << "After relabeling " << endl;
-//        viewClusterExtended();
 
-//        cout << "found index " << found_index << endl;
         for(value_type k{}; k < found_index.size(); ++k){
             ers = found_index[k];
-            if(ers > base){
+            if(ers != base){
 
                 auto it = _clusters.begin() + ers;
                 _clusters.erase(it);
@@ -1322,12 +1333,6 @@ value_type SitePercolation_ps_v8::manage_clusters_v11(
                 }
 //                cout << "After reducing " << __LINE__ << endl;
 //                viewClusterExtended();
-            }
-            else if(ers < base){
-                cout << "ers < base : line " << __LINE__ << endl;
-                auto it = _clusters.begin() + ers;
-                _clusters.erase(it);
-
             }
         }
 
@@ -1378,11 +1383,13 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
 
     if (!found_index.empty()) {
         value_type base = find_suitable_base_cluster(found_index);
+
+
 //        Index root = _clusters[base].getRootSite(); // root index of the base cluster
         int id_base = _clusters[base].get_ID();
         _clusters[base].addSiteIndex(site);
 
-        vector<Index> neibhgors = _lattice.getNeighbrs(site);
+        vector<Index> neibhgors = _lattice.get_neighbor_site_indices(site);
         // find which of the neighbors are of id_base as the base cluster
         IndexRelative r;
         for(auto n: neibhgors){
@@ -1394,7 +1401,7 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
         }
 
         _lattice.getSite(site).relativeIndex(r);
-        _lattice.getSite(site).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
+        _lattice.getSite(site).set_groupID(id_base); // relabeling for 1 site
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(hv_bonds);
@@ -1404,13 +1411,14 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
 
 //        cout << "found index " << found_index << endl;
 //        value_type x{1};
-
+        // found_index must be a sorted array
         for(value_type k{}; k < found_index.size(); ++k){
             ers = found_index[k];
 //            cout << "ers = " << ers << endl;
             if(ers != base){
                 // erase the redundant cluster ids
-                ers = found_index[k];
+
+                _total_relabeling += _clusters[ers].numberOfSites();
                 // order of the code matters here
                 int id_to_be_deleted = _clusters[ers].get_ID();
 
@@ -1427,34 +1435,36 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
                 /// index found_index[0] whatever the id is index must be found_index[0]
 
                 // store values of other found indices to the cluster
-                _clusters[base].insert(_clusters[ers]);
-            }
-            // now erase the merged cluster
-            if(ers > base){
 
-                auto it = _clusters.begin() + ers;
-                _clusters.erase(it);
+                _clusters[base].insert(_clusters[ers]);
+
+                // now erase the merged cluster
+                if(ers > base){
+
+                    auto it = _clusters.begin() + ers;
+                    _clusters.erase(it);
 
 //                cout << "before reducing " << __LINE__ << endl;
 //                viewClusterExtended();
-                for(value_type m{k+1}; m < found_index.size(); ++m){
-                    --found_index[m];
-                }
+
 //                cout << "After reducing " << __LINE__ << endl;
 //                viewClusterExtended();
-            }
-            else if(ers < base){
+                }
+                else if(ers < base){
 //                cout << "ers < base : ***************************************************** line " << __LINE__ << endl;
-                auto it = _clusters.begin() + ers;
-                _clusters.erase(it);
+                    auto it = _clusters.begin() + ers;
+                    _clusters.erase(it);
+
+                    --base;
+//                cout << "shifted base [" << base << "] ID " << _clusters[base].get_ID() << endl;
+                }
+//            cout << "view : line " << __LINE__ << endl;
+//            viewClusterExtended();
+
                 for(value_type m{k+1}; m < found_index.size(); ++m){
                     --found_index[m];
                 }
-                --base;
-//                cout << "shifted base [" << base << "] ID " << _clusters[base].get_ID() << endl;
             }
-//            cout << "view : line " << __LINE__ << endl;
-//            viewClusterExtended();
 
         }
 
@@ -1490,7 +1500,7 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
 value_type SitePercolation_ps_v8::find_suitable_base_cluster(const vector<value_type> &found_index) const {
     value_type base = 0;
 //    cout << "Finding base : line " << __LINE__ << endl;
-    if (found_index.size() > 0){
+    if (!found_index.empty()){
         // first find the base cluster, usually the largest cluster
         base = found_index[0];
         value_type sz = _clusters[base].numberOfSites(), tmp;
@@ -1501,6 +1511,7 @@ value_type SitePercolation_ps_v8::find_suitable_base_cluster(const vector<value_
             tmp = _clusters[found_index[k]].numberOfSites();
 //            cout << "cluster [" << found_index[k] << "] ID " << _clusters[found_index[k]].get_ID() << " size " << tmp << endl;
             if(tmp > sz){
+                sz = tmp;
                 base = found_index[k];
             }
         }
@@ -1551,64 +1562,64 @@ void SitePercolation_ps_v8::check(Index current_site){
 void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, vector<BondIndex> &bonds)
 {
     clock_t t = clock();
-    value_type prev_column  = (site.col_ + _length - 1) % _length;
+    value_type prev_column  = (site.column_ + _length - 1) % _length;
     value_type prev_row     = (site.row_ + _length - 1) % _length;
     value_type next_row     = (site.row_ + 1) % _length;
-    value_type next_column  = (site.col_ + 1) % _length;
+    value_type next_column  = (site.column_ + 1) % _length;
     if(_periodicity){
         neighbors.resize(4);
         neighbors[0] = {site.row_, next_column};
         neighbors[1] = {site.row_, prev_column};
-        neighbors[2] = {next_row, site.col_};
-        neighbors[3] = {prev_row, site.col_};
+        neighbors[2] = {next_row, site.column_};
+        neighbors[3] = {prev_row, site.column_};
 
         bonds.reserve(4);
         if(!_lattice.getSite(neighbors[0]).isActive()) {
-            bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+            bonds.push_back({BondType::Horizontal, site.row_, site.column_});
         }
         if(!_lattice.getSite(neighbors[1]).isActive()){
             bonds.push_back({BondType::Horizontal, site.row_, prev_column});
         }
         if(!_lattice.getSite(neighbors[2]).isActive()){
-            bonds.push_back({BondType::Vertical,    site.row_, site.col_});
+            bonds.push_back({BondType::Vertical,    site.row_, site.column_});
         }
         if(!_lattice.getSite(neighbors[3]).isActive()){
-            bonds.push_back({BondType::Vertical, prev_row, site.col_});
+            bonds.push_back({BondType::Vertical, prev_row, site.column_});
         }
 
     }
     else{
         // without periodicity
         if (site.row_ == min_index) { // top edge including corners
-            if(site.col_ == min_index){
+            if(site.column_ == min_index){
                 // upper left corner
 
                 neighbors.resize(2);
                 neighbors[0] = {site.row_, next_column};
-                neighbors[1] = {next_row, site.col_};
+                neighbors[1] = {next_row, site.column_};
 
                 bonds.reserve(2);
                 if(!_lattice.getSite(neighbors[0]).isActive()){
-                    bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bonds.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
-                    bonds.push_back({BondType::Vertical, site.row_, site.col_});
+                    bonds.push_back({BondType::Vertical, site.row_, site.column_});
                 }
 
             }
-            else if(site.col_ == max_index){
+            else if(site.column_ == max_index){
                 // upper right corner
 
                 neighbors.resize(2);
                 neighbors[0] = {site.row_, prev_column};
-                neighbors[1] = {next_row, site.col_};
+                neighbors[1] = {next_row, site.column_};
 
                 bonds.reserve(2);
                 if(!_lattice.getSite(neighbors[0]).isActive()){
                     bonds.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
-                    bonds.push_back({BondType::Vertical, site.row_, site.col_});
+                    bonds.push_back({BondType::Vertical, site.row_, site.column_});
                 }
 
             }
@@ -1617,48 +1628,48 @@ void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, 
                 neighbors.resize(3);
                 neighbors[0] = {site.row_, next_column};
                 neighbors[1] = {site.row_, prev_column};
-                neighbors[2] = {next_row, site.col_};
+                neighbors[2] = {next_row, site.column_};
 
                 bonds.reserve(4);
                 if(!_lattice.getSite(neighbors[0]).isActive()) {
-                    bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bonds.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
                     bonds.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(neighbors[2]).isActive()){
-                    bonds.push_back({BondType::Vertical,    site.row_, site.col_});
+                    bonds.push_back({BondType::Vertical,    site.row_, site.column_});
                 }
 
             }
         }
         else if (site.row_ == max_index) { // bottom edge including corners
-            if (site.col_ == min_index) {
+            if (site.column_ == min_index) {
                 // lower left corner
                 neighbors.resize(2);
                 neighbors[0] = {site.row_, next_column};
-                neighbors[1] = {prev_row, site.col_};
+                neighbors[1] = {prev_row, site.column_};
 
                 bonds.reserve(2);
                 if(!_lattice.getSite(neighbors[0]).isActive()){
-                    bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bonds.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
-                    bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                    bonds.push_back({BondType::Vertical, prev_row, site.column_});
                 }
 
-            } else if (site.col_ == max_index) {
+            } else if (site.column_ == max_index) {
                 // lower right corner
                 neighbors.resize(2);
                 neighbors[0] = {site.row_, prev_column};
-                neighbors[1] = {prev_row, site.col_};
+                neighbors[1] = {prev_row, site.column_};
 
                 bonds.reserve(2);
                 if(!_lattice.getSite(neighbors[0]).isActive()){
                     bonds.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
-                    bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                    bonds.push_back({BondType::Vertical, prev_row, site.column_});
                 }
 
             } else {
@@ -1667,55 +1678,55 @@ void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, 
                 neighbors.resize(3);
                 neighbors[0] = {site.row_, next_column};
                 neighbors[1] = {site.row_, prev_column};
-                neighbors[2] = {prev_row, site.col_};
+                neighbors[2] = {prev_row, site.column_};
 
                 bonds.reserve(3);
                 if(!_lattice.getSite(neighbors[0]).isActive()) {
-                    bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bonds.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(neighbors[1]).isActive()){
                     bonds.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(neighbors[2]).isActive()){
-                    bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                    bonds.push_back({BondType::Vertical, prev_row, site.column_});
                 }
             }
         }
             /* site.x_ > min_index && site.x_ < max_index &&  is not possible anymore*/
-        else if (site.col_ == min_index) { // left edge not in the corners
+        else if (site.column_ == min_index) { // left edge not in the corners
             neighbors.resize(3);
             neighbors[0] = {site.row_, next_column};
-            neighbors[1] = {next_row, site.col_};
-            neighbors[2] = {prev_row, site.col_};
+            neighbors[1] = {next_row, site.column_};
+            neighbors[2] = {prev_row, site.column_};
 
             bonds.reserve(3);
             if(!_lattice.getSite(neighbors[0]).isActive()) {
-                bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                bonds.push_back({BondType::Horizontal, site.row_, site.column_});
             }
             if(!_lattice.getSite(neighbors[1]).isActive()){
-                bonds.push_back({BondType::Vertical,    site.row_, site.col_});
+                bonds.push_back({BondType::Vertical,    site.row_, site.column_});
             }
             if(!_lattice.getSite(neighbors[2]).isActive()){
-                bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                bonds.push_back({BondType::Vertical, prev_row, site.column_});
             }
         }
-        else if (site.col_ == max_index) {
+        else if (site.column_ == max_index) {
             // right edge no corners
 
             neighbors.resize(3);
             neighbors[0] = {site.row_, prev_column};
-            neighbors[1] = {next_row, site.col_};
-            neighbors[2] = {prev_row, site.col_};
+            neighbors[1] = {next_row, site.column_};
+            neighbors[2] = {prev_row, site.column_};
 
             bonds.reserve(3);
             if(!_lattice.getSite(neighbors[0]).isActive()){
                 bonds.push_back({BondType::Horizontal, site.row_, prev_column});
             }
             if(!_lattice.getSite(neighbors[1]).isActive()){
-                bonds.push_back({BondType::Vertical,    site.row_, site.col_});
+                bonds.push_back({BondType::Vertical,    site.row_, site.column_});
             }
             if(!_lattice.getSite(neighbors[2]).isActive()){
-                bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                bonds.push_back({BondType::Vertical, prev_row, site.column_});
             }
         }
         else {
@@ -1724,21 +1735,21 @@ void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, 
             neighbors.resize(4);
             neighbors[0] = {site.row_, next_column};
             neighbors[1] = {site.row_, prev_column};
-            neighbors[2] = {next_row, site.col_};
-            neighbors[3] = {prev_row, site.col_};
+            neighbors[2] = {next_row, site.column_};
+            neighbors[3] = {prev_row, site.column_};
 
             bonds.reserve(4);
             if(!_lattice.getSite(neighbors[0]).isActive()) {
-                bonds.push_back({BondType::Horizontal, site.row_, site.col_});
+                bonds.push_back({BondType::Horizontal, site.row_, site.column_});
             }
             if(!_lattice.getSite(neighbors[1]).isActive()){
                 bonds.push_back({BondType::Horizontal, site.row_, prev_column});
             }
             if(!_lattice.getSite(neighbors[2]).isActive()){
-                bonds.push_back({BondType::Vertical,    site.row_, site.col_});
+                bonds.push_back({BondType::Vertical,    site.row_, site.column_});
             }
             if(!_lattice.getSite(neighbors[3]).isActive()){
-                bonds.push_back({BondType::Vertical, prev_row, site.col_});
+                bonds.push_back({BondType::Vertical, prev_row, site.column_});
             }
         }
 
@@ -1762,46 +1773,46 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
 {
     clock_t t = clock();
 
-    value_type prev_column  = (site.col_ + _length - 1) % _length;
+    value_type prev_column  = (site.column_ + _length - 1) % _length;
     value_type prev_row     = (site.row_ + _length - 1) % _length;
     value_type next_row     = (site.row_ + 1) % _length;
-    value_type next_column  = (site.col_ + 1) % _length;
+    value_type next_column  = (site.column_ + 1) % _length;
 
     if(!_periodicity){
         // without periodicity
         if (site.row_ == min_index) { // top edge including corners
-            if(site.col_ == min_index){
+            if(site.column_ == min_index){
                 // upper left corner
 
                 site_neighbor.resize(2);
                 site_neighbor[0] = {site.row_, next_column};
-                site_neighbor[1] = {next_row, site.col_};
+                site_neighbor[1] = {next_row, site.column_};
 
                 bond_neighbor.reserve(2);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()){
-                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical, site.row_, site.column_});
                 }
 
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
                 return;
 
             }
-            else if(site.col_ == max_index){
+            else if(site.column_ == max_index){
                 // upper right corner
 
                 site_neighbor.resize(2);
                 site_neighbor[0] = {site.row_, prev_column};
-                site_neighbor[1] = {next_row, site.col_};
+                site_neighbor[1] = {next_row, site.column_};
 
                 bond_neighbor.reserve(2);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()){
                     bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical, site.row_, site.column_});
                 }
 
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
@@ -1812,17 +1823,17 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
                 site_neighbor.resize(3);
                 site_neighbor[0] = {site.row_, next_column};
                 site_neighbor[1] = {site.row_, prev_column};
-                site_neighbor[2] = {next_row, site.col_};
+                site_neighbor[2] = {next_row, site.column_};
 
                 bond_neighbor.reserve(4);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()) {
-                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
                     bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(site_neighbor[2]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical,    site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
                 }
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
                 return;
@@ -1830,35 +1841,35 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
             }
         }
         else if (site.row_ == max_index) { // bottom edge including corners
-            if (site.col_ == min_index) {
+            if (site.column_ == min_index) {
                 // lower left corner
                 site_neighbor.resize(2);
                 site_neighbor[0] = {site.row_, next_column};
-                site_neighbor[1] = {prev_row, site.col_};
+                site_neighbor[1] = {prev_row, site.column_};
 
                 bond_neighbor.reserve(2);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()){
-                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
                 }
 
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
                 return;
 
-            } else if (site.col_ == max_index) {
+            } else if (site.column_ == max_index) {
                 // lower right corner
                 site_neighbor.resize(2);
                 site_neighbor[0] = {site.row_, prev_column};
-                site_neighbor[1] = {prev_row, site.col_};
+                site_neighbor[1] = {prev_row, site.column_};
 
                 bond_neighbor.reserve(2);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()){
                     bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
                 }
 
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
@@ -1870,59 +1881,59 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
                 site_neighbor.resize(3);
                 site_neighbor[0] = {site.row_, next_column};
                 site_neighbor[1] = {site.row_, prev_column};
-                site_neighbor[2] = {prev_row, site.col_};
+                site_neighbor[2] = {prev_row, site.column_};
 
                 bond_neighbor.reserve(3);
                 if(!_lattice.getSite(site_neighbor[0]).isActive()) {
-                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+                    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
                 }
                 if(!_lattice.getSite(site_neighbor[1]).isActive()){
                     bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
                 }
                 if(!_lattice.getSite(site_neighbor[2]).isActive()){
-                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+                    bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
                 }
                 time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
                 return;
             }
         }
             /* site.x_ > min_index && site.x_ < max_index &&  is not possible anymore*/
-        else if (site.col_ == min_index) { // left edge not in the corners
+        else if (site.column_ == min_index) { // left edge not in the corners
             site_neighbor.resize(3);
             site_neighbor[0] = {site.row_, next_column};
-            site_neighbor[1] = {next_row, site.col_};
-            site_neighbor[2] = {prev_row, site.col_};
+            site_neighbor[1] = {next_row, site.column_};
+            site_neighbor[2] = {prev_row, site.column_};
 
             bond_neighbor.reserve(3);
             if(!_lattice.getSite(site_neighbor[0]).isActive()) {
-                bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+                bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
             }
             if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                bond_neighbor.push_back({BondType::Vertical,    site.row_, site.col_});
+                bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
             }
             if(!_lattice.getSite(site_neighbor[2]).isActive()){
-                bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+                bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
             }
             time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
             return;
         }
-        else if (site.col_ == max_index) {
+        else if (site.column_ == max_index) {
             // right edge no corners
 
             site_neighbor.resize(3);
             site_neighbor[0] = {site.row_, prev_column};
-            site_neighbor[1] = {next_row, site.col_};
-            site_neighbor[2] = {prev_row, site.col_};
+            site_neighbor[1] = {next_row, site.column_};
+            site_neighbor[2] = {prev_row, site.column_};
 
             bond_neighbor.reserve(3);
             if(!_lattice.getSite(site_neighbor[0]).isActive()){
                 bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
             }
             if(!_lattice.getSite(site_neighbor[1]).isActive()){
-                bond_neighbor.push_back({BondType::Vertical,    site.row_, site.col_});
+                bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
             }
             if(!_lattice.getSite(site_neighbor[2]).isActive()){
-                bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+                bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
             }
             time_7_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
             return;
@@ -1934,21 +1945,21 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
     site_neighbor.resize(4);
     site_neighbor[0] = {site.row_, next_column};
     site_neighbor[1] = {site.row_, prev_column};
-    site_neighbor[2] = {next_row, site.col_};
-    site_neighbor[3] = {prev_row, site.col_};
+    site_neighbor[2] = {next_row, site.column_};
+    site_neighbor[3] = {prev_row, site.column_};
 
     bond_neighbor.reserve(4);
     if(!_lattice.getSite(site_neighbor[0]).isActive()) {
-        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.col_});
+        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
     }
     if(!_lattice.getSite(site_neighbor[1]).isActive()){
         bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
     }
     if(!_lattice.getSite(site_neighbor[2]).isActive()){
-        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.col_});
+        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
     }
     if(!_lattice.getSite(site_neighbor[3]).isActive()) {
-        bond_neighbor.push_back({BondType::Vertical, prev_row, site.col_});
+        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
     }
 
 //    time_6_connection2 += (clock() - t) / double(CLOCKS_PER_SEC);
@@ -1979,12 +1990,12 @@ void SitePercolation_ps_v8::save_index_if_in_boundary_v2(const Index& site){
     }
 
     // checking column indices for Left-Right boundary
-    if(site.col_ == min_index){
+    if(site.column_ == min_index){
         if(!check_if_id_matches(site, _left_edge)) {
             _left_edge.push_back(site);
         }
     }
-    else if(site.col_ == max_index){
+    else if(site.column_ == max_index){
         if(!check_if_id_matches(site, _right_edge)) {
             _right_edge.push_back(site);
         }
@@ -2635,10 +2646,12 @@ value_type SitePercolation_ps_v8::placeSite_v13(Index current_site) {
 
     subtract_entropy_for_full(found_index_set);  // tracking entropy change
 
-
-    value_type merged_cluster_index = manage_clusters_v12(
+    auto t0 = chrono::system_clock::now();
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
     );
+    auto t1 = chrono::system_clock::now();
+    time_relabel += chrono::duration<double>(t1 - t0).count();
 
 
     add_entropy_for_full(merged_cluster_index); // tracking entropy change
@@ -3118,10 +3131,10 @@ bool SitePercolation_ps_v8::detectSpanning_v5(const Index& site) {
     }
 
     // checking column indices for Left-Right boundary
-    if(site.col_ == min_index){ // left edge
+    if(site.column_ == min_index){ // left edge
         _left_edge.push_back(site);
     }
-    else if(site.col_ == max_index){
+    else if(site.column_ == max_index){
         _right_edge.push_back(site);
     }
 
@@ -3217,12 +3230,12 @@ bool SitePercolation_ps_v8::detectSpanning_v6(const Index& site) {
     }
 
     // checking column indices for Left-Right boundary
-    if(site.col_ == min_index){ // left edge
+    if(site.column_ == min_index){ // left edge
         if(!check_if_id_matches(site, _left_edge)) {
             _left_edge.push_back(site);
         }
     }
-    else if(site.col_ == max_index){
+    else if(site.column_ == max_index){
         if(!check_if_id_matches(site, _right_edge)) {
             _right_edge.push_back(site);
         }
@@ -3374,7 +3387,7 @@ bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
     }
 
     // get four neighbors of site always. since wrapping is valid if periodicity is implied
-    vector<Index> sites = _lattice.getNeighbrs(site);
+    vector<Index> sites = _lattice.get_neighbor_site_indices(site);
 
 
     if(sites.size() < 2){ // at least two neighbor of  site is required
@@ -3400,8 +3413,8 @@ bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
         }
     }
 
-//    cout << "wrapping sites " << _wrapping_sites << endl;
-    // if %_wrapping_sites is not empty but wrapping is not detected for the current site (%site)
+//    cout << "wrapping sites " << _wrapping_indices << endl;
+    // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
     // that means there is wrapping but not for the %site
     return !_wrapping_sites.empty();
 }
@@ -3439,7 +3452,7 @@ std::vector<value_type> SitePercolation_ps_v8::number_of_bonds_in_clusters() {
         total += nob;
     }
 
-    value_type mnob = _max_bonds;
+    value_type mnob = _max_number_of_bonds;
     x.reserve(mnob - total);
     while (total < mnob){
         x.push_back(1);
@@ -3605,7 +3618,7 @@ void SitePercolation_ps_v8::relabel_sites_v4(Index site_a, const Cluster_v2& cls
     Index b = clstr_b.getRootSite();
 
     // get four site_b of site_a
-    vector<Index> sites_neighbor_a = _lattice.getNeighbrs(site_a);
+    vector<Index> sites_neighbor_a = _lattice.get_neighbor_site_indices(site_a);
     Index site_b;
     IndexRelative relative_index_b_after;
     bool flag{false};
@@ -3654,7 +3667,7 @@ void SitePercolation_ps_v8::relabel_sites_v4(Index site_a, const Cluster_v2& cls
 /**
  * Relabels site and also reassign relative index to the relabeled sites
   *
-  * @param site_a  : root index of the base cluster
+  * @param site_a  : last added site index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
 void SitePercolation_ps_v8::relabel_sites_v5(Index site_a, const Cluster_v2& clstr_b) {
@@ -3664,7 +3677,7 @@ void SitePercolation_ps_v8::relabel_sites_v5(Index site_a, const Cluster_v2& cls
     Index b = clstr_b.getRootSite();
 
     // get four site_b of site_a
-    vector<Index> sites_neighbor_a = _lattice.getNeighbrs(site_a);
+    vector<Index> sites_neighbor_a = _lattice.get_neighbor_site_indices(site_a);
     Index site_b;
     IndexRelative relative_index_b_after;
     bool flag{false};
@@ -3705,7 +3718,7 @@ void SitePercolation_ps_v8::relabel_sites_v5(Index site_a, const Cluster_v2& cls
 /**
  * Relabels site and also reassign relative index to the relabeled sites
  *
- * @param site_a  : root index of the base cluster
+ * @param site_a  : root index of the base cluster or last added site index of the base cluster
  * @param clstr_b : 2nd cluster, which to be merged withe the root
  * @param id : id to be used for relabeling sites
  */
@@ -3716,7 +3729,7 @@ void SitePercolation_ps_v8::relabel_sites_v6(Index site_a, const Cluster_v2& cls
     Index b = clstr_b.getRootSite();
 
     // get four site_b of site_a
-    vector<Index> sites_neighbor_a = _lattice.getNeighbrs(site_a);
+    vector<Index> sites_neighbor_a = _lattice.get_neighbor_site_indices(site_a);
     Index site_b;
     IndexRelative relative_index_b_after;
     bool flag{false};
@@ -3776,7 +3789,7 @@ void SitePercolation_ps_v8::relabel_sites(const vector<Index> &sites, int id_a, 
 void SitePercolation_ps_v8::relabel_bonds(const Cluster_v2& clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
     for(auto a: bonds){
-        _lattice.getBond(a).groupID(id);
+        _lattice.getBond(a).set_groupID(id);
     }
 }
 
@@ -3807,7 +3820,7 @@ double SitePercolation_ps_v8::entropy() const{
     double counter{}; // counts how many elements _clusters contains
     for (value_type i{}; i != _clusters.size(); ++i) {
         counter += _clusters[i].numberOfBonds();
-        mu_i = _clusters[i].numberOfBonds() / double(_max_bonds);
+        mu_i = _clusters[i].numberOfBonds() / double(_max_number_of_bonds);
         H += mu_i * log(mu_i);
     }
 //    cout << "from greater than 1 (v1) " << H << endl;
@@ -3815,7 +3828,7 @@ double SitePercolation_ps_v8::entropy() const{
 
 //    cout << "counter : " << counter << " : line " << __LINE__ << endl;
 
-    H += ((_max_bonds - counter) / double(_max_bonds)) * log(1.0 / double(_max_bonds));
+    H += ((_max_number_of_bonds - counter) / double(_max_number_of_bonds)) * log(1.0 / double(_max_number_of_bonds));
     H *= -1;    // since, H = - sum(p_i * log(p_i))
     return H;
 }
@@ -3839,9 +3852,9 @@ double SitePercolation_ps_v8::entropy_v2(){
     }
 //    cout << "from greater than 1 (v2) " << H << endl;
 
-    double n = _max_bonds - _bonds_in_cluster_with_size_two_or_more;
+    double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(_max_bonds)) / double(_max_bonds);
+    H += n * log(1.0/double(_max_number_of_bonds)) / double(_max_number_of_bonds);
     H *= -1;
   // since, H = - sum(p_i * log(p_i))
     return H;
@@ -3863,9 +3876,9 @@ double SitePercolation_ps_v8::entropy_v2(){
  */
 double SitePercolation_ps_v8::entropy_v3() const {
     double H{};
-    double n = _max_bonds - _bonds_in_cluster_with_size_two_or_more;
+    double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(_max_bonds)) / double(_max_bonds);
+    H += n * log(1.0/double(_max_number_of_bonds)) / double(_max_number_of_bonds);
     H *= -1;
     return _entropy_by_bond + H;
 }
@@ -3894,9 +3907,9 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
     if (i==1) {
         double H{};
         // measure cluster length by bond
-        double n = _max_bonds - _bonds_in_cluster_with_size_two_or_more;
+        double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-        H += n * log(1.0 / double(_max_bonds)) / double(_max_bonds);
+        H += n * log(1.0 / double(_max_number_of_bonds)) / double(_max_number_of_bonds);
         H *= -1;
         return _entropy_by_bond + H;
     }
@@ -3907,7 +3920,7 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
     else if(i==-1){
         cout << "Not checked : line " << __LINE__ << endl;
         double H{};
-        double mu, l=_max_bonds;
+        double mu, l=_max_number_of_bonds;
         #pragma omp parallel for shared(H, l) private(mu)
         for (value_type j = 0; j < _clusters.size(); ++j) {
             mu = _clusters[j].numberOfBonds() / l;
@@ -3915,7 +3928,7 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
 //            H += mu * log10(mu);
             H += mu * log(mu);
         }
-        double n = _max_bonds - _bonds_in_cluster_with_size_two_or_more;
+        double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
         H += n * log(1.0 / l) / l;
         return -H;
@@ -4012,7 +4025,7 @@ double SitePercolation_ps_v8::entropy_v5_site_threaded() const{
 double SitePercolation_ps_v8::orderParameter() const{
     if(_number_of_bonds_in_the_largest_cluster != 0){
         // already calculated somewhere
-        return double(_number_of_bonds_in_the_largest_cluster) / _max_bonds;
+        return double(_number_of_bonds_in_the_largest_cluster) / _max_number_of_bonds;
     }
     value_type  len{}, nob{};
     for(const Cluster_v2& c: _clusters){
@@ -4021,7 +4034,7 @@ double SitePercolation_ps_v8::orderParameter() const{
             len = nob;
         }
     }
-    return double(len) / _max_bonds;
+    return double(len) / _max_number_of_bonds;
 }
 
 /**
@@ -4032,7 +4045,7 @@ double SitePercolation_ps_v8::orderParameter() const{
  */
 double SitePercolation_ps_v8::orderParameter_v2() const{
 //    double bond_num = _clusters[_index_largest_cluster].numberOfBonds() / double(_total_bonds);
-    double tmp = _number_of_bonds_in_the_largest_cluster / double(_max_bonds);
+    double tmp = _number_of_bonds_in_the_largest_cluster / double(_max_number_of_bonds);
     return tmp;
 }
 
@@ -4477,7 +4490,7 @@ void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool 
     if(only_spanning){
         vector<Index> sites = _clusters[_cluster_index_from_id[id]].getSiteIndices();
         for(auto s: sites){
-            fout << s.col_ << ',' << s.row_ << ',' << id << endl;
+            fout << s.column_ << ',' << s.row_ << ',' << id << endl;
         }
     }
     else {
@@ -4502,93 +4515,93 @@ void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool 
  * @param signature
  */
 void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
-
-    size_t j{};
-    bool wrapping_occured {false};
-    _pcs.resize(ensemble_size);
-    _spanning_cluster_size_bonds.resize(ensemble_size);
-    _spanning_cluster_size_sites.resize(ensemble_size);
-
-    _occupation_probabilities = vector<double>(_length_squared);
-
-    _nob_spanning = vector<double>(_length_squared);
-    _nob_largest = vector<double>(_length_squared);
-    _nos_largest = vector<double>(_length_squared);
-    _nos_spanning = vector<double>(_length_squared);
-
-    _entropy_sites = vector<double>(_length_squared);
-    _entropy_bonds = vector<double>(_length_squared);
-
-    std::mutex _mu_cout;
-    for(value_type i{} ; i != ensemble_size ; ++i){
-
-        reset();
-        j = 0;
-        wrapping_occured = false;
-        bool successful = false;
-        auto t_start = std::chrono::system_clock::now();
-        while (true){
-            successful = occupy();
-            if(successful) {
-                if(_periodicity) {
-                    if (!wrapping_occured && detectWrapping_v1(lastPlacedSite())) {
-                        wrapping_occured = true;
-                        _pcs[i] = occupationProbability();
-//                        _pcs[i] = _number_of_occupied_sites;
-                        _spanning_cluster_size_sites[i] = numberOfSitesInTheWrappingClusters();
-                        _spanning_cluster_size_bonds[i] = numberOfBondsInTheWrappingClusters();
-                    }
-                    if (wrapping_occured) {
-                        _nob_spanning[j] += numberOfBondsInTheWrappingClusters();
-                        _nos_spanning[j] += numberOfSitesInTheWrappingClusters();
-                    }
-                }else{
-                    if (!wrapping_occured && detectSpanning_v6(lastPlacedSite())) {
-                        wrapping_occured = true;
-                        _pcs[i] = occupationProbability();
-//                        _pcs[i] = _number_of_occupied_sites;
-                        _spanning_cluster_size_sites[i] = numberOfSitesInTheSpanningClusters_v2();
-                        _spanning_cluster_size_bonds[i] = numberOfBondsInTheSpanningClusters_v2();
-
-                    }
-                    if (wrapping_occured) {
-                        _nob_spanning[j] += numberOfBondsInTheSpanningClusters_v2();
-                        _nos_spanning[j] += numberOfSitesInTheSpanningClusters_v2();
-                    }
-                }
-
-                _nob_largest[j] += numberOfBondsInTheLargestCluster_v2();
-                _nos_largest[j] += numberOfSitesInTheLargestCluster();
-
-//            entrpy[j] += sp.entropy();  // old method and takes long time
-                _entropy_bonds[j] += entropy_v3(); // faster method
-                ++j;
-            }
-            if(j >= _length_squared){ // length_squared is the number of site
-                break;
-            }
-        }
-        {
-            auto t_end = std::chrono::system_clock::now();
-            std::lock_guard<mutex> lockGuard(_mu_cout);
-            cout << "Iteration " << i
-                 //<< " . Thread " << std::this_thread::get_id()
-                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
-        }
-    }
-
-    // Taking Average
-    for(size_t i{}; i!= _length_squared ; ++i){
-        _occupation_probabilities[i] = (i + 1) / double(_length_squared);
-
-        _nob_spanning[i] /= double(ensemble_size);
-        _nob_largest[i]  /= double(ensemble_size);
-        _nos_largest[i]  /= double(ensemble_size);
-        _nos_spanning[i] /= double(ensemble_size);
-
-        _entropy_sites[i] /= double(ensemble_size);
-        _entropy_sites[i] /= double(ensemble_size);
-    }
+    cout << "Will be deleted in the future versions : line " << __LINE__ << endl;
+//    size_t j{};
+//    bool wrapping_occured {false};
+//    _pcs.resize(ensemble_size);
+//    _spanning_cluster_size_bonds.resize(ensemble_size);
+//    _spanning_cluster_size_sites.resize(ensemble_size);
+//
+//    _occupation_probabilities = vector<double>(_length_squared);
+//
+//    _nob_spanning = vector<double>(_length_squared);
+//    _nob_largest = vector<double>(_length_squared);
+//    _nos_largest = vector<double>(_length_squared);
+//    _nos_spanning = vector<double>(_length_squared);
+//
+//    _entropy_sites = vector<double>(_length_squared);
+//    _entropy_bonds = vector<double>(_length_squared);
+//
+//    std::mutex _mu_cout;
+//    for(value_type i{} ; i != ensemble_size ; ++i){
+//
+//        reset();
+//        j = 0;
+//        wrapping_occured = false;
+//        bool successful = false;
+//        auto t_start = std::chrono::system_clock::now();
+//        while (true){
+//            successful = occupy();
+//            if(successful) {
+//                if(_periodicity) {
+//                    if (!wrapping_occured && detectWrapping_v1(lastPlacedSite())) {
+//                        wrapping_occured = true;
+//                        _pcs[i] = occupationProbability();
+////                        _pcs[i] = _number_of_occupied_sites;
+//                        _spanning_cluster_size_sites[i] = numberOfSitesInTheWrappingClusters();
+//                        _spanning_cluster_size_bonds[i] = numberOfBondsInTheWrappingClusters();
+//                    }
+//                    if (wrapping_occured) {
+//                        _nob_spanning[j] += numberOfBondsInTheWrappingClusters();
+//                        _nos_spanning[j] += numberOfSitesInTheWrappingClusters();
+//                    }
+//                }else{
+//                    if (!wrapping_occured && detectSpanning_v6(lastPlacedSite())) {
+//                        wrapping_occured = true;
+//                        _pcs[i] = occupationProbability();
+////                        _pcs[i] = _number_of_occupied_sites;
+//                        _spanning_cluster_size_sites[i] = numberOfSitesInTheSpanningClusters_v2();
+//                        _spanning_cluster_size_bonds[i] = numberOfBondsInTheSpanningClusters_v2();
+//
+//                    }
+//                    if (wrapping_occured) {
+//                        _nob_spanning[j] += numberOfBondsInTheSpanningClusters_v2();
+//                        _nos_spanning[j] += numberOfSitesInTheSpanningClusters_v2();
+//                    }
+//                }
+//
+//                _nob_largest[j] += numberOfBondsInTheLargestCluster_v2();
+//                _nos_largest[j] += numberOfSitesInTheLargestCluster();
+//
+////            entrpy[j] += sp.entropy();  // old method and takes long time
+//                _entropy_bonds[j] += entropy_v3(); // faster method
+//                ++j;
+//            }
+//            if(j >= _length_squared){ // length_squared is the number of site
+//                break;
+//            }
+//        }
+//        {
+//            auto t_end = std::chrono::system_clock::now();
+//            std::lock_guard<mutex> lockGuard(_mu_cout);
+//            cout << "Iteration " << i
+//                 //<< " . Thread " << std::this_thread::get_id()
+//                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+//        }
+//    }
+//
+//    // Taking Average
+//    for(size_t i{}; i!= _length_squared ; ++i){
+//        _occupation_probabilities[i] = (i + 1) / double(_length_squared);
+//
+//        _nob_spanning[i] /= double(ensemble_size);
+//        _nob_largest[i]  /= double(ensemble_size);
+//        _nos_largest[i]  /= double(ensemble_size);
+//        _nos_spanning[i] /= double(ensemble_size);
+//
+//        _entropy_sites[i] /= double(ensemble_size);
+//        _entropy_sites[i] /= double(ensemble_size);
+//    }
 }
 
 
@@ -4599,50 +4612,51 @@ void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
  * @param ensemble_size
  */
 void SitePercolation_ps_v8::simulate_periodic_critical(value_type ensemble_size) {
+    cout << "Will be deleted in the future versions : line " << endl;
     if(!_periodicity) {
         cout << "Periodicity flag is False : file " << __FILE__ << " : line " << __LINE__ << endl;
     }
-
-    size_t j{};
-
-    _pcs.resize(ensemble_size);
-    _spanning_cluster_size_bonds.resize(ensemble_size);
-    _spanning_cluster_size_sites.resize(ensemble_size);
-
-    std::mutex _mu_cout;
-    for(value_type i{} ; i != ensemble_size ; ++i){
-
-        reset();
-        j = 0;
-
-        bool successful = false;
-        auto t_start = std::chrono::system_clock::now();
-        while (true){
-            successful = occupy();
-            if(successful) {
-
-                if (detectWrapping_v1(lastPlacedSite())) {
-                    _pcs[i] = occupationProbability();
-//                        _pcs[i] = _number_of_occupied_sites;
-                    _spanning_cluster_size_sites[i] = numberOfSitesInTheWrappingClusters();
-                    _spanning_cluster_size_bonds[i] = numberOfBondsInTheWrappingClusters();
-                    break;
-                }
-
-                ++j;
-            }
-            if(j >= _length_squared){ // length_squared is the number of site
-                break;
-            }
-        }
-        {
-            auto t_end = std::chrono::system_clock::now();
-            std::lock_guard<mutex> lockGuard(_mu_cout);
-            cout << "Iteration " << i
-                 //<< " . Thread " << std::this_thread::get_id()
-                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
-        }
-    }
+//
+//    size_t j{};
+//
+//    _pcs.resize(ensemble_size);
+//    _spanning_cluster_size_bonds.resize(ensemble_size);
+//    _spanning_cluster_size_sites.resize(ensemble_size);
+//
+//    std::mutex _mu_cout;
+//    for(value_type i{} ; i != ensemble_size ; ++i){
+//
+//        reset();
+//        j = 0;
+//
+//        bool successful = false;
+//        auto t_start = std::chrono::system_clock::now();
+//        while (true){
+//            successful = occupy();
+//            if(successful) {
+//
+//                if (detectWrapping_v1(lastPlacedSite())) {
+//                    _pcs[i] = occupationProbability();
+////                        _pcs[i] = _number_of_occupied_sites;
+//                    _spanning_cluster_size_sites[i] = numberOfSitesInTheWrappingClusters();
+//                    _spanning_cluster_size_bonds[i] = numberOfBondsInTheWrappingClusters();
+//                    break;
+//                }
+//
+//                ++j;
+//            }
+//            if(j >= _length_squared){ // length_squared is the number of site
+//                break;
+//            }
+//        }
+//        {
+//            auto t_end = std::chrono::system_clock::now();
+//            std::lock_guard<mutex> lockGuard(_mu_cout);
+//            cout << "Iteration " << i
+//                 //<< " . Thread " << std::this_thread::get_id()
+//                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+//        }
+//    }
 
 }
 

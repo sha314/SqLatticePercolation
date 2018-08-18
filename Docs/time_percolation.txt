@@ -1,0 +1,34 @@
+# Performance comparison 
+# Time in seconds			
+
+
+# manage_clusters_v10
+L		Time (sec)      Relabeling_count
+100		0.054460        103,000 to  503,000
+200		0.418705        521,000 to  8,829,000
+300		1.891022        3,526,000 to 89,628,000
+400		5.750709        6,205,000 to 132,157,000
+500		17.097894
+
+
+
+# manage_clusters_v11
+L		Time (sec)      Relabeling_count
+100		0.051980        15,000 to 22,000
+200		0.403463        76,000  to 131,000
+300		1.854279        183,000 to 285,000
+400		5.697847        340,000 to  515,000
+500		16.829765
+
+
+
+# applying weighted relabeling
+# manage_clusters_v12
+        minimum time    max relabeling
+L		Time (sec)	    Relabeling_count
+100		0.052593        13,000
+200		0.442478        60,000
+300		1.948184        148,000
+400		6.292237        284,000
+500		20.102944       445,000
+

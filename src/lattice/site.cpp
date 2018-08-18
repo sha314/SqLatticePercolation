@@ -17,5 +17,5 @@ std::ostream& operator<<(std::ostream& os, const Site& site)
 
 
 bool operator==(Site& site1, Site& site2){
-    return (site1.ID().row_ == site2.ID().row_) && (site1.ID().col_ == site2.ID().col_);
+    return (site1.ID().row_ == site2.ID().row_) && (site1.ID().column_ == site2.ID().column_);
 }

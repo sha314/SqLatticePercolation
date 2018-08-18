@@ -10,7 +10,7 @@ using namespace std;
 
 ostream& operator<<(ostream& os, const Index& index)
 {
-    return os <<'(' << index.row_ << ',' << index.col_ << ')';
+    return os <<'(' << index.row_ << ',' << index.column_ << ')';
 //    return os << '(' << std::setw(2) << index.x_ << ',' << std::setw(2) << index.y_ << ')';
 }
 
@@ -21,14 +21,14 @@ ostream& operator<<(ostream& os, const IndexRelative& index)
 }
 
 bool operator==(const Index& index1, const Index& index2){
-    return (index1.row_ == index2.row_) && (index1.col_ == index2.col_);
+    return (index1.row_ == index2.row_) && (index1.column_ == index2.column_);
 }
 
 bool operator<(const Index& index1, const Index& index2){
     if(index1.row_ < index2.row_)
             return true;
     if(index1.row_ == index2.row_){
-        return index1.col_ < index2.col_;
+        return index1.column_ < index2.column_;
     }
     return false;
 }
@@ -70,7 +70,7 @@ bool operator<(BondIndex index1, BondIndex index2){
  * @return
  */
 Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
-    int delta_c = int(nn_1.col_) - int(center.col_);
+    int delta_c = int(nn_1.column_) - int(center.column_);
     int delta_r = int(nn_1.row_) - int(center.row_);
     if (delta_c == 0 && delta_r == 0){
         cout << "Both indices are same : line " << __LINE__ << endl;
@@ -80,7 +80,7 @@ Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
 //        cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
     }
 
-    return Index{(nn_1.row_ + delta_r + length) % length, (nn_1.col_ + delta_c + length) % length};
+    return Index{(nn_1.row_ + delta_r + length) % length, (nn_1.column_ + delta_c + length) % length};
 }
 
 
@@ -96,7 +96,7 @@ vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const vector<Index> &nn
     vector<Index> nn_2(nn_1.size());
 
     for(size_t i{}; i != nn_1.size() ; ++i){
-        int delta_c = int(nn_1[i].col_) - int(center.col_);
+        int delta_c = int(nn_1[i].column_) - int(center.column_);
         int delta_r = int(nn_1[i].row_) - int(center.row_);
         if (delta_c == 0 && delta_r == 0){
             cout << "Both indices are same : line " << __LINE__ << endl;
@@ -107,7 +107,7 @@ vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const vector<Index> &nn
 //            cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
         }
 
-        nn_2[i] =  Index{(nn_1[i].row_ + delta_r + length) % length, (nn_1[i].col_ + delta_c + length) % length};
+        nn_2[i] =  Index{(nn_1[i].row_ + delta_r + length) % length, (nn_1[i].column_ + delta_c + length) % length};
     }
     return nn_2;
 }

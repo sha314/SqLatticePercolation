@@ -22,7 +22,7 @@ ostream& operator<<(ostream& os, const Delta& delta)
  * @return Delta{dx, dy}
  */
 Delta getDelta(Index siteA, Index siteB){
-    int dx = int(siteA.col_) - int(siteB.col_);
+    int dx = int(siteA.column_) - int(siteB.column_);
     int dy = int(siteA.row_) - int(siteB.row_);
     return Delta{dx, dy};
 }

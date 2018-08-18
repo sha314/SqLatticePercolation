@@ -29,6 +29,9 @@ struct Bond{
     int _group_id{-1};
 
     BondType bondType;
+    //relative distance from the root site. {0,0} if it is the root site
+    //very useful for detecting wrapping // todo
+    IndexRelative _relative_index{0,0};
 
 //    bool horizontal{false};
 //    bool vertical{false};
@@ -42,9 +45,9 @@ struct Bond{
     Bond() = default;
     Bond(Index end1, Index end2, value_type length){
         _end1.row_ = end1.row_;
-        _end1.col_ = end1.col_;
+        _end1.column_ = end1.column_;
         _end2.row_ = end2.row_;
-        _end2.col_ = end2.col_;
+        _end2.column_ = end2.column_;
 
         // correct the bond here
         _length = length;
@@ -53,29 +56,29 @@ struct Bond{
             bondType = BondType::Horizontal;
 //            horizontal = true;
             // means x_ values are equal
-            if(_end1.col_ > _end2.col_){
+            if(_end1.column_ > _end2.column_){
                 // case (0,0)<->(0,4) for L=5 and
                 // case (0,4)<->(0,0) are equal for bond like this end1=(0,4) end2=(0,0)
                 // for all other cases lower index is end1
-                if(_end1.col_ == _length-1 && _end2.col_ ==0){
+                if(_end1.column_ == _length-1 && _end2.column_ ==0){
                     // do nothing
 //                    std::cout << "_end1.y_ == _length-1 && _end2.y_ ==0 : line " << __LINE__ << std::endl;
                 }
                 else{
                     // sort them out
-                    _end1.col_ = end2.col_;
-                    _end2.col_ = end1.col_;
+                    _end1.column_ = end2.column_;
+                    _end2.column_ = end1.column_;
                 }
             }
-            else if(_end1.col_ < _end2.col_){
-                if(_end1.col_ == 0 && _end2.col_ == _length-1){
-                    _end1.col_ = end2.col_;
-                    _end2.col_ = end1.col_;
+            else if(_end1.column_ < _end2.column_){
+                if(_end1.column_ == 0 && _end2.column_ == _length-1){
+                    _end1.column_ = end2.column_;
+                    _end2.column_ = end1.column_;
                 }
             }
 //            _id = set_ID<3>({0, _end1.x_, _end1.y_});
         }
-        else if(_end1.col_ == _end2.col_){
+        else if(_end1.column_ == _end2.column_){
             bondType = BondType::Vertical;
 //            vertical = true;
             // means y_ values are equal
@@ -102,14 +105,14 @@ struct Bond{
 //            _id = set_ID<3>({1, _end1.x_, _end1.y_});
         }
         else{
-            std::cout << '(' << _end1.row_ << ',' << _end1.col_ << ')' << "<->"
-                    << '(' << _end2.row_ << ',' << _end2.col_ << ')'
+            std::cout << '(' << _end1.row_ << ',' << _end1.column_ << ')' << "<->"
+                    << '(' << _end2.row_ << ',' << _end2.column_ << ')'
                     << " is not a valid bond : line " << __LINE__ << std::endl;
 //            _id = set_ID<3>({-1, -1, -1});
         }
 
 //        _id = {(horizontal) ? 0ul : 1ul, _end1.x_, end1.y_};  // unsigned long
-        _id = BondIndex(bondType, _end1.row_, _end1.col_);  // unsigned long
+        _id = BondIndex(bondType, _end1.row_, _end1.column_);  // unsigned long
 
     }
 
@@ -132,8 +135,8 @@ struct Bond{
 /*
 * Group get_ID is the set_ID of the cluster they are in
 */
-    int groupID() const {return _group_id;}
-    void groupID(int  g_id) {_group_id = g_id;}
+    int get_groupID() const {return _group_id;}
+    void set_groupID(int g_id) {_group_id = g_id;}
 
 //    std::stringstream getBondString() const {
 //        std::stringstream ss;
@@ -169,6 +172,16 @@ struct Bond{
 
     bool isHorizontal() const { return bondType == BondType ::Horizontal;}
     bool isVertical()   const { return bondType == BondType ::Vertical;}
+
+    void relativeIndex(IndexRelative r){
+        _relative_index = r;
+    }
+
+    void relativeIndex(int x, int y){
+        _relative_index = {x,y};
+    }
+
+    IndexRelative relativeIndex() const {return _relative_index;}
 };
 
 

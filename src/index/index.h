@@ -21,7 +21,7 @@
  */
 struct Index{
     value_type row_{};
-    value_type col_{};
+    value_type column_{};
 
     ~Index()                      = default;
     Index()                       = default;
@@ -31,7 +31,7 @@ struct Index{
 //    Index& operator=(Index&)    = default;
 //    Index& operator=(Index&&)   = default;
 
-    Index(value_type x, value_type y) : row_{x}, col_{y} {}
+    Index(value_type x, value_type y) : row_{x}, column_{y} {}
 
 };
 
@@ -56,10 +56,8 @@ public:
  *
  */
 struct BondIndex{
-    // if hv_ == 0 -> horizontal bond
-    // if hv_ == 1 -> vertical bond
     BondType bondType;
-//    value_type hv_;
+
     value_type row_;
     value_type column_;
 
@@ -69,15 +67,6 @@ struct BondIndex{
 //    BondIndex(BondIndex&&)              = default;
 //    BondIndex& operator=(BondIndex&)    = default;
 //    BondIndex& operator=(BondIndex&&)   = default;
-
-//    BondIndex(value_type hv, value_type row, value_type column)
-//            : hv_{hv}, x_{row}, column_{column}
-//    {
-//        if(hv_ != 0 && hv_ != 1){
-//            std::cout << "Cannot construct object. throwing exception : line " << __LINE__ << std::endl;
-//            throw InvalidIndex{"hv_ != 0 || hv_ != 1 : line " + std::to_string(__LINE__) };
-//        }
-//    }
 
 
     BondIndex(BondType hv, value_type row, value_type column)

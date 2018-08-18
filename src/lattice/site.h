@@ -57,11 +57,11 @@ public:
 
     Site(Index id, value_type length){
         // I have handle _neighbor or corner points and edge points carefully
-        if(id.row_ >= length || id.col_ >= length){
+        if(id.row_ >= length || id.column_ >= length){
             std::cout << "out of range : line " << __LINE__ << std::endl;
         }
         _id.row_ = id.row_;
-        _id.col_ = id.col_;
+        _id.column_ = id.column_;
 //        _neighbor = Lattice_Helper::get_neighbor(id, length);
     }
 

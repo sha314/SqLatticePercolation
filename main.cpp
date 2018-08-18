@@ -486,15 +486,15 @@ void single_thread(
         value_type ensemble_size,
         value_type thread_id
 ){
-
+    cout << "Not good : line " <<__LINE__ << endl;
     SitePercolation_ps_v8 sp(length, true);
 
     sp.simulate_periodic_critical(ensemble_size);
 
     vector<vector<double>> critical(3);
-    critical[0] = sp.get_pcs();
-    critical[1] = sp.get_spanning_cluster_size_bonds();
-    critical[2] = sp.get_spanning_cluster_size_sites();
+//    critical[0] = sp.get_pcs();
+//    critical[1] = sp.get_spanning_cluster_size_bonds();
+//    critical[2] = sp.get_spanning_cluster_size_sites();
 
     ostringstream header_info;
     header_info << "{"
@@ -568,7 +568,7 @@ void cluster_size(int argc, char **argv) {
     value_type length = atoi(argv[1]);
     value_type ensemble_size = atoi(argv[2]);
 
-
+    cout << "Not good " << __LINE__ << endl;
     cout << "length " << length << " ensemble_size " << ensemble_size << endl;
 
     vector<vector<double>> _critical_data(3);
@@ -577,9 +577,9 @@ void cluster_size(int argc, char **argv) {
 
     sp.simulate_periodic_critical(ensemble_size);
 
-    _critical_data[0] = sp.get_pcs();
-    _critical_data[1] = sp.get_spanning_cluster_size_bonds();
-    _critical_data[2] = sp.get_spanning_cluster_size_sites();
+//    _critical_data[0] = sp.get_pcs();
+//    _critical_data[1] = sp.get_spanning_cluster_size_bonds();
+//    _critical_data[2] = sp.get_spanning_cluster_size_sites();
 
     ostringstream header_info;
     header_info << "{"
@@ -772,9 +772,6 @@ void measure_clusters(int argc, char** argv){
     }
 
 
-
-
-
     fout_b.close();
     fout_s.close();
 }
@@ -814,9 +811,146 @@ void weighted_relabeling_test(int argc, char** argv) {
     }
 //    sp.viewSiteByID();
 //    sp.viewClusterExtended();
-    cout << sp.occupationProbability() << endl;
+    cout << sp.relabeling_count() << endl;
+    cout << sp.get_relabeling_time() << endl;
 
 }
+
+void bond_percolation(int argc, char** argv) {
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+//    value_type length = 5;
+    BondPercolation_pb_v0 bp(length);
+    value_type total_bonds= 2*length*length;
+    double length_squared = length*length;
+
+    value_type j = 0;
+    vector<double> entrpy(total_bonds), nos1(total_bonds), nos2(total_bonds);
+
+
+    bool successful{false};
+
+    for(value_type e{}; e < ensemble_size; ++e) {
+        bp.reset();
+//        bp.viewBondByID();
+//        bp.viewClusterExtended();
+
+        cout << "Iteration " << e << " : ";
+        auto t0 = chrono::system_clock::now();
+        j = 0;
+        while (true) {
+            successful = bp.occupy();
+            if (successful) {
+//                cout << "*******************************************" << endl;
+//                entrpy[j] += bp.entropy_slow();
+                entrpy[j] += bp.entropy();
+                auto index = bp.lastPlacedBond();
+
+//                cout << j << " th bond" << index << endl;
+//                bp.viewBondByID();
+//                bp.viewClusterExtended();
+//                cout << "Entropy " << H_tmp << endl;
+
+
+                ++j;
+            }
+            if (j >= total_bonds) { // length_squared is the number of site
+                break;
+            }
+        }
+        auto t1 = chrono::system_clock::now();
+        cout << "elapsed time " << chrono::duration<double>(t1 - t0).count() << " sec" << endl;
+//        bp.viewBondByID();
+//        bp.viewClusterExtended();
+    }
+
+
+    for(value_type e{}; e < entrpy.size(); ++e) {
+        entrpy[e] /= double(ensemble_size);
+    }
+
+
+    stringstream ss;
+    ss << "{\"length\":" << length
+       <<",\"ensemble_size\":"<< ensemble_size
+       << ",\"signature\":\"" << bp.getSignature() << "\"}" << endl;
+    string header  = ss.str();
+    header += R"***(#<p>	<H(p,L)>	<P1(p,L)>	<P2(p,L)>
+#p = occupation probability
+#H(p,L) = Entropy = sum( - u_i * log(u_i))
+#P1(p,L) = Order parameter = (number of sites in largest cluster) / (total number of sites)
+#P2(p,L) = Order parameter = (number of sites in spanning or wrapping cluster) / (total number of sites)
+#C(p,L) = Specific heat = -T dH/dT
+#X(p,L) = Susceptibility = dP/dp
+#u_i = (number of sites in the i-th cluster) / (total number of sites))***";
+
+    string tm = currentTime();
+    string filename = bp.getSignature() + "_" + to_string(length) + "_" + tm + ".txt";
+
+
+    ofstream fout(filename);
+    fout << header << endl;
+    double p, H, P1, P2;
+    for(size_t i{}; i!= total_bonds; ++i){
+        p = (i+1)/ double(total_bonds);
+        H = entrpy[i];                      // Entropy
+//        P1 = nos1[i] / length_squared;    // Order parameter
+//        P2 = nos2[i] / length_squared;    // Order parameter
+
+        fout << p << '\t' << H << '\t' << '-' << '\t' << '-' << endl;
+    }
+    fout.close();
+}
+
+
+
+void bond_percolation_wrapping(int argc, char** argv) {
+//    value_type length = atoi(argv[1]);
+//    value_type ensemble_size = atoi(argv[2]);
+
+    value_type length = 300;
+    BondPercolation_pb_v0 bp(length);
+    value_type total_bonds= 2*length*length;
+//    double length_squared = length*length;
+
+    size_t j=0;
+    bool successful{false};
+    while (true) {
+        successful = bp.occupy();
+        if (successful) {
+//            cout << "*******************************************" << endl;
+            auto index = bp.lastPlacedBond();
+            cout << j << " th bond" << index << endl;
+            auto neighbors = SqLattice::get_neighbor_indices(length, index);
+//            if(bp.detectWrapping_v1(neighbors[0]) || bp.detectWrapping_v1(neighbors[1])){
+            if(bp.detectWrapping_v2(index)){
+                cout << "wrapping " << endl;
+                cout << "pc = " << bp.occupationProbability() << endl;
+//                cout << bp.wrapping_indices() << endl;
+//                bp.viewBondByRelativeIndex();
+//                bp.viewSiteByRelativeIndex();
+                break;
+            }
+
+//            bp.viewBondByID();
+//            bp.viewClusterExtended();
+//            bp.viewBondByRelativeIndex();
+//            bp.viewByRelativeIndex();
+//            bp.viewSiteByRelativeIndex();
+//            if( j == 10){
+//                break;
+//            }
+            ++j;
+        }
+        if (j >= total_bonds) { // length_squared is the number of site
+            break;
+        }
+    }
+
+}
+
+
 
 /****
  *  All the function that is run in main
@@ -862,7 +996,11 @@ void run_in_main(int argc, char** argv){
 //    cluster_size(argc, argv);
 //    measure_entropy_by_site(argc, argv);
 //    measure_clusters(argc, argv);
-    weighted_relabeling_test(argc, argv);
+//    weighted_relabeling_test(argc, argv);
+
+//    bond_percolation(argc, argv);
+
+    bond_percolation_wrapping(argc, argv);
 
 }
 
@@ -879,7 +1017,7 @@ int main(int argc, char** argv) {
     auto t_start = std::chrono::system_clock::now();
 
     time_t seed = time(NULL);
-//    srand(seed);    // seeding
+    srand(seed);    // seeding
 
     run_in_main(argc, argv);
 

@@ -77,6 +77,6 @@ set(SOURCE_FILES
         src/ziff_algorithm.cpp
         src/ziff_algorithm.h
         CMakeLists.txt
-        main.cpp)
+        main.cpp src/util/printer.cpp)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})

@@ -30,10 +30,10 @@ bool operator==(Bond a, Bond b)
 {
     if(a.isHorizontal() && b.isHorizontal())
     {
-        return (a.id().row_ == b.id().row_) && (a.id().col_ == b.id().col_);
+        return (a.id().row_ == b.id().row_) && (a.id().column_ == b.id().column_);
     }
     if(a.isVertical() && b.isVertical()){
-        return (a.id().row_ == b.id().row_) && (a.id().col_ == b.id().col_);
+        return (a.id().row_ == b.id().row_) && (a.id().column_ == b.id().column_);
     }
 
     return false;
@@ -41,7 +41,7 @@ bool operator==(Bond a, Bond b)
 
 bool  operator<(const Bond& bond1, const Bond& bond2){
     if(bond1.isHorizontal() && bond2.isHorizontal()){
-        return bond1._end1.col_ < bond2._end1.col_;
+        return bond1._end1.column_ < bond2._end1.column_;
     }
     if(bond1.isVertical() && bond2.isVertical()){
         return bond1._end1.row_ < bond2._end1.row_;
@@ -52,7 +52,7 @@ bool  operator<(const Bond& bond1, const Bond& bond2){
 
 bool  operator>(const Bond& bond1, const Bond& bond2){
     if(bond1.isHorizontal() && bond2.isHorizontal()){
-        return bond1._end1.col_ > bond2._end1.col_;
+        return bond1._end1.column_ > bond2._end1.column_;
     }
     if(bond1.isVertical() && bond2.isVertical()){
         return bond1._end1.row_ > bond2._end1.row_;

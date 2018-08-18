@@ -53,6 +53,12 @@ public:
     void view_sites_extended();
     void view_sites_by_id();
     void view_sites_by_relative_index();
+    void view_bonds_by_relative_index();
+    void view_bonds_by_relative_index_v2();
+    void view_bonds_by_relative_index_v3();
+    void view_bonds_by_relative_index_v4();
+    void view_by_relative_index();
+    void view(); // view lattice bonds and sites together
 
     void view_h_bonds();
     void view_v_bonds();
@@ -108,7 +114,13 @@ public:
 /******************************************************************************
  * Get Neighbor from given index
  ******************************************************************************/
-    std::vector<Index> getNeighbrs(Index site);
+    std::vector<Index> get_neighbor_site_indices(Index site);   // site neighbor of site
+    std::vector<BondIndex> get_neighbor_bond_indices(BondIndex site); // bond neighbor of bond
+    std::vector<Index> get_neighbor_indices(BondIndex bond);   // two site neighbor of bond.
+
+    static std::vector<Index> get_neighbor_site_indices(size_t length, Index site);   // 4 site neighbor of site
+    static std::vector<BondIndex> get_neighbor_bond_indices(size_t length, BondIndex site); // 6 bond neighbor of bond
+    static std::vector<Index> get_neighbor_indices(size_t length, BondIndex bond);   // 2 site neighbor of bond.
 
 //    std::vector<Index> getNeighborSite(Index site, bool periodicity=false);
 //    std::vector<Index> getNeighborSite(BondIndex bond, bool periodicity=false);
@@ -119,7 +131,7 @@ public:
 //    void connection_v1(Index site, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
 //    void connection_v1(BondIndex bond, std::vector<Index>& neighbors, std::vector<BondIndex>& bonds, bool periodicity);
 
-    void print_horizontal_separator() const;
+
 };
 
 

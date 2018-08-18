@@ -11,7 +11,8 @@
 SqLatticePercolation::SqLatticePercolation(value_type length) {
     _length = length;
     _length_squared = length * length;
-    _max_bonds = 2*_length_squared;
+    _max_number_of_bonds = 2*_length_squared;
+    _max_number_of_sites = _length_squared;
     _clusters = vector<Cluster_v2>();
 
     min_index = 0;
@@ -88,52 +89,46 @@ void SqLatticePercolation::viewClusterExtended() {
 }
 
 
-/**
- *
- */
-void SqLatticePercolation::viewSiteByRelativeIndex(){
-    _lattice.view_sites_by_relative_index();
-}
 
-
-const vector<double> &SqLatticePercolation::get_occupation_probabilities() const {
-    return _occupation_probabilities;
-}
-
-const vector<double> &SqLatticePercolation::get_nob_spanning() const {
-    return _nob_spanning;
-}
-
-const vector<double> &SqLatticePercolation::get_nob_largest() const {
-    return _nob_largest;
-}
-
-const vector<double> &SqLatticePercolation::get_nos_spanning() const {
-    return _nos_spanning;
-}
-
-const vector<double> &SqLatticePercolation::get_nos_largest() const {
-    return _nos_largest;
-}
-
-const vector<double> &SqLatticePercolation::get_entropy_sites() const {
-    return _entropy_sites;
-}
-
-const vector<double> &SqLatticePercolation::get_entropy_bonds() const {
-    return _entropy_bonds;
-}
-
-
-const vector<double> &SqLatticePercolation::get_pcs() const {
-    return _pcs;
-}
-
-const vector<double> &SqLatticePercolation::get_spanning_cluster_size_sites() const {
-    return _spanning_cluster_size_sites;
-}
-
-const vector<double> &SqLatticePercolation::get_spanning_cluster_size_bonds() const {
-    return _spanning_cluster_size_bonds;
-}
+//
+//const vector<double> &SqLatticePercolation::get_occupation_probabilities() const {
+//    return _occupation_probabilities;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_nob_spanning() const {
+//    return _nob_spanning;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_nob_largest() const {
+//    return _nob_largest;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_nos_spanning() const {
+//    return _nos_spanning;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_nos_largest() const {
+//    return _nos_largest;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_entropy_sites() const {
+//    return _entropy_sites;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_entropy_bonds() const {
+//    return _entropy_bonds;
+//}
+//
+//
+//const vector<double> &SqLatticePercolation::get_pcs() const {
+//    return _pcs;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_spanning_cluster_size_sites() const {
+//    return _spanning_cluster_size_sites;
+//}
+//
+//const vector<double> &SqLatticePercolation::get_spanning_cluster_size_bonds() const {
+//    return _spanning_cluster_size_bonds;
+//}
 
