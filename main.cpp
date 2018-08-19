@@ -903,7 +903,39 @@ void bond_percolation(int argc, char** argv) {
     fout.close();
 }
 
+void bond_percolation_wrapping(){
+    value_type length = 5;
+    BondPercolation_pb_v0 bp(length, true);
 
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    for(size_t i{}; i < 50; ++i) {
+//        cout << "Iteration " << i << endl;
+        bp.reset();
+//        bp.viewByRelativeIndex();
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        size_t counter = 0;
+        while (true) {
+            successful = bp.occupy();
+            if (successful) {
+//                cout << counter << " th bond " << bp.lastPlacedBond() << endl;
+                if (bp.detectWrapping_v2(bp.lastPlacedBond())) {
+                    cout << bp.occupationProbability() << endl;
+//                    bp.viewByRelativeIndex();
+
+                    break;
+                }
+
+                ++counter;
+            }
+            if (counter >= twice_length_squared) { // length_squared is the number of site
+                break;
+            }
+        }
+    }
+}
 
 void bond_percolation_wrapping(int argc, char** argv) {
     value_type length = atoi(argv[1]);
@@ -988,7 +1020,7 @@ void bond_percolation_wrapping(int argc, char** argv) {
 
                 ++counter;
             }
-            if(counter >= length_squared){ // length_squared is the number of site
+            if(counter >= twice_length_squared){ // twice_length_squared is the number of bonds
                 break;
             }
         }
@@ -1058,6 +1090,7 @@ void run_in_main(int argc, char** argv){
 //    bond_percolation(argc, argv);
 
     bond_percolation_wrapping(argc, argv);
+//    bond_percolation_wrapping();
 
 }
 

@@ -52,7 +52,7 @@ SitePercolation_ps_v8::SitePercolation_ps_v8(value_type length, bool periodicity
 //    _impure_sites = impure_sites;
     _periodicity = periodicity;
     _index_sequence_position = 0;
-    _lattice = SqLattice(length, true, false);   // since it is a site percolation all bonds will be activated by default
+    _lattice = SqLattice(length, true, false, false, true);   // since it is a site percolation all bonds will be activated by default
 
     min_index = 0;
     max_index = _length - 1;

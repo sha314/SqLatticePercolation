@@ -44,8 +44,11 @@ SqLattice::SqLattice(value_type length)
  *                          and will not be deactivated as long as the object exists,
  *                          even if SLattice::reset function is called.
  */
-SqLattice::SqLattice(value_type length, bool activate_bonds, bool activate_sites)
-        : _length{length}, _bond_resetting_flag{!activate_bonds}, _site_resetting_flag{!activate_sites}
+SqLattice::SqLattice(
+        value_type length,
+        bool activate_bonds, bool activate_sites,
+        bool bond_reset, bool site_reset)
+        : _length{length}, _bond_resetting_flag{bond_reset}, _site_resetting_flag{site_reset}
 {
     cout << "Constructing Lattice object : line " << __LINE__ << endl;
     cout << "Bond resetting is disabled : line " << __LINE__ << endl;
@@ -852,12 +855,12 @@ void SqLattice::reset() {
 void SqLattice::reset_bonds() {
     for(value_type i{}; i != _h_bonds.size(); ++i){
         for (int j{}; j != _h_bonds[i].size(); ++j) {
-//            _h_bonds[i][j].set_groupID(-1);
-//            _v_bonds[i][j].set_groupID(-1);
-
+            // deactivating. automatically set group id == - and relative index == (0,0)
             // setting group id = -1 and deactivating the bond
             _h_bonds[i][j].deactivate();
             _v_bonds[i][j].deactivate();
+
+
         }
     }
 }
@@ -868,7 +871,7 @@ void SqLattice::reset_bonds() {
 void SqLattice::reset_sites() {
     for(value_type i{}; i != _sites.size(); ++i){
         for(value_type j{}; j != _sites[i].size(); ++j) {
-//            _sites[i][j].set_groupID(-1);
+            // deactivating. automatically set group id == - and relative index == (0,0)
             // setting group id = -1 and deactivating the site
             _sites[i][j].deactivate();
         }

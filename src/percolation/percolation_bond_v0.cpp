@@ -33,8 +33,7 @@ BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity
 
     _periodicity = periodicity;
     _index_sequence_position = 0;
-    _lattice = SqLattice(length, false,
-                         true);   // since it is a site percolation all bonds will be activated by default
+    _lattice = SqLattice(length, false, true, true, true);
 
     index_sequence.reserve(_max_number_of_bonds);
 

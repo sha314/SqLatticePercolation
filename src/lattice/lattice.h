@@ -40,7 +40,7 @@ public:
     SqLattice& operator=(SqLattice&&) = default;
 
     SqLattice(value_type length);
-    SqLattice(value_type length, bool activate_bonds, bool activate_sites);
+    SqLattice(value_type length, bool activate_bonds, bool activate_sites, bool bond_reset, bool site_reset);
 
     void reset();
     void reset_sites();

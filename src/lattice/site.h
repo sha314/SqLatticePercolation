@@ -69,6 +69,7 @@ public:
     bool isActive() const { return _status;}
     void activate(){ _status = true;}
     void deactivate() {
+        _relative_index = {0,0};
         _group_id = -1;
         _status = false;
     }
