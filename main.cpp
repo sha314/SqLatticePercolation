@@ -1033,7 +1033,6 @@ void bond_percolation_wrapping(int argc, char** argv) {
 //        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
     }
 
-
     fout_b.close();
     fout_s.close();
     fout_critical.close();

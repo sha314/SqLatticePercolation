@@ -144,8 +144,9 @@ void SqLatticePercolation::reset() {
 }
 
 void SqLatticePercolation::jump() {
+
     double delta_H{};
-    if(_largest_jump_entropy == 0){
+    if(_largest_jump_entropy == 0){ // when the first site or bond is placed entropy jump is zero
         _entropy_previous = _entropy_current;
     }else{
         delta_H = _entropy_current - _entropy_previous;
@@ -153,7 +154,7 @@ void SqLatticePercolation::jump() {
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_pc = occupationProbability();
+        _entropy_jump_pc = _occuption_probability;
     }
 }
 
