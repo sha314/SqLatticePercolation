@@ -1056,7 +1056,7 @@ void entropyJumps(int argc, char** argv){
                 << "\"length\":" << length
                 << ", \"ensemble_size\":" << ensemble_size
                 << ", \"signature\":\"" << bp.getSignature() << "\""
-                << "}" << endl;
+                << "}" ;
 
     string tm = currentTime();
 
@@ -1065,7 +1065,7 @@ void entropyJumps(int argc, char** argv){
 
     ofstream fout(filename);
     // JSON formated header
-    fout << header_info.str();
+    fout << '#' << header_info.str() << endl;
     fout << "#each line is an independent realization" << endl;
     fout << "#each line contains information about all clusters at critical point" << endl;
     fout << "#cluster size is measured by number of sites in it" << endl;
