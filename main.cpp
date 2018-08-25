@@ -619,8 +619,8 @@ void measure_entropy_by_site(int argc, char** argv){
         while (true){
             successful = sp.occupy();
             if(successful) {
-//                entropy[j] += sp.entropy_v4(-2); // slower method
-                entropy[j] += sp.entropy_v5_site_threaded(); // slower method
+                entropy[j] += sp.entropy_v4(-2); // slower method
+//                entropy[j] += sp.entropy_v5_site_threaded(); // slower method
 //                entropy2[j] += sp.entropy_v4(2); // faster method
 
 //                cout << '\t' << entropy[j]  << '\t' << entropy2[j] << endl;
@@ -1040,6 +1040,11 @@ void bond_percolation_wrapping(int argc, char** argv) {
 }
 
 
+void entropyJumps(int argc, char** argv){
+    SitePercolation_ps_v8 sp(5);
+
+}
+
 
 /****
  *  All the function that is run in main
@@ -1089,8 +1094,9 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-    bond_percolation_wrapping(argc, argv);
+//    bond_percolation_wrapping(argc, argv);
 //    bond_percolation_wrapping();
+    entropyJumps(argc, argv);
 
 }
 

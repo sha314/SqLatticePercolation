@@ -9,12 +9,18 @@
  * @param length
  */
 SqLatticePercolation::SqLatticePercolation(value_type length) {
+    if (_length <= 2) {
+        /*
+         * Because if _length=2
+         * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
+         */
+        cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
+    }
     _length = length;
-    _length_squared = length * length;
+    value_type _length_squared = length * length;
     _max_number_of_bonds = 2*_length_squared;
     _max_number_of_sites = _length_squared;
     _clusters = vector<Cluster_v2>();
-
     min_index = 0;
     max_index = _length - 1;
 }
@@ -121,6 +127,34 @@ SqLatticePercolation::get_cluster_info(
         total_bond += b;
     }
 
+}
+
+void SqLatticePercolation::reset() {
+    _lattice.reset();
+    _cluster_index_from_id.clear();
+    _clusters.clear();
+    _cluster_id = 0;
+    _occuption_probability = 0;
+    // entropy
+    _entropy=0;
+    _entropy_current=0;
+    _entropy_previous=0;
+    _largest_jump_entropy = 0;
+    _entropy_jump_pc = 0;
+}
+
+void SqLatticePercolation::jump() {
+    double delta_H{};
+    if(_largest_jump_entropy == 0){
+        _entropy_previous = _entropy_current;
+    }else{
+        delta_H = _entropy_current - _entropy_previous;
+        _entropy_previous = _entropy_current; // be ready for next step
+    }
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
+        _largest_jump_entropy = delta_H;
+        _entropy_jump_pc = occupationProbability();
+    }
 }
 
 

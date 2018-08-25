@@ -35,7 +35,7 @@ BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity
     _index_sequence_position = 0;
     _lattice = SqLattice(length, false, true, true, true);
 
-    index_sequence.reserve(_max_number_of_bonds);
+    index_sequence.reserve(maxBonds());
 
     // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
     _clusters = vector<Cluster_v2>();
@@ -52,22 +52,15 @@ BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity
  * Initialize the Class Object
  */
 void BondPercolation_pb_v0::initialize() {
-    if (_length <= 2) {
-        /*
-         * Because if _length=2
-         * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
-         */
-        cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
-    }
 
     // to improve performence
-    number_of_sites_to_span.reserve(_length_squared);
-    number_of_bonds_to_span.reserve(_length_squared);
+    number_of_sites_to_span.reserve(maxSites());
+    number_of_bonds_to_span.reserve(maxSites());
 
-//    _top_edge.reserve(_length);
-//    _bottom_edge.reserve(_length);
-//    _left_edge.reserve(_length);
-//    _right_edge.reserve(_length);
+//    _top_edge.reserve(length());
+//    _bottom_edge.reserve(length());
+//    _left_edge.reserve(length());
+//    _right_edge.reserve(length());
 
     randomized_index_sequence = index_sequence;
 }
@@ -80,7 +73,7 @@ void BondPercolation_pb_v0::initialize_index_sequence() {
     value_type row{}, col{};
 
     if (!_periodicity) {
-        value_type limit = _length_squared - 1; // since if row==4 and col ==4 we don't want that bond
+        value_type limit = maxSites() - 1; // since if row==4 and col ==4 we don't want that bond
         for (value_type i{}; i < limit; ++i) {
             /*if (row == max_index && col == max_index){
                 continue; // it is the last step. so decrease the loop limit by 1 will do the job
@@ -95,19 +88,19 @@ void BondPercolation_pb_v0::initialize_index_sequence() {
             }
 
             ++col;
-            if (col == _length) {
+            if (col == length()) {
                 col = 0;
                 ++row;
             }
         }
     } else {
-        for (value_type i{}; i < _length_squared; ++i) {
+        for (value_type i{}; i < maxSites(); ++i) {
 
             index_sequence.push_back({BondType::Horizontal, row, col});
             index_sequence.push_back({BondType::Vertical, row, col});
 
             ++col;
-            if (col == _length) {
+            if (col == length()) {
                 col = 0;
                 ++row;
             }
@@ -157,20 +150,13 @@ void BondPercolation_pb_v0::randomize() {
  * caution -> it does not erase _calculation_flags, for it will be used for calculation purposes
  */
 void BondPercolation_pb_v0::reset() {
+    SqLatticePercolation::reset();
     _total_number_of_active_bonds = 0;
-    _clusters.clear();
     _index_sequence_position = 0;
     _number_of_occupied_bonds = 0;
     number_of_bonds_to_span.clear();
     _sites_required_to_min_span = 0;
-
-    _entropy_by_site = 0;
-    _entropy_by_site_to_add = 0;
-    _entropy_by_site_to_subtract = 0;
     sites_in_cluster_with_size_greater_than_one = 0;
-    _lattice.reset();
-    _clusters.clear();
-    _cluster_index_from_id.clear();
     _wrapping_indices.clear();
     initialize();
     randomize();  // randomize the untouched_site_indices
@@ -205,18 +191,19 @@ double BondPercolation_pb_v0::entropy_slow() {
     for (value_type i{}; i < _clusters.size(); ++i) {
         x = _clusters[i].numberOfSites();
         count += x;
-        mu = x / double(_max_number_of_sites);
+        mu = x / double(maxSites());
 //        cout << "mu " << mu << endl;
         H += mu * log(mu);
     }
     // for cluster with numberOfBonds 1
 //    cout << sites_in_cluster_with_size_greater_than_one  << " == ? " << count << endl;
-    double number_of_cluster_with_size_one = _max_number_of_sites - sites_in_cluster_with_size_greater_than_one;
+    double number_of_cluster_with_size_one = maxSites() - sites_in_cluster_with_size_greater_than_one;
 //    cout << number_of_cluster_with_size_one << endl;
-    mu = 1 / double(_max_number_of_sites);
+    mu = 1 / double(maxSites());
     H += number_of_cluster_with_size_one * mu * log(mu);
     H *= -1;    // since S = - mu * log(mu)
 //    cout << "H = " << H << endl;
+    _entropy_current = H;
     return H;
 }
 
@@ -321,9 +308,9 @@ void BondPercolation_pb_v0::relabel_cluster(BondIndex bond,  const vector<Index>
     Index site_a = {bond.row_, bond.column_};
     Index site_b;
     if(bond.horizontal()){
-        site_b = {bond.row_, (bond.column_ + 1 ) % _length};
+        site_b = {bond.row_, (bond.column_ + 1 ) % length()};
     }else{
-        site_b = {(bond.row_ + 1 ) % _length, bond.column_};
+        site_b = {(bond.row_ + 1 ) % length(), bond.column_};
     }
     // basically site_a and site_b must be added to cluster_b
 
@@ -393,9 +380,9 @@ void BondPercolation_pb_v0::relabel_cluster(BondIndex bond, const Cluster_v2& cl
     Index site_a = {bond.row_, bond.column_};
     Index site_b;
     if(bond.horizontal()){
-        site_b = {bond.row_, (bond.column_ + 1 ) % _length};
+        site_b = {bond.row_, (bond.column_ + 1 ) % length()};
     }else{
-        site_b = {(bond.row_ + 1 ) % _length, bond.column_};
+        site_b = {(bond.row_ + 1 ) % length(), bond.column_};
     }
 
     int id_a = _lattice.getSite(site_a).get_groupID();
@@ -527,12 +514,12 @@ void BondPercolation_pb_v0::relabel_sites(const vector<Index> &sites, int id_a, 
  * @return true if operation is successfull
  */
 bool BondPercolation_pb_v0::occupy() {
-    if (_index_sequence_position >= _max_number_of_bonds) {
+    if (_index_sequence_position >= maxBonds()) {
         return false;
     }
 
     value_type v = placeBond_v0();
-
+    _occuption_probability = occupationProbability(); // for super class
     return v != ULONG_MAX;
 }
 
@@ -549,7 +536,7 @@ bool BondPercolation_pb_v0::occupy() {
 value_type BondPercolation_pb_v0::placeBond_v0() {
 
 //    if (_index_sequence_position == randomized_index_sequence.size()) {
-    if (_number_of_occupied_bonds == _max_number_of_bonds){
+    if (_number_of_occupied_bonds == maxBonds()){
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -586,9 +573,7 @@ value_type BondPercolation_pb_v0::placeBond_v0() {
 
     // running tracker
 //    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-
     return merged_cluster_index;
-
 }
 
 
@@ -1011,10 +996,10 @@ void
 BondPercolation_pb_v0::connection_v1(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
     // for a bond there is two site. each site connects to maximum of 3 bonds.
     // select the site if one of the three bonds is active
-    value_type next_column = (bond.column_ + 1) % _length;
-    value_type prev_column = (bond.column_ + 1 + _length) % _length;
-    value_type prev_row = (bond.row_ + 1 + _length) % _length;
-    value_type next_row = (bond.row_ + 1) % _length;
+    value_type next_column = (bond.column_ + 1) % length();
+    value_type prev_column = (bond.column_ + 1 + length()) % length();
+    value_type prev_row = (bond.row_ + 1 + length()) % length();
+    value_type next_row = (bond.row_ + 1) % length();
     if (!_periodicity) {
         cout << "Testing ... ... .. .. .. . . . : line " << __LINE__ << endl;
         if (bond.horizontal()) {
@@ -1315,10 +1300,10 @@ void
 BondPercolation_pb_v0::connection_v2(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
     // for a bond there is two site. each site connects to maximum of 3 bonds.
     // select the site if one of the three bonds is active
-    value_type next_column = (bond.column_ + 1) % _length;
-    value_type prev_column = (bond.column_ - 1 + _length) % _length;
-    value_type prev_row = (bond.row_ - 1 + _length) % _length;
-    value_type next_row = (bond.row_ + 1) % _length;
+    value_type next_column = (bond.column_ + 1) % length();
+    value_type prev_column = (bond.column_ - 1 + length()) % length();
+    value_type prev_row = (bond.row_ - 1 + length()) % length();
+    value_type next_row = (bond.row_ + 1) % length();
     if (!_periodicity) {
 
         cout << "Testing ... ... .. .. .. . . . : line " << __LINE__ << endl;
@@ -1846,7 +1831,7 @@ void BondPercolation_pb_v0::calculate_spanning_probability_by_largest_cluster() 
     double b;
     for (auto a: _clusters) {
         b = a.numberOfSites();
-        if (b < _length) // no percolation yet
+        if (b < length()) // no percolation yet
             continue;
         if (b > l_largest_cluster) {
             l_largest_cluster = b;
@@ -1864,8 +1849,8 @@ void BondPercolation_pb_v0::calculate_spanning_probability_by_largest_cluster() 
  */
 value_type BondPercolation_pb_v0::count_number_of_active_site() {
     value_type counter{};
-    for (value_type i{}; i != _length; ++i) {
-        for (value_type j{}; j != _length; ++j) {
+    for (value_type i{}; i != length(); ++i) {
+        for (value_type j{}; j != length(); ++j) {
             if (_lattice.getSite({i, j}).isActive())
                 ++counter;
         }
@@ -1890,12 +1875,12 @@ value_type BondPercolation_pb_v0::count_number_of_active_site() {
 //    if(index.horizontal()) {
 //        // for horizontal bond, row remains the same
 //        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
-//        auto c = (index.column_ + 1) % _length;
+//        auto c = (index.column_ + 1) % length();
 //        connected_sites[1] = _lattice.getSite({index.x_, c}).set_ID();
 //    }else{
 //        // for vertical bond, column remains the same
 //        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
-//        auto r = (index.x_ + 1) % _length;
+//        auto r = (index.x_ + 1) % length();
 //        connected_sites[1] = _lattice.getSite({r, index.column_}).set_ID();
 //    }
 //
@@ -1933,13 +1918,13 @@ bool BondPercolation_pb_v0::detectSpanning() {
         cout << "Entry -> detectSpanning() : line " << __LINE__ << endl;
     }
 
-    // if any of the clusters does not have sites > _length --> no spanning
+    // if any of the clusters does not have sites > length() --> no spanning
     value_type x{};
     for (auto a: _clusters) {
         if (x < a.numberOfSites())
             x = a.numberOfSites();
     }
-    if (x < _length) {
+    if (x < length()) {
         if (debug_4_detectSpanning) {
             cout << "not enough sites in any cluster to span : line " << __LINE__ << endl;
         }
@@ -1954,21 +1939,21 @@ bool BondPercolation_pb_v0::detectSpanning() {
     std::unordered_set<int> first_column_group_ids;
     std::unordered_set<int> last_column_group_ids;
 
-    for (value_type i{}; i != _length; ++i) {
+    for (value_type i{}; i != length(); ++i) {
         // for rows
         if (_lattice.getSite({0, i}).isActive()) {
             first_row_group_ids.insert(_lattice.getSite({0, i}).get_groupID());
         }
-        if (_lattice.getSite({_length - 1, i}).isActive()) {
-            last_row_group_ids.insert(_lattice.getSite({_length - 1, i}).get_groupID());
+        if (_lattice.getSite({length() - 1, i}).isActive()) {
+            last_row_group_ids.insert(_lattice.getSite({length() - 1, i}).get_groupID());
         }
 
         // for columns
         if (_lattice.getSite({i, 0}).isActive()) {
             first_column_group_ids.insert(_lattice.getSite({i, 0}).get_groupID());
         }
-        if (_lattice.getSite({i, _length - 1}).isActive()) {
-            last_column_group_ids.insert(_lattice.getSite({i, _length - 1}).get_groupID());
+        if (_lattice.getSite({i, length() - 1}).isActive()) {
+            last_column_group_ids.insert(_lattice.getSite({i, length() - 1}).get_groupID());
         }
 
     }
@@ -2019,7 +2004,7 @@ bool BondPercolation_pb_v0::detectSpanning() {
     if (debug_4_detectSpanning) {
         cout << "Number of sites to span " << number_of_sites_in_spanning_cluster << ','
              << "Number of active sites " << _total_number_of_active_bonds << ','
-             << "Total number of sites " << _length_squared << endl;
+             << "Total number of sites " << maxSites() << endl;
         cout << "Number of cluters " << _clusters.size() << endl;
         cout << "Spanning Info : line " << __LINE__ << endl;
         cout << "Vertical spanning for cluster_ID   : " << vertical_spanning_id << endl;
@@ -2044,7 +2029,7 @@ bool BondPercolation_pb_v0::detectSpanning() {
  */
 bool BondPercolation_pb_v0::detectWrapping_v2(BondIndex bond) {
     // only possible if the cluster containing 'site' has bonds >= length of the lattice
-    if(_number_of_occupied_bonds < _length){
+    if(_number_of_occupied_bonds < length()){
         return false;
     }
 
@@ -2059,7 +2044,7 @@ bool BondPercolation_pb_v0::detectWrapping_v2(BondIndex bond) {
         }
     }
 
-    auto sites = SqLattice::get_neighbor_indices(_length, bond);
+    auto sites = SqLattice::get_neighbor_indices(length(), bond);
     IndexRelative r1 = _lattice.getSite(sites[0]).relativeIndex();
     IndexRelative r2 = _lattice.getSite(sites[1]).relativeIndex();
 
@@ -2079,14 +2064,14 @@ bool BondPercolation_pb_v0::detectWrapping_v2(BondIndex bond) {
 std::vector<double> BondPercolation_pb_v0::spanningProbability() const {
     vector<double> x(number_of_bonds_to_span.size());
     for (value_type i{}; i != x.size(); ++i) {
-        x[i] = number_of_bonds_to_span[i] / double(_length_squared);
+        x[i] = number_of_bonds_to_span[i] / double(maxSites());
     }
     return x;
 }
 
 
 double BondPercolation_pb_v0::occupationProbability() const {
-    return _number_of_occupied_bonds / double(_max_number_of_bonds);
+    return _number_of_occupied_bonds / double(maxBonds());
 }
 
 
@@ -2117,11 +2102,11 @@ void BondPercolation_pb_v0::subtract_entropy_for_site(const set<value_type>& fou
     double H{};
     for(auto x : found_index){
         nos = _clusters[x].numberOfSites();
-        mu_site = nos / _max_number_of_sites;
+        mu_site = nos / maxSites();
         H += log(mu_site) * mu_site;
     }
     H *= -1;
-    _entropy_by_site -= H;
+    _entropy -= H;
 }
 
 /**
@@ -2131,24 +2116,26 @@ void BondPercolation_pb_v0::subtract_entropy_for_site(const set<value_type>& fou
  */
 void BondPercolation_pb_v0::add_entropy_for_site(value_type index){
     double nos = _clusters[index].numberOfSites();
-    double mu = nos / _max_number_of_sites;
+    double mu = nos / maxSites();
     double H = -log(mu) * mu;
-    _entropy_by_site += H;   // keeps track of entropy
-
+    _entropy += H;   // keeps track of entropy
 }
 
 /**
  * Very efficient approach for calculating entropy
  * @return
  */
-double BondPercolation_pb_v0::entropy() const {
+double BondPercolation_pb_v0::entropy() {
 
-    double mu = 1/ double(_max_number_of_sites);
-    double number_of_cluster_with_size_one = (_max_number_of_sites - sites_in_cluster_with_size_greater_than_one);
+    double mu = 1/ double(maxSites());
+    double number_of_cluster_with_size_one = (maxSites() - sites_in_cluster_with_size_greater_than_one);
     double H = number_of_cluster_with_size_one * mu * log(mu);
     H *= -1;
-    return _entropy_by_site + H;
+    _entropy_current = _entropy + H;
+    return _entropy_current;
 }
+
+
 
 
 

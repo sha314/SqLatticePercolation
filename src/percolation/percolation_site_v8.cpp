@@ -55,10 +55,10 @@ SitePercolation_ps_v8::SitePercolation_ps_v8(value_type length, bool periodicity
     _lattice = SqLattice(length, true, false, false, true);   // since it is a site percolation all bonds will be activated by default
 
     min_index = 0;
-    max_index = _length - 1;
+    max_index = length - 1;
 
-    randomized_index_sequence = vector<Index>(_length_squared);
-    index_sequence = vector<Index>(_length_squared);
+    randomized_index_sequence = vector<Index>(maxSites());
+    index_sequence = vector<Index>(maxSites());
 
 
     initialize_index_sequence();
@@ -72,21 +72,15 @@ SitePercolation_ps_v8::SitePercolation_ps_v8(value_type length, bool periodicity
  *
  */
 void SitePercolation_ps_v8::initialize() {
-    if (_length <= 2) {
-        /*
-         * Because if _length=2
-         * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
-         */
-        cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
-    }
-    // to improve performence
-    number_of_sites_to_span.reserve(_length_squared);
-    number_of_bonds_to_span.reserve(_length_squared);
 
-    _top_edge.reserve(_length);
-    _bottom_edge.reserve(_length);
-    _left_edge.reserve(_length);
-    _right_edge.reserve(_length);
+    // to improve performence
+    number_of_sites_to_span.reserve(maxSites());
+    number_of_bonds_to_span.reserve(maxSites());
+
+    _top_edge.reserve(length());
+    _bottom_edge.reserve(length());
+    _left_edge.reserve(length());
+    _right_edge.reserve(length());
 
     randomized_index_sequence = index_sequence;
 }
@@ -100,7 +94,7 @@ void SitePercolation_ps_v8::initialize_index_sequence() {
     for (value_type i{}; i != index_sequence.size(); ++i) {
         index_sequence[i] = Index(m, n);
         ++n;
-        if (n == _length) {
+        if (n == length()) {
             n = 0;
             ++m;
         }
@@ -116,6 +110,7 @@ void SitePercolation_ps_v8::initialize_index_sequence() {
  * caution -> it does not erase _calculation_flags, for it will be used for calculation purposes
  */
 void SitePercolation_ps_v8::reset() {
+    SqLatticePercolation::reset();
     // variables
     _number_of_occupied_sites = 0;
     _index_sequence_position = 0;
@@ -125,10 +120,8 @@ void SitePercolation_ps_v8::reset() {
 //    sites_in_largest_cluster = 0;
 
     // containers
-    _lattice.reset();
 //    randomized_index_sequence.clear();    // reseted in the initialize function
-    _clusters.clear();
-    _cluster_index_from_id.clear();
+
 //    _number_of_occupied_sites.clear();
 //    _entropy_by_bond.clear();
     number_of_sites_to_span.clear();
@@ -236,9 +229,9 @@ void SitePercolation_ps_v8::configure(std::vector<Index> site_indices) {
 //        site_index_sequence.erase(site_index_sequence.begin() + x); // must erase used site_index_sequence value
 //
 //        // checking if there is an invalid index;
-//        if (s_index.x_ >= _length || s_index.y_ >= _length) {
+//        if (s_index.x_ >= length() || s_index.y_ >= length()) {
 //            cerr << "Invalid index : line " << __LINE__ << endl;
-//            cerr << "site_indices[i].x_ >= _length || site_indices[i].y_ >= _length  : line " << __LINE__ << endl;
+//            cerr << "site_indices[i].x_ >= length() || site_indices[i].y_ >= length()  : line " << __LINE__ << endl;
 //            return;
 //        }
 //        _lattice.getSite(s_index).activate();
@@ -289,7 +282,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_bond(const set<value_type> &fou
     double nob, mu_bond;
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ _max_number_of_bonds;
+        mu_bond = nob/ maxBonds();
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
     }
 }
@@ -298,7 +291,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_bond(const vector<value_type> &
     double nob, mu_bond;
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ _max_number_of_bonds;
+        mu_bond = nob/ maxBonds();
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
     }
 }
@@ -328,7 +321,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const vector<value_type>& 
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ _max_number_of_bonds;
+        mu_bond = nob/ maxBonds();
         mu_site = nos/_number_of_occupied_sites;
 
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
@@ -342,7 +335,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const set<value_type>& fou
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ _max_number_of_bonds;
+        mu_bond = nob/ maxBonds();
         mu_site = nos/_number_of_occupied_sites;
 
         _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
@@ -358,7 +351,7 @@ void SitePercolation_ps_v8::subtract_entropy_for_full(const set<value_type>& fou
  */
 void SitePercolation_ps_v8::add_entropy_for_bond(value_type index){
     double nob = _clusters[index].numberOfBonds();
-    double mu_bond = nob / _max_number_of_bonds;
+    double mu_bond = nob / maxBonds();
     _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
     _entropy_by_bond = _entropy_by_bond + _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
     _entropy_by_bond_to_subtract = 0;
@@ -400,7 +393,7 @@ void SitePercolation_ps_v8::add_entropy_for_full(value_type index){
 
     // by bond
     double nob = _clusters[index].numberOfBonds();
-    double mu_bond = nob / _max_number_of_bonds;
+    double mu_bond = nob / maxBonds();
     _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
     _entropy_by_bond += _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
     _entropy_by_bond_to_subtract = 0;
@@ -439,7 +432,7 @@ void SitePercolation_ps_v8::track_numberOfSitesInLargestCluster(){
  * Condition: must be called each time a site is placed
  */
 void SitePercolation_ps_v8::track_entropy() {
-    double mu = _clusters[_index_last_modified_cluster].numberOfBonds() / double(_max_number_of_bonds);
+    double mu = _clusters[_index_last_modified_cluster].numberOfBonds() / double(maxBonds());
     _cluster_entropy[_clusters[_index_last_modified_cluster].get_ID()] = mu * log(mu);
 }
 
@@ -1562,10 +1555,10 @@ void SitePercolation_ps_v8::check(Index current_site){
 void SitePercolation_ps_v8::connection_v1(Index site, vector<Index> &neighbors, vector<BondIndex> &bonds)
 {
     clock_t t = clock();
-    value_type prev_column  = (site.column_ + _length - 1) % _length;
-    value_type prev_row     = (site.row_ + _length - 1) % _length;
-    value_type next_row     = (site.row_ + 1) % _length;
-    value_type next_column  = (site.column_ + 1) % _length;
+    value_type prev_column  = (site.column_ + length() - 1) % length();
+    value_type prev_row     = (site.row_ + length() - 1) % length();
+    value_type next_row     = (site.row_ + 1) % length();
+    value_type next_column  = (site.column_ + 1) % length();
     if(_periodicity){
         neighbors.resize(4);
         neighbors[0] = {site.row_, next_column};
@@ -1773,10 +1766,10 @@ void SitePercolation_ps_v8::connection_v2(Index site, vector<Index> &site_neighb
 {
     clock_t t = clock();
 
-    value_type prev_column  = (site.column_ + _length - 1) % _length;
-    value_type prev_row     = (site.row_ + _length - 1) % _length;
-    value_type next_row     = (site.row_ + 1) % _length;
-    value_type next_column  = (site.column_ + 1) % _length;
+    value_type prev_column  = (site.column_ + length() - 1) % length();
+    value_type prev_row     = (site.row_ + length() - 1) % length();
+    value_type next_row     = (site.row_ + 1) % length();
+    value_type next_column  = (site.column_ + 1) % length();
 
     if(!_periodicity){
         // without periodicity
@@ -2054,7 +2047,7 @@ bool SitePercolation_ps_v8::check_if_id_matches_and_erase(Index site, vector<Ind
  * @return true if operation is successfull
  */
 bool SitePercolation_ps_v8::occupy() {
-    if(_index_sequence_position >= _length_squared){
+    if(_index_sequence_position >= maxSites()){
         return false;
     }
 
@@ -2073,7 +2066,7 @@ bool SitePercolation_ps_v8::occupy() {
 //    cout << "_number_of_occupied_sites " << _number_of_occupied_sites << endl;
 //    cout << "Cluster id set " << _cluster_id_set << endl;
 //    viewCluster_id_index();
-
+    _occuption_probability = occupationProbability(); // for super class
     return true;
 }
 
@@ -2082,7 +2075,7 @@ bool SitePercolation_ps_v8::occupy() {
  * @return false -> if not site placing is possible
  */
 bool SitePercolation_ps_v8::placeSiteForSpanning() {
-    if(_index_sequence_position >= _length_squared){
+    if(_index_sequence_position >= maxSites()){
         return false;
     }
 
@@ -2104,7 +2097,7 @@ bool SitePercolation_ps_v8::placeSiteForSpanning() {
  * @return
  */
 bool SitePercolation_ps_v8::placeSite_explosive(int rule){
-    if(_index_sequence_position >= _length_squared){
+    if(_index_sequence_position >= maxSites()){
         return false;
     }
     if(rule == 0){
@@ -2123,7 +2116,7 @@ bool SitePercolation_ps_v8::placeSite_explosive(int rule){
  * @return false -> if not site placing is possible
  */
 bool SitePercolation_ps_v8::placeSite_explosive_product_rule_ForSpanning() {
-    if(_index_sequence_position >= _length_squared){
+    if(_index_sequence_position >= maxSites()){
         return false;
     }
 
@@ -2140,7 +2133,7 @@ bool SitePercolation_ps_v8::placeSite_explosive_product_rule_ForSpanning() {
  * @return false -> if not site placing is possible
  */
 bool SitePercolation_ps_v8::placeSite_explosive_sum_rule_ForSpanning() {
-    if(_index_sequence_position >= _length_squared){
+    if(_index_sequence_position >= maxSites()){
         return false;
     }
 
@@ -2322,7 +2315,7 @@ void SitePercolation_ps_v8::placeSites(value_type n, value_type step) {
  */
 value_type SitePercolation_ps_v8::placeSite_v6() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2387,7 +2380,7 @@ value_type SitePercolation_ps_v8::placeSite_v6() {
  */
 value_type SitePercolation_ps_v8::placeSite_v7() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2430,7 +2423,7 @@ value_type SitePercolation_ps_v8::placeSite_v7() {
  */
 value_type SitePercolation_ps_v8::placeSite_weighted_v8() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2475,7 +2468,7 @@ value_type SitePercolation_ps_v8::placeSite_weighted_v8() {
  */
 value_type SitePercolation_ps_v8::placeSite_v10() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2524,7 +2517,7 @@ value_type SitePercolation_ps_v8::placeSite_v10() {
  */
 value_type SitePercolation_ps_v8::placeSite_v11(Index current_site) {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2578,7 +2571,7 @@ value_type SitePercolation_ps_v8::placeSite_v12(
         vector<BondIndex>& neighbor_bonds
 ){
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2619,7 +2612,7 @@ value_type SitePercolation_ps_v8::placeSite_v12(
  */
 value_type SitePercolation_ps_v8::placeSite_v13(Index current_site) {
     // randomly choose a site
-    if (_number_of_occupied_sites == _length_squared) {
+    if (_number_of_occupied_sites == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2823,7 +2816,7 @@ value_type SitePercolation_ps_v8::cluster_length_for_placing_site_sum_rule_v2(In
  */
 value_type SitePercolation_ps_v8::placeSite_explosive_prodduct_rule() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2895,7 +2888,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_prodduct_rule() {
  */
 value_type SitePercolation_ps_v8::placeSite_explosive_sum_rule() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -2968,7 +2961,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_sum_rule() {
  */
 value_type SitePercolation_ps_v8::placeSite_explosive_test() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -3138,7 +3131,7 @@ bool SitePercolation_ps_v8::detectSpanning_v5(const Index& site) {
         _right_edge.push_back(site);
     }
 
-    if(_index_sequence_position < _length){
+    if(_index_sequence_position < length()){
 //        cout << "Not enough site to span : line " << __LINE__ << endl;
         return false;
     }
@@ -3241,7 +3234,7 @@ bool SitePercolation_ps_v8::detectSpanning_v6(const Index& site) {
         }
     }
 
-    if(_number_of_occupied_sites < _length){
+    if(_number_of_occupied_sites < length()){
 //        cout << "Not enough site to span : line " << __LINE__ << endl;
         return false;
     }
@@ -3371,7 +3364,7 @@ void SitePercolation_ps_v8::scanEdges() {
  **********************************/
 bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
     // only possible if the cluster containing 'site' has sites >= length of the lattice
-    if(_number_of_occupied_sites < _length){
+    if(_number_of_occupied_sites < length()){
         return false;
     }
 
@@ -3452,7 +3445,7 @@ std::vector<value_type> SitePercolation_ps_v8::number_of_bonds_in_clusters() {
         total += nob;
     }
 
-    value_type mnob = _max_number_of_bonds;
+    value_type mnob = maxBonds();
     x.reserve(mnob - total);
     while (total < mnob){
         x.push_back(1);
@@ -3814,13 +3807,13 @@ double SitePercolation_ps_v8::spanningProbability() const {
  *
  * @return
  */
-double SitePercolation_ps_v8::entropy() const{
+double SitePercolation_ps_v8::entropy() {
     double mu_i{}; // probability for the cluster
     double H{}; // entropy
     double counter{}; // counts how many elements _clusters contains
     for (value_type i{}; i != _clusters.size(); ++i) {
         counter += _clusters[i].numberOfBonds();
-        mu_i = _clusters[i].numberOfBonds() / double(_max_number_of_bonds);
+        mu_i = _clusters[i].numberOfBonds() / double(maxBonds());
         H += mu_i * log(mu_i);
     }
 //    cout << "from greater than 1 (v1) " << H << endl;
@@ -3828,9 +3821,10 @@ double SitePercolation_ps_v8::entropy() const{
 
 //    cout << "counter : " << counter << " : line " << __LINE__ << endl;
 
-    H += ((_max_number_of_bonds - counter) / double(_max_number_of_bonds)) * log(1.0 / double(_max_number_of_bonds));
+    H += ((maxBonds() - counter) / double(maxBonds())) * log(1.0 / double(maxBonds()));
     H *= -1;    // since, H = - sum(p_i * log(p_i))
-    return H;
+    _entropy_current = H;
+    return _entropy_current;
 }
 
 
@@ -3852,12 +3846,13 @@ double SitePercolation_ps_v8::entropy_v2(){
     }
 //    cout << "from greater than 1 (v2) " << H << endl;
 
-    double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
+    double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(_max_number_of_bonds)) / double(_max_number_of_bonds);
+    H += n * log(1.0/double(maxBonds())) / double(maxBonds());
     H *= -1;
   // since, H = - sum(p_i * log(p_i))
-    return H;
+    _entropy_current = H;
+    return _entropy_current;
 }
 
 
@@ -3874,13 +3869,14 @@ double SitePercolation_ps_v8::entropy_v2(){
  *
  * @return
  */
-double SitePercolation_ps_v8::entropy_v3() const {
+double SitePercolation_ps_v8::entropy_v3() {
     double H{};
-    double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
+    double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(_max_number_of_bonds)) / double(_max_number_of_bonds);
+    H += n * log(1.0/double(maxBonds())) / double(maxBonds());
     H *= -1;
-    return _entropy_by_bond + H;
+    _entropy_current =  _entropy_by_bond + H;
+    return _entropy_current;
 }
 
 
@@ -3902,25 +3898,27 @@ double SitePercolation_ps_v8::entropy_v3() const {
  *            if i==-2 cluster length is measured by site but expensive calculation
  * @return
  */
-double SitePercolation_ps_v8::entropy_v4(int i) const {
+double SitePercolation_ps_v8::entropy_v4(int i) {
 
     if (i==1) {
         double H{};
         // measure cluster length by bond
-        double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
+        double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-        H += n * log(1.0 / double(_max_number_of_bonds)) / double(_max_number_of_bonds);
+        H += n * log(1.0 / double(maxBonds())) / double(maxBonds());
         H *= -1;
-        return _entropy_by_bond + H;
+        _entropy_current = _entropy_by_bond + H;
+        return _entropy_current;
     }
     else if(i==2){
         // measure cluster length by site
-        return _entropy_by_site;
+        _entropy_current = _entropy_by_site;
+        return _entropy_current;
     }
     else if(i==-1){
         cout << "Not checked : line " << __LINE__ << endl;
         double H{};
-        double mu, l=_max_number_of_bonds;
+        double mu, l=maxBonds();
         #pragma omp parallel for shared(H, l) private(mu)
         for (value_type j = 0; j < _clusters.size(); ++j) {
             mu = _clusters[j].numberOfBonds() / l;
@@ -3928,10 +3926,11 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
 //            H += mu * log10(mu);
             H += mu * log(mu);
         }
-        double n = _max_number_of_bonds - _bonds_in_cluster_with_size_two_or_more;
+        double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
         H += n * log(1.0 / l) / l;
-        return -H;
+        _entropy_current = -H;
+        return _entropy_current;
     }
     else if(i==-2){
         double H{};
@@ -3944,7 +3943,8 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
 //            H += mu * log10(mu);
             H += mu * log(mu);
         }
-        return -H;
+        _entropy_current = -H;
+        return _entropy_current;
     }else{
         cout << "Not defined. file : line ->" << __FILE__ << " : " << __LINE__ << endl;
         cout << R"***( * @param i : default (0)
@@ -3957,65 +3957,6 @@ double SitePercolation_ps_v8::entropy_v4(int i) const {
 }
 
 
-mutex mutex_entropy;
-
-void entropy_in_range(const vector<Cluster_v2>& clstrs, value_type start, value_type stop, double normalize, double & H){
-    double mu;
-    double local_H{0};
-    for (value_type j = start; j < stop; ++j) {
-        mu = clstrs[j].numberOfSites() / normalize;
-//            cout << "mu " << mu << endl;
-//            H += mu * log10(mu);
-        H += mu * log(mu);
-    }
-    lock_guard<mutex> grd(mutex_entropy);
-    H += local_H;
-}
-
-/**
- *
- * @return
- */
-double SitePercolation_ps_v8::entropy_v5_site_threaded() const{
-    double H{};
-    double mu, l=_number_of_occupied_sites;
-    value_type size = _clusters.size();
-    if(size < 100){ // use single thread
-        entropy_in_range(_clusters, 0, size, l, H);
-    }else {
-        unsigned n = thread::hardware_concurrency();
-        value_type loop_per_thread = size / n;
-        vector<thread> t(n);
-        unsigned i{};
-        for (; i < (n-1); ++i) {
-            t[i] = thread(
-                    entropy_in_range,
-                    std::ref(_clusters),
-                    i * loop_per_thread,
-                    (i+1) * loop_per_thread,
-                    l,
-                    std::ref(H)
-            );
-        }
-        t[n-1] = thread(
-                entropy_in_range,
-                std::ref(_clusters),
-                i * loop_per_thread,
-                size,
-                l,
-                std::ref(H)
-        );
-
-        for(unsigned i{}; i != n; ++ i){
-            if(t[i].joinable()){
-                t[i].join();
-            }
-        }
-    }
-    H *= -1;
-    return H;
-}
-
 /**
  * number of bonds in the largest cluster / total number of bonds
  *
@@ -4025,7 +3966,7 @@ double SitePercolation_ps_v8::entropy_v5_site_threaded() const{
 double SitePercolation_ps_v8::orderParameter() const{
     if(_number_of_bonds_in_the_largest_cluster != 0){
         // already calculated somewhere
-        return double(_number_of_bonds_in_the_largest_cluster) / _max_number_of_bonds;
+        return double(_number_of_bonds_in_the_largest_cluster) / maxBonds();
     }
     value_type  len{}, nob{};
     for(const Cluster_v2& c: _clusters){
@@ -4034,7 +3975,7 @@ double SitePercolation_ps_v8::orderParameter() const{
             len = nob;
         }
     }
-    return double(len) / _max_number_of_bonds;
+    return double(len) / maxBonds();
 }
 
 /**
@@ -4045,7 +3986,7 @@ double SitePercolation_ps_v8::orderParameter() const{
  */
 double SitePercolation_ps_v8::orderParameter_v2() const{
 //    double bond_num = _clusters[_index_largest_cluster].numberOfBonds() / double(_total_bonds);
-    double tmp = _number_of_bonds_in_the_largest_cluster / double(_max_number_of_bonds);
+    double tmp = _number_of_bonds_in_the_largest_cluster / double(maxBonds());
     return tmp;
 }
 
@@ -4265,9 +4206,9 @@ int SitePercolation_ps_v8::birthTimeOfACluster(int id) const {
  */
 value_type SitePercolation_ps_v8::box_counting(value_type delta) {
     value_type counter{};
-    if(_length % delta == 0){
-        for(value_type r{} ; r < _length ; r += delta){
-            for(value_type c{}; c < _length ; c += delta){
+    if(length() % delta == 0){
+        for(value_type r{} ; r < length() ; r += delta){
+            for(value_type c{}; c < length() ; c += delta){
                 if(anyActiveSite(r, c, delta)){
                     ++ counter;
                 }
@@ -4292,9 +4233,9 @@ array<value_type, 2> SitePercolation_ps_v8::box_counting_v2(value_type delta) {
     value_type counter{}, spanning_counter{};
     bool foud_site{false}, found_spanning_site{false};
     int current_id{-1};
-    if(_length % delta == 0){
-        for(value_type r{} ; r < _length ; r += delta){
-            for(value_type c{}; c < _length ; c += delta){
+    if(length() % delta == 0){
+        for(value_type r{} ; r < length() ; r += delta){
+            for(value_type c{}; c < length() ; c += delta){
                 for(value_type i{} ; i < delta ; ++i) {
                     for (value_type j{}; j < delta; ++j) {
                         current_id = _lattice.getSite({i + r, j + c}).get_groupID();
@@ -4338,9 +4279,9 @@ array<value_type, 2> SitePercolation_ps_v8::box_counting_v2(value_type delta) {
  */
 value_type SitePercolation_ps_v8::box_counting_spanning(value_type delta) {
     value_type counter{};
-    if(_length % delta == 0){
-        for(value_type r{} ; r < _length ; r += delta){
-            for(value_type c{}; c < _length ; c += delta){
+    if(length() % delta == 0){
+        for(value_type r{} ; r < length() ; r += delta){
+            for(value_type c{}; c < length() ; c += delta){
                 if(anyActiveSpanningSite(r, c, delta)){
                     ++counter;
                 }
@@ -4405,8 +4346,8 @@ bool SitePercolation_ps_v8::anyActiveSpanningSite(value_type row, value_type col
  */
 value_type SitePercolation_ps_v8::count_number_of_active_site() {
     value_type counter{};
-    for (value_type i{}; i != _length; ++i) {
-        for (value_type j{}; j != _length; ++j) {
+    for (value_type i{}; i != length(); ++i) {
+        for (value_type j{}; j != length(); ++j) {
             if (_lattice.getSite({i, j}).isActive())
                 ++counter;
         }
@@ -4417,7 +4358,7 @@ value_type SitePercolation_ps_v8::count_number_of_active_site() {
 
 value_type SitePercolation_ps_v8::placeSiteWeightedRelabeling_v9() {
     // randomly choose a site
-    if (_index_sequence_position == _length_squared) {
+    if (_index_sequence_position == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
 
@@ -4475,7 +4416,7 @@ std::string SitePercolation_ps_v8::getSignature() {
  */
 void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool only_spanning) {
     std::ofstream fout(filename);
-    fout << "{\"length\":" << _length << "}" << endl;
+    fout << "{\"length\":" << length() << "}" << endl;
 //        fout << "#" << getSignature() << endl;
     fout << "#<x>,<y>,<color>" << endl;
     fout << "# color=0 -means-> unoccupied site" << endl;
@@ -4494,8 +4435,8 @@ void SitePercolation_ps_v8::writeVisualLatticeData(const string &filename, bool 
         }
     }
     else {
-        for (value_type y{}; y != _length; ++y) {
-            for (value_type x{}; x != _length; ++x) {
+        for (value_type y{}; y != length(); ++y) {
+            for (value_type x{}; x != length(); ++x) {
                 id = _lattice.getSite({y, x}).get_groupID();
                 if(id != -1) {
                     fout << x << ',' << y << ',' << id << endl;
@@ -4522,15 +4463,15 @@ void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
 //    _spanning_cluster_size_bonds.resize(ensemble_size);
 //    _spanning_cluster_size_sites.resize(ensemble_size);
 //
-//    _occupation_probabilities = vector<double>(_length_squared);
+//    _occupation_probabilities = vector<double>(maxSites());
 //
-//    _nob_spanning = vector<double>(_length_squared);
-//    _nob_largest = vector<double>(_length_squared);
-//    _nos_largest = vector<double>(_length_squared);
-//    _nos_spanning = vector<double>(_length_squared);
+//    _nob_spanning = vector<double>(maxSites());
+//    _nob_largest = vector<double>(maxSites());
+//    _nos_largest = vector<double>(maxSites());
+//    _nos_spanning = vector<double>(maxSites());
 //
-//    _entropy_sites = vector<double>(_length_squared);
-//    _entropy_bonds = vector<double>(_length_squared);
+//    _entropy_sites = vector<double>(maxSites());
+//    _entropy_bonds = vector<double>(maxSites());
 //
 //    std::mutex _mu_cout;
 //    for(value_type i{} ; i != ensemble_size ; ++i){
@@ -4577,7 +4518,7 @@ void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
 //                _entropy_bonds[j] += entropy_v3(); // faster method
 //                ++j;
 //            }
-//            if(j >= _length_squared){ // length_squared is the number of site
+//            if(j >= maxSites()){ // length_squared is the number of site
 //                break;
 //            }
 //        }
@@ -4591,8 +4532,8 @@ void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
 //    }
 //
 //    // Taking Average
-//    for(size_t i{}; i!= _length_squared ; ++i){
-//        _occupation_probabilities[i] = (i + 1) / double(_length_squared);
+//    for(size_t i{}; i!= maxSites() ; ++i){
+//        _occupation_probabilities[i] = (i + 1) / double(maxSites());
 //
 //        _nob_spanning[i] /= double(ensemble_size);
 //        _nob_largest[i]  /= double(ensemble_size);
@@ -4645,7 +4586,7 @@ void SitePercolation_ps_v8::simulate_periodic_critical(value_type ensemble_size)
 //
 //                ++j;
 //            }
-//            if(j >= _length_squared){ // length_squared is the number of site
+//            if(j >= maxSites()){ // length_squared is the number of site
 //                break;
 //            }
 //        }

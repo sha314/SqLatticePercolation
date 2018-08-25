@@ -38,7 +38,7 @@ void SitePercolationBallisticDeposition::reset() {
  * Called only once when the object is constructed for the first time
  */
 void SitePercolationBallisticDeposition::initialize_indices() {
-    indices = vector<value_type>(_length_squared);
+    indices = vector<value_type>(maxSites());
     for(value_type i{}; i != indices.size(); ++i){
         indices[i] = i; // assign index first
     }
@@ -225,7 +225,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
         Index nn2;
         if(_lattice.getSite(nn1).isActive()){
             // if the neighbor is also occupied then choose the 2nd nearest neighbor in the direction of motion
-            nn2 = get_2nn_in_1nn_direction(central_site, nn1, _length);
+            nn2 = get_2nn_in_1nn_direction(central_site, nn1, length());
             if(!_periodicity){
                 // if periodic boundary condition is not enabled then sites on the opposite edges will not contribute
                 vector<Index> tmp_sites;
@@ -249,7 +249,7 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
             if(_lattice.getSite(nn2).isActive()) {
                 flag_nn2 = true;
 
-                vector<Index> nn2_sites = get_2nn_s_in_1nn_s_direction(central_site, sites, _length);
+                vector<Index> nn2_sites = get_2nn_s_in_1nn_s_direction(central_site, sites, length());
                 for(auto x: nn2_sites){
                     if(!_lattice.getSite(x).isActive()){
                         flag_nn2 = false;
@@ -317,14 +317,14 @@ Index SitePercolationBallisticDeposition::select_site_upto_2nn(
 bool SitePercolationBallisticDeposition::occupy() {
     // if no site is available then return false
 
-    if(_number_of_occupied_sites == _length_squared){
+    if(_number_of_occupied_sites == maxSites()){
         return false;
     }
 
     try {
 //        value_type v = placeSite_1nn_v0(); // debugging version
         value_type v = placeSite_1nn_v1();
-
+        _occuption_probability = occupationProbability(); // for super class
 
 
         return v != ULLONG_MAX;

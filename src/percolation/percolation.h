@@ -48,11 +48,11 @@ struct ClusterIDComparator{
  * The Square Lattice Percolation class
  */
 class SqLatticePercolation{
-protected:
+    // constants
     value_type  _length;
-    value_type  _length_squared;
     value_type _max_number_of_bonds;
     value_type _max_number_of_sites;
+protected:
 
     // structural variables of lattice
     SqLattice _lattice;
@@ -69,6 +69,14 @@ protected:
 
     value_type min_index{};
     value_type max_index{};
+
+    double _occuption_probability {};
+    // entropy
+    double _entropy{};
+    double _entropy_current{};
+    double _entropy_previous{};
+    double _largest_jump_entropy{}; // lrgest jump in entropy
+    double _entropy_jump_pc{}; // at what pc there have been the largest jump
 
 //    // Quanties to measure
 //    std::vector<double> _pcs;
@@ -88,12 +96,15 @@ public:
 
     virtual ~SqLatticePercolation() = default;
     SqLatticePercolation(value_type length);
-
+    void reset();
     void set_cluster_measuring_unit(int i){
         cout << "Cluster measuring unit = " << ((i==0) ? "bond" : "site") << " : line " << __LINE__ <<endl;
     }
 
     bool occupy();
+    value_type length() const { return _length;}
+    value_type maxSites() const {return _max_number_of_sites;}
+    value_type maxBonds() const { return _max_number_of_bonds;}
 
     /*********
      *  I/O functions
@@ -147,10 +158,13 @@ public:
         _lattice.view();
     }
 
-    void occupationProbability();
-    void entropy();
-    void orderParameter();
+    virtual double occupationProbability() const { return _occuption_probability;}
+    virtual double entropy() { return _entropy_current;}
+    double orderParameter();
 
+    void jump();
+    double largestEntropyJump()const { return _largest_jump_entropy;}
+    double largestEntropyJump_pc()const { return _entropy_jump_pc;}
 
 //    // getters
 //    const vector<double> &get_pcs() const;
@@ -350,7 +364,6 @@ public:
      * Properties of Percolation class
      ***********************************************/
     std::string getSignature();
-    value_type length() const { return _length;}
     value_type unoccupiedSite() const { return randomized_index_sequence.size();}
 
     std::vector<value_type> number_of_site_in_clusters();
@@ -365,7 +378,7 @@ public:
     value_type count_number_of_active_site();
 
     value_type impuritySite() const { return _impure_sites;}
-    double impurityPercentage() const { return _impure_sites/double(_length_squared);}
+    double impurityPercentage() const { return _impure_sites/double(maxSites());}
 
     int birthTimeOfSpanningCluster() const;
     int birthTimeOfACluster(int id) const;
@@ -396,7 +409,7 @@ public:
      *
      ************************************************/
     void placeAllSites(value_type step=1){
-        placeSites(_length_squared, step);
+        placeSites(maxSites(), step);
     }
     void placeSites(value_type n, value_type step=1);
 
@@ -468,13 +481,13 @@ public:
      * Information about current state of Class
      **********************************************/
     double numberOfOccupiedSite() const { return _number_of_occupied_sites;}
-    double occupationProbability() const { return double(_number_of_occupied_sites)/_length_squared;}
+    double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
-    double entropy() const; // the shannon entropy
+    double entropy(); // the shannon entropy
     double entropy_v2(); // the shannon entropy
-    double entropy_v3() const;   // the shannon entropy
-    double entropy_v4(int i=0) const;   // the shannon entropy
-    double entropy_v5_site_threaded() const ;
+    double entropy_v3();   // the shannon entropy
+    double entropy_v4(int i=0);   // the shannon entropy
+
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds
     double orderParameter_v2() const;  // number of bonds in the largest cluster / total number of bonds
 
@@ -674,7 +687,7 @@ public:
             s += "_periodic_";
         else
             s += "_non_periodic_";
-        s += to_string(_length);
+        s += to_string(length());
         return s;
     }
 
@@ -779,14 +792,14 @@ public:
     bool occupy() {
         // if no site is available then return false
 
-        if(_number_of_occupied_sites == _length_squared){
+        if(_number_of_occupied_sites == maxSites()){
             return false;
         }
 
         try {
 //        value_type v = placeSite_1nn_v0(); // debugging version
             value_type v = placeSite_1nn_v2();
-
+            _occuption_probability = occupationProbability(); // for super class
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
 //        on.what();
@@ -819,7 +832,7 @@ public:
     bool occupy() {
         // if no site is available then return false
 
-        if(_number_of_occupied_sites == _length_squared){
+        if(_number_of_occupied_sites == maxSites()){
             return false;
         }
 
@@ -827,6 +840,7 @@ public:
 
 //            value_type v = placeSite_2nn_v0();
             value_type v = placeSite_2nn_v1();
+            _occuption_probability = occupationProbability(); // for super class
 
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
@@ -906,9 +920,9 @@ class BondPercolation_pb_v0 : public SqLatticePercolation{
 
 
     // keeps track of entropy
-    double _entropy_by_site{};
-    double _entropy_by_site_to_add {};
-    double _entropy_by_site_to_subtract{};
+    double _entropy{};
+    double _entropy_current{};
+    double _entropy_previous{};
 
     value_type sites_in_cluster_with_size_greater_than_one{};
 
@@ -931,7 +945,6 @@ public:
 
     void periodicityFlag(bool p){_periodicity=p;};
 
-    value_type length() const { return _length;}
     void reset();
     void configure(std::vector<BondIndex> bond_indices);
 
@@ -942,8 +955,9 @@ public:
     double occupationProbability() const ;
     std::vector<double> spanningProbability() const ;
 
-    double entropy() const;
+    double entropy();
     double entropy_slow();
+
     void calculate_spanning_probability();
     void calculate_spanning_probability_by_largest_cluster();
 
