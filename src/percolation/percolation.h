@@ -58,6 +58,7 @@ protected:
     SqLattice _lattice;
     InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
 
+    value_type _index_sequence_position{};
     // cluster
     // todo. on the next version only count number of sites
     // todo. and bonds and keep track of root sites and bonds only
@@ -91,6 +92,7 @@ protected:
 //    std::vector<double> _entropy_sites; // entropy measured by sites
 //    std::vector<double> _entropy_bonds; // entropy measured by bonds
 
+    value_type _max_iteration_limit{};
 public:
     static constexpr const char* signature = "SqLatticePercolation";
 
@@ -194,6 +196,7 @@ public:
             value_type &total_bond
     );
 
+    virtual value_type maxIterationLimit() {return _max_iteration_limit;};
 };
 
 
@@ -250,7 +253,6 @@ protected:
     std::vector<Index> index_sequence;  // initialized once
     std::vector<Index> randomized_index_sequence;
     value_type _number_of_occupied_sites{};
-    value_type _index_sequence_position{}; // usually starts from 0. but when there is impurity it starts from non zer0
 
 
     // every birthTime we create a cluster we assign an set_ID for them
@@ -260,7 +262,7 @@ protected:
     /// Cluster tracker
     // key      -> id of cluster
     // value    -> index of cluster
-    InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
+
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
 
 
@@ -347,6 +349,7 @@ public:
     value_type relabeling_count() const {return _total_relabeling;}
 
     virtual void reset();
+
     void configure(std::vector<Index> site_indices);
 //    void markImpureSites();
 
@@ -893,7 +896,6 @@ class BondPercolation_pb_v0 : public SqLatticePercolation{
     std::vector<value_type> indices;
     std::vector<BondIndex> index_sequence; // initialized only once
     std::vector<BondIndex> randomized_index_sequence;
-    value_type _index_sequence_position{};
     BondIndex _last_placed_bond;
 
     double _total_number_of_active_bonds{};
@@ -919,10 +921,7 @@ class BondPercolation_pb_v0 : public SqLatticePercolation{
 
 
 
-    // keeps track of entropy
-    double _entropy{};
-    double _entropy_current{};
-    double _entropy_previous{};
+
 
     value_type sites_in_cluster_with_size_greater_than_one{};
 
@@ -946,6 +945,7 @@ public:
     void periodicityFlag(bool p){_periodicity=p;};
 
     void reset();
+
     void configure(std::vector<BondIndex> bond_indices);
 
 

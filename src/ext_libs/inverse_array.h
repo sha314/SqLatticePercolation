@@ -885,7 +885,7 @@ template <typename T>
 void InverseArray<T>::insert(T key){
     if(_tracker.count(key) > 0){
         // key already exists
-        std::cout << "Key already exits : line " << __LINE__ << std::endl;
+        std::cerr << "InverseArray<T>::insert -> Key already exits. line " << __LINE__ << std::endl;
         return;
     }
     NodeDIA<T>* n = _ll.create_node(key);

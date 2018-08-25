@@ -9,7 +9,7 @@
  * @param length
  */
 SqLatticePercolation::SqLatticePercolation(value_type length) {
-    if (_length <= 2) {
+    if (length <= 2) {
         /*
          * Because if _length=2
          * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
@@ -133,6 +133,7 @@ void SqLatticePercolation::reset() {
     _lattice.reset();
     _cluster_index_from_id.clear();
     _clusters.clear();
+    _index_sequence_position = 0;
     _cluster_id = 0;
     _occuption_probability = 0;
     // entropy
@@ -146,16 +147,14 @@ void SqLatticePercolation::reset() {
 void SqLatticePercolation::jump() {
 
     double delta_H{};
-    if(_largest_jump_entropy == 0){ // when the first site or bond is placed entropy jump is zero
-        _entropy_previous = _entropy_current;
-    }else{
+    if(_index_sequence_position > 1) {
         delta_H = _entropy_current - _entropy_previous;
-        _entropy_previous = _entropy_current; // be ready for next step
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
         _entropy_jump_pc = _occuption_probability;
     }
+    _entropy_previous = _entropy_current; // be ready for next step
 }
 
 

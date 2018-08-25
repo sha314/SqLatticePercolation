@@ -59,7 +59,7 @@ SitePercolation_ps_v8::SitePercolation_ps_v8(value_type length, bool periodicity
 
     randomized_index_sequence = vector<Index>(maxSites());
     index_sequence = vector<Index>(maxSites());
-
+    _max_iteration_limit = maxSites();
 
     initialize_index_sequence();
     initialize();

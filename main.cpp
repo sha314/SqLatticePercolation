@@ -1040,8 +1040,69 @@ void bond_percolation_wrapping(int argc, char** argv) {
 
 
 void entropyJumps(int argc, char** argv){
-    SitePercolation_ps_v8 sp(5);
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
 
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    SitePercolation_ps_v8 bp(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << bp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename = bp.getSignature() + "_entropy-jump_" + to_string(length) + '_' + tm;
+    filename += ".csv";
+
+    ofstream fout(filename);
+    // JSON formated header
+    fout << header_info.str();
+    fout << "#each line is an independent realization" << endl;
+    fout << "#each line contains information about all clusters at critical point" << endl;
+    fout << "#cluster size is measured by number of sites in it" << endl;
+
+    value_type counter{};
+    double H{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        bp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = bp.occupy();
+            if(successful) {
+                H = bp.entropy();
+//                cout << H << endl;
+                bp.jump();
+
+                ++counter;
+            }
+            if(counter >= bp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+        fout << bp.largestEntropyJump() << "," << bp.largestEntropyJump_pc() << endl;
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
+    }
+
+    fout.close();
 }
 
 

@@ -39,7 +39,7 @@ BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity
 
     // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
     _clusters = vector<Cluster_v2>();
-
+    _max_iteration_limit = maxBonds();
     initialize_index_sequence();
     initialize();
 
@@ -2127,7 +2127,7 @@ void BondPercolation_pb_v0::add_entropy_for_site(value_type index){
  */
 double BondPercolation_pb_v0::entropy() {
 
-    double mu = 1/ double(maxSites());
+    double mu = 1.0/ maxSites();
     double number_of_cluster_with_size_one = (maxSites() - sites_in_cluster_with_size_greater_than_one);
     double H = number_of_cluster_with_size_one * mu * log(mu);
     H *= -1;
