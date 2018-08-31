@@ -52,6 +52,7 @@ class SqLatticePercolation{
     value_type  _length;
     value_type _max_number_of_bonds;
     value_type _max_number_of_sites;
+    char type{'0'}; // percolation type. 's' -> site percolation. 'b' -> bond percolation
 protected:
 
     // structural variables of lattice
@@ -79,20 +80,10 @@ protected:
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
 
-//    // Quanties to measure
-//    std::vector<double> _pcs;
-//    // critical occupation probabilities
-//    std::vector<double> _spanning_cluster_size_sites;
-//    std::vector<double> _spanning_cluster_size_bonds;
-//    std::vector<double> _occupation_probabilities;
-//    std::vector<double> _nob_spanning; // number of bonds in the spanning cluster
-//    std::vector<double> _nob_largest;  // number of bonds in the largest cluster
-//    std::vector<double> _nos_spanning; // number of sites in the spanning cluster
-//    std::vector<double> _nos_largest;  // number of sites in the largest cluster
-//    std::vector<double> _entropy_sites; // entropy measured by sites
-//    std::vector<double> _entropy_bonds; // entropy measured by bonds
 
     value_type _max_iteration_limit{};
+
+    void set_type(char t){type = t;} // setting percolation type
 public:
     static constexpr const char* signature = "SqLatticePercolation";
 
@@ -191,11 +182,10 @@ public:
 
     void get_cluster_info(
             vector<value_type> &site,
-            vector<value_type> &bond,
-            value_type &total_site,
-            value_type &total_bond
+            vector<value_type> &bond
     );
 
+    char get_type() const {return type;} // get percolation type
     virtual value_type maxIterationLimit() {return _max_iteration_limit;};
 };
 
@@ -487,9 +477,6 @@ public:
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
     double entropy(); // the shannon entropy
-    double entropy_v2(); // the shannon entropy
-    double entropy_v3();   // the shannon entropy
-    double entropy_v4(int i=0);   // the shannon entropy
 
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds
     double orderParameter_v2() const;  // number of bonds in the largest cluster / total number of bonds
@@ -543,7 +530,7 @@ public:
     /***********************************
      * Wrapping Detection
      **********************************/
-    bool detectWrapping_v1(Index site);
+    bool detectWrapping();
 
 
     /************************************
@@ -1001,7 +988,7 @@ public:
     value_type number_of_site_in_spanning_clusters(std::unordered_set<int> g_ids);
 
     bool detectSpanning();
-    bool detectWrapping_v2(BondIndex bond);
+    bool detectWrapping();
 
     IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
     IndexRelative getRelativeIndex(Index root, Index site_new);

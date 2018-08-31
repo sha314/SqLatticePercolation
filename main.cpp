@@ -433,13 +433,13 @@ void test_ballistic_deposition(size_t seed){
             sp.viewSiteByID();
             if(sp.periodicity()) {
 //                sp.viewSiteByRelativeIndex();
-//                if(sp.detectWrapping_v1(sp.lastPlacedSite())){
+//                if(sp.detectWrapping(sp.lastPlacedSite())){
 //                    sp.viewSiteByRelativeIndex();
 //                    cout << "***********************Wrapping ************************" << endl;
 //                    sp.wrappingIndices();
 //                    return;
 //                }
-                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                if (!wrapping_occured && sp.detectWrapping()) {
                     wrapping_occured = true;
                     pc = sp.occupationProbability();
 //                    sp.writeVisualLatticeData("lattice-visual-data-"+to_string(length)+".txt", false);
@@ -464,7 +464,7 @@ void test_ballistic_deposition(size_t seed){
             nos[j] += sp.numberOfOccupiedSite();
             nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
 //            entrpy[j] += sp.entropy();  // old method and takes long time
-            entrpy[j] += sp.entropy_v3(); // faster method
+            entrpy[j] += sp.entropy(); // faster method
             ++j;
         }
         if (j >= length_squared) { // length_squared is the number of site
@@ -619,7 +619,7 @@ void measure_entropy_by_site(int argc, char** argv){
         while (true){
             successful = sp.occupy();
             if(successful) {
-                entropy[j] += sp.entropy_v4(-2); // slower method
+                entropy[j] += sp.entropy(); // slower method
 //                entropy[j] += sp.entropy_v5_site_threaded(); // slower method
 //                entropy2[j] += sp.entropy_v4(2); // faster method
 
@@ -734,21 +734,15 @@ void measure_clusters(int argc, char** argv){
         while (true){
             successful = sp.occupy();
             if(successful) {
-                if(sp.detectWrapping_v1(sp.lastPlacedSite())){
+                if(sp.detectWrapping()){
                     vector<value_type> site, bond;
-                    value_type total_site, total_bond;
-                    sp.get_cluster_info(site, bond, total_site, total_bond);
-                    if(site.size() != bond.size()){
-                        cout << "Size mismatched : line " << __LINE__ << endl;
-                    }
+                    sp.get_cluster_info(site, bond);
+
                     for(value_type j{}; j != site.size(); ++j){
                         fout_s << site[j] << ',';
                         fout_b << bond[j] <<',';
                     }
 
-                    for(value_type j{total_bond}; j < twice_length_squared; ++j){
-                        fout_b << 1 << ','; // cluster of length 1
-                    }
 
                     fout_s << endl;
                     fout_b << endl;
@@ -921,7 +915,7 @@ void bond_percolation_wrapping(){
             successful = bp.occupy();
             if (successful) {
 //                cout << counter << " th bond " << bp.lastPlacedBond() << endl;
-                if (bp.detectWrapping_v2(bp.lastPlacedBond())) {
+                if (bp.detectWrapping()) {
                     cout << bp.occupationProbability() << endl;
 //                    bp.viewByRelativeIndex();
 
@@ -937,7 +931,7 @@ void bond_percolation_wrapping(){
     }
 }
 
-void bond_percolation_wrapping(int argc, char** argv) {
+void percolation_wrapping_and_jump(int argc, char **argv) {
     value_type length = atoi(argv[1]);
     value_type ensemble_size = atoi(argv[2]);
 
@@ -947,70 +941,77 @@ void bond_percolation_wrapping(int argc, char** argv) {
     value_type length_squared = length*length;
     value_type twice_length_squared = 2 * length_squared;
 
-    BondPercolation_pb_v0 bp(length, true);
+    SitePercolation_ps_v8 lattice_percolation(length, true);
 
     ostringstream header_info;
     header_info << "{"
                 << "\"length\":" << length
                 << ", \"ensemble_size\":" << ensemble_size
-                << ", \"signature\":\"" << bp.getSignature() << "\""
-                << "}" << endl;
+                << ", \"signature\":\"" << lattice_percolation.getSignature() << "\""
+                << "}" ;
 
     string tm = currentTime();
 
-    string filename_s = bp.getSignature() + "_cluster_by_site_" + to_string(length) + '_' + tm;
-    string filename_b = bp.getSignature() + "_cluster_by_bond_" + to_string(length) + '_' + tm;
-    string filename_critical = bp.getSignature() + "_critical_" + to_string(length) + '_' + tm;
+    string filename_s = lattice_percolation.getSignature() + "_cluster_by_site_" + to_string(length) + '_' + tm;
+    string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond_" + to_string(length) + '_' + tm;
+    string filename_critical = lattice_percolation.getSignature() + "_critical_" + to_string(length) + '_' + tm;
     filename_s += ".txt";
     filename_b += ".txt";
     filename_critical += ".txt";
 
+    string filename = lattice_percolation.getSignature() + "_entropy-jump_" + to_string(length) + '_' + tm;
+    filename += ".csv";
+
+    ofstream fout_jump(filename);
+    // JSON formated header
+    fout_jump << '#' << header_info.str() << endl;
+    fout_jump << "#each line is an independent realization" << endl;
+    fout_jump << "#each line contains information about all clusters at critical point" << endl;
+    fout_jump << "#cluster size is measured by number of sites in it" << endl;
+
     ofstream fout_s(filename_s);
     // JSON formated header
-    fout_s << header_info.str();
+    fout_s << header_info.str() << endl;
     fout_s << "#each line is an independent realization" << endl;
     fout_s << "#each line contains information about all clusters at critical point" << endl;
     fout_s << "#cluster size is measured by number of sites in it" << endl;
 
     ofstream fout_b(filename_b);
     // JSON formated header
-    fout_b << header_info.str();
+    fout_b << header_info.str() << endl;
     fout_b << "#each line is an independent realization" << endl;
     fout_b << "#each line contains information about all clusters at critical point" << endl;
     fout_b << "#cluster size is measured by number of bonds in it" << endl;
 
     ofstream fout_critical(filename_critical);
-    fout_critical << header_info.str();
+    fout_critical << header_info.str() << endl;
     fout_critical << "#critical occupation probability or pc" << endl;
     fout_critical << "#<pc>" << endl;
 
     value_type counter{};
     for(value_type i{} ; i != ensemble_size ; ++i){
 
-        bp.reset();
+        lattice_percolation.reset();
 
         bool successful = false;
         auto t_start = std::chrono::system_clock::now();
         counter = 0;
         while (true){
-            successful = bp.occupy();
+            successful = lattice_percolation.occupy();
             if(successful) {
-                if(bp.detectWrapping_v2(bp.lastPlacedBond())){
-                    fout_critical << bp.occupationProbability() << endl;
+                lattice_percolation.entropy();
+                lattice_percolation.jump();
+                if(lattice_percolation.detectWrapping()){
+                    fout_critical << lattice_percolation.occupationProbability() << endl;
                     vector<value_type> site, bond;
-                    value_type total_site, total_bond;
-                    bp.get_cluster_info(site, bond, total_site, total_bond);
-                    if(site.size() != bond.size()){
-                        cout << "Size mismatched : line " << __LINE__ << endl;
-                    }
+
+                    lattice_percolation.get_cluster_info(site, bond);
+
                     for(value_type j{}; j != site.size(); ++j){
                         fout_s << site[j] << ',';
                         fout_b << bond[j] <<',';
                     }
 
-                    for(value_type j{total_site}; j < length_squared; ++j){
-                        fout_s << 1 << ','; // cluster of length 1
-                    }
 
                     fout_s << endl;
                     fout_b << endl;
@@ -1020,22 +1021,24 @@ void bond_percolation_wrapping(int argc, char** argv) {
 
                 ++counter;
             }
-            if(counter >= twice_length_squared){ // twice_length_squared is the number of bonds
+            if(counter >= lattice_percolation.maxIterationLimit()){ // twice_length_squared is the number of bonds
                 break;
             }
         }
+        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << endl;
         {
             auto t_end = std::chrono::system_clock::now();
             cout << "Iteration " << i
                  //                 << " . Thread " << std::this_thread::get_id()
                  << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
         }
-//        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
+//        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
     }
 
     fout_b.close();
     fout_s.close();
     fout_critical.close();
+    fout_jump.close();
 }
 
 
@@ -1049,7 +1052,7 @@ void entropyJumps(int argc, char** argv){
     value_type length_squared = length*length;
     value_type twice_length_squared = 2 * length_squared;
 
-    SitePercolation_ps_v8 bp(length, true);
+    BondPercolation_pb_v0 bp(length, true);
 
     ostringstream header_info;
     header_info << "{"
@@ -1154,9 +1157,9 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-//    bond_percolation_wrapping(argc, argv);
-//    bond_percolation_wrapping();
-    entropyJumps(argc, argv);
+    percolation_wrapping_and_jump(argc, argv);
+//    percolation_wrapping_and_jump();
+//    entropyJumps(argc, argv);
 
 }
 

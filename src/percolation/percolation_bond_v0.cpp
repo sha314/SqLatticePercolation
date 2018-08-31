@@ -30,7 +30,7 @@ double total_time_for_find_index_for_placing_new_bonds{};
 BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity)
         : SqLatticePercolation(length) {
     std::cout << "Constructing BondPercolation_pb_v0 object : line " << __LINE__ << endl;
-
+    SqLatticePercolation::set_type('b');
     _periodicity = periodicity;
     _index_sequence_position = 0;
     _lattice = SqLattice(length, false, true, true, true);
@@ -2027,7 +2027,12 @@ bool BondPercolation_pb_v0::detectSpanning() {
  * @param bond  : last placed bond
  * @return
  */
-bool BondPercolation_pb_v0::detectWrapping_v2(BondIndex bond) {
+/**
+ * Wrapping is detected here. using the last placed bond.
+ * @return bool. True if wrapping occured.
+ */
+bool BondPercolation_pb_v0::detectWrapping() {
+    BondIndex bond = lastPlacedBond();
     // only possible if the cluster containing 'site' has bonds >= length of the lattice
     if(_number_of_occupied_bonds < length()){
         return false;

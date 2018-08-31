@@ -208,7 +208,7 @@ void percolation_data_all_site_placed(value_type length, value_type ensembleSize
             value_type nob2 = sp.numberOfBondsInTheLargestCluster_v2();
 //            double H1 = sp.entropy();
 //            double H2 = sp.entropy_v2();
-            double H3 = sp.entropy_v3();
+            double H3 = sp.entropy();
 //            if(abs(H2 - H3) > 1e-5){
 //                cout << "Newly calculated entropy values are not equal" << endl;
 //            }
@@ -264,7 +264,7 @@ void entropy_order_parameter_explosive(value_type length, value_type ensembleSiz
         while (sp.placeSite_explosive(rule)){
             nos[j] += sp.numberOfOccupiedSite();
             nob[j] += sp.numberOfBondsInTheLargestCluster_v2();
-            entrpy[j] += sp.entropy_v3();
+            entrpy[j] += sp.entropy();
             ++j;
         }
 
@@ -390,7 +390,7 @@ void percolation_data_sq_lattice_explosive(value_type length, value_type ensembl
         while (sp.placeSite_explosive(rule)){
             nos[j] += sp.numberOfOccupiedSite();
             nob[j] += sp.numberOfBondsInTheLargestCluster_v2();
-            entrpy[j] += sp.entropy_v3();
+            entrpy[j] += sp.entropy();
             ++j;
         }
 
@@ -444,7 +444,7 @@ void percolation_data_sq_lattice_ballistic_L1(bool periodicity, value_type lengt
                 nob_def1[j] += sp.numberOfBondsInTheLargestCluster_v2(); // is this or
 //                nob_def1[j] += sp.numberOfSitesInTheLargestCluster(); // this
 //                entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
+                entrpy[j] += sp.entropy(); // faster method
 //                cout << nos[j] << "  " << nob_def1[j] << endl;
 
                 ++j;
@@ -551,7 +551,7 @@ void entropy_order_parameter(value_type length, value_type ensembleSize, value_t
         while (sp.occupy()){
             nos[j] += sp.numberOfOccupiedSite();
             nob[j] += sp.numberOfBondsInTheLargestCluster_v2();
-            entrpy[j] += sp.entropy_v3();
+            entrpy[j] += sp.entropy();
             ++j;
         }
 

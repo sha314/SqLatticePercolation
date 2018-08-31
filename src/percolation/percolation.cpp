@@ -104,19 +104,16 @@ void SqLatticePercolation::viewClusterExtended() {
 void
 SqLatticePercolation::get_cluster_info(
         vector<value_type> &site,
-        vector<value_type> &bond,
-        value_type &total_site,
-        value_type &total_bond
+        vector<value_type> &bond
 ) {
-
+    value_type total_site{}, total_bond{};
     site.clear();
     bond.clear();
 
     unsigned long size = _clusters.size();
     site.resize(size);
     bond.resize(size);
-    total_site = 0;
-    total_bond = 0;
+
     value_type a, b;
     for(value_type i{}; i < size; ++i){
         a = _clusters[i].numberOfSites();
@@ -125,6 +122,21 @@ SqLatticePercolation::get_cluster_info(
         bond[i] = b;
         total_site += a;
         total_bond += b;
+    }
+    if(site.size() != bond.size()){
+        cout << "Size mismatched : line " << __LINE__ << endl;
+    }
+    if(type == 's'){
+        for(value_type j{total_bond}; j < maxBonds(); ++j){
+            bond.push_back(1); // cluster of length 1
+            total_bond += 1;
+        }
+    }
+    if(type == 'b'){
+        for(value_type j{total_site}; j < maxSites(); ++j){
+            total_site += 1;
+            site.push_back(1); // cluster of length 1
+        }
     }
 
 }

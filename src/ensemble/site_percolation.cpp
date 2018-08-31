@@ -74,9 +74,9 @@ void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
                 nob_def1[j] += sp.numberOfBondsInTheLargestCluster_v2(); // is this or
                 nob_def2[j] += sp.numberOfSitesInTheSpanningClusters_v2(); // this
 //                entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
+                entrpy[j] += sp.entropy(); // faster method
             }
-            if(flag && sp.detectWrapping_v1(sp.lastPlacedSite())){
+            if(flag && sp.detectWrapping()){
                 if(!wrapping_occured) {
                     wrapping_occured = true;
 
@@ -166,7 +166,7 @@ void sq_lattice_site_percolation_non_periodic(size_t length, size_t ensemble_siz
                 nob_def1[j] += sp.numberOfBondsInTheLargestCluster_v2(); // is this or
                 nob_def2[j] += sp.numberOfSitesInTheSpanningClusters_v2(); // this
 //                entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
+                entrpy[j] += sp.entropy(); // faster method
             }
             if(flag && sp.detectSpanning_v6(sp.lastPlacedSite())){
                 if(!spanning_occured) {

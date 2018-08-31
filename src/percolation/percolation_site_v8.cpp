@@ -45,7 +45,7 @@ SitePercolation_ps_v8::SitePercolation_ps_v8(value_type length, bool periodicity
     :SqLatticePercolation(length)
 {
     std::cout << "Constructing SitePercolation_ps_v8 object : line " << __LINE__ << endl;
-
+    SqLatticePercolation::set_type('s');
 //    if(impure_sites > length*length){
 //        cout << "Too many impure sites : line " << __LINE__ << endl;
 //    }
@@ -3362,7 +3362,12 @@ void SitePercolation_ps_v8::scanEdges() {
 /***********************************
  * Wrapping Detection
  **********************************/
-bool SitePercolation_ps_v8::detectWrapping_v1(Index site) {
+/**
+ * Wrapping is detected here using the last placed site
+ * @return bool. True if wrapping occured.
+ */
+bool SitePercolation_ps_v8::detectWrapping() {
+    Index site = lastPlacedSite();
     // only possible if the cluster containing 'site' has sites >= length of the lattice
     if(_number_of_occupied_sites < length()){
         return false;
@@ -3804,72 +3809,11 @@ double SitePercolation_ps_v8::spanningProbability() const {
 
 
 /**
- *
- * @return
+ * Entropy calculation is performed here. The fastest method possible.
+ * Cluster size is measured by bond.
+ * @return current entropy of the lattice
  */
 double SitePercolation_ps_v8::entropy() {
-    double mu_i{}; // probability for the cluster
-    double H{}; // entropy
-    double counter{}; // counts how many elements _clusters contains
-    for (value_type i{}; i != _clusters.size(); ++i) {
-        counter += _clusters[i].numberOfBonds();
-        mu_i = _clusters[i].numberOfBonds() / double(maxBonds());
-        H += mu_i * log(mu_i);
-    }
-//    cout << "from greater than 1 (v1) " << H << endl;
-    // for cluster with numberOfBonds 1
-
-//    cout << "counter : " << counter << " : line " << __LINE__ << endl;
-
-    H += ((maxBonds() - counter) / double(maxBonds())) * log(1.0 / double(maxBonds()));
-    H *= -1;    // since, H = - sum(p_i * log(p_i))
-    _entropy_current = H;
-    return _entropy_current;
-}
-
-
-/**
- * Significantly efficient than the previous version entropy()
- * Requirements:
- *      _cluster_entropy must be modified each time a site is placed.
- *
- *      _bonds_in_cluster_with_size_two_or_more must be modified
- *              each time a site is placed.
- *      SitePercolation_ps_v7::calculation_short_cut function must be called
- * @return
- */
-double SitePercolation_ps_v8::entropy_v2(){
-    double H{};
-
-    for(auto cs: _cluster_entropy){ // ok
-        H += cs.second;
-    }
-//    cout << "from greater than 1 (v2) " << H << endl;
-
-    double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
-//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(maxBonds())) / double(maxBonds());
-    H *= -1;
-  // since, H = - sum(p_i * log(p_i))
-    _entropy_current = H;
-    return _entropy_current;
-}
-
-
-/**
- * In the asysmtotic limit this function is very efficient than entropy() and entropy_v2()
- * following function must be called for this method to work properly
- *      add_entropy_for(value_type)
- *      subtract_entropy_for(const set<value_type>&)
- *  Problems:
- *      when 99% sites are placed entropy should be exactly zero but
- *      with entropy_v3() entropy is not exctly zero but in the range of Exp(-12)
- *      which is very close to zero.
- *      The reason behind this is the simultaneous addition and subtraction of the _entropy.
- *
- * @return
- */
-double SitePercolation_ps_v8::entropy_v3() {
     double H{};
     double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
@@ -3877,83 +3821,6 @@ double SitePercolation_ps_v8::entropy_v3() {
     H *= -1;
     _entropy_current =  _entropy_by_bond + H;
     return _entropy_current;
-}
-
-
-/**
- * In the asysmtotic limit this function is very efficient than entropy() and entropy_v2()
- * following function must be called for this method to work properly
- *      add_entropy_for(value_type)
- *      subtract_entropy_for(const set<value_type>&)
- *  Problems:
- *      when 99% sites are placed entropy should be exactly zero but
- *      with entropy_v3() entropy is not exctly zero but in the range of Exp(-12)
- *      which is very close to zero.
- *      The reason behind this is the simultaneous addition and subtraction of the _entropy.
- *
- * @param i : default (0)
- *            if i==1 cluster length is measured by bond
- *            if i==2 cluster length is measured by site
- *            if i==-1 cluster length is measured by bond but expensive calculation
- *            if i==-2 cluster length is measured by site but expensive calculation
- * @return
- */
-double SitePercolation_ps_v8::entropy_v4(int i) {
-
-    if (i==1) {
-        double H{};
-        // measure cluster length by bond
-        double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
-//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-        H += n * log(1.0 / double(maxBonds())) / double(maxBonds());
-        H *= -1;
-        _entropy_current = _entropy_by_bond + H;
-        return _entropy_current;
-    }
-    else if(i==2){
-        // measure cluster length by site
-        _entropy_current = _entropy_by_site;
-        return _entropy_current;
-    }
-    else if(i==-1){
-        cout << "Not checked : line " << __LINE__ << endl;
-        double H{};
-        double mu, l=maxBonds();
-        #pragma omp parallel for shared(H, l) private(mu)
-        for (value_type j = 0; j < _clusters.size(); ++j) {
-            mu = _clusters[j].numberOfBonds() / l;
-//            cout << "mu " << mu << endl;
-//            H += mu * log10(mu);
-            H += mu * log(mu);
-        }
-        double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
-//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-        H += n * log(1.0 / l) / l;
-        _entropy_current = -H;
-        return _entropy_current;
-    }
-    else if(i==-2){
-        double H{};
-        double mu, l=_number_of_occupied_sites;
-        value_type j = 0;
-        //#pragma omp parallel for shared(H, l) private(mu, j)
-        for (j = 0; j < _clusters.size(); ++j) {
-            mu = _clusters[j].numberOfSites() / l;
-//            cout << "mu " << mu << endl;
-//            H += mu * log10(mu);
-            H += mu * log(mu);
-        }
-        _entropy_current = -H;
-        return _entropy_current;
-    }else{
-        cout << "Not defined. file : line ->" << __FILE__ << " : " << __LINE__ << endl;
-        cout << R"***( * @param i : default (0)
- *            if i==1 cluster length is measured by bond
- *            if i==2 cluster length is measured by site
- *            if i==-1 cluster length is measured by bond but expensive calculation
- *            if i==-2 cluster length is measured by site but expensive calculation)***"<< endl;
-        return 0;
-    }
 }
 
 
@@ -4485,7 +4352,7 @@ void SitePercolation_ps_v8::simulate_all(value_type ensemble_size) {
 //            successful = occupy();
 //            if(successful) {
 //                if(_periodicity) {
-//                    if (!wrapping_occured && detectWrapping_v1(lastPlacedSite())) {
+//                    if (!wrapping_occured && detectWrapping(lastPlacedSite())) {
 //                        wrapping_occured = true;
 //                        _pcs[i] = occupationProbability();
 ////                        _pcs[i] = _number_of_occupied_sites;
@@ -4576,7 +4443,7 @@ void SitePercolation_ps_v8::simulate_periodic_critical(value_type ensemble_size)
 //            successful = occupy();
 //            if(successful) {
 //
-//                if (detectWrapping_v1(lastPlacedSite())) {
+//                if (detectWrapping(lastPlacedSite())) {
 //                    _pcs[i] = occupationProbability();
 ////                        _pcs[i] = _number_of_occupied_sites;
 //                    _spanning_cluster_size_sites[i] = numberOfSitesInTheWrappingClusters();

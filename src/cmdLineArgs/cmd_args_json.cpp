@@ -41,7 +41,7 @@ void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) 
             successful = sp.occupy();
             if(successful) {
                 if(sp.periodicity()) {
-                    if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                    if (!wrapping_occured && sp.detectWrapping()) {
                         wrapping_occured = true;
                         pcs[i] = sp.occupationProbability();
                     }
@@ -60,7 +60,7 @@ void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) 
                 nos[j] += sp.numberOfOccupiedSite();
                 nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
 //            entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
+                entrpy[j] += sp.entropy(); // faster method
                 ++j;
             }
             if(j >= length_squared){ // length_squared is the number of site
@@ -128,7 +128,7 @@ void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) 
 //        while (true){
 //            successful = sp.occupy();
 //            if(successful) {
-//                if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+//                if (!wrapping_occured && sp.detectWrapping(sp.lastPlacedSite())) {
 //                    wrapping_occured = true;
 //                    pcs[i] = sp.occupationProbability();
 //                }
@@ -279,7 +279,7 @@ void percolation_sq_lattice_g_measure_by_bond(value_type length, bool periodicit
             successful = sp.occupy();
             if(successful) {
                 if(periodicity) {
-                    if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+                    if (!wrapping_occured && sp.detectWrapping()) {
                         wrapping_occured = true;
                         pcs[i] = sp.occupationProbability();
                     }
@@ -299,7 +299,7 @@ void percolation_sq_lattice_g_measure_by_bond(value_type length, bool periodicit
                 nos[j] += sp.numberOfOccupiedSite();
                 nob1[j] += sp.numberOfBondsInTheLargestCluster_v2();
 //            entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy_v3(); // faster method
+                entrpy[j] += sp.entropy(); // faster method
                 ++j;
             }
             if(j >= length_squared){ // length_squared is the number of site
@@ -368,7 +368,7 @@ void percolation_sq_lattice_g_measure_by_bond(value_type length, bool periodicit
 //            successful = sp.occupy();
 //            if(successful) {
 //                if(periodicity) {
-//                    if (!wrapping_occured && sp.detectWrapping_v1(sp.lastPlacedSite())) {
+//                    if (!wrapping_occured && sp.detectWrapping(sp.lastPlacedSite())) {
 //                        wrapping_occured = true;
 //                        pcs[i] = sp.occupationProbability();
 //                    }
