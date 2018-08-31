@@ -594,11 +594,6 @@ protected:
     std::set<value_type> find_index_for_placing_new_bonds_v3(const vector<Index>& neighbors);
     std::vector<value_type> find_index_for_placing_new_bonds_v4(std::vector<Index> neighbors);
 
-    // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_weighted_v5(   // todo
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
 
     // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v4(
