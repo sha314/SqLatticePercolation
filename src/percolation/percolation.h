@@ -401,23 +401,11 @@ public:
      * Site placing methods
      *
      ************************************************/
-    void placeAllSites(value_type step=1){
-        placeSites(maxSites(), step);
-    }
-    void placeSites(value_type n, value_type step=1);
 
     virtual bool occupy();
-    value_type placeSite_v6();    // does not erase any element of untouched_site_index
-    value_type placeSite_v7();    // does not erase any element of untouched_site_index
-    value_type placeSite_weighted_v8();    // does not erase any element of untouched_site_index
-    value_type placeSiteWeightedRelabeling_v9();
-    value_type placeSite_v10();    // implementing for wrapping
-    value_type placeSite_v11(Index site);
-    value_type placeSite_v12(Index site,
-                             vector<Index>& neighbor_sites,
-                             vector<BondIndex>& neighbor_bonds);
+
     value_type placeSite_v13(Index site);
-    value_type placeSite_v14(Index current_site);
+
 
     Index selectSite(); // selecting site
 
@@ -602,57 +590,11 @@ protected:
 
 
     // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_v4(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_v6(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_v7(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_weighted_v8(    // suitable for spanning detection
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    // manage_cluster takes more than 85% of total time
-    value_type manage_clusters_v9(
-            const std::vector<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    // manage_cluster takes more than 85% of total time
     value_type manage_clusters_v10( // successful
             const set<value_type> &found_index_set,
             vector<BondIndex> &hv_bonds,
             Index &site);
 
-    value_type manage_clusters_v11( // 2018.07.26
-            const set<value_type> &found_index_set,
-            vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    value_type manage_clusters_v12( // 2018.07.28
-            const set<value_type> &found_index_set,
-            vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    value_type manage_clusters_v13_test1( // experimental
-            const set<value_type> &found_index_set,
-            vector<BondIndex> &hv_bonds,
-            Index &site,
-            value_type base
-    );
 
     bool anyActiveSite(value_type r, value_type c, value_type delta);
     bool anyActiveSpanningSite(value_type row, value_type col, value_type delta);

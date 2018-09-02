@@ -82,7 +82,7 @@ value_type SitePercolationBallisticDeposition::placeSite_nn_v0(int n) {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, _last_placed_site
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
@@ -365,7 +365,7 @@ value_type SitePercolationBallisticDeposition::placeSite_1nn_v0() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, _last_placed_site
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
@@ -440,7 +440,7 @@ value_type SitePercolationBallisticDeposition::placeSite_1nn_v1() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
@@ -496,7 +496,7 @@ value_type SitePercolationBallisticDeposition::placeSite_2nn_v0() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, _last_placed_site
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
