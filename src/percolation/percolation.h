@@ -417,6 +417,7 @@ public:
                              vector<Index>& neighbor_sites,
                              vector<BondIndex>& neighbor_bonds);
     value_type placeSite_v13(Index site);
+    value_type placeSite_v14(Index current_site);
 
     Index selectSite(); // selecting site
 
@@ -592,6 +593,11 @@ protected:
     void randomize();
 
     std::set<value_type> find_index_for_placing_new_bonds_v3(const vector<Index>& neighbors);
+
+    value_type
+    find_index_for_placing_new_bonds_v4(
+            const vector<Index>& neighbors, set<value_type>& found_index_set
+    );
     std::vector<value_type> find_index_for_placing_new_bonds_v4(std::vector<Index> neighbors);
 
 

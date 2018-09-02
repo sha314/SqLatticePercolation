@@ -779,34 +779,42 @@ void weighted_relabeling_test(int argc, char** argv) {
 //    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
 
 
-//    srand(5);    // seeding
-    srand(atoi(argv[2]));    // seeding from cmdl
+//    srand(4);    // seeding
+//    srand(atoi(argv[2]));    // seeding from cmdl
 
 //    value_type length = 500;
     value_type length_squared = length * length;
     SitePercolation_ps_v8 sp(length, true);
-    value_type j{};
-    j = 0;
-
+    double agv_time{};
+    size_t avg_count{};
     bool successful{false};
-    while (true) {
-        successful = sp.occupy();
-        if (successful) {
-            ++j;
-            auto index = sp.lastPlacedSite();
+    cout << "sp.maxIterationLimit() " << sp.maxIterationLimit() << endl;
+    size_t size = 1;
+    for(size_t e{}; e < size; ++e) {
+        cout << "step " << e << " of " << size << endl;
+//        srand(e);    // seeding
+        sp.reset();
+        for (size_t j{}; j < sp.maxIterationLimit(); ++j) {
+            successful = sp.occupy();
+            if (successful) {
+                auto index = sp.lastPlacedSite();
 
 //            cout << j << " th site" << index << endl;
 //            sp.viewSiteByID();
 //            sp.viewClusterExtended();
+            } else {
+                cout << "False at " << j << endl;
+            }
         }
-        if (j >= length_squared) { // length_squared is the number of site
-            break;
-        }
-    }
 //    sp.viewSiteByID();
 //    sp.viewClusterExtended();
-    cout << sp.relabeling_count() << endl;
-    cout << sp.get_relabeling_time() << endl;
+        cout << "number of relabeling done " << sp.relabeling_count() << endl;
+        cout << "time required " << sp.get_relabeling_time() << endl;
+        agv_time += sp.get_relabeling_time();
+        avg_count += sp.relabeling_count();
+    }
+    cout << "avg number of relabeling done " << avg_count / size << endl;
+    cout << "avg time required " << agv_time / size << endl;
 
 }
 
@@ -1153,11 +1161,11 @@ void run_in_main(int argc, char** argv){
 //    cluster_size(argc, argv);
 //    measure_entropy_by_site(argc, argv);
 //    measure_clusters(argc, argv);
-//    weighted_relabeling_test(argc, argv);
+    weighted_relabeling_test(argc, argv);
 
 //    bond_percolation(argc, argv);
 
-    percolation_wrapping_and_jump(argc, argv);
+//    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
 
@@ -1176,7 +1184,7 @@ int main(int argc, char** argv) {
     auto t_start = std::chrono::system_clock::now();
 
     time_t seed = time(NULL);
-    srand(seed);    // seeding
+//    srand(seed);    // seeding
 
     run_in_main(argc, argv);
 

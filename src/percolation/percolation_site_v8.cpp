@@ -162,6 +162,8 @@ void SitePercolation_ps_v8::reset() {
     initialize();
     randomize();
 //    markImpureSites();
+    time_relabel = 0;
+   _total_relabeling = 0;
 }
 
 
@@ -470,6 +472,55 @@ SitePercolation_ps_v8::find_index_for_placing_new_bonds_v3(const vector<Index>& 
     return found_index_set;
 }
 
+/**
+ * Find cluster of size greater than 1 that includes neighbors.
+ * Also finds the suitable base cluster to get weighted relabeling.
+ * @param neighbors       : std::vector<value_type>&,
+ *                          index of the neighbor sites
+ * @param found_index_set : std::set<value_type>&,
+ *                          index of the cluster of neighbors which belongs
+ *                          to a cluster of size greater thatn 1
+ * @return                : value type,
+ *                          suitable base cluster index
+ */
+value_type 
+SitePercolation_ps_v8::find_index_for_placing_new_bonds_v4(const vector<Index>& neighbors, set<value_type>& found_index_set) {
+    clock_t t = clock();              // for Time calculation purposes only
+    value_type total_found_bonds{}; // for checking program running Time only
+
+    found_index_set.clear();
+    value_type x{}, base{}, tmp{}, sz{};
+    bool first{true};
+    int id{};
+    if(!_cluster_index_from_id.empty()) {
+        for (auto n: neighbors) {
+            id = _lattice.getSite(n).get_groupID();
+            if(_cluster_index_from_id.count(id) > 0) {
+
+                x = _cluster_index_from_id[id];
+                if(first) {
+                    base = x;
+                    sz = _clusters[x].numberOfSites();
+                    first = false;
+                }else{
+                    tmp = _clusters[x].numberOfSites();
+                    if(tmp > sz){
+//                        cout << "cluster [" << x << "] ID " << id << " size " << tmp << " > " << sz << endl;
+                        sz = tmp;
+                        base = x;
+//                        continue; // since it is base it's not included in the found_index_set // todo check if it works
+                    }
+                }
+                found_index_set.insert(x);
+
+            }
+        }
+    }
+
+//    cout << "found base is " << base << endl;
+    return base;
+}
+
 
 bool ispresent(const std::vector<value_type> &v, value_type a){
     for(auto x: v){
@@ -538,94 +589,6 @@ SitePercolation_ps_v8::find_index_for_placing_new_bonds_v4(vector<Index> neighbo
 
 
 
-
-/**
- * // todo problem all cluster is not merged together when all sites are placed
- *
- * Do the relabeling here
- * Keeps track of index id pair
- * @param found_index_set
- * @param hv_bonds
- * @param site
- * @return
- */
-value_type SitePercolation_ps_v8::manage_clusters_weighted_v5(
-        const set<value_type> &found_index_set,
-        vector<BondIndex> &hv_bonds,
-        Index &site
-)
-{
-    clock_t t = clock();
-    vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
-    value_type merged_cluster_index{};
-
-    if (found_index_set.size() > 0) {
-        unsigned long &base = found_index[0];
-        _clusters[base].addSiteIndex(site);
-        _lattice.getSite(site).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
-
-        // put_values_to_the_cluster new values in the 0-th found index
-        _clusters[base].insert(hv_bonds);
-        // merge clusters with common values from all other cluster
-        int tmp_id;
-        for (value_type k{1}; k != found_index.size(); ++k) {
-
-            // do the relabeling here
-            if(_clusters[base].numberOfSites() > _clusters[found_index[k]].numberOfSites()){
-
-                tmp_id = _clusters[base].get_ID();
-                _cluster_index_from_id.erase(_clusters[found_index[k]].get_ID()); // first erase previous keys
-                relabel_sites(_clusters[found_index[k]], tmp_id);
-
-                // since we use cluster id to relabel cluster when merging, cluster also need to be updated
-                _clusters[found_index[k]].set_ID(tmp_id);
-            }
-            else{
-                tmp_id = _clusters[found_index[k]].get_ID();
-                _cluster_index_from_id.erase(_clusters[base].get_ID()); // first erase previous keys
-                relabel_sites(_clusters[base], tmp_id);
-                // since we use cluster id to relabel cluster when merging, cluster also need to be updated
-                _clusters[base].set_ID(tmp_id);
-            }
-            /// since all cluster will eventually get merged to cluster with
-            /// index found_index[0] whatever the id is index must be found_index[0]
-//            _cluster_index_from_id[tmp_id] = base; // then set new key and value
-//            _cluster_index_from_id.insert_key_order(tmp_id, base);
-
-            // store values of other found indices to the cluster
-            _clusters[base].insert(_clusters[found_index[k]]);
-
-            // now erase merged cluster
-            auto it = _clusters.begin() + found_index[k];
-            _clusters.erase(it);
-            // after erasing found_index cannot remain same. come on.
-            // If you don't do this we will be deleting wrond clusters
-            for (value_type m{k + 1}; m != found_index.size(); ++m) {
-                // only the values of found_index that will be used next Time must be reduced
-                --found_index[m];
-            }
-        }
-        // relabel only once here // todo
-//        relabelMap(found_index[0]);
-        merged_cluster_index = base;
-
-    } else {
-        // create new element for the cluster
-        _clusters.push_back(Cluster_v2(_cluster_id));
-        value_type _this_cluster_index = _clusters.size() -1;
-//        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
-        _cluster_index_from_id.insert(_cluster_id); // new version
-        _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
-        _cluster_id++;
-        _clusters.back().insert(hv_bonds);
-        _clusters[_this_cluster_index].addSiteIndex(site);
-        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
-
-    }
-
-
-    return merged_cluster_index;
-}
 
 
 /**
@@ -1172,29 +1135,32 @@ value_type SitePercolation_ps_v8::manage_clusters_v10(
         // merge clusters with common values from all other cluster
         int tmp_id;
         for (value_type k{1}; k != found_index.size(); ++k) {
-            _total_relabeling += _clusters[k].numberOfSites();
+
+            unsigned long ers = found_index[k];
+            _total_relabeling += _clusters[ers].numberOfSites();
 
             tmp_id = id_base;
 
             // erase the redundant cluster ids
-            int id_to_be_deleted = _clusters[found_index[k]].get_ID();
+
+            int id_to_be_deleted = _clusters[ers].get_ID();
             _cluster_index_from_id.erase(id_to_be_deleted); // first erase previous keys
 
             // perform relabeling on the sites
-            relabel_sites_v5(site, _clusters[found_index[k]]);
+            relabel_sites_v5(site, _clusters[ers]);
 
             // since we use cluster id to relabel cluster when merging, cluster also need to be updated
-            _clusters[found_index[k]].set_ID(tmp_id);
+            _clusters[ers].set_ID(tmp_id);
 
             /// since all cluster will eventually get merged to cluster with
             /// index found_index[0] whatever the id is index must be found_index[0]
 
             // store values of other found indices to the cluster
-            _clusters[base].insert(_clusters[found_index[k]]);
+            _clusters[base].insert(_clusters[ers]);
 
 
             // delete the merged cluster
-            auto it = _clusters.begin() + found_index[k];
+            auto it = _clusters.begin() + ers;
             _clusters.erase(it);
             // after erasing found_index cannot remain same. come on.
             // If you don't do this we will be deleting wrond clusters
@@ -1457,6 +1423,137 @@ value_type SitePercolation_ps_v8::manage_clusters_v12(
                 for(value_type m{k+1}; m < found_index.size(); ++m){
                     --found_index[m];
                 }
+            }
+
+        }
+
+        merged_cluster_index = base;
+
+    } else {
+        // create new element for the cluster
+        _clusters.push_back(Cluster_v2(_cluster_id));
+        merged_cluster_index = _clusters.size() -1;  // this new cluster index
+//        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
+        _cluster_index_from_id.insert(_cluster_id); // new version
+        _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
+        _cluster_id++;  // increase the cluster id for next round
+        _clusters.back().insert(hv_bonds);
+        _clusters[merged_cluster_index].addSiteIndex(site);
+
+    }
+
+
+    // data for short cut calculation
+    _index_last_modified_cluster = merged_cluster_index;
+    _bonds_in_cluster_with_size_two_or_more += hv_bonds.size();
+
+    return merged_cluster_index;
+}
+
+/**
+ * Erases merged cluster only after all clusters are relabeled and merged.
+ * Cluster id from _cluster_index_from_id is erased when merging clusters.
+ * Weighted Relabeling is successfully done here.
+ * @param found_index_set 
+ * @param hv_bonds 
+ * @param site 
+ * @param base
+ * @return 
+ */
+value_type SitePercolation_ps_v8::manage_clusters_v13_test1(
+        const set<value_type> &found_index_set,
+        vector<BondIndex> &hv_bonds,
+        Index &site,
+        value_type base
+)
+{
+
+//    cout << "Merging cluster **********weighted relabeling****************************************" << endl;
+
+    vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
+    value_type merged_cluster_index{};
+    if(found_index.size() == 4){
+        cout << "gotcha ********************************************" << _index_sequence_position << endl;
+        _index_sequence_position = maxIterationLimit(); // to end the loop
+//        exit(1);
+    }
+    if (!found_index.empty()) {
+        cout << "base is " << base << endl;
+        
+//        Index root = _clusters[base].getRootSite(); // root index of the base cluster
+        int id_base = _clusters[base].get_ID();
+        _clusters[base].addSiteIndex(site);
+
+        vector<Index> neibhgors = _lattice.get_neighbor_site_indices(site);
+        // find which of the neighbors are of id_base as the base cluster
+        IndexRelative r;
+        for(auto n: neibhgors){
+            if(_lattice.getSite(n).get_groupID() == id_base){
+                // find relative index with respect to this site
+                r = getRelativeIndex(n, site);
+                break; // since first time r is set running loop is doing no good
+            }
+        }
+
+        _lattice.getSite(site).relativeIndex(r);
+        _lattice.getSite(site).set_groupID(id_base); // relabeling for 1 site
+
+        // put_values_to_the_cluster new values in the 0-th found index
+        _clusters[base].insert(hv_bonds);
+        // merge clusters with common values from all other cluster
+
+        value_type ers{}, m{1};
+
+        for(value_type k{}; k < found_index.size(); ++k){
+            ers = found_index[k];
+//            cout << "ers = " << ers << endl;
+            if(ers != base){
+                // erase the redundant cluster ids
+
+                _total_relabeling += _clusters[ers].numberOfSites();
+                // order of the code matters here
+                int id_to_be_deleted = _clusters[ers].get_ID();
+
+//                cout << "Erasing cluster [" << ers << "] : ID " << id_to_be_deleted << endl;
+                _cluster_index_from_id.erase(id_to_be_deleted); // erase previous key before relabeling cluster
+                relabel_sites_v5(site, _clusters[ers]);
+
+                // since we use cluster id_base to relabel cluster when merging, cluster also need to be updated
+//                _clusters[ers].set_ID(id_base);
+
+                /// since all cluster will eventually get merged to cluster with
+                /// index found_index[0] whatever the id is index must be found_index[0]
+
+                // store values of other found indices to the cluster
+
+                _clusters[base].insert_v2(_clusters[ers]);
+
+//                // now erase the merged cluster
+                cout << "erasing " << ers << endl;
+                if(ers > base){
+                    auto it = _clusters.begin() + ers;
+                    _clusters.erase(it);
+                }
+                else if(ers < base){
+//                cout << "ers < base : ***************************************************** line " << __LINE__ << endl;
+                    auto it = _clusters.begin() + ers;
+                    _clusters.erase(it);
+
+                    --base;
+                    cout << "shifted base [" << base << "] ID " << _clusters[base].get_ID() << endl;
+                }
+                cout << "before " << found_index << endl;
+
+                if((k+1) < found_index.size()){ // on test
+                    found_index[k+1] -= m;
+                    m++;
+                }
+
+//                for(value_type m{k+1}; m < found_index.size(); ++m){
+//                    --found_index[m];
+//                }
+
+                cout << "after " << found_index << endl;
             }
 
         }
@@ -2051,7 +2148,6 @@ bool SitePercolation_ps_v8::occupy() {
         return false;
     }
 
-//    placeSiteWeightedRelabeling_v4();
 //    placeSite_v6(); // ok
 //    placeSite_v7(); // ok
 //    placeSite_weighted_v8(); // on test
@@ -2060,7 +2156,8 @@ bool SitePercolation_ps_v8::occupy() {
 
     Index site = selectSite(); // added 2018.06.18
 //    placeSite_v11(site); // added 2018.06.18
-    placeSite_v13(site); // added 2018.07.16
+//    placeSite_v13(site); // added 2018.07.16
+    placeSite_v14(site); // added 2018.08.31
 
 
 //    cout << "_number_of_occupied_sites " << _number_of_occupied_sites << endl;
@@ -2642,6 +2739,61 @@ value_type SitePercolation_ps_v8::placeSite_v13(Index current_site) {
     auto t0 = chrono::system_clock::now();
     value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
+    );
+    auto t1 = chrono::system_clock::now();
+    time_relabel += chrono::duration<double>(t1 - t0).count();
+
+
+    add_entropy_for_full(merged_cluster_index); // tracking entropy change
+
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+
+    return merged_cluster_index;
+}
+
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ * Entropy is measured by site and bond both.
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v8::placeSite_v14(Index current_site) {
+    // randomly choose a site
+    if (_number_of_occupied_sites == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+
+    _lattice.activate_site(current_site);
+
+    ++_number_of_occupied_sites;
+
+
+    // find the bonds for this site
+    vector<BondIndex> bonds;
+    vector<Index>     sites;
+
+//    connection_v1(current_site, sites, bonds);
+    connection_v2(current_site, sites, bonds);
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set;
+    value_type  base = find_index_for_placing_new_bonds_v4(sites, found_index_set);
+
+//    cout << "Found indices " << found_index_set << endl;
+
+
+    subtract_entropy_for_full(found_index_set);  // tracking entropy change
+
+    auto t0 = chrono::system_clock::now();
+    value_type merged_cluster_index = manage_clusters_v13_test1(
+            found_index_set, bonds, current_site, base
     );
     auto t1 = chrono::system_clock::now();
     time_relabel += chrono::duration<double>(t1 - t0).count();

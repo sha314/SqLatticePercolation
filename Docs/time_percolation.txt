@@ -2,33 +2,40 @@
 # Time in seconds			
 
 
-# manage_clusters_v10
-L		Time (sec)      Relabeling_count
-100		0.054460        103,000 to  503,000
-200		0.418705        521,000 to  8,829,000
-300		1.891022        3,526,000 to 89,628,000
-400		5.750709        6,205,000 to 132,157,000
-500		17.097894
+# manage_clusters_v10 on core i5
+L		Time(avg) (sec)      Relabeling_count(avg)
+100		0.0119917       20,556
+200		0.202783        94,400
+300		1.19912         226,280
+400		4.55383         403,379
 
 
 
-# manage_clusters_v11
-L		Time (sec)      Relabeling_count
-100		0.051980        15,000 to 22,000
-200		0.403463        76,000  to 131,000
-300		1.854279        183,000 to 285,000
-400		5.697847        340,000 to  515,000
-500		16.829765
+
+# manage_clusters_v11 on core i5
+L		Time(avg) (sec)      Relabeling_count(avg)
+100		0.0118757       20,556
+200		0.218898        94,400
+300		1.15513         226,280
+400		4.74784         403,379
+
 
 
 
 # applying weighted relabeling
-# manage_clusters_v12
-        minimum time    max relabeling
-L		Time (sec)	    Relabeling_count
-100		0.052593        13,000
-200		0.442478        60,000
-300		1.948184        148,000
-400		6.292237        284,000
-500		20.102944       445,000
+# manage_clusters_v12 on core i5
+L		Time(avg) (sec)      Relabeling_count(avg)
+100		0.0123557       12,963
+200		0.213424        60,368
+300		1.2803          144,747
+400		5.20988         270,464
 
+
+
+# applying weighted relabeling
+# manage_clusters_v13_test1 on core i5
+L		Time(avg) (sec)      Relabeling_count(avg)
+100		0.0131287       12,963
+200		0.223814        60,368
+300		1.34835         144,747
+400		5.6068          270,464
