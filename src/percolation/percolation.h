@@ -389,11 +389,6 @@ public:
 
     virtual bool occupy();
 
-    value_type placeSite_v12(
-            Index current_site,
-            vector<Index>& neighbor_sites,
-            vector<BondIndex>& neighbor_bonds
-    );
     value_type placeSite_v13(Index site);
 
 
@@ -417,7 +412,7 @@ public:
     bool placeSite_explosive_sum_rule_ForSpanning();
     value_type placeSite_explosive_prodduct_rule(); // for explosive percolation
     value_type placeSite_explosive_sum_rule();
-
+    value_type placeSite_explosive_test();
     value_type cluster_length_for_placing_site_product_rule(Index site);
     value_type cluster_length_for_placing_site_product_rule_v2(Index site);
     value_type cluster_length_for_placing_site_sum_rule(Index site);
