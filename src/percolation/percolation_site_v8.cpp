@@ -202,66 +202,6 @@ void SitePercolation_ps_v8::randomize(){
  */
 void SitePercolation_ps_v8::configure(std::vector<Index> site_indices) {
     cout << "Entry -> configure() : line " << endl;
-    if (_number_of_occupied_sites > 0) {
-        cout << "The lattice is not in the initial state" << endl;
-        cout << "setting _number_of_occupied_sites = 0" << endl;
-        _number_of_occupied_sites = 0;
-    }
-
-    // mark active sites
-    randomized_index_sequence = site_indices;
-//    randomize();
-    while (_number_of_occupied_sites < site_indices.size()){
-        placeSite_v6();
-        viewClusterExtended();
-        viewLatticeExtended();
-    }
-//    std::vector<value_type> site_index_sequence(site_indices.size());
-//    for (value_type i{}; i != site_index_sequence.size(); ++i) {
-//        site_index_sequence[i] = i;
-//    }
-//
-//    value_type x;
-//    Index s_index;
-//    value_type count{};
-//    while (!site_index_sequence.empty()) {
-//        ++count;
-//        x = std::rand() % site_index_sequence.size();
-//        s_index = site_indices[site_index_sequence[x]];
-//        site_index_sequence.erase(site_index_sequence.begin() + x); // must erase used site_index_sequence value
-//
-//        // checking if there is an invalid index;
-//        if (s_index.x_ >= length() || s_index.y_ >= length()) {
-//            cerr << "Invalid index : line " << __LINE__ << endl;
-//            cerr << "site_indices[i].x_ >= length() || site_indices[i].y_ >= length()  : line " << __LINE__ << endl;
-//            return;
-//        }
-//        _lattice.getSite(s_index).activate();
-//        ++_number_of_occupied_sites;
-//
-//        // find the bonds for this site
-//        vector<Bond> hv_bonds;
-//        if(_periodicity) {
-//            hv_bonds = get_Bond_for_site(s_index);// old
-//        }
-//        else {
-//            hv_bonds = get_Bond_for_site_no_periodicity(s_index); // new
-//        }
-//
-//        // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-//        set<value_type> found_index_set = find_index_for_placing_new_bonds_v1(hv_bonds);
-////        value_type m = put_values_to_the_cluster_weighted_relabeling_v1(found_index_set, hv_bonds, s_index);
-////        set<value_type> found_index_set = find_index_for_placing_new_bonds_v2(s_index);
-//        value_type m = put_values_to_the_cluster_weighted_relabeling_v2(found_index_set, hv_bonds, s_index);
-//
-//        cout << "_cluster_index_from_id : \n" << _cluster_index_from_id << endl;
-//        if (debug_4_configure) {
-//            cout << "********************** view ***************** : line " << __LINE__ << endl;
-//            viewLatticeExtended();
-//            viewClusterExtended();
-//        }
-//    }
-
 
 }
 
@@ -1329,21 +1269,7 @@ bool SitePercolation_ps_v8::occupy() {
  * @return false -> if not site placing is possible
  */
 bool SitePercolation_ps_v8::placeSiteForSpanning() {
-    if(_index_sequence_position >= maxSites()){
-        return false;
-    }
-
-//    placeSite_v6();
-    placeSite_v7();
-
-//    detectSpanning();
-//    detectSpanning_v2();
-//    detectSpanning_v3();
-//    detectSpanning_v4(_last_placed_site); // todo problem
-//    detectSpanning_v5(_last_placed_site); // todo problem
-    detectSpanning_v6(_last_placed_site);
-
-    return true;
+    cout << "Entry placeSiteForSpanning() : line " << __LINE__ << endl;
 }
 
 /**
@@ -1441,6 +1367,47 @@ void SitePercolation_ps_v8::placeSite_sequentially(double p) {
 
 
 
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ *
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v8::placeSite_v12(
+        Index current_site,
+        vector<Index>& neighbor_sites,
+        vector<BondIndex>& neighbor_bonds
+){
+    // randomly choose a site
+    if (_index_sequence_position == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+
+    _lattice.activate_site(current_site);
+    ++_number_of_occupied_sites;
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbor_sites);
+
+//    cout << "Found indices " << found_index_set << endl;
+
+    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters_v10(
+            found_index_set, neighbor_bonds, current_site
+    );
+    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
+
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of neighbor_bonds in the largest cluster
+
+    return merged_cluster_index;
+}
 
 /***
  * Index of the selected site must be provided with the argument
@@ -1483,61 +1450,6 @@ value_type SitePercolation_ps_v8::placeSite_v13(Index current_site) {
     auto t0 = chrono::system_clock::now();
     value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
-    );
-    auto t1 = chrono::system_clock::now();
-    time_relabel += chrono::duration<double>(t1 - t0).count();
-
-
-    add_entropy_for_full(merged_cluster_index); // tracking entropy change
-
-    // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-
-    return merged_cluster_index;
-}
-
-/***
- * Index of the selected site must be provided with the argument
- *
- * Wrapping and spanning index arrangement is enabled.
- * Entropy is calculated smoothly.
- * Entropy is measured by site and bond both.
- * @param current_site
- * @return
- */
-value_type SitePercolation_ps_v8::placeSite_v14(Index current_site) {
-    // randomly choose a site
-    if (_number_of_occupied_sites == maxSites()) {
-        return ULONG_MAX;// unsigned long int maximum value
-    }
-
-    _last_placed_site = current_site;
-//    cout << "placing site " << current_site << endl;
-
-    _lattice.activate_site(current_site);
-
-    ++_number_of_occupied_sites;
-
-
-    // find the bonds for this site
-    vector<BondIndex> bonds;
-    vector<Index>     sites;
-
-//    connection_v1(current_site, sites, bonds);
-    connection_v2(current_site, sites, bonds);
-
-    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set;
-    value_type  base = find_index_for_placing_new_bonds_v4(sites, found_index_set);
-
-//    cout << "Found indices " << found_index_set << endl;
-
-
-    subtract_entropy_for_full(found_index_set);  // tracking entropy change
-
-    auto t0 = chrono::system_clock::now();
-    value_type merged_cluster_index = manage_clusters_v13(
-            found_index_set, bonds, current_site, base
     );
     auto t1 = chrono::system_clock::now();
     time_relabel += chrono::duration<double>(t1 - t0).count();
@@ -1758,7 +1670,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_prodduct_rule() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
     );
     add_entropy_for_bond(merged_cluster_index);
@@ -1832,7 +1744,7 @@ value_type SitePercolation_ps_v8::placeSite_explosive_sum_rule() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters_v10(
             found_index_set, bonds, current_site
     );
     add_entropy_for_bond(merged_cluster_index);
@@ -1845,84 +1757,6 @@ value_type SitePercolation_ps_v8::placeSite_explosive_sum_rule() {
 }
 
 
-/**
- * Randomly choose two site say siteA and siteB.
- * calculate for which site cluster length is minimum (by product rule or sum rule)
- * place that site for which cluster length is minimum
- *
- * @return merged_cluster_index -> the index of _cluster
- *                                      where new site and bond indicis are placed
- *                                      or the merged cluster index
- *
- */
-value_type SitePercolation_ps_v8::placeSite_explosive_test() {
-    // randomly choose a site
-    if (_index_sequence_position == maxSites()) {
-        return ULONG_MAX;// unsigned long int maximum value
-    }
-
-    // in order to apply sum rule or product rule
-    size_t i = _index_sequence_position;
-    size_t j = (i+1) + rand() % (randomized_index_sequence.size() - (i+1));
-    Index siteA = randomized_index_sequence[i];
-    Index siteB = randomized_index_sequence[j];
-
-//    cout << "placing site " << current_site << endl;
-
-    Index current_site;
-    value_type lenA_prod = cluster_length_for_placing_site_product_rule(siteA);
-    value_type lenB_prod = cluster_length_for_placing_site_product_rule(siteB);
-    value_type lenA_sum = cluster_length_for_placing_site_sum_rule(siteA);
-    value_type lenB_sum = cluster_length_for_placing_site_sum_rule(siteB);
-    if(lenA_prod < lenB_prod && lenA_sum > lenB_sum){
-        cerr << "lenA_prod < lenB_prod && lenA_sum > lenB_sum" << endl;
-    }
-    if(lenA_prod > lenB_prod && lenA_sum < lenB_sum){
-        cerr << "lenA_prod > lenB_prod && lenA_sum < lenB_sum" << endl;
-    }
-    if(lenA_prod < lenB_prod){
-        // place siteA
-        current_site = siteA;
-         cout << "selecting " << siteA << endl;
-        // use siteA as current site
-    }else{
-        current_site = siteB;
-        cout << "selecting " << siteB  << endl;
-        // flip the sites since siteB was selected from free region.
-        // if it is not done siteA will not be placed at all
-        // since _index_sequence_position is always increases by 1
-        randomized_index_sequence[i] = siteB;
-        randomized_index_sequence[j] = siteA;
-    }
-
-    _lattice.activate_site(current_site);
-    ++_number_of_occupied_sites;
-    ++_index_sequence_position;
-    _last_placed_site = current_site;
-
-    // find the bonds for this site
-    vector<BondIndex> bonds;
-    vector<Index>     neighbors;
-//    connection_v1(current_site, neighbors, bonds);
-    connection_v2(current_site, neighbors, bonds);
-
-    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
-
-//    cout << "Found indices " << found_index_set << endl;
-
-    subtract_entropy_for_bond(found_index_set);
-    value_type merged_cluster_index = manage_clusters_v7(
-            found_index_set, bonds, current_site
-    );
-    add_entropy_for_bond(merged_cluster_index);
-
-    // running tracker
-    track_numberOfBondsInLargestCluster();
-
-
-    return merged_cluster_index;
-}
 
 
 /**
@@ -3119,43 +2953,6 @@ value_type SitePercolation_ps_v8::count_number_of_active_site() {
     return counter;
 }
 
-value_type SitePercolation_ps_v8::placeSiteWeightedRelabeling_v9() {
-    // randomly choose a site
-    if (_index_sequence_position == maxSites()) {
-        return ULONG_MAX;// unsigned long int maximum value
-    }
-
-    Index current_site = randomized_index_sequence[_index_sequence_position];
-    _last_placed_site = current_site;
-//    cout << "placing site " << current_site << endl;
-
-    _lattice.activate_site(current_site);
-
-    ++_number_of_occupied_sites;
-    ++_index_sequence_position;
-
-    // find the bonds for this site
-    vector<BondIndex> bonds;
-    vector<Index>     neighbors;
-//    connection_v1(current_site, neighbors, bonds);
-    connection_v2(current_site, neighbors, bonds);
-
-    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(neighbors);
-
-//    cout << "Found indices " << found_index_set << endl;
-
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_weighted_v8(
-            found_index_set, bonds, current_site
-    );
-    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
-
-    // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-
-    return merged_cluster_index;
-}
 
 void SitePercolation_ps_v8::logs() {
     if(_logging_flag){
