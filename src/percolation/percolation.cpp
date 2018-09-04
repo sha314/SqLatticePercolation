@@ -34,6 +34,10 @@ void SqLatticePercolation::viewCluster() {
     value_type total_bonds{}, total_sites{};
 
     for (value_type i{}; i != _clusters.size(); ++i) {
+        if(_clusters[i].empty()){
+//            cout << "Empty cluster : line " << endl;
+            continue;
+        }
         cout << "cluster [" << i << "] : " << '{' << endl;
         cout << _clusters[i];
         total_bonds += _clusters[i].numberOfBonds();
@@ -58,7 +62,7 @@ void SqLatticePercolation::viewClusterExtended() {
     std::vector<BondIndex> bonds;
     for (value_type i{}; i != _clusters.size(); ++i) {
         if(_clusters[i].empty()){
-            cout << "Empty cluster : line " << endl;
+//            cout << "Empty cluster : line " << endl;
             continue;
         }
         cout << "cluster [" << i << "] : ID (" << _clusters[i].get_ID() << "){" << endl;
@@ -115,21 +119,28 @@ SqLatticePercolation::get_cluster_info(
     bond.clear();
 
     unsigned long size = _clusters.size();
-    site.resize(size);
-    bond.resize(size);
+    site.reserve(size);
+    bond.reserve(size);
 
-    value_type a, b;
+    value_type s, b;
+
     for(value_type i{}; i < size; ++i){
-        a = _clusters[i].numberOfSites();
+        if(_clusters[i].empty()){
+//            cout << "Empty cluster : line " << endl;
+            continue;
+        }
+        s = _clusters[i].numberOfSites();
         b = _clusters[i].numberOfBonds();
-        site[i] = a;
-        bond[i] = b;
-        total_site += a;
+        site.push_back(s);
+        bond.push_back(b);
+        total_site += s;
         total_bond += b;
     }
     if(site.size() != bond.size()){
         cout << "Size mismatched : line " << __LINE__ << endl;
     }
+//    cout << "total bonds " << total_bond << endl;
+//    cout << "tatal sites " << total_site << endl;
     if(type == 's'){
         for(value_type j{total_bond}; j < maxBonds(); ++j){
             bond.push_back(1); // cluster of length 1
@@ -142,6 +153,11 @@ SqLatticePercolation::get_cluster_info(
             site.push_back(1); // cluster of length 1
         }
     }
+//    if(site.size() != bond.size()){
+//        cout << "Size mismatched : line " << __LINE__ << endl;
+//    }
+//    cout << "total bonds " << total_bond << endl;
+//    cout << "tatal sites " << total_site << endl;
 
 }
 
