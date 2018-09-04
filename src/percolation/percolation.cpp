@@ -57,6 +57,10 @@ void SqLatticePercolation::viewClusterExtended() {
     std::vector<Index> sites;
     std::vector<BondIndex> bonds;
     for (value_type i{}; i != _clusters.size(); ++i) {
+        if(_clusters[i].empty()){
+            cout << "Empty cluster : line " << endl;
+            continue;
+        }
         cout << "cluster [" << i << "] : ID (" << _clusters[i].get_ID() << "){" << endl;
         // printing sites
         sites = _clusters[i].getSiteIndices();

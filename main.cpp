@@ -1117,6 +1117,16 @@ void entropyJumps(int argc, char** argv){
 }
 
 
+void site_percolation_new_version(){
+    value_type length = 5;
+    SitePercolation_ps_v9 sp(length);
+
+    while(sp.occupy()) {
+        sp.viewSiteByID();
+        sp.viewClusterExtended();
+    }
+}
+
 /****
  *  All the function that is run in main
  * @param argc
@@ -1161,15 +1171,18 @@ void run_in_main(int argc, char** argv){
 //    cluster_size(argc, argv);
 //    measure_entropy_by_site(argc, argv);
 //    measure_clusters(argc, argv);
-    weighted_relabeling_test(argc, argv);
+//    weighted_relabeling_test(argc, argv);
 
 //    bond_percolation(argc, argv);
 
 //    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
+    site_percolation_new_version();
 
 }
+
+
 
 
 /**************************************

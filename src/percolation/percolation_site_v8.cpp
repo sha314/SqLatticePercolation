@@ -16,6 +16,7 @@
 #include "../index/delta.h"
 #include <omp.h>
 #include <thread>
+#include "../util/checking.h"
 
 using namespace std;
 
@@ -521,15 +522,6 @@ SitePercolation_ps_v8::find_index_for_placing_new_bonds_v4(const vector<Index>& 
     return base;
 }
 
-
-bool ispresent(const std::vector<value_type> &v, value_type a){
-    for(auto x: v){
-        if(x == a){
-            return true;
-        }
-    }
-    return false;
-}
 
 /**
  * Find one row from _cluster to place 4 or less new bonds
