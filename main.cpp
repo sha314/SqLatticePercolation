@@ -949,7 +949,7 @@ void percolation_wrapping_and_jump(int argc, char **argv) {
     value_type length_squared = length*length;
     value_type twice_length_squared = 2 * length_squared;
 
-    SitePercolation_ps_v8 lattice_percolation(length, true);
+    SitePercolation_ps_v9 lattice_percolation(length, true);
 
     ostringstream header_info;
     header_info << "{"
@@ -963,9 +963,9 @@ void percolation_wrapping_and_jump(int argc, char **argv) {
     string filename_s = lattice_percolation.getSignature() + "_cluster_by_site_" + to_string(length) + '_' + tm;
     string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond_" + to_string(length) + '_' + tm;
     string filename_critical = lattice_percolation.getSignature() + "_critical_" + to_string(length) + '_' + tm;
-    filename_s += ".txt";
-    filename_b += ".txt";
-    filename_critical += ".txt";
+    filename_s += ".csv";
+    filename_b += ".csv";
+    filename_critical += ".csv";
 
     string filename = lattice_percolation.getSignature() + "_entropy-jump_" + to_string(length) + '_' + tm;
     filename += ".csv";
@@ -979,20 +979,20 @@ void percolation_wrapping_and_jump(int argc, char **argv) {
 
     ofstream fout_s(filename_s);
     // JSON formated header
-    fout_s << header_info.str() << endl;
+    fout_s << '#' << header_info.str() << endl;
     fout_s << "#each line is an independent realization" << endl;
     fout_s << "#each line contains information about all clusters at critical point" << endl;
     fout_s << "#cluster size is measured by number of sites in it" << endl;
 
     ofstream fout_b(filename_b);
     // JSON formated header
-    fout_b << header_info.str() << endl;
+    fout_b << '#' << header_info.str() << endl;
     fout_b << "#each line is an independent realization" << endl;
     fout_b << "#each line contains information about all clusters at critical point" << endl;
     fout_b << "#cluster size is measured by number of bonds in it" << endl;
 
     ofstream fout_critical(filename_critical);
-    fout_critical << header_info.str() << endl;
+    fout_critical << '#' << header_info.str() << endl;
     fout_critical << "#critical occupation probability or pc" << endl;
     fout_critical << "#<pc>" << endl;
 
@@ -1017,6 +1017,8 @@ void percolation_wrapping_and_jump(int argc, char **argv) {
 
                     for(value_type j{}; j != site.size(); ++j){
                         fout_s << site[j] << ',';
+                    }
+                    for(value_type j{}; j != bond.size(); ++j){
                         fout_b << bond[j] <<',';
                     }
 
@@ -1121,10 +1123,28 @@ void site_percolation_new_version(){
     value_type length = 5;
     SitePercolation_ps_v9 sp(length);
 
+    value_type j{};
     while(sp.occupy()) {
+        j+=1;
+        cout << j << "-th site " << sp.lastPlacedSite() << endl;
+//        if(sp.detectWrapping()){
+//            cout << "Wrapping " << sp.occupationProbability() << endl;
+//            break;
+//        }
+
         sp.viewSiteByID();
+        sp.viewSiteByRelativeIndex();
         sp.viewClusterExtended();
+//        if (j >= sp.maxIterationLimit()){
+//            break;
+//        }
+        if (j >= sp.maxIterationLimit()){
+            break;
+        }
     }
+    sp.viewSiteByID();
+    sp.viewSiteByRelativeIndex();
+    sp.viewClusterExtended();
 }
 
 /****
@@ -1175,10 +1195,10 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-//    percolation_wrapping_and_jump(argc, argv);
+    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
-    site_percolation_new_version();
+//    site_percolation_new_version();
 
 }
 
