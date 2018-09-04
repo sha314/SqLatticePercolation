@@ -316,6 +316,97 @@ void set_comparator(){
     }
 }
 
+void test(){
+    SitePercolation_ps_v8 sp(6);
+    sp.periodicityFlag(true);
+    sp.logging_flag(true);
+
+    size_t sz = sp.length()*sp.length();
+    sz = 22;
+    for(size_t i{}; i <= sz ; ++i){
+        sp.placeSite_weighted_v8();
+//        sp.placeSite_v7();
+        cout << i << " th site " << sp.lastPlacedSite() << endl;
+        sp.viewLatticeByID();
+        sp.viewClusterExtended();
+        sp.viewCluster_id_index();
+    }
+
+    sp.viewLatticeByID();
+    sp.viewClusterExtended();
+    sp.viewCluster_id_index();
+    sp.placeSite_weighted_v8();
+    sp.viewLatticeByID();
+    sp.viewClusterExtended();
+    sp.viewCluster_id_index();
+    sp.logs();
+}
+
+
+void test_spanning(){
+    SitePercolation_ps_v8 sp(10);
+    sp.periodicityFlag(false);
+//    while (sp.placeSiteForSpanning()){
+    while (sp.placeSite_explosive_sum_rule_ForSpanning()){
+
+        if(sp.isSpanned()){
+            sp.viewLatticeByID();
+//            sp.spanningIndices();
+            break;
+        }
+//        sp.viewLatticeByID();
+    }
+
+    sp.spanningIndices();
+    sp.viewLatticeByID();
+
+}
+
+
+void test_bond_percolation(){
+    BondPercolation_pb_v0 bp(5, false);
+    bp.viewClusterExtended();
+    bp.viewLatticeByID();
+    cout << bp.lastPlacedBond() << endl;
+
+    value_type i{};
+    while(bp.occupy()) {
+        cout << i << " th bond " << bp.lastPlacedBond() << endl;
+        bp.viewLatticeByID();
+        bp.viewClusterExtended();
+        ++i;
+//        if( i == 7) {
+//            break;
+//        }
+    }
+//    bp.viewClusterExtended();
+}
+
+
+
+void test_site_percolation(){
+//    srand(1526028791);    // seeding
+    SitePercolation_ps_v8 sp(100, false);
+//    sp.periodicityFlag(true);
+    value_type i = 0;
+    while(sp.occupy()) {
+        ++i;
+//        sp.viewClusterExtended();
+//        sp.viewSiteByID();
+//        sp.viewSiteByRelativeIndex();
+        if(sp.detectSpanning_v6(sp.lastPlacedSite())){
+//            cout << "last site " << sp.lastPlacedSite() << endl;
+//            cout << "pc = " << sp.occupationProbability() << endl;
+            sp.numberOfBondsInTheSpanningClusters();
+        }
+//        if ( i == 25){
+//            break;
+//        }
+    }
+    cout << "spanning cluster ids " << endl;
+    sp.numberOfBondsInTheSpanningClusters();
+    cout << "Function ended" << endl;
+}
 
 
 void test_ballistic_deposition(size_t seed){
@@ -680,6 +771,53 @@ void measure_clusters(int argc, char** argv){
 }
 
 
+void weighted_relabeling_test(int argc, char** argv) {
+    value_type length = atoi(argv[1]);
+//    value_type ensemble_size = atoi(argv[2]);
+
+
+//    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+
+//    srand(4);    // seeding
+//    srand(atoi(argv[2]));    // seeding from cmdl
+
+//    value_type length = 500;
+    value_type length_squared = length * length;
+    SitePercolation_ps_v8 sp(length, true);
+    double agv_time{};
+    size_t avg_count{};
+    bool successful{false};
+    cout << "sp.maxIterationLimit() " << sp.maxIterationLimit() << endl;
+    size_t size = 1;
+    for(size_t e{}; e < size; ++e) {
+        cout << "step " << e << " of " << size << endl;
+//        srand(e);    // seeding
+        sp.reset();
+        for (size_t j{}; j < sp.maxIterationLimit(); ++j) {
+            successful = sp.occupy();
+            if (successful) {
+                auto index = sp.lastPlacedSite();
+
+//            cout << j << " th site" << index << endl;
+//            sp.viewSiteByID();
+//            sp.viewClusterExtended();
+            } else {
+                cout << "False at " << j << endl;
+            }
+        }
+//    sp.viewSiteByID();
+//    sp.viewClusterExtended();
+        cout << "number of relabeling done " << sp.relabeling_count() << endl;
+        cout << "time required " << sp.get_relabeling_time() << endl;
+        agv_time += sp.get_relabeling_time();
+        avg_count += sp.relabeling_count();
+    }
+    cout << "avg number of relabeling done " << avg_count / size << endl;
+    cout << "avg time required " << agv_time / size << endl;
+
+}
+
 void bond_percolation(int argc, char** argv) {
     value_type length = atoi(argv[1]);
     value_type ensemble_size = atoi(argv[2]);
@@ -912,7 +1050,82 @@ void percolation_wrapping_and_jump(int argc, char **argv) {
 }
 
 
+void entropyJumps(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
 
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    BondPercolation_pb_v0 bp(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << bp.getSignature() << "\""
+                << "}" ;
+
+    string tm = currentTime();
+
+    string filename = bp.getSignature() + "_entropy-jump_" + to_string(length) + '_' + tm;
+    filename += ".csv";
+
+    ofstream fout(filename);
+    // JSON formated header
+    fout << '#' << header_info.str() << endl;
+    fout << "#each line is an independent realization" << endl;
+    fout << "#each line contains information about all clusters at critical point" << endl;
+    fout << "#cluster size is measured by number of sites in it" << endl;
+
+    value_type counter{};
+    double H{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        bp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = bp.occupy();
+            if(successful) {
+                H = bp.entropy();
+//                cout << H << endl;
+                bp.jump();
+
+                ++counter;
+            }
+            if(counter >= bp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+        fout << bp.largestEntropyJump() << "," << bp.largestEntropyJump_pc() << endl;
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
+    }
+
+    fout.close();
+}
+
+
+void site_percolation_new_version(){
+    value_type length = 5;
+    SitePercolation_ps_v9 sp(length);
+
+    while(sp.occupy()) {
+        sp.viewSiteByID();
+        sp.viewClusterExtended();
+    }
+}
 
 /****
  *  All the function that is run in main
@@ -958,14 +1171,18 @@ void run_in_main(int argc, char** argv){
 //    cluster_size(argc, argv);
 //    measure_entropy_by_site(argc, argv);
 //    measure_clusters(argc, argv);
+//    weighted_relabeling_test(argc, argv);
 
 //    bond_percolation(argc, argv);
 
-    percolation_wrapping_and_jump(argc, argv);
+//    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
+    site_percolation_new_version();
 
 }
+
+
 
 
 /**************************************

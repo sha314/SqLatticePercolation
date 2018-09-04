@@ -16,15 +16,13 @@
  * Cluster of bonds and sites
  * version 3
  * final goal -> make a template cluster. so that we can use it for Bond cluster or Site cluster
+ * root site (bond) is the first site (bond) of the cluster. nedeed for (wrapping) site percolation
  */
 class Cluster_v2{
     // contains bond and site ??
     std::vector<BondIndex>  _bond_index; // BondIndex for indexing bonds
     std::vector<Index>      _site_index; // Site index
 
-
-//    Index _root_site; // root site is the first site of the cluster. nedeed for (wrapping) site percolation
-//    BondIndex _root_bond; // root bond is the first bond of the cluster.
 
     int _creation_time;  // holds the creation birthTime of a cluster object
     int _id;
@@ -39,10 +37,7 @@ public:
     Cluster_v2& operator=(Cluster_v2&&)     = default;
 
     Cluster_v2(int id){
-//        _bond_index.reserve(max_size);
-        /*
-         *
-         */
+
         _id = id;       // may be modified in the program
 
         /*
@@ -110,6 +105,8 @@ public:
 
     Index getRootSite()const{return _site_index[0];} // for site percolation
     BondIndex getRootBond()const{return _bond_index[0];} // for bond percolation
+    bool empty() const { return _bond_index.empty() && _site_index.empty();}
+    void clear() {_bond_index.clear(); _site_index.clear(); }
 };
 
 
