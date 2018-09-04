@@ -1120,21 +1120,21 @@ void entropyJumps(int argc, char** argv){
 
 
 void site_percolation_new_version(){
-    value_type length = 5;
+    value_type length = 1000;
     SitePercolation_ps_v9 sp(length);
 
     value_type j{};
     while(sp.occupy()) {
         j+=1;
-        cout << j << "-th site " << sp.lastPlacedSite() << endl;
+//        cout << j << "-th site " << sp.lastPlacedSite() << endl;
 //        if(sp.detectWrapping()){
 //            cout << "Wrapping " << sp.occupationProbability() << endl;
 //            break;
 //        }
 
-        sp.viewSiteByID();
-        sp.viewSiteByRelativeIndex();
-        sp.viewClusterExtended();
+//        sp.viewSiteByID();
+//        sp.viewSiteByRelativeIndex();
+//        sp.viewClusterExtended();
 //        if (j >= sp.maxIterationLimit()){
 //            break;
 //        }
@@ -1142,9 +1142,10 @@ void site_percolation_new_version(){
             break;
         }
     }
-    sp.viewSiteByID();
-    sp.viewSiteByRelativeIndex();
-    sp.viewClusterExtended();
+//    sp.viewSiteByID();
+//    sp.viewSiteByRelativeIndex();
+//    sp.viewClusterExtended();
+    cout << "relabeling count " << sp.relabeling_count() << endl;
 }
 
 /****
@@ -1195,10 +1196,10 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-    percolation_wrapping_and_jump(argc, argv);
+//    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
-//    site_percolation_new_version();
+    site_percolation_new_version();
 
 }
 
@@ -1217,7 +1218,7 @@ int main(int argc, char** argv) {
     auto t_start = std::chrono::system_clock::now();
 
     time_t seed = time(NULL);
-//    srand(seed);    // seeding
+    srand(seed);    // seeding
 
     run_in_main(argc, argv);
 
