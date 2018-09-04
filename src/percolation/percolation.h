@@ -812,6 +812,7 @@ public:
                              vector<Index>& neighbor_sites,
                              vector<BondIndex>& neighbor_bonds);
     value_type placeSite_v2(Index site);
+    value_type placeSite_v3(Index site); // uses weighted relabeling by first identifying the largest cluster
 
 
     Index selectSite(); // selecting site
@@ -944,12 +945,20 @@ protected:
     void randomize_v2(); // better random number generator
 
     std::set<value_type> find_index_for_placing_new_bonds(const vector<Index> &neighbors);
+    int find_index_for_placing_new_bonds(const vector<Index> &neighbors, std::set<value_type>& found_indices);
 
 
     value_type manage_clusters(
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site);
+
+    value_type manage_clusters_v2(
+            const std::set<value_type> &found_index_set,
+            std::vector<BondIndex> &hv_bonds,
+            Index &site,
+            int base_id // since id and index is same
+    );
 
     value_type manage_clusters_weighted(
             const std::set<value_type> &found_index_set,
