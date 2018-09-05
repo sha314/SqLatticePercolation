@@ -37,11 +37,13 @@ BondPercolation_pb_v1::BondPercolation_pb_v1(value_type length, bool periodicity
     _clusters = vector<Cluster_v2>();
     _max_iteration_limit = maxBonds();
     initialize_index_sequence();
+    randomized_index.resize(maxIterationLimit());
+    for(value_type i{}; i < maxIterationLimit(); ++i){randomized_index[i] = i;}
     initialize();
 
 //    initialize_indices();
 
-    randomize();  // randomize the untouched_site_indices
+    randomize_v2();  // randomize the untouched_site_indices
 }
 
 /**
@@ -53,12 +55,12 @@ void BondPercolation_pb_v1::initialize() {
     number_of_sites_to_span.reserve(maxSites());
     number_of_bonds_to_span.reserve(maxSites());
 
+
 //    _top_edge.reserve(length());
 //    _bottom_edge.reserve(length());
 //    _left_edge.reserve(length());
 //    _right_edge.reserve(length());
 
-    randomized_index_sequence = index_sequence;
 }
 
 
@@ -138,6 +140,16 @@ void BondPercolation_pb_v1::randomize() {
 
 }
 
+/**
+ * Randomize the site placing order
+ * Takes 3.031000 sec for 1000 x 1000 sites
+ */
+void BondPercolation_pb_v1::randomize_v2() {
+
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _g);
+//    cout << "Index sequence : " << randomized_index_sequence << endl;
+}
+
 
 /**
  * Reset all calculated values and then call initiate()
@@ -154,8 +166,11 @@ void BondPercolation_pb_v1::reset() {
     _sites_required_to_min_span = 0;
     sites_in_cluster_with_size_greater_than_one = 0;
     _wrapping_indices.clear();
+
     initialize();
-    randomize();  // randomize the untouched_site_indices
+
+//    cout << "use suffle : line " << __LINE__ << endl;
+    randomize_v2();
 }
 
 
@@ -514,7 +529,7 @@ bool BondPercolation_pb_v1::occupy() {
         return false;
     }
 
-    value_type v = placeBond_v0();
+    value_type v = placeBond_v1();
     _occuption_probability = occupationProbability(); // for super class
     return v != ULONG_MAX;
 }
@@ -535,8 +550,8 @@ value_type BondPercolation_pb_v1::placeBond_v0() {
     if (_number_of_occupied_bonds == maxBonds()){
         return ULONG_MAX;// unsigned long int maximum value
     }
-
-    BondIndex current_bond = randomized_index_sequence[_index_sequence_position];
+    value_type index = randomized_index[_index_sequence_position];
+    BondIndex current_bond = index_sequence[index];
     _last_placed_bond = current_bond;
 //    cout << "placing bond " << current_bond << " : " << __LINE__ << endl;
 
@@ -556,7 +571,7 @@ value_type BondPercolation_pb_v1::placeBond_v0() {
 
     sites_in_cluster_with_size_greater_than_one += sites.size();
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set = find_index_for_placing_new_bonds_v1(bonds);
+    set<value_type> found_index_set = find_index_for_placing_new_bonds(bonds);
 
 
 //    cout << "Found indices " << found_index_set << endl;
@@ -564,6 +579,63 @@ value_type BondPercolation_pb_v1::placeBond_v0() {
     subtract_entropy_for_site(found_index_set);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters(
             found_index_set, sites, current_bond
+    );
+    add_entropy_for_site(merged_cluster_index); // tracking entropy change
+
+    // running tracker
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    return merged_cluster_index;
+}
+
+
+/**
+ * Place one site at a time. Actually activates one site and 4 bonds at a time.
+ * Also label and relabel each bond and site as per their corresponding cluster
+ *
+ * @return merged_cluster_index -> the index of _cluster
+ *                                      where new site and bond indicis are placed
+ *                                      or the merged cluster index
+ *
+ */
+value_type BondPercolation_pb_v1::placeBond_v1() {
+
+//    if (_index_sequence_position == randomized_index_sequence.size()) {
+    if (_number_of_occupied_bonds == maxBonds()){
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+    value_type index = randomized_index[_index_sequence_position];
+    ++_index_sequence_position;
+    BondIndex current_bond = index_sequence[index];
+    _last_placed_bond = current_bond;
+//    cout << "placing bond " << current_bond << " : " << __LINE__ << endl;
+
+    _lattice.activateBond(current_bond);
+
+    ++_number_of_occupied_bonds;
+
+    // find the bonds for this site
+    vector<BondIndex> bonds;
+    vector<Index> sites;
+
+//    connection_v1(current_bond, sites, bonds); // problem
+    connection_v2(current_bond, sites, bonds);
+//    cout << "Found bonds : " << bonds << endl;
+//    cout << "Found sites : " << sites << endl;
+
+    sites_in_cluster_with_size_greater_than_one += sites.size();
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set;
+    int base_id = find_cluster_index_for_placing_new_bonds(bonds, found_index_set);
+
+//    if (found_index_set.find(value_type(base_id)) != found_index_set.end()) {
+//        cout << "base " << base_id << " and Found indices " << found_index_set << endl;
+//        exit(1);
+//    }
+
+
+    subtract_entropy_for_site(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters(
+            found_index_set, sites, current_bond, base_id
     );
     add_entropy_for_site(merged_cluster_index); // tracking entropy change
 
@@ -891,12 +963,13 @@ value_type BondPercolation_pb_v1::manage_clusters(
         int tmp_id;
         value_type ers{};
         for (value_type k{1}; k != found_index.size(); ++k) {
-
+            ers = found_index[k];
+            _total_relabeling += _clusters[ers].numberOfSites();
             // store values of other found indices to the cluster
             bond_pos = _clusters[base].numberOfBonds();
             site_pos = _clusters[base].numberOfSites();
 
-            ers = found_index[k];
+
             _clusters[base].insert(_clusters[ers]);
 
             relabel_cluster(bond, _clusters[base], bond_pos, site_pos);
@@ -919,6 +992,78 @@ value_type BondPercolation_pb_v1::manage_clusters(
         _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_id++;  // increase the cluster id for next round
         _clusters.back().insert(sites);
+        _clusters[merged_cluster_index].addBondIndex(bond);
+
+    }
+
+
+    // data for short cut calculation
+    _index_last_modified_cluster = merged_cluster_index;
+
+    return merged_cluster_index;
+}
+
+/**
+ * Functions that will give correct value.
+ * Relabel sites and bonds and wrapping is detected using sites
+ * @param found_index_set
+ * @param sites
+ * @param site
+ * @return
+ */
+value_type BondPercolation_pb_v1::manage_clusters(
+        const set<value_type> &found_index_set,
+        vector<Index> &sites,
+        BondIndex &bond,
+        int base_id
+) {
+//    cout << "on test line " << __LINE__ << endl;
+
+    value_type merged_cluster_index{};
+
+    if (base_id != -1) {
+        value_type base = value_type(base_id);
+        BondIndex root = _clusters[base].getRootBond(); // root index of the base cluster
+
+        _clusters[base].addBondIndex(bond);
+
+        _lattice.getBond(bond).set_groupID(base_id); // relabeling for 1 site
+
+        // put_values_to_the_cluster new values in the 0-th found index
+        size_t site_pos = _clusters[base].numberOfSites();
+        size_t bond_pos = _clusters[base].numberOfBonds();
+        _clusters[base].insert(sites);
+        relabel_cluster(bond, _clusters[base], bond_pos, site_pos);
+        // merge clusters with common values from all other cluster
+
+
+        for(value_type ers : found_index_set){
+            // store values of other found indices to the cluster
+            bond_pos = _clusters[base].numberOfBonds();
+            site_pos = _clusters[base].numberOfSites();
+            _total_relabeling += _clusters[ers].numberOfSites(); // only for debugging purposes
+            _clusters[base].insert_v2(_clusters[ers]);
+
+            relabel_cluster(bond, _clusters[base], bond_pos, site_pos);
+            // delete the merged cluster
+            _clusters[ers].clear();
+
+        }
+
+        merged_cluster_index = base;
+
+    } else {
+        // create new element for the cluster
+
+        relabel_new_sites_relative(sites, _cluster_id);
+
+        _clusters.push_back(Cluster_v2(_cluster_id));
+        merged_cluster_index = _clusters.size() - 1;  // this new cluster index
+
+        _cluster_index_from_id.insert(_cluster_id); // new version
+        _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
+        _cluster_id++;  // increase the cluster id for next round
+        _clusters[merged_cluster_index].insert(sites);
         _clusters[merged_cluster_index].addBondIndex(bond);
 
     }
@@ -1754,7 +1899,7 @@ void BondPercolation_pb_v1::connection_2_horizontal_no_periodicity(const BondInd
  * @return a set
  */
 set<value_type>
-BondPercolation_pb_v1::find_index_for_placing_new_bonds_v1(const vector<BondIndex> &neighbors) {
+BondPercolation_pb_v1::find_index_for_placing_new_bonds(const vector<BondIndex> &neighbors) {
 
     set<value_type> found_index_set;    // use set to prevent repeated index
 
@@ -1767,6 +1912,43 @@ BondPercolation_pb_v1::find_index_for_placing_new_bonds_v1(const vector<BondInde
     }
     return found_index_set;
 }
+
+/**
+ *
+ * @param neighbors         :
+ * @param found_index_set   : index of the clusters that will be merged together.
+ *                            Does not contain the base cluster index or id.
+ * @return                  : id of the base cluster
+ */
+int
+BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors,
+                                                                std::set<value_type> &found_indices){
+
+    found_indices.clear();
+    int base_id{-1};
+    int id{0};
+    value_type size_base{}, tmp, index;
+    for (auto n: neighbors) {
+        id = _lattice.getBond(n).get_groupID();
+        if(id >= 0){
+            index = value_type(id);
+            tmp = _clusters[index].numberOfBonds();
+            if(tmp > size_base){
+                size_base = tmp;
+                base_id = id;
+                continue;
+            }
+            if(id == base_id){
+                // already a base. harmful if included in found_index_set
+                continue;
+            }
+            found_indices.insert(index);
+
+        }
+    }
+    return base_id;
+}
+
 
 
 void BondPercolation_pb_v1::calculate_spanning_probability() {
