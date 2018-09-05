@@ -22,7 +22,7 @@
 #include "id_index.h"
 #include "boundary.h"
 #include "../ext_libs/inverse_array.h"
-
+#include <random>
 
 template <typename T>
 T sum(const std::vector<T>& vec){
@@ -80,8 +80,13 @@ protected:
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
 
+    value_type _total_relabeling{};
+    double time_relabel{};
 
     value_type _max_iteration_limit{};
+    std::vector<value_type> randomized_index;
+    std::random_device _random_device;
+    std::mt19937 _g;
 
     void set_type(char t){type = t;} // setting percolation type
 public:
@@ -167,6 +172,9 @@ public:
 
     char get_type() const {return type;} // get percolation type
     virtual value_type maxIterationLimit() {return _max_iteration_limit;};
+
+    double get_relabeling_time() const {return time_relabel;}
+    value_type relabeling_count() const {return _total_relabeling;}
 };
 
 
@@ -294,7 +302,7 @@ protected:
      * Logging variable
      ************************************/
     bool _logging_flag{false};
-    value_type _total_relabeling{};
+
 
     /*****************************************
      * Private Methods
@@ -303,7 +311,6 @@ protected:
     void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
     value_type find_suitable_base_cluster(const vector<value_type> &found_index) const;
 
-    double time_relabel{};
 public:
     static constexpr const char* signature = "SitePercolation_ps_v8";
 
@@ -315,8 +322,6 @@ public:
 
     SitePercolation_ps_v8& operator=(SitePercolation_ps_v8 & ) = default;
 //    SitePercolation_ps_v8&& operator=(SitePercolation_ps_v8 && ) = default;
-    double get_relabeling_time() {return time_relabel;}
-    value_type relabeling_count() const {return _total_relabeling;}
 
     virtual void reset();
 
@@ -698,7 +703,8 @@ protected:
 
     // index sequence
     std::vector<Index> index_sequence;  // initialized once
-    std::vector<Index> randomized_index_sequence;
+//    std::vector<Index> randomized_index_sequence;
+    std::vector<value_type> randomized_index;
     value_type _number_of_occupied_sites{};
 
 
@@ -978,11 +984,7 @@ public:
      */
     void view_cluster_from_ground_up();
 
-    void uncooupied_site_count()const {std::cout << "unactivated site number " << randomized_index_sequence.size() << std::endl;}
-
     std::string getLatticeIDs() {return _lattice.getLatticeIDs();}
-
-    void view_index_order() {for(auto a: randomized_index_sequence){std::cout << a << ',' << std::endl;}}
 
 
     /***********************************************
@@ -998,8 +1000,7 @@ protected:
     void randomize_v2(); // better random number generator
 
     std::set<value_type> find_index_for_placing_new_bonds(const vector<Index> &neighbors);
-    int find_index_for_placing_new_bonds(const vector<Index> &neighbors, std::set<value_type>& found_indices);
-
+    int find_cluster_index_for_placing_new_bonds(const vector<Index> &neighbors, std::set<value_type> &found_indices);
 
     value_type manage_clusters(
             const std::set<value_type> &found_index_set,
@@ -1012,12 +1013,6 @@ protected:
             Index &site,
             int base_id // since id and index is same
     );
-
-    value_type manage_clusters_weighted(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
 
     bool anyActiveSite(value_type r, value_type c, value_type delta);
     bool anyActiveSpanningSite(value_type row, value_type col, value_type delta);
@@ -1527,6 +1522,7 @@ public:
     }
 
     value_type placeBond_v0();
+    value_type placeBond_v1();
     bool occupy();
 
     /**********************
@@ -1597,6 +1593,7 @@ private:
     void initialize_indices();
 
     void randomize();
+    void randomize_v2();
 
 //    std::vector<Index> get_Sites_for_bonds(BondIndex);
 
@@ -1607,10 +1604,21 @@ private:
             BondIndex &bond
     );
 
+    value_type manage_clusters(
+            const set<value_type> &found_index_set,
+            vector<Index> &sites,
+            BondIndex &bond,
+            int base_id
+    );
+
     void connection_v1(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
     void connection_v2(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
     void mark_sites(vector<Index> &sites);
-    std::set<value_type> find_index_for_placing_new_bonds_v1(const std::vector<BondIndex>& neighbors);
+    std::set<value_type> find_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors);
+    int find_cluster_index_for_placing_new_bonds(
+            const std::vector<BondIndex> &neighbors,
+            std::set<value_type> &found_indices
+    );
 
 
     void connection_2_horizontal_no_periodicity(const BondIndex &bond, vector<Index> &site_neighbor,
@@ -1628,5 +1636,18 @@ private:
 
 };
 
+/**
+ * Universal class to access all types of percolation in square lattice.
+ * More userfriendly.
+ */
+class Percolation{
+public:
+    enum class Types{
+       SitePercolation,
+       BondPercolation,
+       SitePercolationBallisticDepositionL1,
+       SitePercolationBallisticDepositionL2
+    };
+};
 #endif //SITEPERCOLATION_PERCOLATION_H
 

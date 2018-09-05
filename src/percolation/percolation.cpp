@@ -15,6 +15,7 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
          * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
          */
         cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
+        exit(1);
     }
     _length = length;
     value_type _length_squared = length * length;
@@ -23,6 +24,14 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
     _clusters = vector<Cluster_v2>();
     min_index = 0;
     max_index = _length - 1;
+
+//    size_t seed = 0;
+//    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
+
+    auto seed = _random_device();
+
+    _g.seed(seed); // seeding
+    cout << "seeding with " << seed << endl;
 }
 
 
@@ -174,6 +183,8 @@ void SqLatticePercolation::reset() {
     _entropy_previous=0;
     _largest_jump_entropy = 0;
     _entropy_jump_pc = 0;
+    _total_relabeling = 0;
+    time_relabel = 0;
 }
 
 void SqLatticePercolation::jump() {

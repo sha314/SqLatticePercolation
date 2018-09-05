@@ -16,6 +16,7 @@
 #include "../index/delta.h"
 #include <omp.h>
 #include <thread>
+
 #include "../util/checking.h"
 
 using namespace std;
@@ -43,13 +44,14 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
     min_index = 0;
     max_index = length - 1;
 
-    randomized_index_sequence = vector<Index>(maxSites());
-    index_sequence = vector<Index>(maxSites());
+//    randomized_index_sequence = vector<Index>(maxSites());
+    index_sequence.resize(maxSites());
+    randomized_index.resize(maxSites());
     _max_iteration_limit = maxSites();
 
     initialize_index_sequence();
     initialize();
-    randomize();  // randomize the untouched_site_indices
+    randomize_v2();  // randomize the untouched_site_indices
 //    markImpureSites();
 }
 
@@ -68,7 +70,7 @@ void SitePercolation_ps_v9::initialize() {
     _left_edge.reserve(length());
     _right_edge.reserve(length());
 
-    randomized_index_sequence = index_sequence;
+//    randomized_index_sequence = index_sequence;
 }
 
 
@@ -78,6 +80,7 @@ void SitePercolation_ps_v9::initialize() {
 void SitePercolation_ps_v9::initialize_index_sequence() {
     value_type m{}, n{};
     for (value_type i{}; i != index_sequence.size(); ++i) {
+        randomized_index[i] = i;
         index_sequence[i] = Index(m, n);
         ++n;
         if (n == length()) {
@@ -146,7 +149,8 @@ void SitePercolation_ps_v9::reset() {
     _spanning_occured = false;
 
     initialize();
-    randomize();
+//    randomize();
+    randomize_v2();
 //    markImpureSites();
     time_relabel = 0;
     _total_relabeling = 0;
@@ -158,18 +162,28 @@ void SitePercolation_ps_v9::reset() {
  * Takes 3.031000 sec for 1000 x 1000 sites
  */
 void SitePercolation_ps_v9::randomize(){
-    value_type  len = randomized_index_sequence.size();
-    value_type j{};
-    Index temp;
-    for(value_type i{} ; i != len; ++i){
-        // select a j from the array. which must come from the ordered region
-        j = i + std::rand() % (len - i);
+    cout << "use std::suffle instead of manually suffling : line " << endl;
+//    value_type  len = randomized_index_sequence.size();
+//    value_type j{};
+//    Index temp;
+//    for(value_type i{} ; i != len; ++i){
+//        // select a j from the array. which must come from the ordered region
+//        j = i + std::rand() % (len - i);
+//
+//        // perform the swapping with i-th and j-th value
+//        temp = randomized_index_sequence[j];
+//        randomized_index_sequence[j] = randomized_index_sequence[i];
+//        randomized_index_sequence[i] = temp;
+//    }
+//    cout << "Index sequence : " << randomized_index_sequence << endl;
+}
 
-        // perform the swapping with i-th and j-th value
-        temp = randomized_index_sequence[j];
-        randomized_index_sequence[j] = randomized_index_sequence[i];
-        randomized_index_sequence[i] = temp;
-    }
+/**
+ * Randomize the indices
+ */
+void SitePercolation_ps_v9::randomize_v2(){
+
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _g);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -372,16 +386,14 @@ SitePercolation_ps_v9::find_index_for_placing_new_bonds(const vector<Index> &nei
 
 /**
  *
- * Find one row from _cluster to place 4 or less new bonds
- * Also remove the matched index values, because they will be inserted later.
- * This gives an advantage, i.e., you don't need to perform a checking.
- * todo takes so much time
- * @param hv_bonds
- * @return a set
+ * @param neighbors         :
+ * @param found_index_set   : index of the clusters that will be merged together.
+ *                            Does not contain the base cluster index or id.
+ * @return                  : id of the base cluster
  */
 int
-SitePercolation_ps_v9::find_index_for_placing_new_bonds(
-        const vector<Index> &neighbors, std::set<value_type>& found_index_set
+SitePercolation_ps_v9::find_cluster_index_for_placing_new_bonds(
+        const vector<Index> &neighbors, std::set<value_type> &found_index_set
 ){
     found_index_set.clear();
     value_type size{}, tmp{}, index;
@@ -395,9 +407,14 @@ SitePercolation_ps_v9::find_index_for_placing_new_bonds(
             if(tmp > size){
                 size = tmp;
                 base_id = id;
-            }else { // base index is not inserted in the found index set
-                found_index_set.insert(index);
+                continue;
             }
+            if(id == base_id){
+                // already a base. harmful if included in found_index_set
+                continue;
+            }
+            found_index_set.insert(index);
+
         }
     }
 
@@ -500,7 +517,6 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
 )
 {
 
-    vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
     value_type merged_cluster_index{};
 
     if (base_id != -1) {
@@ -525,9 +541,8 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
 
         // merge clusters with common values from all other cluster        // merge clusters with common values from all other cluster
 
-        value_type ers{};
-        for (value_type k{}; k != found_index.size(); ++k) {
-            ers = found_index[k];
+
+        for(value_type ers: found_index_set){
 
             _total_relabeling += _clusters[ers].numberOfSites(); // only for debugging purposes
             // perform relabeling on the sites
@@ -554,93 +569,6 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
         merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
 
     }
-
-    return merged_cluster_index;
-}
-
-
-/**
- * Last placed site is added to a cluster. If this connects other clusters then merge all
- * cluster together to get one big cluster. All sites that are part of the other clusters
- * are relabled according to the id of the base cluster. Weighted relabeling is applied here, i.e.,
- * When merging two cluster the small cluster get merged to the large cluster.
- * @param found_index_set : index of the clusters that are neighbors of the last placed site
- * @param hv_bonds        : bonds that connects the last placed site and its neighbors
- *                          and which are not part of any cluster of size larger than one
- * @param site            : last placed site
- * @return
- */
-value_type SitePercolation_ps_v9::manage_clusters_weighted(
-        const set<value_type> &found_index_set,
-        vector<BondIndex> &hv_bonds,
-        Index &site
-)
-{
-
-    vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
-    cout << "found index : " << found_index << endl;
-    value_type merged_cluster_index{};
-
-//    if (!found_index_set.empty()) {
-//        value_type base = found_index[0];
-//        _clusters[base].addSiteIndex(site);
-//        int id_base = _clusters[base].get_ID();
-//        vector<Index> neibhgors = _lattice.get_neighbor_site_indices(site);
-//        // find which of the neighbors are of id_base as the base cluster
-//        IndexRelative r;
-//        for(auto n: neibhgors){
-//            if(_lattice.getSite(n).get_groupID() == id_base){
-//                // find relative index with respect to this site
-//                r = getRelativeIndex(n, site);
-//                break; // since first time r is set running loop is doing no good
-//            }
-//        }
-//
-//        // put_values_to_the_cluster new values in the 0-th found index
-//        _clusters[base].insert(hv_bonds);
-//        _lattice.getSite(site).relativeIndex(r);
-//        _lattice.getSite(site).set_groupID(id_base); // relabeling for 1 site
-//
-//        // merge clusters with common values from all other cluster
-//
-//        value_type ers{}, tmp{};
-//        int tmp_id{};
-//        value_type base_size = _clusters[base].numberOfSites(), tmp_size;
-//        for (value_type k{1}; k != found_index.size(); ++k) {
-//            ers = found_index[k];
-//            tmp_size = _clusters[ers].numberOfSites();
-//            tmp_id = _clusters[ers].get_ID();
-//            if(tmp_size > base_size){
-//                tmp = base;
-//                base = ers;
-//                ers = tmp;
-//                cout << "weighted relabeling : line " << __LINE__ << endl;
-//                _lattice.getSite(site).set_groupID(tmp_id); // relabeling for 1 site
-//            }
-//
-//            // perform relabeling on the sites
-//            relabel_sites_v5(site, _clusters[ers]);
-//
-//            // store values of other found indices to the cluster
-//            _clusters[base].insert_v2(_clusters[ers]);
-//            _clusters[ers].clear(); // emptying the cluster
-//
-//        }
-//        merged_cluster_index = base;
-//
-//    } else {
-//        // create new element for the cluster
-//        _clusters.push_back(Cluster_v2(_cluster_id));
-//        value_type _this_cluster_index = _clusters.size() -1;
-////        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
-//        _cluster_index_from_id.insert(_cluster_id); // new version
-//        _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
-//        _cluster_id++;
-//        _clusters.back().insert(hv_bonds);
-//        _clusters[_this_cluster_index].addSiteIndex(site);
-//        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
-//
-//    }
 
     return merged_cluster_index;
 }
@@ -1211,8 +1139,8 @@ bool SitePercolation_ps_v9::occupy() {
 
     Index site = selectSite();
 
-    placeSite_v2(site);
-//    placeSite_v3(site);
+//    placeSite_v2(site);
+    placeSite_v3(site);
 
 
     _occuption_probability = occupationProbability(); // for super class
@@ -1304,9 +1232,12 @@ value_type SitePercolation_ps_v9::placeSite_v3(Index current_site) {
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set;
-    int  base_id = find_index_for_placing_new_bonds(sites, found_index_set);
+    int  base_id = find_cluster_index_for_placing_new_bonds(sites, found_index_set);
+//    if (found_index_set.find(value_type(base_id)) != found_index_set.end()) {
+//        cout << "base " << base_id << " and Found indices " << found_index_set << endl;
+//        exit(1);
+//    }
 
-//    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
 
@@ -1333,7 +1264,9 @@ value_type SitePercolation_ps_v9::placeSite_v3(Index current_site) {
  * @return
  */
 Index SitePercolation_ps_v9::selectSite(){
-    Index current_site = randomized_index_sequence[_index_sequence_position];
+//    Index current_site = randomized_index_sequence[_index_sequence_position]; // old
+    value_type index = randomized_index[_index_sequence_position];
+    Index current_site = index_sequence[index]; // new process
     ++_index_sequence_position;
 
     return current_site;

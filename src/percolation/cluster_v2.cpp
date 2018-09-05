@@ -144,9 +144,6 @@ void Cluster_v2::insert(const Cluster_v2 &cluster) {
  * @param cluster
  */
 void Cluster_v2::insert_v2(const Cluster_v2 &cluster) {
-//    if(_id > cluster._id){
-//        cout << "_id > cluster._id : line " << __LINE__ << endl;
-//    }
     // older time or smaller time is the creation birthTime of the cluster
 //    cout << "Comparing " << _creation_time << " and " << cluster._creation_time;
     _creation_time = _creation_time < cluster._creation_time ? _creation_time : cluster._creation_time;

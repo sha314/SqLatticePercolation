@@ -1121,31 +1121,29 @@ void entropyJumps(int argc, char** argv){
 
 void site_percolation_new_version(){
     value_type length = 1000;
-    SitePercolation_ps_v9 sp(length);
-
+    BondPercolation_pb_v1 lattice_percolation(length);
+    lattice_percolation.reset();
     value_type j{};
-    while(sp.occupy()) {
+    while(lattice_percolation.occupy()) {
         j+=1;
-//        cout << j << "-th site " << sp.lastPlacedSite() << endl;
-//        if(sp.detectWrapping()){
-//            cout << "Wrapping " << sp.occupationProbability() << endl;
+//        cout << j << "-th site " << lattice_percolation.lastPlacedSite() << endl;
+//        if(lattice_percolation.detectWrapping()){
+//            cout << "Wrapping " << lattice_percolation.occupationProbability() << endl;
 //            break;
 //        }
 
-//        sp.viewSiteByID();
-//        sp.viewSiteByRelativeIndex();
-//        sp.viewClusterExtended();
-//        if (j >= sp.maxIterationLimit()){
-//            break;
-//        }
-        if (j >= sp.maxIterationLimit()){
+//        lattice_percolation.viewLatticeByID();
+//        lattice_percolation.viewSiteByRelativeIndex();
+//        lattice_percolation.viewClusterExtended();
+
+        if (j >= lattice_percolation.maxIterationLimit()){
             break;
         }
     }
-//    sp.viewSiteByID();
-//    sp.viewSiteByRelativeIndex();
-//    sp.viewClusterExtended();
-    cout << "relabeling count " << sp.relabeling_count() << endl;
+//    lattice_percolation.viewSiteByID();
+//    lattice_percolation.viewSiteByRelativeIndex();
+//    lattice_percolation.viewClusterExtended();
+    cout << "relabeling count " << lattice_percolation.relabeling_count() << endl;
 }
 
 /****

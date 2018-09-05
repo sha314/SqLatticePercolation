@@ -250,7 +250,7 @@ void SitePercolation_ps_v8::configure(std::vector<Index> site_indices) {
 //        }
 //
 //        // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-//        set<value_type> found_index_set = find_index_for_placing_new_bonds_v1(hv_bonds);
+//        set<value_type> found_index_set = find_cluster_index_for_placing_new_bonds(hv_bonds);
 ////        value_type m = put_values_to_the_cluster_weighted_relabeling_v1(found_index_set, hv_bonds, s_index);
 ////        set<value_type> found_index_set = find_index_for_placing_new_bonds_v2(s_index);
 //        value_type m = put_values_to_the_cluster_weighted_relabeling_v2(found_index_set, hv_bonds, s_index);
