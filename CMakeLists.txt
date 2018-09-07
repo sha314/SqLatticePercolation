@@ -45,7 +45,6 @@ set(SOURCE_FILES
         src/percolation/calculation.h
         src/percolation/cluster.cpp
         src/percolation/cluster.h
-        src/percolation/cluster_v2.cpp
         src/percolation/id_index.cpp
         src/percolation/id_index.h
         src/percolation/percolation.cpp

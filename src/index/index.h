@@ -77,6 +77,7 @@ struct BondIndex{
 
     bool horizontal() const { return bondType == BondType::Horizontal;}
     bool vertical() const { return bondType == BondType::Vertical;}
+
 };
 
 

@@ -1121,16 +1121,16 @@ void entropyJumps(int argc, char** argv){
 
 void site_percolation_new_version(){
     value_type length = 1000;
-    BondPercolation_pb_v1 lattice_percolation(length);
-    lattice_percolation.reset();
+    SitePercolation_ps_v9 lattice_percolation(length);
+//    lattice_percolation.reset();
     value_type j{};
     while(lattice_percolation.occupy()) {
         j+=1;
-//        cout << j << "-th site " << lattice_percolation.lastPlacedSite() << endl;
-//        if(lattice_percolation.detectWrapping()){
-//            cout << "Wrapping " << lattice_percolation.occupationProbability() << endl;
-//            break;
-//        }
+//        cout << j << "-th site " << lattice_percolation.lastPlacedBond() << endl;
+        if(lattice_percolation.detectWrapping()){
+            cout << "Wrapping " << lattice_percolation.occupationProbability() << endl;
+            break;
+        }
 
 //        lattice_percolation.viewLatticeByID();
 //        lattice_percolation.viewSiteByRelativeIndex();
@@ -1140,8 +1140,10 @@ void site_percolation_new_version(){
             break;
         }
     }
+    cout << j << "-th site " << lattice_percolation.lastPlacedSite() << endl;
 //    lattice_percolation.viewSiteByID();
 //    lattice_percolation.viewSiteByRelativeIndex();
+//    lattice_percolation.viewByRelativeIndex();
 //    lattice_percolation.viewClusterExtended();
     cout << "relabeling count " << lattice_percolation.relabeling_count() << endl;
 }

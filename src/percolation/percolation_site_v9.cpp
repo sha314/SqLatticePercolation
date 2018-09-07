@@ -396,7 +396,7 @@ SitePercolation_ps_v9::find_cluster_index_for_placing_new_bonds(
         const vector<Index> &neighbors, std::set<value_type> &found_index_set
 ){
     found_index_set.clear();
-    value_type size{}, tmp{}, index;
+    value_type size{}, tmp{}, index, base{ULONG_MAX};
     int base_id{-1};
     int id;
     for (auto n: neighbors) {
@@ -407,17 +407,14 @@ SitePercolation_ps_v9::find_cluster_index_for_placing_new_bonds(
             if(tmp > size){
                 size = tmp;
                 base_id = id;
-                continue;
+                base = index;
             }
-            if(id == base_id){
-                // already a base. harmful if included in found_index_set
-                continue;
-            }
+
             found_index_set.insert(index);
 
         }
     }
-
+    found_index_set.erase(base);
     return base_id;
 }
 
@@ -482,7 +479,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
 
     } else {
         // create new element for the cluster
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
 //        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
         _cluster_index_from_id.insert(_cluster_id); // new version
@@ -558,7 +555,7 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
 
     } else {
         // create new element for the cluster
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
 //        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
         _cluster_index_from_id.insert(_cluster_id); // new version
@@ -1754,7 +1751,7 @@ value_type SitePercolation_ps_v9::numberOfSitesInCluster_by_id(value_type id) {
  * @param clstr
  * @param id
  */
-void SitePercolation_ps_v9::relabel_sites(const Cluster_v2& clstr, int id) {
+void SitePercolation_ps_v9::relabel_sites(const Cluster& clstr, int id) {
     const vector<Index> sites = clstr.getSiteIndices();
     for(auto a: sites){
         _lattice.getSite(a).set_groupID(id);
@@ -1768,7 +1765,7 @@ void SitePercolation_ps_v9::relabel_sites(const Cluster_v2& clstr, int id) {
   * @param site_a  : root index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
-void SitePercolation_ps_v9::relabel_sites_v4(Index site_a, const Cluster_v2& clstr_b) {
+void SitePercolation_ps_v9::relabel_sites_v4(Index site_a, const Cluster& clstr_b) {
     const vector<Index> sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getSite(site_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -1827,7 +1824,7 @@ void SitePercolation_ps_v9::relabel_sites_v4(Index site_a, const Cluster_v2& cls
   * @param site_a  : last added site index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
-void SitePercolation_ps_v9::relabel_sites_v5(Index site_a, const Cluster_v2& clstr_b) {
+void SitePercolation_ps_v9::relabel_sites_v5(Index site_a, const Cluster& clstr_b) {
     const vector<Index> sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getSite(site_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -1879,7 +1876,7 @@ void SitePercolation_ps_v9::relabel_sites_v5(Index site_a, const Cluster_v2& cls
  * @param clstr_b : 2nd cluster, which to be merged withe the root
  * @param id : id to be used for relabeling sites
  */
-void SitePercolation_ps_v9::relabel_sites_v6(Index site_a, const Cluster_v2& clstr_b, int id) {
+void SitePercolation_ps_v9::relabel_sites_v6(Index site_a, const Cluster& clstr_b, int id) {
     const vector<Index> sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getSite(site_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -1943,7 +1940,7 @@ void SitePercolation_ps_v9::relabel_sites(const vector<Index> &sites, int id_a, 
  * @param clstr
  * @param id
  */
-void SitePercolation_ps_v9::relabel_bonds(const Cluster_v2& clstr, int id) {
+void SitePercolation_ps_v9::relabel_bonds(const Cluster& clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
     for(auto a: bonds){
         _lattice.getBond(a).set_groupID(id);
@@ -1995,7 +1992,7 @@ double SitePercolation_ps_v9::orderParameter() const{
         return double(_number_of_bonds_in_the_largest_cluster) / maxBonds();
     }
     value_type  len{}, nob{};
-    for(const Cluster_v2& c: _clusters){
+    for(const Cluster& c: _clusters){
         nob = c.numberOfBonds();
         if (len < nob){
             len = nob;
@@ -2215,7 +2212,7 @@ int SitePercolation_ps_v9::birthTimeOfACluster(int id) const {
         cerr << "_first_spanning_cluster_id < 0 : line " << __LINE__ << endl;
         return -1;
     }
-    for (const Cluster_v2& cls: _clusters){
+    for (const Cluster& cls: _clusters){
         if(cls.get_ID() == id){
             return cls.birthTime();
         }

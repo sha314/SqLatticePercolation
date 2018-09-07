@@ -33,12 +33,13 @@ BondPercolation_pb_v0::BondPercolation_pb_v0(value_type length, bool periodicity
     SqLatticePercolation::set_type('b');
     _periodicity = periodicity;
     _index_sequence_position = 0;
+    _number_of_occupied_bonds = 0;
     _lattice = SqLattice(length, false, true, true, true);
 
     index_sequence.reserve(maxBonds());
 
     // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
-    _clusters = vector<Cluster_v2>();
+    _clusters = vector<Cluster>();
     _max_iteration_limit = maxBonds();
     initialize_index_sequence();
     initialize();
@@ -214,7 +215,7 @@ double BondPercolation_pb_v0::entropy_slow() {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v0::relabel_sites(const Cluster_v2 &clstr, int id) {
+void BondPercolation_pb_v0::relabel_sites(const Cluster &clstr, int id) {
 
     const vector<Index> sites = clstr.getSiteIndices();
     for (auto a: sites) {
@@ -228,7 +229,7 @@ void BondPercolation_pb_v0::relabel_sites(const Cluster_v2 &clstr, int id) {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v0::relabel_bonds(const Cluster_v2 &clstr, int id) {
+void BondPercolation_pb_v0::relabel_bonds(const Cluster &clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
     for (auto a: bonds) {
         _lattice.getBond(a).set_groupID(id);
@@ -241,7 +242,7 @@ void BondPercolation_pb_v0::relabel_bonds(const Cluster_v2 &clstr, int id) {
   * @param bond_a  : : last added bond index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
-void BondPercolation_pb_v0::relabel_bonds_v1(BondIndex bond_a, const Cluster_v2 &clstr_b) {
+void BondPercolation_pb_v0::relabel_bonds_v1(BondIndex bond_a, const Cluster &clstr_b) {
     const vector<BondIndex> bonds = clstr_b.getBondIndices();
     int id_a = _lattice.getBond(bond_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -372,7 +373,7 @@ void BondPercolation_pb_v0::relabel_cluster(BondIndex bond,  const vector<Index>
  * @param site_pos : position of the sites from where sites will be relabeled
  *                   according to site_pos-1 site ?
  */
-void BondPercolation_pb_v0::relabel_cluster(BondIndex bond, const Cluster_v2& clstr_b, size_t bond_pos, size_t site_pos){
+void BondPercolation_pb_v0::relabel_cluster(BondIndex bond, const Cluster& clstr_b, size_t bond_pos, size_t site_pos){
     const vector<Index> & sites = clstr_b.getSiteIndices();
     const vector<BondIndex> & bonds = clstr_b.getBondIndices();
 
@@ -449,7 +450,7 @@ void BondPercolation_pb_v0::relabel_cluster(BondIndex bond, const Cluster_v2& cl
  * @param last_bond
  * @param clstr_b
  */
-void BondPercolation_pb_v0::relabel_v1(BondIndex last_bond, const Cluster_v2 &clstr_b) {
+void BondPercolation_pb_v0::relabel_v1(BondIndex last_bond, const Cluster &clstr_b) {
     Index site_a = {last_bond.row_, last_bond.column_};
     const vector<Index> &sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getBond(last_bond).get_groupID();
@@ -669,7 +670,7 @@ value_type BondPercolation_pb_v0::manage_clusters_v1(
 
     } else {
         // create new element for the cluster
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 //        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
         _cluster_index_from_id.insert(_cluster_id); // new version
@@ -951,7 +952,7 @@ value_type BondPercolation_pb_v0::manage_clusters_v3(
 
         relabel_new_sites_relative(sites, _cluster_id);
 
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 
         _cluster_index_from_id.insert(_cluster_id); // new version

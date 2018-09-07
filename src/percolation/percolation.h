@@ -65,7 +65,7 @@ protected:
     // todo. and bonds and keep track of root sites and bonds only
     // todo. root site or bond means the first one that is stored
 
-    std::vector<Cluster_v2> _clusters;   // check and remove reapeted index manually
+    std::vector<Cluster> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
 
@@ -442,11 +442,11 @@ public:
     // applicable to weighted relabeling
 
     value_type relabel(value_type index_1, value_type index_2);
-    void relabel_sites(const Cluster_v2&  clstr, int id);  // todo pass cluster as reference
-    void relabel_sites_v4(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
-    void relabel_sites_v5(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
-    void relabel_sites_v6(Index root_a, const Cluster_v2& clstr_b, int id); // relative index is set accordingly
-    void relabel_bonds(const Cluster_v2&  clstr, int id);  // todo
+    void relabel_sites(const Cluster&  clstr, int id);  // todo pass cluster as reference
+    void relabel_sites_v4(Index root_a, const Cluster& clstr_b); // relative index is set accordingly
+    void relabel_sites_v5(Index root_a, const Cluster& clstr_b); // relative index is set accordingly
+    void relabel_sites_v6(Index root_a, const Cluster& clstr_b, int id); // relative index is set accordingly
+    void relabel_bonds(const Cluster&  clstr, int id);  // todo
 
 
     /**********************************************
@@ -835,11 +835,11 @@ public:
     // applicable to weighted relabeling
 
     value_type relabel(value_type index_1, value_type index_2);
-    void relabel_sites(const Cluster_v2&  clstr, int id);  // todo pass cluster as reference
-    void relabel_sites_v4(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
-    void relabel_sites_v5(Index root_a, const Cluster_v2& clstr_b); // relative index is set accordingly
-    void relabel_sites_v6(Index root_a, const Cluster_v2& clstr_b, int id); // relative index is set accordingly
-    void relabel_bonds(const Cluster_v2&  clstr, int id);  // todo
+    void relabel_sites(const Cluster&  clstr, int id);  // todo pass cluster as reference
+    void relabel_sites_v4(Index root_a, const Cluster& clstr_b); // relative index is set accordingly
+    void relabel_sites_v5(Index root_a, const Cluster& clstr_b); // relative index is set accordingly
+    void relabel_sites_v6(Index root_a, const Cluster& clstr_b, int id); // relative index is set accordingly
+    void relabel_bonds(const Cluster&  clstr, int id);  // todo
 
 
     /**********************************************
@@ -1267,12 +1267,12 @@ public:
     /**********************
      * Relabeling
      */
-    void relabel_sites(const Cluster_v2& clstr, int id);
-    void relabel_bonds(const Cluster_v2& clstr, int id);
-    void relabel_bonds_v1(BondIndex site_a, const Cluster_v2 &clstr_b); // implemented on 17 Aug 2018
+    void relabel_sites(const Cluster& clstr, int id);
+    void relabel_bonds(const Cluster& clstr, int id);
+    void relabel_bonds_v1(BondIndex site_a, const Cluster &clstr_b); // implemented on 17 Aug 2018
     void relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
 
-    void relabel_v1(BondIndex last_bond, const Cluster_v2& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
+    void relabel_v1(BondIndex last_bond, const Cluster& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
     void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
     void relabel_sites_relative(BondIndex bond, const vector<Index> &sites);
@@ -1280,7 +1280,7 @@ public:
 
     // relabel sites and bonds in the cluster cluster
     void relabel_cluster(BondIndex bond, const vector<Index>& sites);
-    void relabel_cluster(BondIndex bond, const Cluster_v2& clstr_b, size_t bond_pos, size_t site_pos);
+    void relabel_cluster(BondIndex bond, const Cluster& clstr_b, size_t bond_pos, size_t site_pos);
 
     void numberOfActiveSites() const {std::cout << "Number of active sites " << _total_number_of_active_bonds << std::endl;}
     double activeSites() const { return _total_number_of_active_bonds;}
@@ -1475,12 +1475,12 @@ public:
     /**********************
      * Relabeling
      */
-    void relabel_sites(const Cluster_v2& clstr, int id);
-    void relabel_bonds(const Cluster_v2& clstr, int id);
-    void relabel_bonds_v1(BondIndex site_a, const Cluster_v2 &clstr_b); // implemented on 17 Aug 2018
+    void relabel_sites(const Cluster& clstr, int id);
+    void relabel_bonds(const Cluster& clstr, int id);
+    void relabel_bonds_v1(BondIndex site_a, const Cluster &clstr_b); // implemented on 17 Aug 2018
     void relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
 
-    void relabel_v1(BondIndex last_bond, const Cluster_v2& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
+    void relabel_v1(BondIndex last_bond, const Cluster& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
     void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
     void relabel_sites_relative(BondIndex bond, const vector<Index> &sites);
@@ -1488,7 +1488,7 @@ public:
 
     // relabel sites and bonds in the cluster cluster
     void relabel_cluster(BondIndex bond, const vector<Index>& sites);
-    void relabel_cluster(BondIndex bond, const Cluster_v2& clstr_b, size_t bond_pos, size_t site_pos);
+    void relabel_cluster(BondIndex bond, const Cluster& clstr_b, size_t bond_pos, size_t site_pos);
 
     void numberOfActiveSites() const {std::cout << "Number of active sites " << _total_number_of_active_bonds << std::endl;}
     double activeSites() const { return _total_number_of_active_bonds;}
@@ -1522,13 +1522,11 @@ public:
 
     BondIndex lastPlacedBond() {
         if (_index_sequence_position == 0) {
-            cout << "Empty lattice : line " << __LINE__ << endl;
+            cerr << "Empty lattice : line " << __LINE__ << endl;
             return _last_placed_bond;
         }
         return _last_placed_bond;
     }
-
-    // debuggind functions
 
 
 private:
@@ -1567,6 +1565,11 @@ private:
             std::set<value_type> &found_indices
     );
 
+    int find_cluster_index_for_placing_new_bonds_v2(
+            const std::vector<BondIndex> &neighbors,
+            std::set<value_type> &found_indices
+    );
+
 
     void connection_2_horizontal_no_periodicity(const BondIndex &bond, vector<Index> &site_neighbor,
                                                 vector<BondIndex> &bond_neighbor,
@@ -1587,6 +1590,7 @@ private:
  * Universal class to access all types of percolation in square lattice.
  * More userfriendly.
  */
+template <class T>
 class Percolation{
 public:
     enum class Types{
@@ -1595,6 +1599,10 @@ public:
        SitePercolationBallisticDepositionL1,
        SitePercolationBallisticDepositionL2
     };
+
+    ~Percolation() = default;
+    T getClass(Types t, value_type length, bool periodicity=true);
 };
+
 #endif //SITEPERCOLATION_PERCOLATION_H
 
