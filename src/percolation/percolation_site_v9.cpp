@@ -183,7 +183,7 @@ void SitePercolation_ps_v9::randomize(){
  */
 void SitePercolation_ps_v9::randomize_v2(){
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _g);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_generator);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -852,7 +852,6 @@ void SitePercolation_ps_v9::connection_v1(Index site, vector<Index> &neighbors, 
  */
 void SitePercolation_ps_v9::connection_v2(Index site, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor)
 {
-    clock_t t = clock();
 
     value_type prev_column  = (site.column_ + length() - 1) % length();
     value_type prev_row     = (site.row_ + length() - 1) % length();
@@ -1136,8 +1135,8 @@ bool SitePercolation_ps_v9::occupy() {
 
     Index site = selectSite();
 
-//    placeSite_v2(site);
-    placeSite_v3(site);
+//    placeSite(site);
+    placeSite_weighted(site);
 
 
     _occuption_probability = occupationProbability(); // for super class
@@ -1153,7 +1152,7 @@ bool SitePercolation_ps_v9::occupy() {
  * @param current_site
  * @return
  */
-value_type SitePercolation_ps_v9::placeSite_v2(Index current_site) {
+value_type SitePercolation_ps_v9::placeSite(Index current_site) {
     // randomly choose a site
     if (_number_of_occupied_sites == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
@@ -1206,7 +1205,42 @@ value_type SitePercolation_ps_v9::placeSite_v2(Index current_site) {
  * @param current_site
  * @return
  */
-value_type SitePercolation_ps_v9::placeSite_v3(Index current_site) {
+value_type SitePercolation_ps_v9::placeSite(
+        Index current_site,
+        vector<Index>& neighbor_sites,
+        vector<BondIndex>& neighbor_bonds
+) {
+
+    if (_number_of_occupied_sites == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+    _last_placed_site = current_site;
+    _lattice.activate_site(current_site);
+    ++_number_of_occupied_sites;
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set = find_index_for_placing_new_bonds(neighbor_sites);
+
+    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters(
+            found_index_set, neighbor_bonds, current_site
+    );
+    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    return merged_cluster_index;
+}
+
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ * Entropy is measured by site and bond both.
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
     // randomly choose a site
     if (_number_of_occupied_sites == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
@@ -1224,8 +1258,11 @@ value_type SitePercolation_ps_v9::placeSite_v3(Index current_site) {
     vector<BondIndex> bonds;
     vector<Index>     sites;
 
-//    connection_v1(current_site, sites, bonds);
+//    auto t0 = chrono::system_clock::now();
+
     connection_v2(current_site, sites, bonds);
+//    auto t1 = chrono::system_clock::now();
+//    time_relabel += chrono::duration<double>(t1 - t0).count();
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set;
@@ -1235,22 +1272,59 @@ value_type SitePercolation_ps_v9::placeSite_v3(Index current_site) {
 //        exit(1);
 //    }
 
-
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-
-    auto t0 = chrono::system_clock::now();
     value_type merged_cluster_index = manage_clusters_v2(
             found_index_set, bonds, current_site, base_id
     );
-    auto t1 = chrono::system_clock::now();
-    time_relabel += chrono::duration<double>(t1 - t0).count();
-
-
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
-
     // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
 
+    return merged_cluster_index;
+}
+
+/***
+ * Index of the selected site must be provided with the argument
+ *
+ * Wrapping and spanning index arrangement is enabled.
+ * Entropy is calculated smoothly.
+ * Entropy is measured by site and bond both.
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v9::placeSite_weighted(
+        Index current_site,
+        vector<Index>& neighbor_sites,
+        vector<BondIndex>& neighbor_bonds
+) {
+    // randomly choose a site
+    if (_number_of_occupied_sites == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+
+    _lattice.activate_site(current_site);
+
+    ++_number_of_occupied_sites;
+
+
+    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
+    set<value_type> found_index_set;
+    int  base_id = find_cluster_index_for_placing_new_bonds(neighbor_sites, found_index_set);
+//    if (found_index_set.find(value_type(base_id)) != found_index_set.end()) {
+//        cout << "base " << base_id << " and Found indices " << found_index_set << endl;
+//        exit(1);
+//    }
+
+    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    value_type merged_cluster_index = manage_clusters_v2(
+            found_index_set, neighbor_bonds, current_site, base_id
+    );
+    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
     return merged_cluster_index;
 }
 

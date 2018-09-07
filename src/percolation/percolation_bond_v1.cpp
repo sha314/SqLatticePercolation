@@ -147,7 +147,7 @@ void BondPercolation_pb_v1::randomize() {
  */
 void BondPercolation_pb_v1::randomize_v2() {
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _g);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_generator);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 

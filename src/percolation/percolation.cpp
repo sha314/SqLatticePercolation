@@ -28,7 +28,7 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
 //    size_t seed = 0;
 //    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
     auto seed = _random_device();
-    _g.seed(seed); // seeding
+    _random_generator.seed(seed); // seeding
     cout << "seeding with " << seed << endl;
 }
 
