@@ -29,12 +29,13 @@ BondPercolation_pb_v1::BondPercolation_pb_v1(value_type length, bool periodicity
     SqLatticePercolation::set_type('b');
     _periodicity = periodicity;
     _index_sequence_position = 0;
+    _number_of_occupied_bonds = 0;
     _lattice = SqLattice(length, false, true, true, true);
 
     index_sequence.reserve(maxBonds());
 
     // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
-    _clusters = vector<Cluster_v2>();
+    _clusters = vector<Cluster>();
     _max_iteration_limit = maxBonds();
     initialize_index_sequence();
     randomized_index.resize(maxIterationLimit());
@@ -225,7 +226,7 @@ double BondPercolation_pb_v1::entropy_slow() {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v1::relabel_sites(const Cluster_v2 &clstr, int id) {
+void BondPercolation_pb_v1::relabel_sites(const Cluster &clstr, int id) {
 
     const vector<Index> sites = clstr.getSiteIndices();
     for (auto a: sites) {
@@ -239,7 +240,7 @@ void BondPercolation_pb_v1::relabel_sites(const Cluster_v2 &clstr, int id) {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v1::relabel_bonds(const Cluster_v2 &clstr, int id) {
+void BondPercolation_pb_v1::relabel_bonds(const Cluster &clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
     for (auto a: bonds) {
         _lattice.getBond(a).set_groupID(id);
@@ -252,7 +253,7 @@ void BondPercolation_pb_v1::relabel_bonds(const Cluster_v2 &clstr, int id) {
   * @param bond_a  : : last added bond index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
-void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v2 &clstr_b) {
+void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster &clstr_b) {
     const vector<BondIndex> bonds = clstr_b.getBondIndices();
     int id_a = _lattice.getBond(bond_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -383,7 +384,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond,  const vector<Index>
  * @param site_pos : position of the sites from where sites will be relabeled
  *                   according to site_pos-1 site ?
  */
-void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v2& clstr_b, size_t bond_pos, size_t site_pos){
+void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster& clstr_b, size_t bond_pos, size_t site_pos){
     const vector<Index> & sites = clstr_b.getSiteIndices();
     const vector<BondIndex> & bonds = clstr_b.getBondIndices();
 
@@ -460,7 +461,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v2& cl
  * @param last_bond
  * @param clstr_b
  */
-void BondPercolation_pb_v1::relabel_v1(BondIndex last_bond, const Cluster_v2 &clstr_b) {
+void BondPercolation_pb_v1::relabel_v1(BondIndex last_bond, const Cluster &clstr_b) {
     Index site_a = {last_bond.row_, last_bond.column_};
     const vector<Index> &sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getBond(last_bond).get_groupID();
@@ -531,6 +532,14 @@ bool BondPercolation_pb_v1::occupy() {
 
     value_type v = placeBond_v1();
     _occuption_probability = occupationProbability(); // for super class
+    auto s = SqLattice::get_neighbor_indices(length(), _last_placed_bond);
+    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
+        cout << "relabeling is not perfect for site " << endl;
+        for(auto a : s) {
+            cout << a << " id " << _lattice.getSite(a).get_groupID() << endl;
+        }
+        return false; // to reminate iteration
+    }
     return v != ULONG_MAX;
 }
 
@@ -625,7 +634,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
     sites_in_cluster_with_size_greater_than_one += sites.size();
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set;
-    int base_id = find_cluster_index_for_placing_new_bonds(bonds, found_index_set);
+    int base_id = find_cluster_index_for_placing_new_bonds_v2(bonds, found_index_set);
 
 //    if (found_index_set.find(value_type(base_id)) != found_index_set.end()) {
 //        cout << "base " << base_id << " and Found indices " << found_index_set << endl;
@@ -720,7 +729,7 @@ void BondPercolation_pb_v1::mark_sites(vector<Index> &sites) {
 //
 //    } else {
 //        // create new element for the cluster
-//        _clusters.push_back(Cluster_v2(_cluster_id));
+//        _clusters.push_back(Cluster(_cluster_id));
 //        merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 ////        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
 //        _cluster_index_from_id.insert(_cluster_id); // new version
@@ -985,7 +994,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 
         relabel_new_sites_relative(sites, _cluster_id);
 
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 
         _cluster_index_from_id.insert(_cluster_id); // new version
@@ -1057,7 +1066,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 
         relabel_new_sites_relative(sites, _cluster_id);
 
-        _clusters.push_back(Cluster_v2(_cluster_id));
+        _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 
         _cluster_index_from_id.insert(_cluster_id); // new version
@@ -1946,6 +1955,42 @@ BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds(const std::vecto
 
         }
     }
+    return base_id;
+}
+
+
+/**
+ *
+ * @param neighbors         :
+ * @param found_index_set   : index of the clusters that will be merged together.
+ *                            Does not contain the base cluster index or id.
+ * @return                  : id of the base cluster
+ */
+int
+BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds_v2(const std::vector<BondIndex> &neighbors,
+                                                                std::set<value_type> &found_indices){
+
+    found_indices.clear();
+    int base_id{-1};
+    int id{0};
+    value_type size_base{}, tmp, index, base{};
+    for (auto n: neighbors) {
+        id = _lattice.getBond(n).get_groupID();
+        if(id >= 0){
+            index = value_type(id);
+            tmp = _clusters[index].numberOfBonds();
+            if(tmp > size_base){
+                size_base = tmp;
+                base_id = id;
+                base = index;
+            }
+            found_indices.insert(index);
+        }
+    }
+
+    // erase if it exists
+    found_indices.erase(base);
+
     return base_id;
 }
 

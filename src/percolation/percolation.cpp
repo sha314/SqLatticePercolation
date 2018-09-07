@@ -21,15 +21,13 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
     value_type _length_squared = length * length;
     _max_number_of_bonds = 2*_length_squared;
     _max_number_of_sites = _length_squared;
-    _clusters = vector<Cluster_v2>();
+    _clusters = vector<Cluster>();
     min_index = 0;
     max_index = _length - 1;
 
 //    size_t seed = 0;
 //    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
-
     auto seed = _random_device();
-
     _g.seed(seed); // seeding
     cout << "seeding with " << seed << endl;
 }
