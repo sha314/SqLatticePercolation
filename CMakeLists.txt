@@ -51,6 +51,7 @@ set(SOURCE_FILES
         src/percolation/percolation.h
         src/percolation/percolation_bond_v0.cpp
         src/percolation/percolation_site_ballistic_deps.cpp
+        src/percolation/percolation_site_ballistic_deps_v2.cpp
         src/percolation/percolation_site_explosive.cpp
         src/percolation/percolation_site_v8.cpp
         src/percolation/percolation_type.h

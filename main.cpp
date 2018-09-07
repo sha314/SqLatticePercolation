@@ -1119,18 +1119,19 @@ void entropyJumps(int argc, char** argv){
 }
 
 
-void site_percolation_new_version(){
+void site_percolation_new_version(int argc, char** argv){
     value_type length = 1000;
+    length = atoi(argv[1]);
     SitePercolation_ps_v9 lattice_percolation(length);
 //    lattice_percolation.reset();
     value_type j{};
     while(lattice_percolation.occupy()) {
         j+=1;
 //        cout << j << "-th site " << lattice_percolation.lastPlacedBond() << endl;
-        if(lattice_percolation.detectWrapping()){
-            cout << "Wrapping " << lattice_percolation.occupationProbability() << endl;
-            break;
-        }
+//        if(lattice_percolation.detectWrapping()){
+//            cout << "Wrapping " << lattice_percolation.occupationProbability() << endl;
+//            break;
+//        }
 
 //        lattice_percolation.viewLatticeByID();
 //        lattice_percolation.viewSiteByRelativeIndex();
@@ -1146,6 +1147,7 @@ void site_percolation_new_version(){
 //    lattice_percolation.viewByRelativeIndex();
 //    lattice_percolation.viewClusterExtended();
     cout << "relabeling count " << lattice_percolation.relabeling_count() << endl;
+    cout << "time " << lattice_percolation.get_relabeling_time() << endl;
 }
 
 /****
@@ -1199,7 +1201,7 @@ void run_in_main(int argc, char** argv){
 //    percolation_wrapping_and_jump(argc, argv);
 //    percolation_wrapping_and_jump();
 //    entropyJumps(argc, argv);
-    site_percolation_new_version();
+    site_percolation_new_version(argc, argv);
 
 }
 
