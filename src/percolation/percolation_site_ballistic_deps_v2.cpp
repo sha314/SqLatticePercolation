@@ -16,7 +16,7 @@
  * @param length
  */
 SitePercolationBallisticDeposition_v2::SitePercolationBallisticDeposition_v2(value_type length, bool periodicity)
-        : SitePercolation_ps_v8(length, periodicity )
+        : SitePercolation_ps_v9(length, periodicity )
 {
 
     std::cout << "Constructing SitePercolationBallisticDeposition_v2 object : line " << __LINE__ << endl;
@@ -48,50 +48,6 @@ void SitePercolationBallisticDeposition_v2::initialize_indices() {
 /***************************************
  * occupy upto 1st nearset neighbor.
  * */
-
-value_type SitePercolationBallisticDeposition_v2::placeSite_nn_v0(int n) {
-    cout << "Under Devlopment : line " << __LINE__ << endl;
-    vector<BondIndex> bonds;
-    vector<Index>     sites;
-
-    try {
-        if (n == 1) { // select upto 1st nearest neighbor
-            _last_placed_site = select_site_upto_1nn(sites, bonds);
-
-        } else if (n == 2) { // select upto 2nd nearest neighbor
-            _last_placed_site = select_site_upto_2nn(sites, bonds);
-        } else {
-            _last_placed_site = select_site(sites, bonds);
-        }
-    }catch (OccupiedNeighbor& on){
-        on.what();
-        cout << "line : " << __LINE__ << endl;
-        throw; // rethrowing
-    }
-
-    // now use the selected site to occupy the lattice
-
-    _lattice.activate_site(_last_placed_site);
-
-    ++_number_of_occupied_sites;
-//    ++_index_sequence_position;
-
-    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
-
-//    cout << "Found indices " << found_index_set << endl;
-
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
-            found_index_set, bonds, _last_placed_site
-    );
-    add_entropy_for_bond(merged_cluster_index); // tracking entropy change
-
-    // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-
-    return merged_cluster_index;
-}
 
 
 /*******************************************

@@ -21,8 +21,8 @@ using namespace std;
  * @param ensembleSize
  */
 void percolation_sq_lattice(value_type length, bool p, value_type ensembleSize) {
-    SitePercolation_ps_v8 sp(length, p);
-    cout << "Signature " << sp.signature << endl;
+    SitePercolation_ps_v9 sp(length, p);
+    cout << "Signature " << sp.getSignature() << endl;
 
     clock_t t;
     size_t length_squared = length*length;
@@ -812,7 +812,7 @@ void cmd_args_json(int argc, char **argv) {
 
     if(place_sites_for == -1) {
         clock_t t0 = clock();
-        SitePercolation_ps_v8 sp(length, true);
+        SitePercolation_ps_v9 sp(length, true);
         cout << "Signature " << sp.signature << endl;
         while (sp.occupy());
         cout << "Time elapsed : " << (clock() - t0) / double(CLOCKS_PER_SEC) << " sec" << endl;
@@ -897,13 +897,13 @@ void cmd_args_json_g(int argc, char **argv) {
 
     if(percolation_type == 0){
         // regular site percolation
-        simulate <SitePercolation_ps_v8> (length, place_sites_for, ensembleSize);
+        simulate <SitePercolation_ps_v9> (length, place_sites_for, ensembleSize);
     }
     else if(percolation_type == 1){
-        simulate <SitePercolationBallisticDeposition_L1>(length, place_sites_for, ensembleSize);
+        simulate <SitePercolationBallisticDeposition_L1_v2>(length, place_sites_for, ensembleSize);
     }
     else if(percolation_type == 2){
-        simulate <SitePercolationBallisticDeposition_L2> (length, place_sites_for, ensembleSize);
+        simulate <SitePercolationBallisticDeposition_L2_v2> (length, place_sites_for, ensembleSize);
     }
 }
 

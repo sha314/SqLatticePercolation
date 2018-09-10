@@ -14,8 +14,6 @@ set(SOURCE_FILES
         src/cmdLineArgs/cmd_args.h
         src/cmdLineArgs/cmd_args_json.cpp
         src/cmdLineArgs/cmd_args_json.h
-        src/cmdLineArgs/percolation_fractal.cpp
-        src/cmdLineArgs/percolation_fractal.h
         src/cmdLineArgs/sq_lattice_methods.h
         src/ensemble/site_percolation.cpp
         src/ensemble/site_percolation.h
@@ -49,11 +47,8 @@ set(SOURCE_FILES
         src/percolation/id_index.h
         src/percolation/percolation.cpp
         src/percolation/percolation.h
-        src/percolation/percolation_bond_v0.cpp
-        src/percolation/percolation_site_ballistic_deps.cpp
         src/percolation/percolation_site_ballistic_deps_v2.cpp
         src/percolation/percolation_site_explosive.cpp
-        src/percolation/percolation_site_v8.cpp
         src/percolation/percolation_type.h
         src/percolation/site_position.cpp
         src/percolation/site_position.h

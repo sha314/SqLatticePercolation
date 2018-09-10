@@ -8,9 +8,9 @@
 #include <cstdlib>
 
 #include "cmd_args.h"
+#include "../percolation/percolation.h"
 #include "../types.h"
-#include "percolation_fractal.h"
-
+#include "../util/time_tracking.h"
 
 
 using namespace std;
@@ -162,9 +162,8 @@ Available Argument
  * @param ensembleSize
  */
 void percolation_data_all_site_placed(value_type length, value_type ensembleSize, value_type impure_site){
-    SitePercolation_ps_v8 sp(length, impure_site);
-    sp.periodicityFlag(true);   // periodicity is turned on
-    cout << "Signature " << sp.signature << endl;
+    SitePercolation_ps_v9 sp(length, true);
+    cout << "Signature " << sp.getSignature() << endl;
     // setting up the calculation flag
 //    sp.calculationFlags({CalculationFlags::Occupation_Probability, CalculationFlags::Entropy});
 
@@ -180,7 +179,7 @@ void percolation_data_all_site_placed(value_type length, value_type ensembleSize
 
     ofstream fout(bond_filename);        // the output data file
 
-    fout << sp.signature << endl;
+    fout << sp.getSignature() << endl;
     // here only minimum data is printed so that it would take smaller size on the storage
     fout << "#Percolation data" << endl;
     fout << "#Number of occupied sites, Entropy, number of bonds in the largest cluster" << endl;
@@ -240,80 +239,6 @@ void percolation_data_all_site_placed(value_type length, value_type ensembleSize
 }
 
 
-/**
- * Data required to calculate entropy, specific heat for explosive percolation
- * @param length
- * @param ensembleSize
- */
-void entropy_order_parameter_explosive(value_type length, value_type ensembleSize, int rule, value_type impure_site){
-    SitePercolation_ps_v8 sp(length, impure_site);
-    sp.periodicityFlag(true);   // periodicity is turned on
-    cout << "Signature " << sp.signature << endl;
-    // setting up the calculation flag
-//    sp.calculationFlags({CalculationFlags::Occupation_Probability, CalculationFlags::Entropy});
-
-    clock_t t;
-    size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob(length_squared), entrpy(length_squared);
-    size_t j{};
-    for(value_type i{} ; i != ensembleSize ; ++i){
-
-        t = clock();
-        sp.reset();
-        j = 0;
-        while (sp.placeSite_explosive(rule)){
-            nos[j] += sp.numberOfOccupiedSite();
-            nob[j] += sp.numberOfBondsInTheLargestCluster_v2();
-            entrpy[j] += sp.entropy();
-            ++j;
-        }
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    // Normalizing
-    for(size_t i{}; i!= length_squared ; ++i){
-        nos[i] /= double(ensembleSize);
-        entrpy[i] /= double(ensembleSize);
-        nob[i] /= double(ensembleSize);
-    }
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    common += "explosive_";
-    common += currentTime();
-    common += ".txt";
-
-    string bond_filename = "entropy_order_parameter_L_" + common;
-
-    ofstream fout(bond_filename);        // the output data file
-
-    fout << sp.signature << endl;
-    // here only minimum data is printed so that it would take smaller size on the storage
-    fout << "#<Number of Occupied Sites>\t<Entropy>\t<number of bonds in the largest cluster>" << endl << endl;
-    fout << "BEGIN_HEADER" << endl;
-    fout << "ensemble size " << ensembleSize << endl;
-    fout << "length " << length << endl;
-    fout << "data_line " << 12 << endl; // todo
-    fout << "END_HEADER" << endl;
-    fout << "#Explosive Percolation on a square lattice" << endl;
-    fout << "#Number of occupied sites, Entropy, number of bonds in the largest cluster" << endl;
-    fout << "#Using the information above we can calculate the followings" << endl;
-    fout << "#Occupation probability = (Number of occupied sites) / (length * length)" << endl;
-    fout << "#Order parameter = (number of bonds in the largest cluster) / (2 * length * length)" << endl;
-    fout << "#first column is printed as integer so that we can easily take ensemble average form given data" << endl;
-
-    // writing the normalized data to file
-    for(size_t i{}; i!= length_squared ; ++i){
-        fout << nos[i] << '\t'
-             << entrpy[i] << '\t'
-             << nob[i] << endl;
-    }
-    fout.close();
-
-}
-
 
 /**
  *
@@ -323,7 +248,7 @@ void entropy_order_parameter_explosive(value_type length, value_type ensembleSiz
  * @param impure_site
  */
 void percolation_data_sq_lattice(value_type length, value_type ensembleSize){
-    SitePercolation_ps_v8 sp(length, true);  // periodicity is turned on
+    SitePercolation_ps_v9 sp(length, true);  // periodicity is turned on
 
     cout << "Signature " << sp.signature << endl;
     // setting up the calculation flag
@@ -364,52 +289,6 @@ void percolation_data_sq_lattice(value_type length, value_type ensembleSize){
 }
 
 
-/**
- *
- * @param length
- * @param ensembleSize
- * @param rule
- * @param impure_site
- */
-void percolation_data_sq_lattice_explosive(value_type length, value_type ensembleSize, int rule){
-    SitePercolation_ps_v8 sp(length, true); // periodic
-
-    cout << "Signature " << sp.signature << endl;
-    // setting up the calculation flag
-    // sp.calculationFlags({CalculationFlags::Occupation_Probability, CalculationFlags::Entropy});
-
-    clock_t t;
-    size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob(length_squared), entrpy(length_squared);
-    size_t j{};
-    for(value_type i{} ; i != ensembleSize ; ++i){
-
-        t = clock();
-        sp.reset();
-        j = 0;
-        while (sp.placeSite_explosive(rule)){
-            nos[j] += sp.numberOfOccupiedSite();
-            nob[j] += sp.numberOfBondsInTheLargestCluster_v2();
-            entrpy[j] += sp.entropy();
-            ++j;
-        }
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    // Normalizing
-    for(size_t i{}; i!= length_squared ; ++i){
-        nos[i] /= double(ensembleSize);
-        entrpy[i] /= double(ensembleSize);
-        nob[i] /= double(ensembleSize);
-    }
-
-    // calculating and writing to a file
-    string filename = "sq_lattice_site_percolation_explosive_"
-                      + to_string(length) + "_calculated_" + currentTime();
-    filename += ".txt";
-    calculate_and_write_to_file(length, ensembleSize, 2*length_squared, nob, entrpy, filename);
-}
 
 
 /**
@@ -420,9 +299,9 @@ void percolation_data_sq_lattice_explosive(value_type length, value_type ensembl
  * @param impure_site
  */
 void percolation_data_sq_lattice_ballistic_L1(bool periodicity, value_type length, value_type ensembleSize){
-    SitePercolationBallisticDeposition sp(length, periodicity);
+    SitePercolationBallisticDeposition_v2 sp(length, periodicity);
 
-    cout << "Signature " << sp.signature << endl;
+    cout << "Signature " << sp.getSignature() << endl;
     // setting up the calculation flag
 //    sp.calculationFlags({CalculationFlags::Occupation_Probability, CalculationFlags::Entropy});
 
@@ -534,9 +413,9 @@ void calculate_and_write_to_file(value_type length, value_type ensembleSize, val
  * @param ensembleSize
  */
 void entropy_order_parameter(value_type length, value_type ensembleSize, value_type impure_site){
-    SitePercolation_ps_v8 sp(length, impure_site);
-    sp.periodicityFlag(true);   // periodicity is turned on
-    cout << "Signature " << sp.signature << endl;
+    SitePercolation_ps_v9 sp(length, true);
+
+    cout << "Signature " << sp.getSignature() << endl;
     // setting up the calculation flag
 //    sp.calculationFlags({CalculationFlags::Occupation_Probability, CalculationFlags::Entropy});
 
@@ -595,257 +474,6 @@ void entropy_order_parameter(value_type length, value_type ensembleSize, value_t
 }
 
 
-/**
- * Does the work according to the Docs/readme.txt file
- * @param argc
- * @param argv
- */
-void cmd_args_site_percolation(int argc, char **argv){
-    if(argc == 1){
-        print_help();
-        exit(0);
-    }
-
-    value_type ensembleSize{1}, length{5};
-    value_type impure_site{0};
-    int place_sites_for{-1};
-    value_type L_start{}, L_end{};
-    int rule{0}; // 0-> sum rule, 1-> product rule
-
-    char * filename=NULL;
-
-    for(int i{1} ; i < argc;){
-        std::cout << i << "\t" << argv[i] << std::endl;
-
-        switch (argv[i][1]){
-            case 'm':
-                rule = atoi(argv[i+1]);
-                i += 2;
-                break;
-            case 'n':
-                // ensemble size
-                ensembleSize = value_type(atoi(argv[i+1]));
-                i += 2;
-                break;
-
-            case 'l':
-                // length
-                if(L_end != 0){
-                    cout << "Range of length parameter is already set" << endl;
-                    break;
-                }
-                length = value_type(atoi(argv[i+1]));
-                L_start = length;
-                i += 2;
-                break;
-
-            case 'r':
-                // range of length
-                if(length != 0){
-                    cout << "Length parameter is already set" << endl;
-                    break;
-                }
-                L_start = value_type(atoi(argv[i+1]));
-                L_end = value_type(atoi(argv[i+2]));
-                i += 3;
-                break;
-
-            case 'i':
-                impure_site = value_type(atoi(argv[i+1]));
-                i += 2;
-                break;
-
-            case 'p':
-                place_sites_for = value_type(atoi(argv[i+1]));
-                i += 2;
-                break;
-
-            case 'h':
-                print_help();
-                exit(0);
-
-            default:
-                print_help();
-                exit(0);
-        }
-    }
-
-    cout << "Performing calculations for" << endl;
-    cout << "Length of the Square Lattice " << length << endl;
-    cout << "Ensemble size " << ensembleSize << endl;
-
-    if(place_sites_for == 0) {
-        cout << "Placing all the sites" << endl;
-    }else{
-        cout << "Placing sites until the spanning" << endl;
-    }
-
-//    run_program(ensembleSize, length, how_many_site_to_place, step);
-
-    if(length != 0){
-        cout << "Length parameter is already set" << endl;
-        L_end = L_start;
-    }
-
-    if(place_sites_for == 0) {
-        clock_t t0 = clock();
-        SitePercolation_ps_v8 sp(L_start, impure_site);
-        cout << "Signature " << sp.signature << endl;
-        sp.periodicityFlag(true);
-        while (sp.occupy());
-        cout << "Time elapsed : " << (clock() - t0) / double(CLOCKS_PER_SEC) << " sec" << endl;
-        if (L_start <= 50) {
-            sp.viewLatticeExtended();
-            sp.viewClusterExtended();
-            sp.viewCluster_id_index();
-        }
-    }else if(place_sites_for == 1) {
-        // place sites until first spanning and generate all data possible
-        // can generate several gigabytes of data
-        spanning_data_for_lengths(L_start, L_end, ensembleSize, impure_site);
-    } else if(place_sites_for == 2) {
-        percolation_data_all_site_placed(length, ensembleSize, impure_site);
-    }else if(place_sites_for == 3) {
-        critical_point_data_sq_lattice_site_percolation(length, ensembleSize, impure_site);
-    }else if(place_sites_for == 4) {
-        entropy_order_parameter(length, ensembleSize, impure_site);
-    }else if(place_sites_for == 5) {
-        critical_point_data_explosive(length, ensembleSize, rule, impure_site);
-    }else if(place_sites_for == 6) {
-        entropy_order_parameter_explosive(length, ensembleSize, rule, impure_site);
-    }else if(place_sites_for == 7) {
-        percolation_data_sq_lattice(length, ensembleSize);
-    }else if(place_sites_for == 8) {
-        percolation_data_sq_lattice_explosive(length, ensembleSize, rule);
-    }else if(place_sites_for == 9) {
-        // global fractal dimension data
-        // and number of bonds and number of sites on the clusters data at spanning
-        box_counting_square_lattice(length, ensembleSize, impure_site);
-    }else if(place_sites_for == 10) {
-        // and number of bonds and number of sites on the clusters data at spanning
-        cluster_length_sq_lattice(length, ensembleSize, impure_site);
-    }
-    else{
-        cout << "process id argument mismatched : line " << __LINE__ << endl;
-    }
-
-}
-
-
-
-/**
- * Does the work according to the Docs/readme.txt file
- * @param argc
- * @param argv
- */
-void cmd_args_site_percolation_ballistic_deposition(int argc, char **argv){
-    if(argc == 1){
-        print_help_ballistic();
-        exit(0);
-    }
-
-    value_type ensembleSize{1}, length{5};
-    int place_sites_for{-1};
-    value_type L_start{}, L_end{};
-    int rule{0}; // 0-> sum rule, 1-> product rule
-
-    char * filename=NULL;
-
-    for(int i{1} ; i < argc;){
-        std::cout << i << "\t" << argv[i] << std::endl;
-
-        switch (argv[i][1]){
-            case 'm':
-                rule = atoi(argv[i+1]);
-                i += 2;
-                break;
-            case 'n':
-                // ensemble size
-                ensembleSize = value_type(atoi(argv[i+1]));
-                i += 2;
-                break;
-
-            case 'l':
-                // length
-                if(L_end != 0){
-                    cout << "Range of length parameter is already set" << endl;
-                    break;
-                }
-                length = value_type(atoi(argv[i+1]));
-                L_start = length;
-                i += 2;
-                break;
-
-            case 'r':
-                // range of length
-                if(length != 0){
-                    cout << "Length parameter is already set" << endl;
-                    break;
-                }
-                L_start = value_type(atoi(argv[i+1]));
-                L_end = value_type(atoi(argv[i+2]));
-                i += 3;
-                break;
-
-            case 'p':
-                place_sites_for = value_type(atoi(argv[i+1]));
-                i += 2;
-                break;
-
-            case 'h':
-                print_help_ballistic();
-                exit(0);
-
-            default:
-                print_help_ballistic();
-                exit(0);
-        }
-    }
-
-    cout << "Performing calculations for" << endl;
-    cout << "Length of the Square Lattice " << length << endl;
-    cout << "Ensemble size " << ensembleSize << endl;
-
-    if(place_sites_for == 0) {
-        cout << "Placing all the sites" << endl;
-    }else{
-        cout << "Placing sites until the spanning" << endl;
-    }
-
-//    run_program(ensembleSize, length, how_many_site_to_place, step);
-
-    if(length != 0){
-        cout << "Length parameter is already set" << endl;
-        L_end = L_start;
-    }
-
-    if(place_sites_for == 0) {
-        clock_t t0 = clock();
-        SitePercolationBallisticDeposition sp(length, true);
-        cout << "Signature " << sp.signature << endl;
-        while (sp.occupy());
-        cout << "Time elapsed : " << (clock() - t0) / double(CLOCKS_PER_SEC) << " sec" << endl;
-        if (L_start <= 50) {
-            sp.viewLatticeExtended();
-            sp.viewClusterExtended();
-            sp.viewCluster_id_index();
-        }
-    }else if(place_sites_for == 1) {
-        critical_point_data_sq_l_sp_ballistic_deposition_L1(length, ensembleSize);
-    }
-    else if(place_sites_for == 2){
-        percolation_data_sq_lattice_ballistic_L1(true, length, ensembleSize);//peridic
-    }
-    else if(place_sites_for == 3){
-        percolation_data_sq_lattice_ballistic_L1(false, length, ensembleSize);// non-peridic
-    }
-    else{
-        cout << "process id argument mismatched : line " << __LINE__ << endl;
-    }
-
-}
-
-
 
 /**
  *
@@ -854,8 +482,7 @@ void cmd_args_site_percolation_ballistic_deposition(int argc, char **argv){
  * @param impure_sites
  */
 void box_counting_square_lattice(value_type length, value_type ensemble_size, value_type impure_sites){
-    SitePercolation_ps_v8 sp(length, impure_sites); // todo breaks down the program // possible solution: remove redundant variables
-    sp.periodicityFlag(false);
+    SitePercolation_ps_v9 sp(length, true); // todo breaks down the program // possible solution: remove redundant variables
 
     cout << "Signature " << sp.signature << endl;
     clock_t t;
@@ -880,7 +507,10 @@ void box_counting_square_lattice(value_type length, value_type ensemble_size, va
         t = clock();
         sp.reset();
 
-        sp.placeSiteUntilFirstSpanning_v2();
+        while(!sp.detectWrapping()){
+            sp.occupy();
+        }
+
 
         for(auto d: delta){
             dummy = sp.box_counting_v2(d);
@@ -935,348 +565,6 @@ void box_counting_square_lattice(value_type length, value_type ensemble_size, va
 
 
 
-/**
- *
- * @param length
- * @param ensemble_size
- * @param impure_sites
- */
-void cluster_length_sq_lattice(value_type length, value_type ensemble_size, value_type impure_sites){
-    SitePercolation_ps_v8 sp(length, impure_sites); // todo breaks down the program // possible solution: remove redundant variables
-    sp.periodicityFlag(false);
 
-    cout << "Signature " << sp.signature << endl;
-    clock_t t;
-    vector<value_type> nos, nob;
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    common += currentTime();;
-    common += ".txt";
-
-    string site_filename = "sq_lattice_cluster_length_sites_L_" + common;
-    string bond_filename = "sq_lattice_cluster_length_bonds_L_" + common;
-
-    ofstream fout_site(site_filename);        // the output data file
-    ofstream fout_bond(bond_filename);        // the output data file
-
-    /**
-     * First uncomment line is the signature
-     * Second uncomment line is the parameter value
-     * Third and all other uncomment lines are data
-     */
-    fout_site << "#" << sp.signature << endl;
-    fout_site << "#cluster length data in site percolation" << endl;
-    fout_site << "#clustter length = number of sites" << endl;
-    fout_site << "BEGIN_HEADER" << endl;
-    fout_site << "ensemble_size\t"  << ensemble_size << endl;
-    fout_site << "length\t"         << length << endl;
-    fout_site << "data_line\t"      << 10 << endl;
-    fout_site << "END_HEADER" << endl;
-    fout_site << "#<data...>" << endl;
-
-    fout_bond << "#" << sp.signature << endl;
-    fout_bond << "#cluster length data in site percolation" << endl;
-    fout_bond << "#clustter length = number of bonds" << endl;
-    fout_bond << "BEGIN_HEADER" << endl;
-    fout_bond << "ensemble_size\t"  << ensemble_size << endl;
-    fout_bond << "length\t"         << length << endl;
-    fout_bond << "data_line\t"      << 10 << endl;
-    fout_bond << "END_HEADER" << endl;
-    fout_bond << "#<data...>" << endl;
-
-
-    map<value_type, value_type> N_delta;
-    // finding all delta to perform box counting
-    vector<value_type> delta;
-    for(value_type i{1}; i != length; ++i){
-        if(length % i == 0){
-            delta.push_back(i);
-            N_delta[i] = 0;
-        }
-    }
-
-    for(value_type i{} ; i != ensemble_size ; ++i){
-        t = clock();
-        sp.reset();
-
-        sp.placeSiteUntilFirstSpanning_v2();
-
-
-        nos = sp.number_of_site_in_clusters();
-        nob = sp.number_of_bonds_in_clusters();
-
-        for(auto a: nos){
-            fout_site << a << ' ';   // one space is enough to separate the data
-        }
-
-        for(auto b: nob){
-            fout_bond << b << ' ';   // one space is enough to separate the data
-        }
-
-        fout_site << endl;
-        fout_bond << endl;
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    fout_site.close();
-    fout_bond.close();
-    cout << "file is closed " << endl;
-}
-/**
- * give cmd argument as
- * L start
- * L end
- * ensembleSize
- * @param argc
- * @param argv
- */
-void cmd_moment_conservation(int argc, char** argv) {
-    cout << "Moment conservation data" << endl;
-    if(argc != 4){
-        cout << "Not correct argument";
-        cout << "L_start L_end ensembleSize" << endl;
-        cout << "Order must be maintained" << endl;
-        return;
-    }
-    value_type L_start = value_type(atoi(argv[1]));
-    value_type L_end = value_type(atoi(argv[2]));
-    value_type ensembleSize = value_type(atoi(argv[3]));
-
-    moment_data(L_start, L_end, ensembleSize, 1.789);
-
-}
-
-
-
-/**
- *
- * @param ensemble_size
- * @param length
- * @param impure_sites
- */
-void critical_point_data_sq_lattice_site_percolation(value_type length, value_type ensemble_size,
-                                                     value_type impure_sites){
-    SitePercolation_ps_v8 sp(length, impure_sites); // todo the program breaks down // possible solution remove redundant variables
-    sp.periodicityFlag(false);
-
-    cout << "Signature " << sp.signature << endl;
-    clock_t t;
-    vector<value_type> nos, nob;
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    common += currentTime();;
-    common += ".txt";
-
-    string time_filename = "critical_point_data_L_" + common;
-
-    ofstream fout_spanning_cluster(time_filename);      // contains the time information of the spanning cluster
-
-    /**
-     * First uncomment line is the signature
-     * Second uncomment line is the parameter value
-     * Third and all other uncomment lines are data
-     */
-
-    fout_spanning_cluster << "#<p_c>\t<id_sc>\t<b_t_sc>\t<sites_sc>\t<bonds_sc>" << endl;
-    fout_spanning_cluster << "BEGIN_HEADER" << endl;
-    fout_spanning_cluster << "ensemble_size\t"  << ensemble_size << endl;
-    fout_spanning_cluster << "length\t"         << length << endl;
-    fout_spanning_cluster << "data_line\t"      << 11 << endl;
-    fout_spanning_cluster << "END_HEADER" << endl;
-    fout_spanning_cluster << "#p_c = critical occupation probability" << endl;
-    fout_spanning_cluster << "#id_sc = id of the spanning cluster" << endl;
-    fout_spanning_cluster << "#b_t_sc = birth time of the spanning cluster" << endl;
-    fout_spanning_cluster << "#sites_sc = number of sites of the spanning cluster" << endl;
-    fout_spanning_cluster << "#bonds_sc = number of bonds of the spanning cluster" << endl;
-
-
-//    double p_c{}, id_sc{}, b_t_sc{}, sites{}, bonds{};
-
-    for(value_type i{} ; i != ensemble_size ; ++i){
-        t = clock();
-        sp.reset();
-
-        sp.placeSiteUntilFirstSpanning_v2();
-
-        fout_spanning_cluster << sp.occupationProbability() << '\t' << sp.firstSpanningClusterID_v2() << '\t'
-                              << sp.birthTimeOfSpanningCluster() << '\t'
-                              << sp.numberOfSitesInTheSpanningClusters_v2() << '\t'
-                              << sp.numberOfBondsInTheSpanningClusters_v2() << endl;
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    cout << "reached the end " << endl;
-    fout_spanning_cluster.close();
-    cout << "file is closed " << endl;
-}
-
-
-
-/**
- *
- * @param length
- * @param ensemble_size
- * @param rule : sum rule or product rule
- * @param impure_sites
- */
-void critical_point_data_explosive(value_type length, value_type ensemble_size, int rule, value_type impure_sites){
-    SitePercolation_ps_v8 sp(length, impure_sites); // todo breaks down the program // possible solution remove redundant variables
-    sp.periodicityFlag(false);
-
-    cout << "Signature " << sp.signature << endl;
-    clock_t t;
-    vector<value_type> nos, nob;
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    if(rule == 0){
-        common += "sum";
-    }
-    else if(rule == 1){
-        common += "product";
-    }
-    else{
-        cout << "Invalid rule : line " << __LINE__ << endl;
-    }
-    common += '_';
-    common += currentTime();;
-    common += ".txt";
-
-    string time_filename = "critical_point_data_explosive_L_" + common;
-
-    ofstream fout_spanning_cluster(time_filename);      // contains the time information of the spanning cluster
-
-    /**
-     * First uncomment line is the signature
-     * Second uncomment line is the parameter value
-     * Third and all other uncomment lines are data
-     */
-
-    fout_spanning_cluster << "#<p_c>\t<id_sc>\t<b_t_sc>\t<sites_sc>\t<bonds_sc>" << endl;
-    fout_spanning_cluster << "#Data for explosive percolation" << endl;
-    if(rule == 0){
-        fout_spanning_cluster << "#using sum rule" << endl;
-    }
-    else if(rule == 1){
-        fout_spanning_cluster << "#using product rule" << endl;
-    }
-    fout_spanning_cluster << "BEGIN_HEADER" << endl;
-    fout_spanning_cluster << "ensemble_size\t"  << ensemble_size << endl;
-    fout_spanning_cluster << "length\t"         << length << endl;
-    fout_spanning_cluster << "data_line\t"      << 11 << endl;
-    fout_spanning_cluster << "END_HEADER" << endl;
-    fout_spanning_cluster << "#p_c = critical occupation probability" << endl;
-    fout_spanning_cluster << "#id_sc = id of the spanning cluster" << endl;
-    fout_spanning_cluster << "#b_t_sc = birth time of the spanning cluster" << endl;
-    fout_spanning_cluster << "#sites_sc = number of sites of the spanning cluster" << endl;
-    fout_spanning_cluster << "#bonds_sc = number of bonds of the spanning cluster" << endl;
-
-
-//    double p_c{}, id_sc{}, b_t_sc{}, sites{}, bonds{};
-
-    for(value_type i{} ; i != ensemble_size ; ++i){
-        t = clock();
-        sp.reset();
-
-        sp.placeSite_explosive_UntilFirstSpanning(rule);
-
-        fout_spanning_cluster << sp.occupationProbability() << '\t' << sp.firstSpanningClusterID_v2() << '\t'
-                              << sp.birthTimeOfSpanningCluster() << '\t'
-                              << sp.numberOfSitesInTheSpanningClusters_v2() << '\t'
-                              << sp.numberOfBondsInTheSpanningClusters_v2() << endl;
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    cout << "reached the end " << endl;
-    fout_spanning_cluster.close();
-    cout << "file is closed " << endl;
-}
-
-
-
-/**
- *
- * @param ensemble_size
- * @param length
- * @param impure_sites
- */
-void critical_point_data_sq_l_sp_ballistic_deposition_L1(value_type length, value_type ensemble_size){
-    SitePercolationBallisticDeposition sp(length, false); // todo the program breaks down // possible solution remove redundant variables
-
-    cout << "Signature " << sp.signature << endl;
-    clock_t t;
-    vector<value_type> nos, nob;
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    common += currentTime();;
-    common += ".txt";
-
-    string filename = "critical_point_data_sq_lattice_sp_ballistic_L1_L_" + common;
-
-    ofstream fout_spanning_cluster(filename);      // contains the time information of the spanning cluster
-
-    /**
-     * First uncomment line is the signature
-     * Second uncomment line is the parameter value
-     * Third and all other uncomment lines are data
-     */
-
-    fout_spanning_cluster << "#<p_c>\t<id_sc>\t<b_t_sc>\t<sites_sc>\t<bonds_sc>" << endl;
-    fout_spanning_cluster << "BEGIN_HEADER" << endl;
-    fout_spanning_cluster << "ensemble_size\t"  << ensemble_size << endl;
-    fout_spanning_cluster << "length\t"         << length << endl;
-    fout_spanning_cluster << "data_line\t"      << 11 << endl;
-    fout_spanning_cluster << "END_HEADER" << endl;
-    fout_spanning_cluster << "#p_c = critical occupation probability" << endl;
-    fout_spanning_cluster << "#id_sc = id of the spanning cluster" << endl;
-    fout_spanning_cluster << "#b_t_sc = birth time of the spanning cluster" << endl;
-    fout_spanning_cluster << "#sites_sc = number of sites of the spanning cluster" << endl;
-    fout_spanning_cluster << "#bonds_sc = number of bonds of the spanning cluster" << endl;
-
-
-    for(value_type i{} ; i != ensemble_size ; ++i){
-        t = clock();
-        sp.reset();
-
-        value_type j = 0;
-        bool flag{};
-        while(true){
-            flag = sp.occupy();
-            if(flag){
-                ++j;
-            }
-
-            if(j >= sp.length()){
-                break;
-            }
-
-            if(sp.detectSpanning_v6(sp.lastPlacedSite())){
-                cout << "Spanning at " << sp.occupationProbability() << endl;
-                break;
-            }
-        }
-
-        fout_spanning_cluster << sp.occupationProbability() << '\t' << sp.firstSpanningClusterID_v2() << '\t'
-                              << sp.birthTimeOfSpanningCluster() << '\t'
-                              << sp.numberOfSitesInTheSpanningClusters_v2() << '\t'
-                              << sp.numberOfBondsInTheSpanningClusters_v2() << endl;
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    cout << "reached the end " << endl;
-    fout_spanning_cluster.close();
-    cout << "file is closed " << endl;
-}
 
 

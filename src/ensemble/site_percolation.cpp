@@ -22,9 +22,9 @@ void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
 
 
 void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
-    SitePercolation_ps_v8 sp(length, true);
+    SitePercolation_ps_v9 sp(length, true);
 
-    cout << "Signature " << sp.signature << endl;
+    cout << "Signature " << sp.getSignature() << endl;
     clock_t t;
 
     size_t length_squared = length*length;
@@ -113,96 +113,6 @@ void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
 }
 
 
-void sq_lattice_site_percolation_non_periodic(size_t length, size_t ensemble_size){
-    SitePercolation_ps_v8 sp(length, false);
-
-    cout << "Signature " << sp.signature << endl;
-    clock_t t;
-
-    size_t length_squared = length*length;
-    std::vector<double> nos(length_squared), nob_def1(length_squared), nob_def2(length_squared), entrpy(length_squared);
-    size_t j{};
-    bool flag{};
-
-    string common;
-    common += to_string(length);
-    common += '_';
-    common += currentTime();;
-    common += ".txt";
-
-    string filename = "critical_point_data_sq_lattice_sp_non_periodic_L_" + common;
-
-    ofstream fout_spanning_cluster(filename);      // contains the time information of the spanning cluster
-
-    /**
-     * First uncomment line is the signature
-     * Second uncomment line is the parameter value
-     * Third and all other uncomment lines are data
-     */
-
-    fout_spanning_cluster << "#<p_c>\t<id_sc>\t<b_t_sc>\t<sites_sc>\t<bonds_sc>" << endl;
-    fout_spanning_cluster << "BEGIN_HEADER" << endl;
-    fout_spanning_cluster << "ensemble_size\t"  << ensemble_size << endl;
-    fout_spanning_cluster << "length\t"         << length << endl;
-    fout_spanning_cluster << "data_line\t"      << 11 << endl;
-    fout_spanning_cluster << "END_HEADER" << endl;
-    fout_spanning_cluster << "#p_c = critical occupation probability" << endl;
-    fout_spanning_cluster << "#id_sc = id of the spanning cluster" << endl;
-    fout_spanning_cluster << "#b_t_sc = birth time of the spanning cluster" << endl;
-    fout_spanning_cluster << "#sites_sc = number of sites of the spanning cluster" << endl;
-    fout_spanning_cluster << "#bonds_sc = number of bonds of the spanning cluster" << endl;
-
-
-    for(value_type i{} ; i != ensemble_size ; ++i){
-        t = clock();
-        sp.reset();
-
-        bool spanning_occured {false};
-        while (j < length_squared){
-            flag = sp.occupy();
-            if(flag) {
-                ++j;
-                nos[j] += sp.numberOfOccupiedSite();
-                nob_def1[j] += sp.numberOfBondsInTheLargestCluster_v2(); // is this or
-                nob_def2[j] += sp.numberOfSitesInTheSpanningClusters_v2(); // this
-//                entrpy[j] += sp.entropy();  // old method and takes long time
-                entrpy[j] += sp.entropy(); // faster method
-            }
-            if(flag && sp.detectSpanning_v6(sp.lastPlacedSite())){
-                if(!spanning_occured) {
-                    spanning_occured = true;
-
-                    fout_spanning_cluster << sp.occupationProbability() << '\t'
-                                          << sp.firstSpanningClusterID_v2() << '\t'
-                                          << sp.birthTimeOfSpanningCluster() << '\t'
-                                          << sp.numberOfSitesInTheSpanningClusters_v2() << '\t'
-                                          << sp.numberOfBondsInTheSpanningClusters_v2() << endl;
-                }
-            }
-        }
-
-
-        cout << "\tIteration " << i << " . Time " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-    }
-
-    cout << "reached the end " << endl;
-    fout_spanning_cluster.close();
-    cout << "file is closed " << endl;
-
-    // Normalizing
-    for(size_t i{}; i!= length_squared ; ++i){
-        nos[i] /= double(ensemble_size);
-        entrpy[i] /= double(ensemble_size);
-        nob_def1[i] /= double(ensemble_size);
-        nob_def2[i] /= double(ensemble_size);
-    }
-
-    cout << "last " << nob_def1.back()  << " : line " << __LINE__ << endl;
-    // calculating and writing to a file
-    string filename2 = "sq_lattice_sp_non_periodic_L_" + common;
-
-    calculate_and_write_to_file_v2(length, ensemble_size, 2*length_squared, nob_def1, nob_def2, entrpy, filename2);
-}
 
 
 void calculate_and_write_to_file_v2(value_type length, value_type ensembleSize, value_type total_number_of_bonds,

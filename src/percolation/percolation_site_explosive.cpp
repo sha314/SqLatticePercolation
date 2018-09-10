@@ -4,8 +4,8 @@
 
 #include "percolation.h"
 
-SitePercolationExplosive::SitePercolationExplosive(value_type length)
-        : SitePercolation_ps_v8(length)
-{
-    std::cout << "Constructing SitePercolationExplosive object : line " << __LINE__ << endl;
-}
+//SitePercolationExplosive::SitePercolationExplosive(value_type length)
+//        : SitePercolation_ps_v9(length)
+//{
+//    std::cout << "Constructing SitePercolationExplosive object : line " << __LINE__ << endl;
+//}
