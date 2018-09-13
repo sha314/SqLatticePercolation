@@ -31,20 +31,21 @@ class SqLattice {
 
     value_type _length{};
 
+private:
+    void reset_sites();
+    void reset_bonds();
 public:
     ~SqLattice() = default;
     SqLattice() = default;
     SqLattice(SqLattice&) = default;
     SqLattice(SqLattice&&) = default;
-    SqLattice& operator=(SqLattice&) = default;
+    SqLattice& operator=(const SqLattice&) = default;
     SqLattice& operator=(SqLattice&&) = default;
 
-    SqLattice(value_type length);
     SqLattice(value_type length, bool activate_bonds, bool activate_sites, bool bond_reset, bool site_reset);
 
-    void reset();
-    void reset_sites();
-    void reset_bonds();
+    void reset(bool reset_all=false);
+
 
     /***************************************
      * I/O functions
@@ -82,13 +83,10 @@ public:
     void activateAllBond();
     void activate_site(Index index);
     void activateBond(BondIndex bond);
-    void activate_h_bond(Bond bond);
-    void activate_v_bond(Bond bond);
 
     void deactivate_site(Index index);
     void deactivate_bond(Bond bond);
-    void deactivate_h_bond(Bond bond);
-    void deactivate_v_bond(Bond bond);
+
 
     value_type length() const { return  _length;}
 
@@ -103,12 +101,11 @@ public:
     Bond& getBond(BondIndex);
 
     const Site& getSite(Index index) const ;
-//    Bond& get_h_bond(Index id) const ;
-//    Bond& get_v_bond(Index id) const ;
-//    Bond& getBond(BondIndex) const ;
 
-    void GroupID(Index index, int group_id);
-    int GroupID(Index index);
+    void setGroupID(Index index, int group_id);
+    void setGroupID(BondIndex index, int group_id);
+    int getGroupID(Index index);
+    int getGroupID(BondIndex index);
 
 
 /******************************************************************************

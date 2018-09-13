@@ -8,31 +8,6 @@
 
 using namespace std;
 
-/**
- *
- * @param length   -> length of the lattice
- */
-SqLattice::SqLattice(value_type length)
-        : _length{length}
-{
-    cout << "Constructing Lattice object : line " << __LINE__ << endl;
-    cout << "Bond resetting is disabled : line " << __LINE__ << endl;
-    _sites = std::vector<std::vector<Site>>(_length);
-    _h_bonds = std::vector<std::vector<Bond>>(_length);
-    _v_bonds = std::vector<std::vector<Bond>>(_length);
-    for (value_type i{}; i != _length; ++i) {
-        _sites[i] = std::vector<Site>(_length);
-        _h_bonds[i] = std::vector<Bond>(_length);
-        _v_bonds[i] = std::vector<Bond>(_length);
-        for (value_type j{}; j != _length; ++j) {
-            _sites[i][j] = Site(Index(i, j), _length);
-            _h_bonds[i][j] = {Index(i, j), Index(i, (j + 1) % _length), _length};
-            _v_bonds[i][j] = {Index(i, j), Index((i + 1) % _length, j), _length};
-        }
-    }
-
-}
-
 
 /**
  *
@@ -137,31 +112,10 @@ void SqLattice::activateAllBond()
 }
 
 void SqLattice::activate_site(Index index) {
-    if(debug_activate_site){
-        cout << "activating site " << index << endl;
-    }
+//    cout << "activating site " << index << endl;
     _sites[index.row_][index.column_].activate();
 }
 
-void SqLattice::activate_h_bond(Bond bond){
-    if(bond.isHorizontal()) {// horizontal bond
-        _h_bonds[bond.id().row_][bond.id().column_].activate();
-    }
-    else{
-        bond.activate();
-        cout << bond << " is not a valid horizontal bond : line " << __LINE__ << endl;
-    }
-}
-
-void SqLattice::activate_v_bond(Bond bond){
-    if(bond.isVertical()){// vertical bond
-        _v_bonds[bond.id().row_][bond.id().column_].activate();
-    }
-    else{
-        bond.activate();
-        cout << bond << " is not a valid vertical bond : line " << __LINE__ << endl;
-    }
-}
 
 void SqLattice::activateBond(BondIndex bond) {
     // check if the bond is vertical or horizontal
@@ -188,26 +142,6 @@ void SqLattice::activateBond(BondIndex bond) {
 
 void SqLattice::deactivate_site(Index index){
     _sites[index.row_][index.column_].deactivate();
-}
-
-void SqLattice::deactivate_h_bond(Bond bond){
-    if(bond.isHorizontal()) {// horizontal bond
-        _h_bonds[bond.id().row_][bond.id().column_].deactivate();
-    }
-    else{
-        bond.activate();
-        cout << bond << " is not a valid horizontal bond : line " << __LINE__ << endl;
-    }
-}
-
-void SqLattice::deactivate_v_bond(Bond bond){
-    if(bond.isVertical()){// vertical bond
-        _v_bonds[bond.id().row_][bond.id().column_].deactivate();
-    }
-    else{
-        bond.activate();
-        cout << bond << " is not a valid vertical bond : line " << __LINE__ << endl;
-    }
 }
 
 
@@ -801,12 +735,31 @@ const Site& SqLattice::getSite(Index index) const {
     return _sites[index.row_][index.column_];
 }
 
-void SqLattice::GroupID(Index index, int group_id){
+void SqLattice::setGroupID(Index index, int group_id){
     _sites[index.row_][index.column_].set_groupID(group_id);
 }
 
-int SqLattice::GroupID(Index index){
+void SqLattice::setGroupID(BondIndex index, int group_id){
+    if(index.horizontal()){
+        _h_bonds[index.row_][index.column_].set_groupID(group_id);
+    }
+    if(index.vertical()){
+        _v_bonds[index.row_][index.column_].set_groupID(group_id);
+    }
+}
+
+int SqLattice::getGroupID(Index index){
     return _sites[index.row_][index.column_].get_groupID();
+}
+
+int SqLattice::getGroupID(BondIndex index){
+    if(index.horizontal()){
+        return _h_bonds[index.row_][index.column_].get_groupID();
+    }
+    if(index.vertical()){
+        return  _v_bonds[index.row_][index.column_].get_groupID();
+    }
+    return -1;
 }
 
 //Bond Lattice::get_h_bond(Index set_ID) {
@@ -836,7 +789,12 @@ Bond& SqLattice::getBond(BondIndex index) {
     throw InvalidBond{"Invalid bond : line " + to_string(__LINE__)};
 }
 
-void SqLattice::reset() {
+void SqLattice::reset(bool reset_all) {
+    if(reset_all){
+        reset_sites();
+        reset_bonds();
+        return;
+    }
     // setting all group id to -1
     if(_site_resetting_flag) {
         reset_sites();

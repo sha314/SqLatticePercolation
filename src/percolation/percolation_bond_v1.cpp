@@ -2005,9 +2005,7 @@ void BondPercolation_pb_v1::calculate_spanning_probability() {
  * Use Group_ID to identify Bond and Site in the same cluster
  */
 void BondPercolation_pb_v1::calculate_spanning_probability_by_largest_cluster() {
-    if (debug_calculate_spanning_probability_by_largest_cluster_3) {
-        cout << "calculate_spanning_probability_by_largest_cluster() : line " << __LINE__ << endl;
-    }
+//    cout << "calculate_spanning_probability_by_largest_cluster() : line " << __LINE__ << endl;
     // find the largest cluster
     value_type l_largest_cluster{0}; // number of site of the largest cluster
     double b;
@@ -2096,9 +2094,7 @@ value_type BondPercolation_pb_v1::number_of_site_in_spanning_clusters(unordered_
  * @return
  */
 bool BondPercolation_pb_v1::detectSpanning() {
-    if (debug_4_detectSpanning) {
-        cout << "Entry -> detectSpanning() : line " << __LINE__ << endl;
-    }
+//    cout << "Entry -> detectSpanning() : line " << __LINE__ << endl;
 
     // if any of the clusters does not have sites > length() --> no spanning
     value_type x{};
@@ -2107,9 +2103,7 @@ bool BondPercolation_pb_v1::detectSpanning() {
             x = a.numberOfSites();
     }
     if (x < length()) {
-        if (debug_4_detectSpanning) {
-            cout << "not enough sites in any cluster to span : line " << __LINE__ << endl;
-        }
+        cout << "not enough sites in any cluster to span : line " << __LINE__ << endl;
         number_of_bonds_to_span.push_back(0);
         return false;
     }
@@ -2182,18 +2176,6 @@ bool BondPercolation_pb_v1::detectSpanning() {
     value_type number_of_sites_in_spanning_cluster = number_of_site_in_spanning_clusters(spanning_ids);
 
     number_of_bonds_to_span.push_back(number_of_sites_in_spanning_cluster);
-
-    if (debug_4_detectSpanning) {
-        cout << "Number of sites to span " << number_of_sites_in_spanning_cluster << ','
-             << "Number of active sites " << _total_number_of_active_bonds << ','
-             << "Total number of sites " << maxSites() << endl;
-        cout << "Number of cluters " << _clusters.size() << endl;
-        cout << "Spanning Info : line " << __LINE__ << endl;
-        cout << "Vertical spanning for cluster_ID   : " << vertical_spanning_id << endl;
-        cout << "Horizontal spanning for cluster_ID : " << horizontal_spanning_id << endl;
-        viewClusterExtended();
-        viewLatticeExtended();
-    }
 
     return !spanning_ids.empty();
 }

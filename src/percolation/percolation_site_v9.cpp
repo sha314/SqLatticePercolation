@@ -1402,9 +1402,7 @@ void SitePercolation_ps_v9::wrappingIndices() const {
  * @return
  */
 bool SitePercolation_ps_v9::detectSpanning_v5(const Index& site) {
-    if (debug_5_detectSpanning) {
-        cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
-    }
+//    cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
     if(_periodicity) {
         cout << "Cannot detect spanning if _periodicity if ON: line " << __LINE__ << endl;
         return false;
@@ -1498,9 +1496,7 @@ bool SitePercolation_ps_v9::detectSpanning_v5(const Index& site) {
  * @return
  */
 bool SitePercolation_ps_v9::detectSpanning_v6(const Index& site) {
-    if (debug_5_detectSpanning) {
-        cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
-    }
+//    cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
     if(_periodicity) {
         cout << "Cannot detect spanning if _periodicity if ON: line " << __LINE__ << endl;
         return false;
