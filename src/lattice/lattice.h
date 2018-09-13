@@ -107,8 +107,10 @@ public:
 //    Bond& get_v_bond(Index id) const ;
 //    Bond& getBond(BondIndex) const ;
 
-    void GroupID(Index index, int group_id);
-    int GroupID(Index index);
+    void setGroupID(Index index, int group_id);
+    void setGroupID(BondIndex index, int group_id);
+    int getGroupID(Index index);
+    int getGroupID(BondIndex index);
 
 
 /******************************************************************************

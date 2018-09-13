@@ -801,21 +801,34 @@ const Site& SqLattice::getSite(Index index) const {
     return _sites[index.row_][index.column_];
 }
 
-void SqLattice::GroupID(Index index, int group_id){
+
+void SqLattice::setGroupID(Index index, int group_id){
     _sites[index.row_][index.column_].set_groupID(group_id);
 }
 
-int SqLattice::GroupID(Index index){
+void SqLattice::setGroupID(BondIndex index, int group_id){
+    if(index.horizontal()){
+        _h_bonds[index.row_][index.column_].set_groupID(group_id);
+    }
+    if(index.vertical()){
+        _v_bonds[index.row_][index.column_].set_groupID(group_id);
+    }
+}
+
+int SqLattice::getGroupID(Index index){
     return _sites[index.row_][index.column_].get_groupID();
 }
 
-//Bond Lattice::get_h_bond(Index set_ID) {
-//    return _h_bonds[id.x_][set_ID.y_];
-//}
-//
-//Bond Lattice::get_v_bond(Index set_ID) {
-//    return _v_bonds[id.x_][set_ID.y_];
-//}
+int SqLattice::getGroupID(BondIndex index){
+    if(index.horizontal()){
+        return _h_bonds[index.row_][index.column_].get_groupID();
+    }
+    if(index.vertical()){
+        return  _v_bonds[index.row_][index.column_].get_groupID();
+    }
+    return -1;
+}
+
 
 
 Bond& SqLattice::get_h_bond(Index id) {
