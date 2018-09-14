@@ -196,7 +196,7 @@ public:
  */
 class SitePercolation_ps_v9 : public SqLatticePercolation{
 private:
-    value_type _impure_sites;
+
 
 protected:
     /*
@@ -321,27 +321,17 @@ public:
      ************************************************/
     bool periodicity() const {return _periodicity;}
 
-//    void measureSpanningClusterByBond(bool flag){_measure_spanning_cluster_by_bond = flag;};
-
 
     /***********************************************
      * Properties of Percolation class
      ***********************************************/
     std::string getSignature();
 
-    std::vector<value_type> number_of_site_in_clusters();
-    std::vector<value_type> number_of_bonds_in_clusters();
-
-    value_type numberOfBondsInCluster_by_id(value_type id); // todo
-    value_type numberOfSitesInCluster_by_id(value_type id); // todo
 
     void numberOfActiveSites() const {std::cout << "Number of active sites " << _number_of_occupied_sites << std::endl;}
     double activeSites() const { return _number_of_occupied_sites;}
 
     value_type count_number_of_active_site();
-
-    value_type impuritySite() const { return _impure_sites;}
-    double impurityPercentage() const { return _impure_sites/double(maxSites());}
 
     int birthTimeOfSpanningCluster() const;
     int birthTimeOfACluster(int id) const;
@@ -370,10 +360,7 @@ public:
      * Site placing methods
      *
      ************************************************/
-    void placeAllSites(value_type step=1){
-        placeSites(maxSites(), step);
-    }
-    void placeSites(value_type n, value_type step=1);
+
 
     virtual bool occupy();
 
@@ -433,7 +420,6 @@ public:
     value_type numberOfBondsInTheWrappingClusters()  ;
 
 
-
     double numberOfcluster() const { return _clusters.size();}
     int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).get_groupID();}
     int firstSpanningClusterID_v2() const {if(!_spanning_sites.empty()){
@@ -441,11 +427,6 @@ public:
         }
         return -1;
     }
-
-//    void get_cluster_info(        vector<value_type> &site,
-//                                  vector<value_type> &bond,
-//                                  value_type &total_site,
-//                                  value_type &total_bond);
 
 
     /***********************************
@@ -520,7 +501,7 @@ protected:
             std::vector<BondIndex> &hv_bonds,
             Index &site);
 
-    value_type manage_clusters_v2(
+    value_type manage_clusters(
             const std::set<value_type> &found_index_set,
             std::vector<BondIndex> &hv_bonds,
             Index &site,
@@ -802,11 +783,8 @@ public:
 
     void reset();
 
-    void configure(std::vector<BondIndex> bond_indices);
 
-    void calculationFlags(std::vector<CalculationFlags> cf);
-
-    double occupationProbability() const ;
+    double occupationProbability() const override;
     std::vector<double> spanningProbability() const ;
 
     double entropy();
@@ -909,7 +887,7 @@ private:
 
     void connection_v1(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
     void connection_v2(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-    void mark_sites(vector<Index> &sites);
+
     std::set<value_type> find_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors);
     int find_cluster_index_for_placing_new_bonds(
             const std::vector<BondIndex> &neighbors,

@@ -11,7 +11,6 @@
 #include <mutex>
 
 #include "src/lattice/lattice.h"
-#include "src/tests/test_percolation.h"
 #include "src/percolation/percolation.h"
 #include "src/latticeConfiguration.h"
 #include "src/util/time_tracking.h"

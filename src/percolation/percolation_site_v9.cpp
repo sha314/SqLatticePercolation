@@ -506,7 +506,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
  * @param base_id         : id of the base cluster
  * @return
  */
-value_type SitePercolation_ps_v9::manage_clusters_v2(
+value_type SitePercolation_ps_v9::manage_clusters(
         const set<value_type> &found_index_set,
         vector<BondIndex> &hv_bonds,
         Index &site,
@@ -1273,7 +1273,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
 //    }
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v2(
+    value_type merged_cluster_index = manage_clusters(
             found_index_set, bonds, current_site, base_id
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
@@ -1319,7 +1319,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
 //    }
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v2(
+    value_type merged_cluster_index = manage_clusters(
             found_index_set, neighbor_bonds, current_site, base_id
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
@@ -1720,47 +1720,6 @@ bool SitePercolation_ps_v9::detectWrapping() {
 
 
 
-/**************************************************
- * Distributions
- *
- **************************************************/
-
-std::vector<value_type> SitePercolation_ps_v9::number_of_site_in_clusters() {
-    vector<value_type> x;
-    x.reserve(_clusters.size());
-    for(auto a: _clusters){
-        x.push_back(a.numberOfSites());
-    }
-    return x;
-}
-
-
-/**
- *
- * @return
- */
-std::vector<value_type> SitePercolation_ps_v9::number_of_bonds_in_clusters() {
-    vector<value_type> x;
-    x.reserve(_clusters.size());
-    value_type nob, total{};
-
-    for(auto a: _clusters){
-        nob = a.numberOfBonds();
-        x.push_back(nob);
-        total += nob;
-    }
-
-    value_type mnob = maxBonds();
-    x.reserve(mnob - total);
-    while (total < mnob){
-        x.push_back(1);
-        total += 1;
-    }
-
-    return x;
-}
-
-
 /********************************************************
  *
  *
@@ -1773,33 +1732,6 @@ void SitePercolation_ps_v9::periodicity_status() {
 
 }
 
-
-/***
- *
- * @param id
- * @return
- */
-value_type SitePercolation_ps_v9::numberOfBondsInCluster_by_id(value_type id){
-    value_type x{};
-    for(auto a: _clusters){
-        if(a.get_ID() == id){
-            x = a.numberOfBonds();
-            return x;
-        }
-    }
-    cout << "cluster wiht set_ID " << id << " does not exists : line " << __LINE__ << endl;
-    return x;
-}
-
-value_type SitePercolation_ps_v9::numberOfSitesInCluster_by_id(value_type id) {
-    value_type x{};
-    for(auto a: _clusters){
-        if(a.get_ID() == id){
-            x = a.numberOfSites();
-        }
-    }
-    return x;
-}
 
 
 /********************************************************************

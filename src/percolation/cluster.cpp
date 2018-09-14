@@ -96,19 +96,6 @@ void Cluster::eraseBond(value_type index) {
     _bond_index.erase(it);
 }
 
-void Cluster::insert(const std::vector<Bond> &bonds) {
-    _bond_index.reserve(bonds.size());
-    for(value_type i{} ; i != bonds.size() ; ++i){
-        _bond_index.push_back(bonds[i].ID());
-    }
-}
-
-void Cluster::insert(const std::vector<Site> &sites) {
-    _site_index.reserve(sites.size());
-    for(value_type i{} ; i != sites.size() ; ++i){
-        _site_index.push_back(sites[i].ID());
-    }
-}
 
 void Cluster::insert(const std::vector<BondIndex>& bonds){
     _bond_index.reserve(bonds.size());

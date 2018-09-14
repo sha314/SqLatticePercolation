@@ -44,7 +44,8 @@ Fractal_2d::Fractal_2d(value_type length)
     rectangles.reserve(30);
     rectangles.push_back({0, 0, length, length});
     _delta = length;
-    grid = SqLattice(_length);
+    cout << "check it " << __FILE__ << " : " << __LINE__ << endl;
+    grid = SqLattice(length, true, true, true, true);
     grid.activateAllSite(); // initially
 }
 

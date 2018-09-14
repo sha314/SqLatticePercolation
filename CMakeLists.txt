@@ -52,12 +52,6 @@ set(SOURCE_FILES
         src/percolation/percolation_type.h
         src/percolation/site_position.cpp
         src/percolation/site_position.h
-        src/tests/test_bonds.cpp
-        src/tests/test_bonds.h
-        src/tests/test_lattice.cpp
-        src/tests/test_lattice.h
-        src/tests/test_percolation.cpp
-        src/tests/test_percolation.h
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h

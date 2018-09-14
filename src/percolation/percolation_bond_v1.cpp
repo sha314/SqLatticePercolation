@@ -175,13 +175,6 @@ void BondPercolation_pb_v1::reset() {
 }
 
 
-/**
- * Create a custome configuration for the lattice
- */
-void BondPercolation_pb_v1::configure(std::vector<BondIndex> bond_indices) {
-    cout << "Entry -> configure() : line " << endl;
-
-}
 
 
 ///**
@@ -653,29 +646,6 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
     return merged_cluster_index;
 }
 
-
-/**
- * For marking sites that is a part of cluster with size > 1
- * @param sites
- */
-void BondPercolation_pb_v1::mark_sites(vector<Index> &sites) {
-    for(value_type i{}; i < sites.size(); ++i){
-        if (_lattice.getSite(sites[i]).get_groupID() >= 0) {
-            // if id >= 0 then it is counted in the cluster so erase it
-//            sites.erase(it); // commenting for now.
-        } else {
-            _lattice.getSite(sites[i]).set_groupID(0); // else set id == 0
-        }
-    }
-//    for (auto it{sites.begin()}; it < sites.end(); ++it) {
-//        if (_lattice.getSite(*it).get_groupID() >= 0) {
-//            // if id >= 0 then it is counted in the cluster so erase it
-////            sites.erase(it); // commenting for now.
-//        } else {
-//            _lattice.getSite(*it).set_groupID(0); // else set id == 0
-//        }
-//    }
-}
 
 
 /***********************

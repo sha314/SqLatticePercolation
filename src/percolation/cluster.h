@@ -19,7 +19,7 @@
  * root site (bond) is the first site (bond) of the cluster. nedeed for (wrapping) site percolation
  */
 class Cluster{
-    // contains bond and site ??
+    // contains bond and site
     std::vector<BondIndex>  _bond_index; // BondIndex for indexing bonds
     std::vector<Index>      _site_index; // Site index
 
@@ -33,10 +33,10 @@ public:
     Cluster()                            = default;
     Cluster(Cluster&)                 = default;
     Cluster(Cluster&&)                = default;
-    Cluster& operator=(Cluster&)      = default;
+    Cluster& operator=(const Cluster&)      = default;
     Cluster& operator=(Cluster&&)     = default;
 
-    Cluster(int id){
+    explicit Cluster(int id){
 
         _id = id;       // may be modified in the program
 
@@ -50,9 +50,6 @@ public:
         _creation_time = id + 1;       // only readable, not modifiable
     }
 
-
-//    void addElement(Bond ); // add an element to the cluster
-//    void addElement(Site ); // add an element to the cluster
 
     void addSiteIndex(Index );
     void addBondIndex(BondIndex );
@@ -72,8 +69,6 @@ public:
     void eraseSite(value_type index);
     void eraseBond(value_type index);
 
-    void insert(const std::vector<Bond>& bonds);
-    void insert(const std::vector<Site>& sites);
 
     void insert(const std::vector<BondIndex>& bonds);
     void insert(const std::vector<Index>& sites);
@@ -81,11 +76,6 @@ public:
     void insert(const Cluster& cluster);
     void insert_v2(const Cluster& cluster);
     void insert_with_id_v2(const Cluster& cluster, int id);
-
-//    void insert_weighted_relabling(std::vector<Bond>& bonds);
-//    void insert_weighted_relabling(std::vector<Site>& sites);
-//
-//    void insert_weighted_relabling(Cluster& cluster);
 
 
     friend std::ostream& operator<<(std::ostream& os, const Cluster& cluster);
