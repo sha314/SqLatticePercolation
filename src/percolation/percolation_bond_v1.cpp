@@ -8,6 +8,7 @@
 #include <cstdlib>
 #include <climits>
 #include <unordered_set>
+#include <algorithm>
 
 #include "percolation.h"
 

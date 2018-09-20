@@ -12,12 +12,10 @@
 
 #include "lattice/lattice.h"
 #include "percolation/percolation.h"
-#include "latticeConfiguration.h"
 #include "util/time_tracking.h"
 #include "util/printer.h"
 #include "fractal/fractal_tool.h"
 #include "cmdLineArgs/cmd_args.h"
-#include "ziff_algorithm.h"
 #include "cmdLineArgs/cmd_args.h"
 #include "cmdLineArgs/cmd_args_json.h"
 #include "tests/test_percolation.h"

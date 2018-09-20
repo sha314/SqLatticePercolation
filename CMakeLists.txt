@@ -10,6 +10,9 @@ SET( CMAKE_CXX_FLAGS  "-pthread -fopenmp")
 #SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
 set(SOURCE_FILES
+        src/flags.h
+        src/types.h
+        src/main.cpp
         src/cmdLineArgs/cmd_args.cpp
         src/cmdLineArgs/cmd_args.h
         src/cmdLineArgs/cmd_args_json.cpp
@@ -19,7 +22,6 @@ set(SOURCE_FILES
         src/ensemble/site_percolation.h
         src/exception/exceptions.cpp
         src/exception/exceptions.h
-        src/ext_libs/inverse_array.h
         src/fractal/fractal_tool.cpp
         src/fractal/fractal_tool.h
         src/index/delta.cpp
@@ -55,14 +57,11 @@ set(SOURCE_FILES
         src/util/printer.h
         src/util/time_tracking.cpp
         src/util/time_tracking.h
-        src/flags.h
-        src/types.h
         src/util/printer.cpp
         src/percolation/percolation_site_v9.cpp
         src/util/checking.cpp
         src/util/checking.h
         src/percolation/percolation_bond_v1.cpp
-        src/main.cpp
         src/tests/test_percolation.cpp
         src/tests/test_percolation.h)
 

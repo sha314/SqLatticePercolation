@@ -16,6 +16,7 @@
 #include "../index/delta.h"
 #include <omp.h>
 #include <thread>
+#include <algorithm>
 
 #include "../util/checking.h"
 
