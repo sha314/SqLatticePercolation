@@ -77,9 +77,11 @@ set(SOURCE_FILES
         src/ziff_algorithm.cpp
         src/ziff_algorithm.h
         src/util/printer.cpp
+        src/percolation/percolation_site_v8.cpp
         src/percolation/percolation_site_v9.cpp
         src/util/checking.cpp
         src/util/checking.h
+        src/percolation/percolation_bond_v0.cpp
         src/percolation/percolation_bond_v1.cpp
         main.cpp
         )

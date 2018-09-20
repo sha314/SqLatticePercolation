@@ -997,7 +997,6 @@ value_type BondPercolation_pb_v1::manage_clusters(
         _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 
-        _cluster_index_from_id.insert(_cluster_id); // new version
         _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_id++;  // increase the cluster id for next round
         _clusters.back().insert(sites);
@@ -1069,7 +1068,6 @@ value_type BondPercolation_pb_v1::manage_clusters(
         _clusters.push_back(Cluster(_cluster_id));
         merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 
-        _cluster_index_from_id.insert(_cluster_id); // new version
         _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_id++;  // increase the cluster id for next round
         _clusters[merged_cluster_index].insert(sites);

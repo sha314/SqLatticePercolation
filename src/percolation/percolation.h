@@ -57,7 +57,6 @@ protected:
 
     // structural variables of lattice
     SqLattice _lattice;
-    InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
 
     value_type _index_sequence_position{};
     // cluster
@@ -71,7 +70,9 @@ protected:
 
     value_type min_index{};
     value_type max_index{};
-
+//// quantity to calculate
+    value_type _number_of_occupied_bonds{};
+    value_type _number_of_occupied_sites{};
     double _occuption_probability {};
     // entropy
     double _entropy{};
@@ -214,6 +215,7 @@ private:
     value_type _impure_sites;
 
 protected:
+    InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
     /*
      * invariant property of lattice
      */
@@ -705,7 +707,6 @@ protected:
     std::vector<Index> index_sequence;  // initialized once
 //    std::vector<Index> randomized_index_sequence;
     std::vector<value_type> randomized_index;
-    value_type _number_of_occupied_sites{};
 
 
     // every birthTime we create a cluster we assign an set_ID for them
@@ -1402,7 +1403,7 @@ public:
  *      i.e., number of sites in the spanning clusters divided by total number of sites
  */
 class BondPercolation_pb_v0 : public SqLatticePercolation{
-
+    InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
     // flags to manipulate method
     bool _periodicity{false};
     bool _measure_spanning_cluster_by_bond{false};
@@ -1637,8 +1638,7 @@ class BondPercolation_pb_v1 : public SqLatticePercolation{
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
 
 
-    //// quantity to calculate
-    value_type _number_of_occupied_bonds;
+
 
     std::vector<value_type> number_of_bonds_to_span;
     std::vector<value_type> number_of_sites_to_span;

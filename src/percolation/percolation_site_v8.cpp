@@ -113,6 +113,7 @@ void SitePercolation_ps_v8::initialize_index_sequence() {
 void SitePercolation_ps_v8::reset() {
     SqLatticePercolation::reset();
     // variables
+    _cluster_index_from_id.clear();
     _number_of_occupied_sites = 0;
     _index_sequence_position = 0;
 //    _first_spanning_cluster_id = -1;
@@ -884,7 +885,7 @@ value_type SitePercolation_ps_v8::manage_clusters_weighted_v8(
     if (found_index_set.size() > 0) {
         unsigned long &base = found_index[0];
         _clusters[base].addSiteIndex(site);
-        _lattice.GroupID(site, _clusters[base].get_ID()); // relabeling for 1 site
+        _lattice.setGroupID(site, _clusters[base].get_ID()); // relabeling for 1 site
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(hv_bonds);
@@ -945,7 +946,7 @@ value_type SitePercolation_ps_v8::manage_clusters_weighted_v8(
         merged_cluster_index = _clusters.size() -1;  // this new cluster index
 //        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
         _cluster_index_from_id.insert(_cluster_id); // new version
-        _lattice.GroupID(site, _cluster_id); // relabeling for 1 site
+        _lattice.setGroupID(site, _cluster_id); // relabeling for 1 site
         _cluster_id++;  // increase the cluster id for next round
         _clusters.back().insert(hv_bonds);
         _clusters[merged_cluster_index].addSiteIndex(site);
@@ -983,7 +984,7 @@ value_type SitePercolation_ps_v8::manage_clusters_v9(
         value_type base = found_index[0];
         _clusters[base].addSiteIndex(site);
 //        _lattice.getSite(site).set_groupID(_clusters[base].set_ID()); // relabeling for 1 site
-        _lattice.GroupID(site, _clusters[base].get_ID());
+        _lattice.setGroupID(site, _clusters[base].get_ID());
 
         // put_values_to_the_cluster new values in the 0-th found index
         _clusters[base].insert(hv_bonds);

@@ -170,7 +170,7 @@ SqLatticePercolation::get_cluster_info(
 
 void SqLatticePercolation::reset() {
     _lattice.reset();
-    _cluster_index_from_id.clear();
+//    _cluster_index_from_id.clear();
     _clusters.clear();
     _index_sequence_position = 0;
     _cluster_id = 0;

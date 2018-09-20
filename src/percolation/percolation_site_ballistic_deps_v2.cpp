@@ -16,7 +16,7 @@
  * @param length
  */
 SitePercolationBallisticDeposition_v2::SitePercolationBallisticDeposition_v2(value_type length, bool periodicity)
-        : SitePercolation_ps_v8(length, periodicity )
+        : SitePercolation_ps_v9(length, periodicity )
 {
 
     std::cout << "Constructing SitePercolationBallisticDeposition_v2 object : line " << __LINE__ << endl;
@@ -77,12 +77,12 @@ value_type SitePercolationBallisticDeposition_v2::placeSite_nn_v0(int n) {
 //    ++_index_sequence_position;
 
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set = find_index_for_placing_new_bonds_v3(sites);
+    set<value_type> found_index_set = find_index_for_placing_new_bonds(sites);
 
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_bond(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters_v7(
+    value_type merged_cluster_index = manage_clusters(
             found_index_set, bonds, _last_placed_site
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change

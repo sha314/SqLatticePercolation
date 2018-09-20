@@ -159,6 +159,7 @@ void BondPercolation_pb_v0::reset() {
     _sites_required_to_min_span = 0;
     sites_in_cluster_with_size_greater_than_one = 0;
     _wrapping_indices.clear();
+    _cluster_index_from_id.clear();
     initialize();
     randomize();  // randomize the untouched_site_indices
 }
