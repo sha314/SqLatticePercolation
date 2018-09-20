@@ -61,7 +61,8 @@ protected:
 
     value_type _total_relabeling{};
     double time_relabel{};
-
+    value_type _number_of_occupied_sites{};
+    value_type _number_of_occupied_bonds{};
     value_type _max_iteration_limit{};
     std::vector<value_type> randomized_index;
     std::random_device _random_device;
@@ -138,6 +139,8 @@ public:
 
     virtual double occupationProbability() const { return _occuption_probability;}
     virtual double entropy() { return _entropy_current;}
+    double entropy_by_site(); // for future convenience
+    double entropy_by_bond(); // for future convenience
     double orderParameter();
 
     void jump();
@@ -215,7 +218,7 @@ protected:
     std::vector<Index> index_sequence;  // initialized once
 //    std::vector<Index> randomized_index_sequence;
     std::vector<value_type> randomized_index;
-    value_type _number_of_occupied_sites{};
+
 
 
     // every birthTime we create a cluster we assign an set_ID for them
@@ -401,6 +404,7 @@ public:
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
     double entropy(); // the shannon entropy
+
 
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds
     double orderParameter_v2() const;  // number of bonds in the largest cluster / total number of bonds
@@ -747,9 +751,6 @@ class BondPercolation_pb_v1 : public SqLatticePercolation{
 
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
 
-
-    //// quantity to calculate
-    value_type _number_of_occupied_bonds;
 
     std::vector<value_type> number_of_bonds_to_span;
     std::vector<value_type> number_of_sites_to_span;

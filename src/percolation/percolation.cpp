@@ -200,4 +200,40 @@ void SqLatticePercolation::jump() {
 }
 
 
+/**
+ * Entropy calculation is performed here. The fastest method possible.
+ * Cluster size is measured by site.
+ * @return current entropy of the lattice
+ */
+double SqLatticePercolation::entropy_by_site() {
+    double H{}, mu ;
+
+    for(size_t i{}; i < _clusters.size(); ++i){
+        if(!_clusters[i].empty()){
+            mu = _clusters[i].numberOfSites() / double(_number_of_occupied_sites);
+            H += mu*log(mu);
+        }
+    }
+
+    return -H;
+}
+
+/**
+ * Entropy calculation is performed here. The fastest method possible.
+ * Cluster size is measured by site.
+ * @return current entropy of the lattice
+ */
+double SqLatticePercolation::entropy_by_bond() {
+    double H{}, mu ;
+
+    for(size_t i{}; i < _clusters.size(); ++i){
+        if(!_clusters[i].empty()){
+            mu = _clusters[i].numberOfBonds() / double(maxBonds());
+            H += mu*log(mu);
+        }
+    }
+
+    return -H;
+}
+
 
