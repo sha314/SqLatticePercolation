@@ -56,21 +56,14 @@ set(SOURCE_FILES
         src/util/time_tracking.cpp
         src/util/time_tracking.h
         src/flags.h
-        src/helper.cpp
-        src/helper.h
-        src/latticeConfiguration.cpp
-        src/latticeConfiguration.h
-        src/logs.cpp
-        src/logs.h
         src/types.h
-        src/ziff_algorithm.cpp
-        src/ziff_algorithm.h
         src/util/printer.cpp
         src/percolation/percolation_site_v9.cpp
         src/util/checking.cpp
         src/util/checking.h
         src/percolation/percolation_bond_v1.cpp
-        main.cpp
-        src/tests/test_percolation.cpp src/tests/test_percolation.h)
+        src/main.cpp
+        src/tests/test_percolation.cpp
+        src/tests/test_percolation.h)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})
