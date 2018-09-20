@@ -2176,13 +2176,13 @@ value_type SitePercolation_ps_v9::numberOfSitesInTheWrappingClusters(){
  * @return
  */
 value_type SitePercolation_ps_v9::numberOfBondsInTheWrappingClusters(){
-    value_type nos{};
+    value_type nob{};
     int id{};
     for(auto i: _wrapping_sites){
         id = _lattice.getSite(i).get_groupID();
-        nos += _clusters[_cluster_index_from_id[id]].numberOfBonds();
+        nob += _clusters[_cluster_index_from_id[id]].numberOfBonds();
     }
-    return nos;
+    return nob;
 }
 
 

@@ -419,6 +419,7 @@ public:
     value_type numberOfSitesInTheWrappingClusters()  ;
     value_type numberOfBondsInTheWrappingClusters()  ;
 
+    value_type wrappingClusterSize() {return numberOfBondsInTheWrappingClusters();};
 
     double numberOfcluster() const { return _clusters.size();}
     int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).get_groupID();}

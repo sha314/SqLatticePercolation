@@ -71,6 +71,6 @@ set(SOURCE_FILES
         src/util/checking.h
         src/percolation/percolation_bond_v1.cpp
         main.cpp
-        )
+        src/tests/test_percolation.cpp src/tests/test_percolation.h)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})
