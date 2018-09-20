@@ -21,7 +21,6 @@
 #include "site_position.h"
 #include "id_index.h"
 #include "boundary.h"
-#include "../ext_libs/inverse_array.h"
 #include <random>
 
 
@@ -38,7 +37,6 @@ protected:
 
     // structural variables of lattice
     SqLattice _lattice;
-    InverseArray<int> _cluster_index_from_id;   // used to track id and index of cluster
 
     value_type _index_sequence_position{};
     // cluster
@@ -77,7 +75,8 @@ public:
     SqLatticePercolation(value_type length);
     void reset();
     void set_cluster_measuring_unit(int i){
-        cout << "Cluster measuring unit = " << ((i==0) ? "bond" : "site") << " : line " << __LINE__ <<endl;
+        std::cout << "Cluster measuring unit = " << ((i==0) ? "bond" : "site")
+                  << " : line " << __LINE__ << std::endl;
     }
 
     bool occupy();
@@ -147,8 +146,8 @@ public:
 
 
     void get_cluster_info(
-            vector<value_type> &site,
-            vector<value_type> &bond
+            std::vector<value_type> &site,
+            std::vector<value_type> &bond
     );
 
     char get_type() const {return type;} // get percolation type
@@ -294,7 +293,7 @@ protected:
      * Private Methods
      ******************************************/
 
-    void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
+    void relabel_sites(const std::vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
 
     double time_relabel{};
@@ -343,18 +342,18 @@ public:
 
     value_type box_counting(value_type delta); // todo both at once
     value_type box_counting_spanning(value_type delta) ;
-    array<value_type, 2> box_counting_v2(value_type delta);
+    std::array<value_type, 2> box_counting_v2(value_type delta);
 
     void add_entropy_for_bond(value_type index);
     void add_entropy_for_site(value_type index);
     void add_entropy_for_full(value_type index);
 
-    void subtract_entropy_for_bond(const set<value_type> &found_index_set);
-    void subtract_entropy_for_bond(const vector<value_type> &found_index);
-    void subtract_entropy_for_site(const set<value_type> &found_index_set);
-    void subtract_entropy_for_site(const vector<value_type> &found_index);
-    void subtract_entropy_for_full(const set<value_type> &found_index_set);
-    void subtract_entropy_for_full(const vector<value_type> &found_index);
+    void subtract_entropy_for_bond(const std::set<value_type> &found_index_set);
+    void subtract_entropy_for_bond(const std::vector<value_type> &found_index);
+    void subtract_entropy_for_site(const std::set<value_type> &found_index_set);
+    void subtract_entropy_for_site(const std::vector<value_type> &found_index);
+    void subtract_entropy_for_full(const std::set<value_type> &found_index_set);
+    void subtract_entropy_for_full(const std::vector<value_type> &found_index);
 
     /*************************************************
      * Site placing methods
@@ -365,13 +364,13 @@ public:
     virtual bool occupy();
 
     value_type placeSite(Index site,
-                             vector<Index>& neighbor_sites,
-                             vector<BondIndex>& neighbor_bonds);
+                         std::vector<Index>& neighbor_sites,
+                         std::vector<BondIndex>& neighbor_bonds);
     value_type placeSite(Index site);
     value_type placeSite_weighted(Index site); // uses weighted relabeling by first identifying the largest cluster
     value_type placeSite_weighted(Index site,
-                         vector<Index>& neighbor_sites,
-                         vector<BondIndex>& neighbor_bonds);
+                                  std::vector<Index>& neighbor_sites,
+                                  std::vector<BondIndex>& neighbor_bonds);
 
 
     Index selectSite(); // selecting site
@@ -438,8 +437,8 @@ public:
     bool detectSpanning_v6(const Index& site);
 
     void save_index_if_in_boundary_v2(const Index& site);
-    bool check_if_id_matches(Index site, const vector<Index> &edge);
-    bool check_if_id_matches_and_erase(Index site, vector<Index> &edge);
+    bool check_if_id_matches(Index site, const std::vector<Index> &edge);
+    bool check_if_id_matches_and_erase(Index site, std::vector<Index> &edge);
 
 
 //    bool isSpanned() const { return !_spanning_sites.empty();}
@@ -467,7 +466,7 @@ public:
      * // todo declare these as constants
      ********************************/
     Index lastPlacedSite() const { return _last_placed_site;}
-    void viewCluster_id_index();
+
     void periodicity_status();
 
     void spanningIndices() const;
@@ -486,7 +485,7 @@ public:
      * Visual data for plotting
      *********************************************/
     // lattice visual data for python
-    void writeVisualLatticeData(const string& filename, bool only_spanning=true);
+    void writeVisualLatticeData(const std::string& filename, bool only_spanning=true);
 
 protected:
     void initialize();
@@ -494,8 +493,8 @@ protected:
     void randomize();
     void randomize_v2(); // better random number generator
 
-    std::set<value_type> find_index_for_placing_new_bonds(const vector<Index> &neighbors);
-    int find_cluster_index_for_placing_new_bonds(const vector<Index> &neighbors, std::set<value_type> &found_indices);
+    std::set<value_type> find_index_for_placing_new_bonds(const std::vector<Index> &neighbors);
+    int find_cluster_index_for_placing_new_bonds(const std::vector<Index> &neighbors, std::set<value_type> &found_indices);
 
     value_type manage_clusters(
             const std::set<value_type> &found_index_set,
@@ -528,12 +527,12 @@ public:
     ~SitePercolationExplosive() = default;
     SitePercolationExplosive(value_type length);
     std::string getSignature() {
-        string s = "sq_lattice_site_percolation_explosive_";
+        std::string s = "sq_lattice_site_percolation_explosive_";
         if(_periodicity)
             s += "_periodic_";
         else
             s += "_non_periodic_";
-        s += to_string(length());
+        s += std::to_string(length());
         return s;
     }
 
@@ -577,9 +576,9 @@ public:
     /************************************
      * Site selection methods
      */
-    Index select_site(vector<Index> &sites, vector<BondIndex> &bonds);
-    Index select_site_upto_1nn(vector<Index> &sites, vector<BondIndex> &bonds);
-    Index select_site_upto_2nn(vector<Index> &sites, vector<BondIndex> &bonds);
+    Index select_site(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
+    Index select_site_upto_1nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
+    Index select_site_upto_2nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
 
 
     void reset(); // todo
@@ -587,7 +586,7 @@ public:
 //    void randomize_index();
 
     virtual std::string getSignature() {
-        string s = "sq_lattice_site_percolation_ballistic_deposition_";
+        std::string s = "sq_lattice_site_percolation_ballistic_deposition_";
         if(_periodicity)
             s += "_periodic_";
         else
@@ -650,7 +649,7 @@ public:
     }
 
     std::string getSignature() {
-        string s = "sq_lattice_site_percolation_ballistic_deposition_L1";
+        std::string s = "sq_lattice_site_percolation_ballistic_deposition_L1";
         if(_periodicity)
             s += "_periodic_";
         else
@@ -692,7 +691,7 @@ public:
     }
 
     std::string getSignature() {
-        string s = "sq_lattice_site_percolation_ballistic_deposition_L2";
+        std::string s = "sq_lattice_site_percolation_ballistic_deposition_L2";
         if(_periodicity)
             s += "_periodic_";
         else
@@ -763,7 +762,7 @@ class BondPercolation_pb_v1 : public SqLatticePercolation{
 
     value_type sites_in_cluster_with_size_greater_than_one{};
 
-    vector<Index> _wrapping_indices;
+    std::vector<Index> _wrapping_indices;
 
 public:
     static constexpr const char* signature = "BondPercolation_v1";
@@ -772,7 +771,7 @@ public:
     explicit BondPercolation_pb_v1(value_type length, bool periodicity=true);
 
     std::string getSignature() {
-        string s = "sq_lattice_bond_percolation_";
+        std::string s = "sq_lattice_bond_percolation_";
         if(_periodicity)
             s += "_periodic_";
         else
@@ -808,16 +807,16 @@ public:
     void relabel_sites(const Cluster& clstr, int id);
     void relabel_bonds(const Cluster& clstr, int id);
     void relabel_bonds_v1(BondIndex site_a, const Cluster &clstr_b); // implemented on 17 Aug 2018
-    void relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
+    void relabel_bonds(const std::vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
 
     void relabel_v1(BondIndex last_bond, const Cluster& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
-    void relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
+    void relabel_sites(const std::vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
-    void relabel_sites_relative(BondIndex bond, const vector<Index> &sites);
-    void relabel_new_sites_relative(const vector<Index> &sites, int id);
+    void relabel_sites_relative(BondIndex bond, const std::vector<Index> &sites);
+    void relabel_new_sites_relative(const std::vector<Index> &sites, int id);
 
     // relabel sites and bonds in the cluster cluster
-    void relabel_cluster(BondIndex bond, const vector<Index>& sites);
+    void relabel_cluster(BondIndex bond, const std::vector<Index>& sites);
     void relabel_cluster(BondIndex bond, const Cluster& clstr_b, size_t bond_pos, size_t site_pos);
 
     void numberOfActiveSites() const {std::cout << "Number of active sites " << _total_number_of_active_bonds << std::endl;}
@@ -825,7 +824,7 @@ public:
 
     value_type count_number_of_active_site();
 
-    void subtract_entropy_for_site(const set<value_type> &found_index_set);
+    void subtract_entropy_for_site(const std::set<value_type> &found_index_set);
     void add_entropy_for_site(value_type found_index);
     /***********************************
      * Spanning and Wrapping
@@ -852,7 +851,7 @@ public:
 
     BondIndex lastPlacedBond() {
         if (_index_sequence_position == 0) {
-            cerr << "Empty lattice : line " << __LINE__ << endl;
+            std::cerr << "Empty lattice : line " << __LINE__ << std::endl;
             return _last_placed_bond;
         }
         return _last_placed_bond;
@@ -874,14 +873,14 @@ private:
 
 
     value_type manage_clusters(
-            const set<value_type> &found_index_set,
-            vector<Index> &sites,
+            const std::set<value_type> &found_index_set,
+            std::vector<Index> &sites,
             BondIndex &bond
     );
 
     value_type manage_clusters(
-            const set<value_type> &found_index_set,
-            vector<Index> &sites,
+            const std::set<value_type> &found_index_set,
+            std::vector<Index> &sites,
             BondIndex &bond,
             int base_id
     );
@@ -901,16 +900,16 @@ private:
     );
 
 
-    void connection_2_horizontal_no_periodicity(const BondIndex &bond, vector<Index> &site_neighbor,
-                                                vector<BondIndex> &bond_neighbor,
+    void connection_2_horizontal_no_periodicity(const BondIndex &bond, std::vector<Index> &site_neighbor,
+                                                std::vector<BondIndex> &bond_neighbor,
                                                 value_type next_column, value_type prev_column,
                                                 value_type prev_row);
 
-    void connection_2_vertical_no_peridicity(const BondIndex &bond, vector<Index> &site_neighbor,
-                                             vector<BondIndex> &bond_neighbor, value_type prev_column, value_type prev_row,
+    void connection_2_vertical_no_peridicity(const BondIndex &bond, std::vector<Index> &site_neighbor,
+                                             std::vector<BondIndex> &bond_neighbor, value_type prev_column, value_type prev_row,
                                              value_type next_row);
 
-    void connection_2_periodic(const BondIndex &bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor,
+    void connection_2_periodic(const BondIndex &bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor,
                                value_type next_column, value_type prev_column, value_type prev_row, value_type next_row);
 
 

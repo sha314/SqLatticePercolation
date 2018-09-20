@@ -819,7 +819,6 @@ void cmd_args_json(int argc, char **argv) {
         if (length <= 50) {
             sp.viewLatticeExtended();
             sp.viewClusterExtended();
-            sp.viewCluster_id_index();
         }
         return;
     }
@@ -927,7 +926,6 @@ void simulate(value_type length, int p, value_type ensembleSize){
         if (length <= 50) {
             sp.viewLatticeExtended();
             sp.viewClusterExtended();
-            sp.viewCluster_id_index();
         }
     }
 

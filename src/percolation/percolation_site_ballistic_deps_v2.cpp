@@ -7,6 +7,8 @@
 
 #include "percolation.h"
 
+using namespace std;
+
 /**************************
  * Ballistic Deposition
  */

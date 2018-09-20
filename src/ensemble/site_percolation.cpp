@@ -8,14 +8,15 @@
 #include "../cmdLineArgs/cmd_args.h"
 #include <fstream>
 
+using namespace std;
 
 template <class TPercolation>
 void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
     // todo
-    cout << "Entry \"sq_lattice_site_percolation_periodic<T>\" : line " << __LINE__ << endl;
-    cout << "On test" << endl;
+    std::cout << "Entry \"sq_lattice_site_percolation_periodic<T>\" : line " << __LINE__ << std::endl;
+    std::cout << "On test" << std::endl;
     TPercolation percolation(length, true);
-    cout << "Signature " << percolation.signature << endl;
+    std::cout << "Signature " << percolation.signature << std::endl;
 
 }
 

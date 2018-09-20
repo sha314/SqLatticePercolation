@@ -4,6 +4,8 @@
 
 #include "percolation.h"
 
+using namespace std;
+
 /**
  *
  * @param length
@@ -170,7 +172,6 @@ SqLatticePercolation::get_cluster_info(
 
 void SqLatticePercolation::reset() {
     _lattice.reset();
-    _cluster_index_from_id.clear();
     _clusters.clear();
     _index_sequence_position = 0;
     _cluster_id = 0;
@@ -199,46 +200,4 @@ void SqLatticePercolation::jump() {
 }
 
 
-
-//
-//const vector<double> &SqLatticePercolation::get_occupation_probabilities() const {
-//    return _occupation_probabilities;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_nob_spanning() const {
-//    return _nob_spanning;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_nob_largest() const {
-//    return _nob_largest;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_nos_spanning() const {
-//    return _nos_spanning;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_nos_largest() const {
-//    return _nos_largest;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_entropy_sites() const {
-//    return _entropy_sites;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_entropy_bonds() const {
-//    return _entropy_bonds;
-//}
-//
-//
-//const vector<double> &SqLatticePercolation::get_pcs() const {
-//    return _pcs;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_spanning_cluster_size_sites() const {
-//    return _spanning_cluster_size_sites;
-//}
-//
-//const vector<double> &SqLatticePercolation::get_spanning_cluster_size_bonds() const {
-//    return _spanning_cluster_size_bonds;
-//}
 

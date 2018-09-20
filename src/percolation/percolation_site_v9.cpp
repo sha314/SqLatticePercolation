@@ -481,8 +481,6 @@ value_type SitePercolation_ps_v9::manage_clusters(
         // create new element for the cluster
         _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
-//        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
-        _cluster_index_from_id.insert(_cluster_id); // new version
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
@@ -557,8 +555,6 @@ value_type SitePercolation_ps_v9::manage_clusters(
         // create new element for the cluster
         _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
-//        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
-        _cluster_index_from_id.insert(_cluster_id); // new version
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
@@ -1348,16 +1344,6 @@ Index SitePercolation_ps_v9::selectSite(){
  * View methods
  ****************************************/
 
-void SitePercolation_ps_v9::viewCluster_id_index(){
-    cout << "set_ID->index : line " << __LINE__ << endl;
-    cout << _cluster_index_from_id << endl;
-//    for(size_t c{}; c != _clusters.size() ; ++c){
-//        auto cifid = _cluster_index_from_id[_clusters[c].set_ID()];
-//        cout << "cluster.set_ID() " << _clusters[c].get_ID() << ", Index " << cifid << endl;
-//    }
-}
-
-
 // recreate cluster from active sites
 // for debugging purposes
 void SitePercolation_ps_v9::view_cluster_from_ground_up() {
@@ -2093,7 +2079,9 @@ double SitePercolation_ps_v9::numberOfSitesInTheSpanningClusters() {
     int id{};
     for(auto i: _spanning_sites){
         id = _lattice.getSite(i).get_groupID();
-        nos += _clusters[_cluster_index_from_id[id]].numberOfSites();
+        if(id >= 0) {
+            nos += _clusters[id].numberOfSites();
+        }
     }
     return nos;
 }
@@ -2114,15 +2102,19 @@ double SitePercolation_ps_v9::numberOfBondsInTheSpanningClusters() {
         for(auto i: _spanning_sites){
 
             id = _lattice.getSite(i).get_groupID();
-            cout << id << ", ";
-            nos += _clusters[_cluster_index_from_id[id]].numberOfBonds();
+            if(id >=0) {
+//            cout << id << ", ";
+                nos += _clusters[id].numberOfBonds();
+            }
         }
         cout << endl;
     }
     else{
         id = _lattice.getSite(_spanning_sites.front()).get_groupID();
+        if(id >= 0) {
 //        cout << endl << "only one spanning cluster " << id << endl;
-        nos = _clusters[_cluster_index_from_id[id]].numberOfBonds();
+            nos = _clusters[id].numberOfBonds();
+        }
     }
 
     return nos;
@@ -2138,7 +2130,9 @@ value_type SitePercolation_ps_v9::numberOfSitesInTheSpanningClusters_v2() {
 
     if(! _spanning_sites.empty()){
         int id = _lattice.getSite(_spanning_sites.front()).get_groupID();
-        return _clusters[_cluster_index_from_id[id]].numberOfSites();
+        if(id >= 0) {
+            return _clusters[id].numberOfSites();
+        }
     }
     return 0;
 }
@@ -2152,7 +2146,9 @@ value_type SitePercolation_ps_v9::numberOfBondsInTheSpanningClusters_v2() {
     if(!_spanning_sites.empty()){
 //        cout << "number of spanning sites " << _spanning_sites.size() << " : line " << __LINE__ << endl;
         int id = _lattice.getSite(_spanning_sites.front()).get_groupID();
-        return _clusters[_cluster_index_from_id[id]].numberOfBonds();
+        if(id >= 0) {
+            return _clusters[id].numberOfBonds();
+        }
     }
     return 0;
 }
@@ -2166,7 +2162,9 @@ value_type SitePercolation_ps_v9::numberOfSitesInTheWrappingClusters(){
     int id{};
     for(auto i: _wrapping_sites){
         id = _lattice.getSite(i).get_groupID();
-        nos += _clusters[_cluster_index_from_id[id]].numberOfSites();
+        if(id >= 0) {
+            nos += _clusters[id].numberOfSites();
+        }
     }
     return nos;
 }
@@ -2180,7 +2178,9 @@ value_type SitePercolation_ps_v9::numberOfBondsInTheWrappingClusters(){
     int id{};
     for(auto i: _wrapping_sites){
         id = _lattice.getSite(i).get_groupID();
-        nob += _clusters[_cluster_index_from_id[id]].numberOfBonds();
+        if(id >= 0) {
+            nob += _clusters[id].numberOfBonds();
+        }
     }
     return nob;
 }
@@ -2410,7 +2410,10 @@ void SitePercolation_ps_v9::writeVisualLatticeData(const string &filename, bool 
     }
 
     if(only_spanning){
-        vector<Index> sites = _clusters[_cluster_index_from_id[id]].getSiteIndices();
+        if(id < 0){
+            cerr << "id < 0 : line " << __LINE__ << endl;
+        }
+        vector<Index> sites = _clusters[id].getSiteIndices();
         for(auto s: sites){
             fout << s.column_ << ',' << s.row_ << ',' << id << endl;
         }

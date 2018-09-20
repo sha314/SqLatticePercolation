@@ -79,7 +79,7 @@ void simulate_site_percolation(int argc, char **argv) {
     ofstream fout_critical(filename_critical);
     fout_critical << '#' << header_info.str() << endl;
     fout_critical << "#data at critical occupation probability or pc" << endl;
-    fout_critical << "#<pc>,<largest cluster size>,<spanning cluster size>" << endl;
+    fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << endl;
 
     // simulation starts here
     value_type counter{};
@@ -104,7 +104,7 @@ void simulate_site_percolation(int argc, char **argv) {
                 lattice_percolation.jump();
                 if(!wrapping_written && lattice_percolation.detectWrapping()){
                     fout_critical << lattice_percolation.occupationProbability() << ","
-                            << lattice_percolation.numberOfBondsInTheLargestCluster_v2() << ","
+                            << lattice_percolation.numberOfSitesInTheWrappingClusters() << ","
                             << lattice_percolation.numberOfBondsInTheWrappingClusters()  << endl;
 
                     vector<value_type> site, bond;
@@ -160,9 +160,9 @@ void simulate_site_percolation(int argc, char **argv) {
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << endl;
     for(size_t i{}; i < lattice_percolation.maxIterationLimit(); ++i){
         fout << (i+1) / double(lattice_percolation.maxIterationLimit()) << ",";
-        fout << (entropy[i]) / double(ensemble_size) << ",";
-        fout << (nob_largest[i]) / double(ensemble_size * lattice_percolation.maxBonds()) << ",";
-        fout << (nob_wraping[i]) / double(ensemble_size * lattice_percolation.maxBonds()) ;
+        fout << entropy[i] / double(ensemble_size) << ",";
+        fout << nob_largest[i] / double(ensemble_size) << ",";
+        fout << nob_wraping[i] / double(ensemble_size) ;
         fout << endl;
     }
     fout.close();
