@@ -121,7 +121,6 @@ void SitePercolation_ps_v9::reset() {
     _wrapping_sites.clear();
 //    wrapping_cluster_ids.clear();
 
-    _cluster_entropy.clear();
     _bonds_in_cluster_with_size_two_or_more = 0;
 //    _id_largest_cluster = 0;
 
@@ -133,14 +132,6 @@ void SitePercolation_ps_v9::reset() {
     _number_of_sites_in_the_largest_cluster = 0;
 //    _cluster_id_set.clear();
 
-    _entropy_by_bond = 0;
-    _entropy_by_bond_to_add = 0;
-    _entropy_by_bond_to_subtract = 0;
-    _entropy_by_site =0;
-    _entropy_by_site_to_add=0;
-    _entropy_by_site_to_subtract = 0;
-    _entropy_by_site_would_be = 0;
-
     // clearing edges
     _top_edge.clear();
     _bottom_edge.clear();
@@ -150,34 +141,11 @@ void SitePercolation_ps_v9::reset() {
     _spanning_occured = false;
 
     initialize();
-//    randomize();
     randomize_v2();
-//    markImpureSites();
     time_relabel = 0;
     _total_relabeling = 0;
 }
 
-
-/**
- * Randomize the site placing order
- * Takes 3.031000 sec for 1000 x 1000 sites
- */
-void SitePercolation_ps_v9::randomize(){
-    cout << "use std::suffle instead of manually suffling : line " << endl;
-//    value_type  len = randomized_index_sequence.size();
-//    value_type j{};
-//    Index temp;
-//    for(value_type i{} ; i != len; ++i){
-//        // select a j from the array. which must come from the ordered region
-//        j = i + std::rand() % (len - i);
-//
-//        // perform the swapping with i-th and j-th value
-//        temp = randomized_index_sequence[j];
-//        randomized_index_sequence[j] = randomized_index_sequence[i];
-//        randomized_index_sequence[i] = temp;
-//    }
-//    cout << "Index sequence : " << randomized_index_sequence << endl;
-}
 
 /**
  * Randomize the indices
@@ -204,69 +172,15 @@ void SitePercolation_ps_v9::randomize_v2(){
  * @param found_index_set
  */
 void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &found_index){
-    double nob, mu_bond;
+    double nob, mu_bond, H{};
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ maxBonds();
-        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
+        mu_bond = nob / maxBonds();
+        H += log(mu_bond) * mu_bond;
     }
+    _entropy -= -H;
 }
 
-void SitePercolation_ps_v9::subtract_entropy_for_bond(const vector<value_type> &found_index){
-    double nob, mu_bond;
-    for(auto x : found_index){
-        nob = _clusters[x].numberOfBonds();
-        mu_bond = nob/ maxBonds();
-        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
-    }
-}
-
-
-void SitePercolation_ps_v9::subtract_entropy_for_site(const vector<value_type>& found_index){
-    double nos, mu_site;
-    for(auto x : found_index){
-        nos = _clusters[x].numberOfSites();
-        mu_site = nos/_number_of_occupied_sites;
-        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
-    }
-}
-
-
-void SitePercolation_ps_v9::subtract_entropy_for_site(const set<value_type>& found_index){
-    double nos, mu_site;
-    for(auto x : found_index){
-        nos = _clusters[x].numberOfSites();
-        mu_site = nos/_number_of_occupied_sites;
-        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
-    }
-}
-
-void SitePercolation_ps_v9::subtract_entropy_for_full(const vector<value_type>& found_index){
-    double nob, mu_bond, nos, mu_site;
-    for(auto x : found_index){
-        nob = _clusters[x].numberOfBonds();
-        nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ maxBonds();
-        mu_site = nos/_number_of_occupied_sites;
-
-        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
-        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
-    }
-}
-
-
-void SitePercolation_ps_v9::subtract_entropy_for_full(const set<value_type>& found_index){
-    double nob, mu_bond, nos, mu_site;
-    for(auto x : found_index){
-        nob = _clusters[x].numberOfBonds();
-        nos = _clusters[x].numberOfSites();
-        mu_bond = nob/ maxBonds();
-        mu_site = nos/_number_of_occupied_sites;
-
-        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
-        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
-    }
-}
 
 
 /**
@@ -277,54 +191,9 @@ void SitePercolation_ps_v9::subtract_entropy_for_full(const set<value_type>& fou
 void SitePercolation_ps_v9::add_entropy_for_bond(value_type index){
     double nob = _clusters[index].numberOfBonds();
     double mu_bond = nob / maxBonds();
-    _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
-    _entropy_by_bond = _entropy_by_bond + _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
-    _entropy_by_bond_to_subtract = 0;
-    _entropy_by_bond_to_add = 0;
+    double H = log(mu_bond) * mu_bond;
+    _entropy += -H;
 }
-
-
-/**
- * Must be called after merging the clusters
- * Cluster length is measured by sites
- * @param index
- */
-void SitePercolation_ps_v9::add_entropy_for_site(value_type index){
-    double nos = _clusters[index].numberOfSites();
-    double mu = nos / _number_of_occupied_sites;
-
-    _entropy_by_site_to_add = -log(mu) * mu;
-    _entropy_by_site = _entropy_by_site + _entropy_by_site_to_add - _entropy_by_site_to_subtract;   // keeps track of entropy
-    _entropy_by_site_to_subtract = 0;
-    _entropy_by_site_to_add = 0;
-}
-
-/**
- * Must be called after merging the clusters
- * Cluster length is measured by sites
- * @param index
- */
-void SitePercolation_ps_v9::add_entropy_for_full(value_type index){
-    double nos = _clusters[index].numberOfSites();
-    double mu_site = nos / _number_of_occupied_sites;
-//    cout << "mu_site " << mu_site << endl;
-    _entropy_by_site_to_add = -log(mu_site) * mu_site;
-    _entropy_by_site += _entropy_by_site_to_add - _entropy_by_site_to_subtract;   // keeps track of entropy
-    _entropy_by_site_to_subtract = 0;
-    _entropy_by_site_to_add = 0;
-    // would be
-//    double mu_site_would_be = nos / (_number_of_occupied_sites + 1); // in the next iteration
-//    _entropy_by_site_would_be += -log(mu_site_would_be) * mu_site_would_be;
-
-    // by bond
-    double nob = _clusters[index].numberOfBonds();
-    double mu_bond = nob / maxBonds();
-    _entropy_by_bond_to_add = -log(mu_bond) * mu_bond;
-    _entropy_by_bond += _entropy_by_bond_to_add - _entropy_by_bond_to_subtract;   // keeps track of entropy
-    _entropy_by_bond_to_subtract = 0;
-    _entropy_by_bond_to_add = 0;
-}
-
 
 
 
@@ -351,14 +220,6 @@ void SitePercolation_ps_v9::track_numberOfSitesInLargestCluster(){
     if(_clusters[_index_last_modified_cluster].numberOfSites() > _number_of_sites_in_the_largest_cluster){
         _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
     }
-}
-
-/**
- * Condition: must be called each time a site is placed
- */
-void SitePercolation_ps_v9::track_entropy() {
-    double mu = _clusters[_index_last_modified_cluster].numberOfBonds() / double(maxBonds());
-    _cluster_entropy[_clusters[_index_last_modified_cluster].get_ID()] = mu * log(mu);
 }
 
 
@@ -1171,7 +1032,7 @@ value_type SitePercolation_ps_v9::placeSite(Index current_site) {
 
 //    connection_v1(current_site, sites, bonds);
     connection_v2(current_site, sites, bonds);
-
+    _bonds_in_cluster_with_size_two_or_more += bonds.size();
     // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
     set<value_type> found_index_set = find_index_for_placing_new_bonds(sites);
 
@@ -1191,7 +1052,7 @@ value_type SitePercolation_ps_v9::placeSite(Index current_site) {
 
     // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-
+    track_numberOfSitesInLargestCluster();
     return merged_cluster_index;
 }
 
@@ -1213,6 +1074,7 @@ value_type SitePercolation_ps_v9::placeSite(
     if (_number_of_occupied_sites == maxSites()) {
         return ULONG_MAX;// unsigned long int maximum value
     }
+    _bonds_in_cluster_with_size_two_or_more += neighbor_bonds.size();
     _last_placed_site = current_site;
     _lattice.activate_site(current_site);
     ++_number_of_occupied_sites;
@@ -1227,6 +1089,7 @@ value_type SitePercolation_ps_v9::placeSite(
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfSitesInLargestCluster();
     return merged_cluster_index;
 }
 
@@ -1260,6 +1123,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
 //    auto t0 = chrono::system_clock::now();
 
     connection_v2(current_site, sites, bonds);
+    _bonds_in_cluster_with_size_two_or_more += bonds.size();
 //    auto t1 = chrono::system_clock::now();
 //    time_relabel += chrono::duration<double>(t1 - t0).count();
 
@@ -1278,6 +1142,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfSitesInLargestCluster();
 
     return merged_cluster_index;
 }
@@ -1301,6 +1166,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
         return ULONG_MAX;// unsigned long int maximum value
     }
 
+    _bonds_in_cluster_with_size_two_or_more += neighbor_bonds.size();
     _last_placed_site = current_site;
 //    cout << "placing site " << current_site << endl;
 
@@ -1324,6 +1190,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfSitesInLargestCluster();
     return merged_cluster_index;
 }
 
@@ -1346,14 +1213,6 @@ Index SitePercolation_ps_v9::selectSite(){
 /***************************************************
  * View methods
  ****************************************/
-
-// recreate cluster from active sites
-// for debugging purposes
-void SitePercolation_ps_v9::view_cluster_from_ground_up() {
-    cout << "Re implementation required : line " << __LINE__ << endl;
-    return;
-
-}
 
 
 /**
@@ -1708,33 +1567,10 @@ bool SitePercolation_ps_v9::detectWrapping() {
 
 
 
-
-/********************************************************
- *
- *
- ******************************************************/
-/**
- *
- */
-void SitePercolation_ps_v9::periodicity_status() {
-    cout << "Periodicity  " << (_periodicity ? "On" : "Off") << endl;
-
-}
-
-
-
 /********************************************************************
  * Relabeling
  *
  *********************************************************************/
-
-/**
- * Takes most of the time ~6 second when total runtime is ~8.7 sec for Length = 100 // todo
- * @param start
- */
-//void SitePercolation_ps_v9::relabelMap3(){
-//    // no more needed when using InverseArray class
-//}
 
 
 /**
@@ -1962,11 +1798,12 @@ double SitePercolation_ps_v9::spanningProbability() const {
  */
 double SitePercolation_ps_v9::entropy() {
     double H{};
-    double n = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
+    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    H += n * log(1.0/double(maxBonds())) / double(maxBonds());
+    double mu = 1.0/double(maxBonds());
+    H += number_of_cluster_with_size_one * log(mu) * mu;
     H *= -1;
-    _entropy_current =  _entropy_by_bond + H;
+    _entropy_current =  _entropy + H;
     return _entropy_current;
 }
 

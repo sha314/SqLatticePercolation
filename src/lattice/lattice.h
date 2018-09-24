@@ -74,8 +74,6 @@ public:
 
     void view_bonds_by_id();
 
-    std::string getLatticeIDs();
-
     /************************************
      * Activation functions
      ***********************************/

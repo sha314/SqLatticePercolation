@@ -82,7 +82,6 @@ void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
                     wrapping_occured = true;
 
                     fout_wrapping_cluster << sp.occupationProbability() << '\t'
-                                          << sp.firstSpanningClusterID_v2() << '\t'
                                           << sp.birthTimeOfSpanningCluster() << '\t'
                                           << sp.numberOfSitesInTheSpanningClusters_v2() << '\t'
                                           << sp.numberOfBondsInTheSpanningClusters_v2() << endl;

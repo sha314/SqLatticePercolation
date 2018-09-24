@@ -232,21 +232,6 @@ protected:
 
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
 
-
-    //// quantity to calculate
-    // entropy
-    double _entropy_by_bond{}, _entropy_by_bond_to_add{}, _entropy_by_bond_to_subtract{};
-    double _entropy_by_site{}, _entropy_by_site_to_add{}, _entropy_by_site_to_subtract{};
-    double _entropy_by_site_would_be{};
-
-    // entropy calculation ingrediants
-    //
-    /**
-     * <id of cluster, mu_i*log(mu_i)> pair
-     * no need to erase any keys because _cluster_id_set ensures that
-     *      only existing id is being referred to.
-     */
-    std::map<int, double> _cluster_entropy; // entropy of individual cluster. used to calculate entropy
     value_type _bonds_in_cluster_with_size_two_or_more{0};   // total number of bonds in the clusters. all cluster has bonds > 1
 
     // order parameter calculation ingradiants
@@ -349,15 +334,7 @@ public:
     std::array<value_type, 2> box_counting_v2(value_type delta);
 
     void add_entropy_for_bond(value_type index);
-    void add_entropy_for_site(value_type index);
-    void add_entropy_for_full(value_type index);
-
     void subtract_entropy_for_bond(const std::set<value_type> &found_index_set);
-    void subtract_entropy_for_bond(const std::vector<value_type> &found_index);
-    void subtract_entropy_for_site(const std::set<value_type> &found_index_set);
-    void subtract_entropy_for_site(const std::vector<value_type> &found_index);
-    void subtract_entropy_for_full(const std::set<value_type> &found_index_set);
-    void subtract_entropy_for_full(const std::vector<value_type> &found_index);
 
     /*************************************************
      * Site placing methods
@@ -405,6 +382,8 @@ public:
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
     double entropy(); // the shannon entropy
+    double entropy_by_site(); // the shannon entropy. the full calculations. time consuming
+    double entropy_by_bond(); // the shannon entropy. the full calculations. time consuming
 
 
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds
@@ -423,15 +402,7 @@ public:
     value_type numberOfSitesInTheWrappingClusters()  ;
     value_type numberOfBondsInTheWrappingClusters()  ;
 
-    value_type wrappingClusterSize() {return numberOfBondsInTheWrappingClusters();};
-
-
-    int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).get_groupID();}
-    int firstSpanningClusterID_v2() const {if(!_spanning_sites.empty()){
-            return _lattice.getSite(_spanning_sites[0]).get_groupID();
-        }
-        return -1;
-    }
+    value_type wrappingClusterSize() {return numberOfBondsInTheWrappingClusters();}
 
 
     /***********************************
@@ -463,7 +434,6 @@ public:
      ***********************************/
     void track_numberOfBondsInLargestCluster();
     void track_numberOfSitesInLargestCluster();
-    void track_entropy();
 
     /*********************************
      * I/O functions
@@ -472,19 +442,8 @@ public:
      ********************************/
     Index lastPlacedSite() const { return _last_placed_site;}
 
-    void periodicity_status();
-
     void spanningIndices() const;
     void wrappingIndices() const;
-
-
-    /*****************************
-     * debuggind functions
-     */
-    void view_cluster_from_ground_up();
-
-    std::string getLatticeIDs() {return _lattice.getLatticeIDs();}
-
 
     /***********************************************
      * Visual data for plotting
@@ -495,7 +454,6 @@ public:
 protected:
     void initialize();
     void initialize_index_sequence();
-    void randomize();
     void randomize_v2(); // better random number generator
 
     std::set<value_type> find_index_for_placing_new_bonds(const std::vector<Index> &neighbors);

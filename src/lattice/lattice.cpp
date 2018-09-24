@@ -835,23 +835,6 @@ void SqLattice::reset_sites() {
     }
 }
 
-/**
- * get Site ID's, i.e., Cluster ID's (separated by space character) as string
- * which can be used to write ids of the lattice to a file to analyze later to obtain
- *      One time data generation
- * @return
- */
-string SqLattice::getLatticeIDs() {
-    stringstream ss;
-    for(value_type i{} ; i != _length ; ++i) {
-        for (value_type j{}; j != _length; ++j) {
-            ss << _sites[i][j].get_groupID() << " ";
-        }
-        if(i != _length-1)
-            ss << std::endl;
-    }
-    return ss.str();
-}
 
 
 /******************************************************************************
