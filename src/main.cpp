@@ -10,18 +10,18 @@
 #include <thread>
 #include <mutex>
 
-#include "src/lattice/lattice.h"
-#include "src/tests/test_percolation.h"
-#include "src/percolation/percolation.h"
-#include "src/latticeConfiguration.h"
-#include "src/util/time_tracking.h"
-#include "src/util/printer.h"
-#include "src/fractal/fractal_tool.h"
-#include "src/cmdLineArgs/percolation_fractal.h"
-#include "src/cmdLineArgs/cmd_args.h"
-#include "src/ziff_algorithm.h"
-#include "src/cmdLineArgs/cmd_args.h"
-#include "src/cmdLineArgs/cmd_args_json.h"
+#include "lattice/lattice.h"
+#include "tests/test_percolation.h"
+#include "percolation/percolation.h"
+#include "latticeConfiguration.h"
+#include "util/time_tracking.h"
+#include "util/printer.h"
+#include "fractal/fractal_tool.h"
+#include "cmdLineArgs/percolation_fractal.h"
+#include "cmdLineArgs/cmd_args.h"
+#include "ziff_algorithm.h"
+#include "cmdLineArgs/cmd_args.h"
+#include "cmdLineArgs/cmd_args_json.h"
 
 
 using namespace std;

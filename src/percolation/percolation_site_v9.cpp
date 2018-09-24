@@ -438,7 +438,6 @@ value_type SitePercolation_ps_v9::manage_clusters(
 {
     clock_t t = clock();
     vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
-    value_type merged_cluster_index{};
 
     if (!found_index_set.empty()) {
         value_type base = found_index[0];
@@ -475,23 +474,23 @@ value_type SitePercolation_ps_v9::manage_clusters(
             _clusters[ers].clear(); // emptying the cluster
             
         }
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
 
     } else {
         // create new element for the cluster
         _clusters.push_back(Cluster(_cluster_id));
-        value_type _this_cluster_index = _clusters.size() -1;
+        _index_last_modified_cluster = _clusters.size() -1;
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_count++; // increasing count
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
-        _clusters[_this_cluster_index].addSiteIndex(site);
-        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
+        _clusters[_index_last_modified_cluster].addSiteIndex(site);
+
 
     }
 
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 
@@ -514,7 +513,6 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
 )
 {
 
-    value_type merged_cluster_index{};
 
     if (base_id != -1) {
         value_type base = value_type(base_id); // converting here
@@ -551,23 +549,22 @@ value_type SitePercolation_ps_v9::manage_clusters_v2(
             _clusters[ers].clear(); // emptying the cluster
 
         }
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
 
     } else {
         // create new element for the cluster
         _clusters.push_back(Cluster(_cluster_id));
-        value_type _this_cluster_index = _clusters.size() -1;
+        _index_last_modified_cluster = _clusters.size() -1;
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_count ++;// increasing count
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
-        _clusters[_this_cluster_index].addSiteIndex(site);
-        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
+        _clusters[_index_last_modified_cluster].addSiteIndex(site);
 
     }
 
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 
