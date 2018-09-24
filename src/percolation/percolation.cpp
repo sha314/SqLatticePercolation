@@ -183,6 +183,7 @@ void SqLatticePercolation::reset() {
     _entropy_jump_pc = 0;
     _total_relabeling = 0;
     time_relabel = 0;
+    _cluster_count = 0;
 }
 
 void SqLatticePercolation::jump() {
