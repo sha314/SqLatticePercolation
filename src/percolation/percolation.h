@@ -140,8 +140,8 @@ public:
 
     virtual double occupationProbability() const { return _occuption_probability;}
     virtual double entropy() { return _entropy_current;}
-    double entropy_by_site(); // for future convenience
-    double entropy_by_bond(); // for future convenience
+    double entropy_by_site(); // for future convenience. // the shannon entropy. the full calculations. time consuming
+    double entropy_by_bond(); // for future convenience. // the shannon entropy. the full calculations. time consuming
     double orderParameter();
     size_t numberOfcluster() const {return _cluster_count;}
     void jump();
@@ -382,8 +382,6 @@ public:
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
     double entropy(); // the shannon entropy
-    double entropy_by_site(); // the shannon entropy. the full calculations. time consuming
-    double entropy_by_bond(); // the shannon entropy. the full calculations. time consuming
 
 
     double orderParameter() const;  // number of bonds in the largest cluster / total number of bonds

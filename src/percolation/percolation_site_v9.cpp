@@ -1808,6 +1808,7 @@ double SitePercolation_ps_v9::entropy() {
 }
 
 
+
 /**
  * number of bonds in the largest cluster / total number of bonds
  *
