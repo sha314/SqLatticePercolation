@@ -439,7 +439,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
 {
     clock_t t = clock();
     vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
-    value_type merged_cluster_index{};
+
 
     if (!found_index_set.empty()) {
         value_type base = found_index[0];
@@ -476,7 +476,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
             _clusters[ers].clear(); // emptying the cluster
             
         }
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
 
     } else {
@@ -488,11 +488,11 @@ value_type SitePercolation_ps_v9::manage_clusters(
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
         _clusters[_this_cluster_index].addSiteIndex(site);
-        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
+        _index_last_modified_cluster = _this_cluster_index;   // last cluster is the place where new bonds are placed
 
     }
 
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 
@@ -515,7 +515,6 @@ value_type SitePercolation_ps_v9::manage_clusters(
 )
 {
 
-    value_type merged_cluster_index{};
 
     if (base_id != -1) {
         value_type base = value_type(base_id); // converting here
@@ -552,7 +551,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
             _clusters[ers].clear(); // emptying the cluster
 
         }
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
 
     } else {
@@ -564,11 +563,10 @@ value_type SitePercolation_ps_v9::manage_clusters(
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
         _clusters[_this_cluster_index].addSiteIndex(site);
-        merged_cluster_index = _this_cluster_index;   // last cluster is the place where new bonds are placed
+        _index_last_modified_cluster = _this_cluster_index;   // last cluster is the place where new bonds are placed
 
     }
-
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 

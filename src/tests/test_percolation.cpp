@@ -60,7 +60,8 @@ void simulate_site_percolation(int argc, char **argv) {
     fout_jump << '#' << header_info.str() << endl;
     fout_jump << "#each line is an independent realization" << endl;
     fout_jump << "#each line contains information about all clusters at critical point" << endl;
-    fout_jump << "#cluster size is measured by number of sites in it" << endl;
+    fout_jump << "#cluster size is measured by number of bonds in it" << endl;
+    fout_jump << "#<entropy jump>,<occupation probability at which the jump occurs>" << endl;
 
     ofstream fout_s(filename_s);
     // JSON formated header
@@ -161,8 +162,8 @@ void simulate_site_percolation(int argc, char **argv) {
     for(size_t i{}; i < lattice_percolation.maxIterationLimit(); ++i){
         fout << (i+1) / double(lattice_percolation.maxIterationLimit()) << ",";
         fout << entropy[i] / double(ensemble_size) << ",";
-        fout << nob_largest[i] / double(ensemble_size) << ",";
-        fout << nob_wraping[i] / double(ensemble_size) ;
+        fout << nob_largest[i] / double(ensemble_size /* lattice_percolation.maxBonds()*/) << ",";
+        fout << nob_wraping[i] / double(ensemble_size /* lattice_percolation.maxBonds()*/) ;
         fout << endl;
     }
     fout.close();

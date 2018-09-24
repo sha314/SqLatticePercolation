@@ -923,7 +923,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 ) {
 //    cout << "on test line " << __LINE__ << endl;
     vector<value_type> found_index(found_index_set.begin(), found_index_set.end());
-    value_type merged_cluster_index{};
+
 
     if (!found_index_set.empty()) {
         value_type base = found_index[0];
@@ -959,7 +959,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 
         }
 
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
     } else {
         // create new element for the cluster
@@ -967,21 +967,19 @@ value_type BondPercolation_pb_v1::manage_clusters(
         relabel_new_sites_relative(sites, _cluster_id);
 
         _clusters.push_back(Cluster(_cluster_id));
-        merged_cluster_index = _clusters.size() - 1;  // this new cluster index
+        _index_last_modified_cluster = _clusters.size() - 1;  // this new cluster index
 
         _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_count++; // increasing number of clusters
         _cluster_id++;  // increase the cluster id for next round
         _clusters.back().insert(sites);
-        _clusters[merged_cluster_index].addBondIndex(bond);
+        _clusters[_index_last_modified_cluster].addBondIndex(bond);
 
     }
 
 
-    // data for short cut calculation
-    _index_last_modified_cluster = merged_cluster_index;
 
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 /**
@@ -1000,7 +998,6 @@ value_type BondPercolation_pb_v1::manage_clusters(
 ) {
 //    cout << "on test line " << __LINE__ << endl;
 
-    value_type merged_cluster_index{};
 
     if (base_id != -1) {
         value_type base = value_type(base_id);
@@ -1032,7 +1029,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 
         }
 
-        merged_cluster_index = base;
+        _index_last_modified_cluster = base;
 
     } else {
         // create new element for the cluster
@@ -1040,21 +1037,17 @@ value_type BondPercolation_pb_v1::manage_clusters(
         relabel_new_sites_relative(sites, _cluster_id);
 
         _clusters.push_back(Cluster(_cluster_id));
-        merged_cluster_index = _clusters.size() - 1;  // this new cluster index
+        _index_last_modified_cluster = _clusters.size() - 1;  // this new cluster index
 
         _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
         _cluster_count++; // increasing number of clusters
         _cluster_id++;  // increase the cluster id for next round
-        _clusters[merged_cluster_index].insert(sites);
-        _clusters[merged_cluster_index].addBondIndex(bond);
+        _clusters[_index_last_modified_cluster].insert(sites);
+        _clusters[_index_last_modified_cluster].addBondIndex(bond);
 
     }
 
-
-    // data for short cut calculation
-    _index_last_modified_cluster = merged_cluster_index;
-
-    return merged_cluster_index;
+    return _index_last_modified_cluster;
 }
 
 /**
