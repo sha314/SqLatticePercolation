@@ -472,6 +472,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
 
             // store values of other found indices to the cluster
             _clusters[base].insert(_clusters[ers]);
+            _cluster_count--; // reducing number of clusters
             _clusters[ers].clear(); // emptying the cluster
             
         }
@@ -483,6 +484,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
         _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
+        _cluster_count++; // increasing number of clusters
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
         _clusters[_this_cluster_index].addSiteIndex(site);
@@ -546,6 +548,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
 
             // store values of other found indices to the cluster
             _clusters[base].insert_v2(_clusters[ers]);
+            _cluster_count--; // reducing number of clusters
             _clusters[ers].clear(); // emptying the cluster
 
         }
@@ -557,6 +560,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
         _clusters.push_back(Cluster(_cluster_id));
         value_type _this_cluster_index = _clusters.size() -1;
         _lattice.getSite(site).set_groupID(_cluster_id); // relabeling for 1 site
+        _cluster_count++; // increasing number of clusters
         _cluster_id++;
         _clusters.back().insert(hv_bonds);
         _clusters[_this_cluster_index].addSiteIndex(site);

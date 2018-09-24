@@ -58,6 +58,7 @@ protected:
     double _entropy_previous{};
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
+    size_t _cluster_count{};
 
     value_type _total_relabeling{};
     double time_relabel{};
@@ -142,7 +143,7 @@ public:
     double entropy_by_site(); // for future convenience
     double entropy_by_bond(); // for future convenience
     double orderParameter();
-
+    size_t numberOfcluster() const {return _cluster_count;}
     void jump();
     double largestEntropyJump()const { return _largest_jump_entropy;}
     double largestEntropyJump_pc()const { return _entropy_jump_pc;}
@@ -424,7 +425,7 @@ public:
 
     value_type wrappingClusterSize() {return numberOfBondsInTheWrappingClusters();};
 
-    double numberOfcluster() const { return _clusters.size();}
+
     int firstSpanningClusterID() const {return _lattice.getSite(_spanning_sites.front()).get_groupID();}
     int firstSpanningClusterID_v2() const {if(!_spanning_sites.empty()){
             return _lattice.getSite(_spanning_sites[0]).get_groupID();

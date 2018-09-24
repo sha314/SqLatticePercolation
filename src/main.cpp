@@ -25,40 +25,6 @@ using namespace std;
 
 
 
-/**
- * data for log(Mass) vs log(Length) curve
- */
-void percolation_fractalDimension_by_site(
-        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L=20
-)
-{
-
-    double M{};
-    ofstream fout("fractal_dimension_mass_length_data.txt");
-    fout << "#Measuring fractal dimension by all sites when spanned" << endl;
-    fout << "#<Length>\t<Mass>" << endl;
-    clock_t t, t_outer;
-    for(value_type len{L_start}; len <= l_end ; len += 10){
-        cout << "Length " << len << " : " << endl;
-        SitePercolation_ps_v9 sp(len);
-        M = 0;
-        t_outer = clock();
-        for(value_type i{} ; i != ensemble_size ; ++i){
-            t = clock();
-            sp.reset();
-            while(!sp.detectWrapping()){
-                sp.occupy();
-            }
-            M += sp.numberOfOccupiedSite();
-            cout << "\t\tIteration " << i << " . birthTime " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
-        }
-        fout << len << '\t' << M / double(ensemble_size) << endl; // writing data to file
-        cout << "Length " << len << " . Time taken "
-             << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
-    }
-    fout.close();
-}
-
 
 
 /**
