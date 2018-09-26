@@ -784,7 +784,7 @@ public:
 
     value_type count_number_of_active_site();
 
-    void subtract_entropy_for_site(const std::set<value_type> &found_index_set);
+    void subtract_entropy_for_site(const std::set<value_type> &found_index_set, int base=-1);
     void add_entropy_for_site(value_type found_index);
     /***********************************
      * Spanning and Wrapping
