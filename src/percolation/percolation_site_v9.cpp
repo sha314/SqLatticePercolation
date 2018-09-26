@@ -1183,7 +1183,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
 //        exit(1);
 //    }
 
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    subtract_entropy_for_bond(found_index_set, base_id);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters(
             found_index_set, neighbor_bonds, current_site, base_id
     );
