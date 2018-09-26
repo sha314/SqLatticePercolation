@@ -59,6 +59,8 @@ protected:
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
     size_t _cluster_count{};
+    value_type _bonds_in_cluster_with_size_two_or_more{0};   // total number of bonds in the clusters. all cluster has bonds > 1
+
 
     value_type _total_relabeling{};
     double time_relabel{};
@@ -232,7 +234,7 @@ protected:
 
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
 
-    value_type _bonds_in_cluster_with_size_two_or_more{0};   // total number of bonds in the clusters. all cluster has bonds > 1
+
 
     // order parameter calculation ingradiants
     // id of the cluster which has maximum number of bonds. used to calculate order parameter
@@ -334,7 +336,7 @@ public:
     std::array<value_type, 2> box_counting_v2(value_type delta);
 
     void add_entropy_for_bond(value_type index);
-    void subtract_entropy_for_bond(const std::set<value_type> &found_index_set);
+    void subtract_entropy_for_bond(const std::set<value_type> &found_index_set, int base=-1);
 
     /*************************************************
      * Site placing methods

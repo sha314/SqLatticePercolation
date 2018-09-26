@@ -34,10 +34,7 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
 {
     std::cout << "Constructing SitePercolation_ps_v9 object : line " << __LINE__ << endl;
     SqLatticePercolation::set_type('s');
-//    if(impure_sites > length*length){
-//        cout << "Too many impure sites : line " << __LINE__ << endl;
-//    }
-//    _impure_sites = impure_sites;
+
     _periodicity = periodicity;
     _index_sequence_position = 0;
     _lattice = SqLattice(length, true, false, false, true);   // since it is a site percolation all bonds will be activated by default
@@ -45,7 +42,6 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
     min_index = 0;
     max_index = length - 1;
 
-//    randomized_index_sequence = vector<Index>(maxSites());
     index_sequence.resize(maxSites());
     randomized_index.resize(maxSites());
     _max_iteration_limit = maxSites();
@@ -53,7 +49,6 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
     initialize_index_sequence();
     initialize();
     randomize_v2();  // randomize the untouched_site_indices
-//    markImpureSites();
 }
 
 
@@ -171,8 +166,13 @@ void SitePercolation_ps_v9::randomize_v2(){
  * Must be called before merging the clusters
  * @param found_index_set
  */
-void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &found_index, int base){
     double nob, mu_bond, H{};
+    if(base >= 0){
+        nob = _clusters[base].numberOfBonds();
+        mu_bond = nob / maxBonds();
+        H += log(mu_bond) * mu_bond;
+    }
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         mu_bond = nob / maxBonds();
@@ -1135,7 +1135,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
 //        exit(1);
 //    }
 
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    subtract_entropy_for_bond(found_index_set, base_id);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters(
             found_index_set, bonds, current_site, base_id
     );

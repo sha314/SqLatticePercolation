@@ -27,9 +27,9 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
     min_index = 0;
     max_index = _length - 1;
 
-//    size_t seed = 0;
-//    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
-    auto seed = _random_device();
+    size_t seed = 0;
+    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
+//    auto seed = _random_device();
     _random_generator.seed(seed); // seeding
     cout << "seeding with " << seed << endl;
 }
@@ -233,6 +233,11 @@ double SqLatticePercolation::entropy_by_bond() {
             H += mu*log(mu);
         }
     }
+
+    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
+//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
+    mu = 1.0/double(maxBonds());
+    H += number_of_cluster_with_size_one * log(mu) * mu;
 
     return -H;
 }

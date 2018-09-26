@@ -298,8 +298,6 @@ void run_in_main(int argc, char** argv){
 //    test_ballistic_deposition(1);
 //    test_site_percolation();
 
-//    cout << "Seed " << seed << endl;
-
 
 //    cluster_size_threaded(argc, argv);
 //    cluster_size(argc, argv);
