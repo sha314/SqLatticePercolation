@@ -850,12 +850,12 @@ public:
     void add_entropy_for_site(value_type index);
     void add_entropy_for_full(value_type index);
 
-    void subtract_entropy_for_bond(const set<value_type> &found_index_set);
-    void subtract_entropy_for_bond(const vector<value_type> &found_index);
-    void subtract_entropy_for_site(const set<value_type> &found_index_set);
-    void subtract_entropy_for_site(const vector<value_type> &found_index);
-    void subtract_entropy_for_full(const set<value_type> &found_index_set);
-    void subtract_entropy_for_full(const vector<value_type> &found_index);
+    void subtract_entropy_for_bond(const set<value_type> &found_index_set, int base=-1);
+    void subtract_entropy_for_bond(const vector<value_type> &found_index, int base=-1);
+    void subtract_entropy_for_site(const set<value_type> &found_index_set, int base=-1);
+    void subtract_entropy_for_site(const vector<value_type> &found_index, int base=-1);
+    void subtract_entropy_for_full(const set<value_type> &found_index_set, int base=-1);
+    void subtract_entropy_for_full(const vector<value_type> &found_index, int base=-1);
 
     /*************************************************
      * Site placing methods
@@ -1716,7 +1716,7 @@ public:
 
     value_type count_number_of_active_site();
 
-    void subtract_entropy_for_site(const set<value_type> &found_index_set);
+    void subtract_entropy_for_site(const set<value_type> &found_index_set, int base=-1);
     void add_entropy_for_site(value_type found_index);
     /***********************************
      * Spanning and Wrapping

@@ -202,8 +202,13 @@ void SitePercolation_ps_v9::randomize_v2(){
  * Must be called before merging the clusters
  * @param found_index_set
  */
-void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &found_index, int base){
     double nob, mu_bond;
+    if(base >=0){
+        nob = _clusters[base].numberOfBonds();
+        mu_bond = nob/ maxBonds();
+        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
+    }
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         mu_bond = nob/ maxBonds();
@@ -211,8 +216,13 @@ void SitePercolation_ps_v9::subtract_entropy_for_bond(const set<value_type> &fou
     }
 }
 
-void SitePercolation_ps_v9::subtract_entropy_for_bond(const vector<value_type> &found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_bond(const vector<value_type> &found_index, int base){
     double nob, mu_bond;
+    if(base >=0){
+        nob = _clusters[base].numberOfBonds();
+        mu_bond = nob/ maxBonds();
+        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
+    }
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         mu_bond = nob/ maxBonds();
@@ -221,8 +231,13 @@ void SitePercolation_ps_v9::subtract_entropy_for_bond(const vector<value_type> &
 }
 
 
-void SitePercolation_ps_v9::subtract_entropy_for_site(const vector<value_type>& found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_site(const vector<value_type>& found_index, int base){
     double nos, mu_site;
+    if(base >=0){
+        nos = _clusters[base].numberOfBonds();
+        mu_site = nos/_number_of_occupied_sites;
+        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
+    }
     for(auto x : found_index){
         nos = _clusters[x].numberOfSites();
         mu_site = nos/_number_of_occupied_sites;
@@ -231,8 +246,13 @@ void SitePercolation_ps_v9::subtract_entropy_for_site(const vector<value_type>& 
 }
 
 
-void SitePercolation_ps_v9::subtract_entropy_for_site(const set<value_type>& found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_site(const set<value_type>& found_index, int base){
     double nos, mu_site;
+    if(base >=0){
+        nos = _clusters[base].numberOfBonds();
+        mu_site = nos/_number_of_occupied_sites;
+        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
+    }
     for(auto x : found_index){
         nos = _clusters[x].numberOfSites();
         mu_site = nos/_number_of_occupied_sites;
@@ -240,8 +260,17 @@ void SitePercolation_ps_v9::subtract_entropy_for_site(const set<value_type>& fou
     }
 }
 
-void SitePercolation_ps_v9::subtract_entropy_for_full(const vector<value_type>& found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_full(const vector<value_type>& found_index, int base){
     double nob, mu_bond, nos, mu_site;
+    if(base >=0){
+        nob = _clusters[base].numberOfBonds();
+        nos = _clusters[base].numberOfSites();
+        mu_bond = nob/ maxBonds();
+        mu_site = nos/_number_of_occupied_sites;
+
+        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
+        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
+    }
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
@@ -254,8 +283,17 @@ void SitePercolation_ps_v9::subtract_entropy_for_full(const vector<value_type>& 
 }
 
 
-void SitePercolation_ps_v9::subtract_entropy_for_full(const set<value_type>& found_index){
+void SitePercolation_ps_v9::subtract_entropy_for_full(const set<value_type>& found_index, int base){
     double nob, mu_bond, nos, mu_site;
+    if(base >=0){
+        nob = _clusters[base].numberOfBonds();
+        nos = _clusters[base].numberOfSites();
+        mu_bond = nob/ maxBonds();
+        mu_site = nos/_number_of_occupied_sites;
+
+        _entropy_by_bond_to_subtract += -log(mu_bond) * mu_bond;
+        _entropy_by_site_to_subtract += -log(mu_site) * mu_site;
+    }
     for(auto x : found_index){
         nob = _clusters[x].numberOfBonds();
         nos = _clusters[x].numberOfSites();
@@ -1269,7 +1307,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
 //        exit(1);
 //    }
 
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    subtract_entropy_for_bond(found_index_set, base_id);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters_v2(
             found_index_set, bonds, current_site, base_id
     );
@@ -1315,7 +1353,7 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
 //        exit(1);
 //    }
 
-    subtract_entropy_for_bond(found_index_set);  // tracking entropy change
+    subtract_entropy_for_bond(found_index_set, base_id);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters_v2(
             found_index_set, neighbor_bonds, current_site, base_id
     );

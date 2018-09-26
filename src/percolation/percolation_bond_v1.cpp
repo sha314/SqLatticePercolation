@@ -642,7 +642,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //    }
 
 
-    subtract_entropy_for_site(found_index_set);  // tracking entropy change
+    subtract_entropy_for_site(found_index_set, base_id);  // tracking entropy change
     value_type merged_cluster_index = manage_clusters(
             found_index_set, sites, current_bond, base_id
     );
@@ -2275,9 +2275,14 @@ void BondPercolation_pb_v1::periodicity_status() {
  * Must be called before merging the clusters
  * @param found_index_set
  */
-void BondPercolation_pb_v1::subtract_entropy_for_site(const set<value_type>& found_index){
+void BondPercolation_pb_v1::subtract_entropy_for_site(const set<value_type>& found_index, int base){
     double nos, mu_site;
     double H{};
+    if(base >= 0){
+        nos = _clusters[base].numberOfSites();
+        mu_site = nos / maxSites();
+        H += log(mu_site) * mu_site;
+    }
     for(auto x : found_index){
         nos = _clusters[x].numberOfSites();
         mu_site = nos / maxSites();
