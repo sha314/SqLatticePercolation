@@ -307,7 +307,9 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-    simulate_site_percolation(argc, argv);
+//    simulate_site_percolation(argc, argv);
+    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(argc, argv);
+    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(argc, argv);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);
 //    site_percolation_new_version(argc, argv);
