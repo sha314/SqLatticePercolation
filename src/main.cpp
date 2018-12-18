@@ -267,6 +267,8 @@ void entropyJumps(int argc, char** argv){
  * @param argv
  */
 void run_in_main(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
 
 //    cmd_moment_conservation(argc, argv);
 
@@ -307,9 +309,11 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-//    simulate_site_percolation(argc, argv);
-    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(argc, argv);
-    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(argc, argv);
+//    simulate_site_percolation(length, ensemble_size);
+//    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
+//    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
+    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
+//    visual(length);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);
 //    site_percolation_new_version(argc, argv);

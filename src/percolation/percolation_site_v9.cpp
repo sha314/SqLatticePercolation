@@ -19,6 +19,7 @@
 #include <algorithm>
 
 #include "../util/checking.h"
+#include "../util/time_tracking.h"
 
 using namespace std;
 
@@ -2238,8 +2239,15 @@ std::string SitePercolation_ps_v9::getSignature() {
  */
 void SitePercolation_ps_v9::writeVisualLatticeData(const string &filename, bool only_spanning) {
     std::ofstream fout(filename);
-    fout << "{\"length\":" << length() << "}" << endl;
-//        fout << "#" << getSignature() << endl;
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length()
+                << ",\"signature\":\"" << getSignature() << "\""
+                << ",\"x\":\"" << lastPlacedSite().column_ << "\""
+                << ",\"y\":\"" << lastPlacedSite().row_ << "\""
+                << "}" ;
+
+    fout << "#" << header_info.str() << endl;
     fout << "#<x>,<y>,<color>" << endl;
     fout << "# color=0 -means-> unoccupied site" << endl;
     int id{-1};

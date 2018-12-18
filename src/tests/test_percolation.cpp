@@ -13,6 +13,43 @@
 using namespace std;
 
 /**
+ * writes x and y coordinate for visual data of the lattice
+ * @param argc
+ * @param argv
+ */
+void visual(value_type length){
+
+    cout << "length " << length << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    SitePercolation_ps_v9 lattice_percolation(length, true);
+
+    string tm = getCurrentTime();
+
+    // simulation starts here
+    bool successful{false};
+    size_t counter{};
+    while (true){
+        successful = lattice_percolation.occupy();
+        if(successful) {
+            if(lattice_percolation.detectWrapping()){
+                break;
+            }
+            ++counter;
+        }
+        if(counter >= lattice_percolation.maxIterationLimit()){ // twice_length_squared is the number of bonds
+            break;
+        }
+    }
+
+    lattice_percolation.writeVisualLatticeData(
+            lattice_percolation.getSignature()+"L"+to_string(length)+"-visual-"+tm+".csv",
+            false);
+
+}
+/**
  * This function simulates for all fundamental data for site percolation on square lattice.
  * 1. cluster size distribution by sites and bonds
  * 2. critical point data
@@ -23,9 +60,7 @@ using namespace std;
  * @param argc
  * @param argv
  */
-void simulate_site_percolation(int argc, char **argv) {
-    value_type length = atoi(argv[1]);
-    value_type ensemble_size = atoi(argv[2]);
+void simulate_site_percolation(value_type length, value_type ensemble_size) {
 
     cout << "length " << length << " ensemble_size " << ensemble_size << endl;
 
@@ -167,6 +202,87 @@ void simulate_site_percolation(int argc, char **argv) {
         fout << endl;
     }
     fout.close();
+}
+
+/**
+ * simulating site percolation at each step
+ * @param length
+ * @param ensemble_size
+ */
+void simulate_site_percolation_detailed(value_type length, value_type ensemble_size) {
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    SitePercolation_ps_v9 lattice_percolation(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ",\"ensemble_size\":" << ensemble_size
+                << ",\"signature\":\"" << lattice_percolation.getSignature() << "\""
+                << "}" ;
+
+    string tm = getCurrentTime();
+
+
+    string filename_entropy = lattice_percolation.getSignature()  + "entropy_" + to_string(length) + '_' + tm;
+    string filename_order_parameter = lattice_percolation.getSignature() + "order-parameter_" + to_string(length) + '_' + tm;
+
+
+    filename_entropy += ".csv";
+    filename_order_parameter += ".csv";
+
+
+
+    ofstream fout_entropy(filename_entropy);
+    fout_entropy << '#' << header_info.str() << endl;
+    fout_entropy << "#each line contains entropy values for one independent realization" << endl;
+
+    ofstream fout_P(filename_order_parameter);
+    fout_P << '#' << header_info.str() << endl;
+    fout_P << "#each line contains order parameter values for one independent realization" << endl;
+    fout_P << "#order parameter is measured in terms of wrapping cluster" << endl;
+
+    // simulation starts here
+    value_type counter{};
+
+    double H,P;
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        lattice_percolation.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        bool wrapping_written{false};
+        while (true){
+            successful = lattice_percolation.occupy();
+            if(successful) {
+                H = lattice_percolation.entropy();
+                lattice_percolation.detectWrapping();
+                P = lattice_percolation.numberOfBondsInTheWrappingClusters();
+                fout_entropy << H << ',';
+                fout_P << P << ',';
+                ++counter;
+            }
+            if(counter >= lattice_percolation.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+        fout_entropy << endl;
+        fout_P << endl;
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
+    }
+
+    fout_entropy.close();
+    fout_P.close();
 }
 
 

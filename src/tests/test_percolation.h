@@ -12,14 +12,14 @@
 #include "../percolation/percolation.h"
 #include "../util/time_tracking.h"
 
-void simulate_site_percolation(int argc, char **argv);
-void simulate_bond_percolation(int argc, char **argv);
+void visual(value_type );
+void simulate_site_percolation(value_type, value_type );
+void simulate_bond_percolation(value_type, value_type );
 
+void simulate_site_percolation_detailed(value_type length, value_type ensemble_size);
 
 template<class PType>
-void simulate_site_percolation_T(int argc, char **argv) {
-    value_type length = atoi(argv[1]);
-    value_type ensemble_size = atoi(argv[2]);
+void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
 
     std::cout << "length " << length << " ensemble_size " << ensemble_size << std::endl;
 
