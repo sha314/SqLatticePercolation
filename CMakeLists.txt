@@ -59,6 +59,7 @@ set(SOURCE_FILES
         src/util/time_tracking.h
         src/util/printer.cpp
         src/percolation/percolation_site_v9.cpp
+        src/percolation/percolation_site_v10.cpp
         src/util/checking.cpp
         src/util/checking.h
         src/percolation/percolation_bond_v1.cpp
