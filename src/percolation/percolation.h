@@ -68,8 +68,12 @@ protected:
     value_type _number_of_occupied_bonds{};
     value_type _max_iteration_limit{};
     std::vector<value_type> randomized_index;
-    std::random_device _random_device;
-    std::mt19937 _random_generator;
+    // order parameter calculation ingradiants
+    // id of the cluster which has maximum number of bonds. used to calculate order parameter
+    value_type _number_of_bonds_in_the_largest_cluster{};
+    value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
+    value_type _index_last_modified_cluster{};  // id of the last modified cluster
+    std::mt19937 _random;
 
     void set_type(char t){type = t;} // setting percolation type
 public:
@@ -161,6 +165,10 @@ public:
 
     double get_relabeling_time() const {return time_relabel;}
     value_type relabeling_count() const {return _total_relabeling;}
+
+    // tracking
+    void track_numberOfBondsInLargestCluster();
+    void track_numberOfSitesInLargestCluster();
 };
 
 
@@ -227,19 +235,6 @@ protected:
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
 //    int _impurity_id{-2};   // id of the impure sites
-
-    /// Cluster tracker
-    // key      -> id of cluster
-    // value    -> index of cluster
-
-    value_type _index_last_modified_cluster{};  // id of the last modified cluster
-
-
-
-    // order parameter calculation ingradiants
-    // id of the cluster which has maximum number of bonds. used to calculate order parameter
-    value_type _number_of_bonds_in_the_largest_cluster{};
-    value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
 
 
     Index _last_placed_site;    // keeps track of last placed site
@@ -708,8 +703,6 @@ class BondPercolation_pb_v1 : public SqLatticePercolation{
     // key      -> id of cluster
     // value    -> index of cluster
 
-    value_type _index_last_modified_cluster{};  // id of the last modified cluster
-
 
     std::vector<value_type> number_of_bonds_to_span;
     std::vector<value_type> number_of_sites_to_span;
@@ -786,6 +779,8 @@ public:
 
     void subtract_entropy_for_site(const std::set<value_type> &found_index_set, int base=-1);
     void add_entropy_for_site(value_type found_index);
+    void track_numberOfBondsInLargestCluster();
+    void track_numberOfSitesInLargestCluster();
     /***********************************
      * Spanning and Wrapping
      **********************************/
@@ -801,6 +796,11 @@ public:
 
 //    const std::vector<BondIndex>& wrapping_bonds() const { return  _wrapping_indices;}
     const std::vector<Index>& wrapping_indices() const { return  _wrapping_indices;}
+
+    value_type numberOfBondsInTheWrappingClusters();
+    value_type numberOfBondsInTheLargestCluster();
+    value_type numberOfSitesInTheLargestCluster();
+    value_type numberOfSitesInTheWrappingClusters();
 
     /*********************************
      * Printing Status

@@ -29,8 +29,9 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
 
 //    size_t seed = 0;
 //    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
-    auto seed = _random_device();
-    _random_generator.seed(seed); // seeding
+    std::random_device _rd;
+    auto seed = _rd();
+    _random.seed(seed); // seeding
     cout << "seeding with " << seed << endl;
 }
 
@@ -185,6 +186,9 @@ void SqLatticePercolation::reset() {
     _total_relabeling = 0;
     time_relabel = 0;
     _cluster_count = 0;
+    _number_of_bonds_in_the_largest_cluster=0;
+    _number_of_sites_in_the_largest_cluster=0;
+    _index_last_modified_cluster=0;
 }
 
 void SqLatticePercolation::jump() {

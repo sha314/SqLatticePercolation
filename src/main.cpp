@@ -312,7 +312,8 @@ void run_in_main(int argc, char** argv){
 //    simulate_site_percolation(length, ensemble_size);
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
-    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
+//    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
+    simulate_bond_percolation_v2(length, ensemble_size);
 //    visual(length);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);

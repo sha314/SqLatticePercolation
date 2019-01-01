@@ -148,7 +148,7 @@ void BondPercolation_pb_v1::randomize() {
  */
 void BondPercolation_pb_v1::randomize_v2() {
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_generator);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -643,7 +643,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
     add_entropy_for_site(merged_cluster_index); // tracking entropy change
 
     // running tracker
-//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
     return merged_cluster_index;
 }
 
@@ -976,8 +976,6 @@ value_type BondPercolation_pb_v1::manage_clusters(
         _clusters[_index_last_modified_cluster].addBondIndex(bond);
 
     }
-
-
 
     return _index_last_modified_cluster;
 }
@@ -2276,6 +2274,70 @@ double BondPercolation_pb_v1::entropy() {
 }
 
 
+value_type BondPercolation_pb_v1::numberOfBondsInTheWrappingClusters(){
+    value_type nob{};
+    int id{};
+    for(auto i: _wrapping_indices){
+        id = _lattice.getSite(i).get_groupID();
+        if(id >= 0) {
+            nob += _clusters[id].numberOfBonds();
+        }
+    }
+    return nob;
+}
 
+value_type BondPercolation_pb_v1::numberOfSitesInTheWrappingClusters(){
+    value_type nos{};
+    int id{};
+    for(auto i: _wrapping_indices){
+        id = _lattice.getSite(i).get_groupID();
+        if(id >= 0) {
+            nos += _clusters[id].numberOfSites();
+        }
+    }
+    return nos;
+}
 
+/**
+ * Only applicable if the number of bonds in the largest cluster is calculated when occupying the lattice.
+ * Significantly efficient than the previous version numberOfBondsInTheLargestCluster()
+ * @return
+ */
+value_type BondPercolation_pb_v1::numberOfBondsInTheLargestCluster() {
+    return _number_of_bonds_in_the_largest_cluster;
+}
+
+/**
+ * Only applicable if the number of bonds in the largest cluster is calculated when occupying the lattice.
+ * Significantly efficient than the previous version numberOfBondsInTheLargestCluster()
+ * @return
+ */
+value_type BondPercolation_pb_v1::numberOfSitesInTheLargestCluster() {
+    return _number_of_bonds_in_the_largest_cluster;
+}
+
+/**
+ * Condition: must be called each time a site is placed
+ */
+void BondPercolation_pb_v1::track_numberOfBondsInLargestCluster() {
+
+    // calculating number of bonds in the largest cluster // by cluster index
+    // checking number of bonds
+    if(_clusters[_index_last_modified_cluster].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
+        _number_of_bonds_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfBonds();
+    }
+
+}
+
+/**
+ *
+ */
+void BondPercolation_pb_v1::track_numberOfSitesInLargestCluster(){
+
+    // calculating number of bonds in the largest cluster // by cluster index
+    // checking number of bonds
+    if(_clusters[_index_last_modified_cluster].numberOfSites() > _number_of_sites_in_the_largest_cluster){
+        _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
+    }
+}
 

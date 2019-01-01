@@ -148,7 +148,7 @@ void SitePercolation_ps_v9::reset() {
  */
 void SitePercolation_ps_v9::randomize_v2(){
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_generator);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 

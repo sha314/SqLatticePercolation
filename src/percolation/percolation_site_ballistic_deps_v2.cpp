@@ -93,7 +93,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
         vector<Index> &sites, vector<BondIndex> &bonds
 ) {
     // randomly choose a site
-    value_type r = _random_generator() % (indices_tmp.size());
+    value_type r = _random() % (indices_tmp.size());
 
     Index current_site = index_sequence[indices_tmp[r]];
 //    cout << "current site " << current_site << endl;
@@ -103,7 +103,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
     connection_v2(current_site, sites, bonds);
 
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
-        value_type r2 = _random_generator() % (sites.size());
+        value_type r2 = _random() % (sites.size());
         current_site = sites[r2]; // select one of the neighbor randomly
 
         if(_lattice.getSite(current_site).isActive()){
@@ -149,7 +149,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
 Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn(
         vector<Index> &sites, vector<BondIndex> &bonds
 ){
-    value_type r = _random_generator() % (indices_tmp.size());
+    value_type r = _random() % (indices_tmp.size());
 
     Index central_site = index_sequence[indices_tmp[r]];
     Index selected_site;
@@ -177,7 +177,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn(
 //            cout << " active"<< endl;
         }
 
-        value_type r2 = _random_generator() % (sites.size());
+        value_type r2 = _random() % (sites.size());
         Index nn1 = sites[r2]; // select one of the neighbor randomly
 //        cout << "nn1 " << nn1 << " : line " << __LINE__ <<endl;
         Index nn2;

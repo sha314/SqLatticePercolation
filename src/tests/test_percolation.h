@@ -15,7 +15,7 @@
 void visual(value_type );
 void simulate_site_percolation(value_type, value_type );
 void simulate_bond_percolation(value_type, value_type );
-
+void simulate_bond_percolation_v2(value_type length, value_type ensemble_size); // 2019.01.01
 void simulate_site_percolation_detailed(value_type length, value_type ensemble_size);
 
 template<class PType>
@@ -36,18 +36,13 @@ void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
                 << "}" ;
 
     std::string tm = getCurrentTime();
+    std::string extension = "_L" + std::to_string(length) + '_' + tm + ".csv";
+    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
+    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
+    std::string filename_critical = lattice_percolation.getSignature() + "_critical" + extension;
+    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
+    std::string filename_entropy_order_parameter = lattice_percolation.getSignature() + extension;
 
-    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site_" + std::to_string(length) + '_' + tm;
-    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond_" + std::to_string(length) + '_' + tm;
-    std::string filename_critical = lattice_percolation.getSignature() + "_critical_" + std::to_string(length) + '_' + tm;
-    std::string filename = lattice_percolation.getSignature() + "_entropy-jump_" + std::to_string(length) + '_' + tm;
-    std::string filename_entropy_order_parameter = lattice_percolation.getSignature()  + std::to_string(length) + '_' + tm;
-
-    filename_s += ".csv";
-    filename_b += ".csv";
-    filename_critical += ".csv";
-    filename += ".csv";
-    filename_entropy_order_parameter += ".csv";
 
     std::ofstream fout_jump(filename);
     // JSON formated header
