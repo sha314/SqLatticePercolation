@@ -80,7 +80,7 @@ public:
     static constexpr const char* signature = "SqLatticePercolation";
 
     virtual ~SqLatticePercolation() = default;
-    SqLatticePercolation(value_type length);
+    explicit SqLatticePercolation(value_type length);
     void reset();
     void set_cluster_measuring_unit(int i){
         std::cout << "Cluster measuring unit = " << ((i==0) ? "bond" : "site")
@@ -566,8 +566,8 @@ public:
 
     ~SitePercolation_ps_v10() = default;
     SitePercolation_ps_v10() = default;
-    SitePercolation_ps_v10(SitePercolation_ps_v9 & ) = default;
-    SitePercolation_ps_v10(SitePercolation_ps_v9 && ) = default;
+    SitePercolation_ps_v10(SitePercolation_ps_v10 & ) = default;
+    SitePercolation_ps_v10(SitePercolation_ps_v10 && ) = default;
     SitePercolation_ps_v10(value_type length, bool periodicity=true);
 
     SitePercolation_ps_v10& operator=(SitePercolation_ps_v10 & ) = default;
@@ -607,7 +607,7 @@ public:
     std::array<value_type, 2> box_counting_v2(value_type delta);
 
     void add_entropy_for_bond(value_type index);
-    void subtract_entropy_for_bond(const std::set<value_type> &found_index_set, int base=-1);
+    void subtract_entropy_for_bond(const std::vector<BondIndex> bonds);
 
     /*************************************************
      * Site placing methods
@@ -621,7 +621,9 @@ public:
                          std::vector<Index>& neighbor_sites,
                          std::vector<BondIndex>& neighbor_bonds);
     value_type placeSite(Index site);
-    value_type placeSite_weighted(Index site); // uses weighted relabeling by first identifying the largest cluster
+
+    // uses weighted relabeling by first identifying the largest cluster
+    value_type placeSite_weighted(Index site); // todo modifying
     value_type placeSite_weighted(Index site,
                                   std::vector<Index>& neighbor_sites,
                                   std::vector<BondIndex>& neighbor_bonds);
@@ -632,7 +634,9 @@ public:
 
     void connection_v1(Index site, std::vector<Index> &neighbors, std::vector<BondIndex> &bonds);
     void connection_v2(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-
+    void connection_periodic(Index site,
+                             std::vector<Index> &site_neighbor,
+                             std::vector<BondIndex> &bond_neighbor); // 2019.01.04
 
     /*************************************************
      * Relabeling methods
@@ -719,6 +723,10 @@ protected:
 
     std::set<value_type> find_index_for_placing_new_bonds(const std::vector<Index> &neighbors);
     int find_cluster_index_for_placing_new_bonds(const std::vector<Index> &neighbors, std::set<value_type> &found_indices);
+
+    value_type manage_clusters(
+            std::vector<BondIndex> &hv_bonds,
+            Index &site);
 
     value_type manage_clusters(
             const std::set<value_type> &found_index_set,

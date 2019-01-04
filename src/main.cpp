@@ -261,6 +261,23 @@ void entropyJumps(int argc, char** argv){
     fout.close();
 }
 
+void test_percolation_v10(){
+    SitePercolation_ps_v10 sp(5);
+    sp.viewLatticeByID();
+//    sp.viewClusterExtended();
+    size_t i{};
+    while(sp.occupy()){
+        ++i;
+        cout << sp.lastPlacedSite() << endl;
+        sp.viewLatticeByID();
+        sp.viewClusterExtended();
+        if(i == 25){
+            break;
+        }
+    }
+
+
+}
 /****
  *  All the function that is run in main
  * @param argc
@@ -313,7 +330,8 @@ void run_in_main(int argc, char** argv){
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
-    simulate_bond_percolation_v2(length, ensemble_size);
+//    simulate_bond_percolation_v2(length, ensemble_size); // 2018.12.31
+    test_percolation_v10();
 //    visual(length);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);

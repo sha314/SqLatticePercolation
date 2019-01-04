@@ -138,7 +138,7 @@ void Cluster::insert(const Cluster &cluster) {
 void Cluster::insert_v2(const Cluster &cluster) {
     // older time or smaller time is the creation birthTime of the cluster
 //    cout << "Comparing " << _creation_time << " and " << cluster._creation_time;
-    _creation_time = _creation_time < cluster._creation_time ? _creation_time : cluster._creation_time;
+//    _creation_time = _creation_time < cluster._creation_time ? _creation_time : cluster._creation_time;
 //    cout << " Keeping " << _creation_time << endl;
     _bond_index.insert(_bond_index.end(), cluster._bond_index.begin(), cluster._bond_index.end());
     _site_index.insert(_site_index.end(), cluster._site_index.begin(), cluster._site_index.end());

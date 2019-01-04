@@ -105,6 +105,8 @@ public:
     int getGroupID(Index index);
     int getGroupID(BondIndex index);
 
+    std::vector<Site> getSites();
+    std::vector<Bond> getBonds();
 
 /******************************************************************************
  * Get Neighbor from given index

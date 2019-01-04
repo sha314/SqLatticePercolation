@@ -991,6 +991,12 @@ std::vector<Index> SqLattice::get_neighbor_indices(size_t length, BondIndex bond
     return sites;
 }
 
+std::vector<Site> SqLattice::getSites() {
+    cout << "undefined : line " << __LINE__ << endl;
+//    return _sites;
+    return {};
+}
+
 
 
 
