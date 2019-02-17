@@ -679,8 +679,8 @@ public:
     /***********************************
      * Spanning and Wrapping
      **********************************/
-    bool detectSpanning_v5(const Index& site);
-    bool detectSpanning_v6(const Index& site);
+    bool detectSpanning_v5();
+    bool detectSpanning_v6();
 
     void save_index_if_in_boundary_v2(const Index& site);
     bool check_if_id_matches(Index site, const std::vector<Index> &edge);

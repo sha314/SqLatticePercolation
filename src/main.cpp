@@ -263,19 +263,24 @@ void entropyJumps(int argc, char** argv){
 
 void test_percolation_v10(){
     SitePercolation_ps_v10 sp(5);
-    sp.viewLatticeByID();
+//    sp.viewLatticeByID();
+    sp.viewSiteByRelativeIndex();
 //    sp.viewClusterExtended();
     size_t i{};
     while(sp.occupy()){
         ++i;
-        cout << sp.lastPlacedSite() << endl;
-        sp.viewLatticeByID();
-        sp.viewClusterExtended();
-        if(i == 25){
+        sp.viewSiteByRelativeIndex();
+        if(sp.detectWrapping()){
+            break;
+        }
+//        cout << sp.lastPlacedSite() << endl;
+//        sp.viewLatticeByID();
+//        sp.viewClusterExtended();
+        if(i == 6){
             break;
         }
     }
-
+//    sp.viewLatticeByID();
 
 }
 /****
@@ -331,7 +336,7 @@ void run_in_main(int argc, char** argv){
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
 //    simulate_bond_percolation_v2(length, ensemble_size); // 2018.12.31
-    test_percolation_v10();
+//    test_percolation_v10();
 //    visual(length);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);

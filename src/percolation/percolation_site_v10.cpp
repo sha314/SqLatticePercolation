@@ -405,13 +405,13 @@ value_type SitePercolation_ps_v10::manage_clusters(
     }
 
     _clusters[base_id].addSiteIndex(site);
-    cout << "base  " << base_id << endl;
+//    cout << "base  " << base_id << endl;
     _lattice.setGroupID(site, base_id);
     int id_1{};
     size_t tmp;
     for(size_t i{0}; i <  hv_bonds.size(); ++i){
         id_1 = _lattice.getGroupID(hv_bonds[i]);
-        cout << "id_1 " << id_1 << endl;
+//        cout << "id_1 " << id_1 << endl;
         if(base_id == id_1){
             // same cluster
             // do nothing
@@ -1415,13 +1415,13 @@ void SitePercolation_ps_v10::wrappingIndices() const {
  * @param site : Check spanning for this argument
  * @return
  */
-bool SitePercolation_ps_v10::detectSpanning_v5(const Index& site) {
+bool SitePercolation_ps_v10::detectSpanning_v5() {
 //    cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
     if(_periodicity) {
         cout << "Cannot detect spanning if _periodicity if ON: line " << __LINE__ << endl;
         return false;
     }
-
+    Index site = _last_placed_site;
 
     // first check if the site with a cluster id is already a spanning site
     for(const Index& ss: _spanning_sites){
@@ -1509,13 +1509,13 @@ bool SitePercolation_ps_v10::detectSpanning_v5(const Index& site) {
  * @param site : Check spanning for this argument
  * @return
  */
-bool SitePercolation_ps_v10::detectSpanning_v6(const Index& site) {
+bool SitePercolation_ps_v10::detectSpanning_v6() {
 //    cout << "Entry -> detectSpanning_v4() : line " << __LINE__ << endl;
     if(_periodicity) {
         cout << "Cannot detect spanning if _periodicity if ON: line " << __LINE__ << endl;
         return false;
     }
-
+    Index site = _last_placed_site;
     // first check if the site with a cluster id is already a spanning site
     for(const Index& ss: _spanning_sites){
         if(_lattice.getSite(ss).get_groupID() == _lattice.getSite(site).get_groupID()){
@@ -1843,7 +1843,7 @@ void SitePercolation_ps_v10::relabel_sites_v5(Index site_a, const Cluster& clstr
     }
 
     if(!flag){
-        cout << "No neibhgor found! : line " << __LINE__ << endl;
+//        cout << "No neibhgor found! : line " << __LINE__ << endl;
     }
 
 
