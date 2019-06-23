@@ -1,15 +1,15 @@
 # Vertical spanning (horizontal periodicity is not considered)
 
 1. select a x_ -> i
-2. find active sites with specific cluster id or group id
-3. If there are more than one active sites with same group id ... todo
+2. find active site_index_sequence with specific cluster id or group id
+3. If there are more than one active site_index_sequence with same group id ... todo
 4. If there are one site (initially), find if it is connected to next vertical site
 5. If not -> no spanning -> return
-6. Else -> select this x_ and find all active sites of same group id in this x_
-7. Find all the sites are connected to next x_ active sites (vertically) with same group id
+6. Else -> select this x_ and find all active site_index_sequence of same group id in this x_
+7. Find all the site_index_sequence are connected to next x_ active site_index_sequence (vertically) with same group id
 8. How many of them are connected (without horizontal periodicity) to the pivot site (which site is the connection_v1 to
-    previous x_) take only those sites into account.
-9. If there are no such sites -> no spanning -> return
+    previous x_) take only those site_index_sequence into account.
+9. If there are no such site_index_sequence -> no spanning -> return
 10. If there is -> continue the process
 
 

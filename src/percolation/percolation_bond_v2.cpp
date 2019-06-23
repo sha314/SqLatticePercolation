@@ -24,39 +24,46 @@ using namespace std;
  *
  * @param length
  */
-BondPercolation_pb_v1::BondPercolation_pb_v1(value_type length, bool periodicity)
+BondPercolation_pb_v2::BondPercolation_pb_v2(value_type length, bool periodicity)
         : SqLatticePercolation(length) {
-    std::cout << "Constructing BondPercolation_pb_v1 object : line " << __LINE__ << endl;
+    std::cout << "Constructing BondPercolation_pb_v2 object : line " << __LINE__ << endl;
     SqLatticePercolation::set_type('b');
     _periodicity = periodicity;
     _index_sequence_position = 0;
     _number_of_occupied_bonds = 0;
-    _lattice = SqLattice(length, false, true, true, true);
-
-    index_sequence.reserve(maxBonds());
-
-    // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
-    _clusters = vector<Cluster_v3>();
     _max_iteration_limit = maxBonds();
-    initialize_index_sequence();
     randomized_index.resize(maxIterationLimit());
     for(value_type i{}; i < maxIterationLimit(); ++i){randomized_index[i] = i;}
+    _clusters = vector<Cluster_v3>();
+
+
+    _lattice = SqLattice(length, false, true, true, true);
+
+    init();
+}
+
+
+/**
+ * some methods that are directly affected by the seed of random number generator
+ * + methods that requires a bit computaion (so not in constructor)
+ *
+ */
+void BondPercolation_pb_v2::init() {
+//    SqLatticePercolation::init();
+    initialize_index_sequence(); // not need to put in reset method
     initialize();
-
-//    initialize_indices();
-
+    initialize_cluster();
     randomize_v2();  // randomize the untouched_site_indices
 }
 
 /**
  * Initialize the Class Object
  */
-void BondPercolation_pb_v1::initialize() {
+void BondPercolation_pb_v2::initialize() {
 
     // to improve performence
     number_of_sites_to_span.reserve(maxSites());
     number_of_bonds_to_span.reserve(maxSites());
-
 
 //    _top_edge.reserve(length());
 //    _bottom_edge.reserve(length());
@@ -69,22 +76,24 @@ void BondPercolation_pb_v1::initialize() {
 /**
  * Called only once when the object is constructed for the first time
  */
-void BondPercolation_pb_v1::initialize_index_sequence() {
-    value_type row{}, col{};
+void BondPercolation_pb_v2::initialize_index_sequence() {
+    bond_index_sequence = _lattice.getBonds();
+    site_index_sequence = _lattice.getSites();
 
     if (!_periodicity) {
+        bond_index_sequence.clear();
+        bond_index_sequence.reserve(maxBonds());
+        value_type row{}, col{};
         value_type limit = maxSites() - 1; // since if row==4 and col ==4 we don't want that bond
         for (value_type i{}; i < limit; ++i) {
-            /*if (row == max_index && col == max_index){
-                continue; // it is the last step. so decrease the loop limit by 1 will do the job
-            }else */
+
             if (row == max_index) {
-                index_sequence.push_back({BondType::Horizontal, row, col});
+                bond_index_sequence.push_back({BondType::Horizontal, row, col});
             } else if (col == max_index) {
-                index_sequence.push_back({BondType::Vertical, row, col});
+                bond_index_sequence.push_back({BondType::Vertical, row, col});
             } else {
-                index_sequence.push_back({BondType::Horizontal, row, col});
-                index_sequence.push_back({BondType::Vertical, row, col});
+                bond_index_sequence.push_back({BondType::Horizontal, row, col});
+                bond_index_sequence.push_back({BondType::Vertical, row, col});
             }
 
             ++col;
@@ -93,60 +102,16 @@ void BondPercolation_pb_v1::initialize_index_sequence() {
                 ++row;
             }
         }
-    } else {
-        for (value_type i{}; i < maxSites(); ++i) {
-
-            index_sequence.push_back({BondType::Horizontal, row, col});
-            index_sequence.push_back({BondType::Vertical, row, col});
-
-            ++col;
-            if (col == length()) {
-                col = 0;
-                ++row;
-            }
-        }
     }
 }
 
-/**
- *
- */
-void BondPercolation_pb_v1::initialize_indices() {
-    indices = vector<value_type>(index_sequence.size());
-    for (value_type i{}; i != indices.size(); ++i) {
-        indices[i] = i; // assign index first
-    }
-}
 
 
 /**
  * Randomize the site placing order
  * Takes 3.031000 sec for 1000 x 1000 sites
  */
-void BondPercolation_pb_v1::randomize() {
-    randomized_index_sequence = index_sequence;
-    value_type len = randomized_index_sequence.size();
-    value_type j{};
-    BondIndex tmp;
-    for (value_type i{}; i != len; ++i) {
-        // select a j from the array. which must come from the ordered region
-        j = i + std::rand() % (len - i);
-        // perform the swapping with i-th and j-th value
-        tmp = randomized_index_sequence[i];
-        randomized_index_sequence[i] = randomized_index_sequence[j]; // todo problematic
-        randomized_index_sequence[j] = tmp;
-    }
-
-//    cout << "Index sequence : " << randomized_index_sequence.size()
-//         << " : " << randomized_index_sequence << endl;
-
-}
-
-/**
- * Randomize the site placing order
- * Takes 3.031000 sec for 1000 x 1000 sites
- */
-void BondPercolation_pb_v1::randomize_v2() {
+void BondPercolation_pb_v2::randomize_v2() {
 
     std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
@@ -159,17 +124,18 @@ void BondPercolation_pb_v1::randomize_v2() {
  * must call reset before actually running the program for data generation.
  * Because random state is not assigned by the constructor rather by the user
  */
-void BondPercolation_pb_v1::reset() {
+void BondPercolation_pb_v2::reset() {
     SqLatticePercolation::reset();
     _total_number_of_active_bonds = 0;
     _index_sequence_position = 0;
     _number_of_occupied_bonds = 0;
     number_of_bonds_to_span.clear();
-    _sites_required_to_min_span = 0;
+
     sites_in_cluster_with_size_greater_than_one = 0;
     _wrapping_indices.clear();
 
     initialize();
+    initialize_cluster();
 
 //    cout << "use suffle : line " << __LINE__ << endl;
     randomize_v2();
@@ -181,7 +147,7 @@ void BondPercolation_pb_v1::reset() {
 ///**
 // *
 // */
-//void BondPercolation_pb_v1::calculate_occupation_probability() {
+//void BondPercolation_pb_v2::calculate_occupation_probability() {
 //    // occupation probability = number of site present / total number of site
 //    _number_of_occupied_bonds.push_back(_total_number_of_active_bonds);
 //}
@@ -189,7 +155,7 @@ void BondPercolation_pb_v1::reset() {
 /**
  *
  */
-double BondPercolation_pb_v1::entropy_slow() {
+double BondPercolation_pb_v2::entropy_slow() {
     double mu{}; // probability for the cluster
     double H{}; // entropyDistribution
     double x;
@@ -220,7 +186,7 @@ double BondPercolation_pb_v1::entropy_slow() {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v1::relabel_sites(const Cluster_v3 &clstr, int id) {
+void BondPercolation_pb_v2::relabel_sites(const Cluster_v3 &clstr, int id) {
 
     const vector<Index> sites = clstr.getSiteIndices();
     for (auto a: sites) {
@@ -234,7 +200,7 @@ void BondPercolation_pb_v1::relabel_sites(const Cluster_v3 &clstr, int id) {
  * @param clstr
  * @param id
  */
-void BondPercolation_pb_v1::relabel_bonds(const Cluster_v3 &clstr, int id) {
+void BondPercolation_pb_v2::relabel_bonds(const Cluster_v3 &clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
     for (auto a: bonds) {
         _lattice.getBond(a).set_groupID(id);
@@ -247,7 +213,7 @@ void BondPercolation_pb_v1::relabel_bonds(const Cluster_v3 &clstr, int id) {
   * @param bond_a  : : last added bond index of the base cluster
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
-void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 &clstr_b) {
+void BondPercolation_pb_v2::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 &clstr_b) {
     const vector<BondIndex> bonds = clstr_b.getBondIndices();
     int id_a = _lattice.getBond(bond_a).get_groupID();
     int id_b = clstr_b.get_ID();
@@ -291,7 +257,7 @@ void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 
 
 
 
-void BondPercolation_pb_v1::relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab)  {
+void BondPercolation_pb_v2::relabel_bonds(const vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab)  {
     int x, y;
     BondIndex a;
     IndexRelative relative_site__a;
@@ -309,7 +275,7 @@ void BondPercolation_pb_v1::relabel_bonds(const vector<BondIndex> &sites, int id
  *
  * @param bond     : last placed bond
  */
-void BondPercolation_pb_v1::relabel_cluster(BondIndex bond,  const vector<Index>& sites){
+void BondPercolation_pb_v2::relabel_cluster(BondIndex bond,  const vector<Index>& sites){
 
     Index site_a = {bond.row_, bond.column_};
     Index site_b;
@@ -370,6 +336,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond,  const vector<Index>
 }
 
 /**
+ * Before this method is called, current bond must have a suitable group id.
  *
  * @param bond     : last placed bond
  * @param clstr_b  : given cluster
@@ -378,21 +345,17 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond,  const vector<Index>
  * @param site_pos : position of the sites from where sites will be relabeled
  *                   according to site_pos-1 site ?
  */
-void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& clstr_b, size_t bond_pos, size_t site_pos){
+void BondPercolation_pb_v2::relabel_cluster(BondIndex bond, const Cluster_v3& clstr_b, size_t bond_pos, size_t site_pos){
     const vector<Index> & sites = clstr_b.getSiteIndices();
     const vector<BondIndex> & bonds = clstr_b.getBondIndices();
 
     int id = _lattice.getBond(bond).get_groupID();
-    Index site_a = {bond.row_, bond.column_};
-    Index site_b;
-    if(bond.horizontal()){
-        site_b = {bond.row_, (bond.column_ + 1 ) % length()};
-    }else{
-        site_b = {(bond.row_ + 1 ) % length(), bond.column_};
-    }
+    auto neighbor_sites = _lattice.get_neighbor_sites(bond); // todo pass as argument
+    Index site_a = neighbor_sites[0];
+    Index site_b = neighbor_sites[1];
 
-    int id_a = _lattice.getSite(site_a).get_groupID();
-    int id_b = _lattice.getSite(site_b).get_groupID();
+//    int id_a = _lattice.getSite(site_a).get_groupID();
+//    int id_b = _lattice.getSite(site_b).get_groupID();
 
     Index base_site;
     if(_lattice.getSite(site_a).get_groupID() == id){
@@ -413,7 +376,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& cl
 
     // relabeling bonds
     for(size_t i{bond_pos}; i < bonds.size(); ++i){
-        _lattice.getBond(bonds[i]).set_groupID(id);
+        _lattice.setGroupID(bonds[i], id);
     }
 
     // relabeling site_index_sequence
@@ -440,7 +403,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& cl
     IndexRelative relative_site__a;
     for (value_type i{site_pos}; i < sites.size(); ++i) {
         a = sites[i];
-        _lattice.getSite(a).set_groupID(id);
+        _lattice.setGroupID(sites[i], id);
         relative_site__a = _lattice.getSite(a).relativeIndex();
 //        cout << "index " << a << " relative index " << relative_site__a << " to ";
         x = relative_site__a.x_ + delta_x_ab;
@@ -455,7 +418,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& cl
  * @param last_bond
  * @param clstr_b
  */
-void BondPercolation_pb_v1::relabel_v1(BondIndex last_bond, const Cluster_v3 &clstr_b) {
+void BondPercolation_pb_v2::relabel_v1(BondIndex last_bond, const Cluster_v3 &clstr_b) {
     Index site_a = {last_bond.row_, last_bond.column_};
     const vector<Index> &sites = clstr_b.getSiteIndices();
     int id_a = _lattice.getBond(last_bond).get_groupID();
@@ -499,7 +462,7 @@ void BondPercolation_pb_v1::relabel_v1(BondIndex last_bond, const Cluster_v3 &cl
     relabel_bonds(clstr_b, id_a);
 }
 
-void BondPercolation_pb_v1::relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab)  {
+void BondPercolation_pb_v2::relabel_sites(const vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab)  {
     int x, y;
     Index a;
     IndexRelative relative_site__a;
@@ -519,15 +482,14 @@ void BondPercolation_pb_v1::relabel_sites(const vector<Index> &sites, int id_a, 
  *
  * @return true if operation is successfull
  */
-bool BondPercolation_pb_v1::occupy() {
+bool BondPercolation_pb_v2::occupy() {
     if (_index_sequence_position >= maxBonds()) {
         return false;
     }
 
     value_type v = placeBond_v1();
     _occuption_probability = occupationProbability(); // for super class
-
-//    auto s = _lattice.get_neighbor_sites(_last_placed_bond);
+//    auto s = SqLattice::get_neighbor_indices(length(), _last_placed_bond);
 //    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
 //        cout << "relabeling is not perfect for site " << endl;
 //        for(auto a : s) {
@@ -548,14 +510,14 @@ bool BondPercolation_pb_v1::occupy() {
  *                                      or the merged cluster index
  *
  */
-value_type BondPercolation_pb_v1::placeBond_v0() {
+value_type BondPercolation_pb_v2::placeBond_v0() {
 
 //    if (_index_sequence_position == randomized_index_sequence.size()) {
     if (_number_of_occupied_bonds == maxBonds()){
         return ULONG_MAX;// unsigned long int maximum value
     }
     value_type index = randomized_index[_index_sequence_position];
-    BondIndex current_bond = index_sequence[index];
+    BondIndex current_bond = bond_index_sequence[index];
     _last_placed_bond = current_bond;
 //    cout << "placing bond " << current_bond << " : " << __LINE__ << endl;
 
@@ -581,7 +543,7 @@ value_type BondPercolation_pb_v1::placeBond_v0() {
 //    cout << "Found indices " << found_index_set << endl;
 
     subtract_entropy_for_site(found_index_set);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters(
+    value_type merged_cluster_index = manage_clusters_v1(
             found_index_set, sites, current_bond
     );
     add_entropy_for_site(merged_cluster_index); // tracking entropy change
@@ -601,15 +563,14 @@ value_type BondPercolation_pb_v1::placeBond_v0() {
  *                                      or the merged cluster index
  *
  */
-value_type BondPercolation_pb_v1::placeBond_v1() {
+value_type BondPercolation_pb_v2::placeBond_v1() {
 
-//    if (_index_sequence_position == randomized_index_sequence.size()) {
-    if (_number_of_occupied_bonds == maxBonds()){
+    if (_number_of_occupied_bonds >= maxBonds()){
         return ULONG_MAX;// unsigned long int maximum value
     }
     value_type index = randomized_index[_index_sequence_position];
     ++_index_sequence_position;
-    BondIndex current_bond = index_sequence[index];
+    BondIndex current_bond = bond_index_sequence[index];
     _last_placed_bond = current_bond;
 //    cout << "placing bond " << current_bond << " : " << __LINE__ << endl;
 
@@ -617,35 +578,57 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 
     ++_number_of_occupied_bonds;
 
-    // find the bonds for this site
-    vector<BondIndex> bonds;
-    vector<Index> sites;
 
-//    connection_v1(current_bond, site_index_sequence, bonds); // problem
-    connection_v2(current_bond, sites, bonds);
-//    cout << "Found bonds : " << bonds << endl;
-//    cout << "Found site_index_sequence : " << site_index_sequence << endl;
+    // merging clusters
 
-    sites_in_cluster_with_size_greater_than_one += sites.size();
-    // find one of hv_bonds in _clusters and add ever other value to that place. then erase other position
-    set<value_type> found_index_set;
-    int base_id = find_cluster_index_for_placing_new_bonds_v2(bonds, found_index_set);
+    // one bond connects site
+    auto sites = _lattice.get_neighbor_sites(current_bond);
+    cout << "neighbor " << sites << endl;
+    if(sites.size() != 2){
+        cerr << "How can a bond can link more than two sites " << __LINE__ << endl;
+        return 0;
+    }
+    int id_1 = _lattice.getGroupID(sites[0]);
+    int id_2 = _lattice.getGroupID(sites[1]);
 
-//    if (found_index_set.find(value_type(base_id)) != found_index_set.end()) {
-//        cout << "base " << base_id << " and Found indices " << found_index_set << endl;
-//        exit(1);
-//    }
+    if(id_1 < 0 || id_2 < 0){
+        cerr << "negative group id!!! " << __LINE__ << endl;
+        return 0;
+    }
+    size_t base_index = 0;
+    if(id_1 == id_2){
+        _clusters[id_1].addBondIndex(current_bond);
+        _lattice.setGroupID(current_bond, id_1);
+        cout << "belongs to the same cluster" << endl;
+    }else {
+        size_t size_1 = _clusters[id_1].numberOfSites();
+        size_t size_2 = _clusters[id_2].numberOfSites();
+
+        if(size_1 > size_2){
+            base_index = id_1;
+        }else{
+            base_index = id_2;
+            id_2 = id_1;
+        }
+        _clusters[base_index].addBondIndex(current_bond);
+        _lattice.setGroupID(current_bond, id_1);
+        _clusters[base_index].insert_v2(_clusters[id_2]);
+        relabel_cluster(current_bond, _clusters[id_2], 0, 0);
+        _clusters[id_2].clear(); // clear the cluster
+    }
 
 
-    subtract_entropy_for_site(found_index_set, base_id);  // tracking entropy change
-    value_type merged_cluster_index = manage_clusters(
-            found_index_set, sites, current_bond, base_id
-    );
-    add_entropy_for_site(merged_cluster_index); // tracking entropy change
+
+    // end merging
+//    subtract_entropy_for_site(found_index_set, base_id);  // tracking entropy change
+//    value_type base_index = manageClusters(
+//            found_index_set, sites, current_bond, base_id
+//    );
+//    add_entropy_for_site(base_index); // tracking entropy change
 
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    return merged_cluster_index;
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    return base_index;
 }
 
 
@@ -665,7 +648,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 // * @param site
 // * @return
 // */
-//value_type BondPercolation_pb_v1::manage_clusters(
+//value_type BondPercolation_pb_v2::manage_clusters(
 //        const set<value_type> &found_index_set,
 //        vector<Index> &site_index_sequence,
 //        BondIndex &bond
@@ -726,7 +709,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
  * @return
  */
 IndexRelative
-BondPercolation_pb_v1::getRelativeIndex(BondIndex root_bond, BondIndex bond_new){
+BondPercolation_pb_v2::getRelativeIndex(BondIndex root_bond, BondIndex bond_new){
     Index root = {root_bond.row_, root_bond.column_};
     Index site_new = {bond_new.row_, bond_new.column_};
 
@@ -764,7 +747,7 @@ BondPercolation_pb_v1::getRelativeIndex(BondIndex root_bond, BondIndex bond_new)
  * @param site_new
  * @return
  */
-IndexRelative BondPercolation_pb_v1::getRelativeIndex(Index root, Index site_new){
+IndexRelative BondPercolation_pb_v2::getRelativeIndex(Index root, Index site_new){
 //    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
     int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
     int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
@@ -805,7 +788,7 @@ IndexRelative BondPercolation_pb_v1::getRelativeIndex(Index root, Index site_new
  * @return
  */
 IndexRelative
-BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
+BondPercolation_pb_v2::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
     cout << "Entry getRelativeIndex_v2 ; line " << __LINE__ << endl;
     vector<Index> sites_root = _lattice.get_neighbor_sites(root);
     cout << "site_index_sequence of " << root << " are " << sites_root << endl;
@@ -917,7 +900,7 @@ BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
  * @param site
  * @return
  */
-value_type BondPercolation_pb_v1::manage_clusters(
+value_type BondPercolation_pb_v2::manage_clusters_v1(
         const set<value_type> &found_index_set,
         vector<Index> &sites,
         BondIndex &bond
@@ -981,6 +964,16 @@ value_type BondPercolation_pb_v1::manage_clusters(
     return _index_last_modified_cluster;
 }
 
+value_type BondPercolation_pb_v2::manageClusters(
+        const set<value_type> &found_index_set,
+        vector<Index> &sites,
+        BondIndex &bond,
+        int base_id
+) {
+    value_type  a = manage_clusters_v3(found_index_set, sites, bond, base_id);
+    return a;
+}
+
 /**
  * Functions that will give correct value.
  * Relabel sites and bonds and wrapping is detected using sites
@@ -989,7 +982,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
  * @param site
  * @return
  */
-value_type BondPercolation_pb_v1::manage_clusters(
+value_type BondPercolation_pb_v2::manage_clusters_v2(
         const set<value_type> &found_index_set,
         vector<Index> &sites,
         BondIndex &bond,
@@ -999,6 +992,7 @@ value_type BondPercolation_pb_v1::manage_clusters(
 
 
     if (base_id != -1) {
+//        cout << "found -1" << endl;
         value_type base = value_type(base_id);
         BondIndex root = _clusters[base].getRootBond(); // root index of the base cluster
 
@@ -1049,12 +1043,72 @@ value_type BondPercolation_pb_v1::manage_clusters(
     return _index_last_modified_cluster;
 }
 
+
+/**
+ * Functions that will give correct value.
+ * Relabel sites and bonds and wrapping is detected using sites
+ * @param found_index_set
+ * @param sites
+ * @param site
+ * @return
+ */
+value_type BondPercolation_pb_v2::manage_clusters_v3(
+        const set<value_type> &found_index_set,
+        vector<Index> &sites,
+        BondIndex &bond,
+        int base_id
+) {
+    cout << "on test line " << __LINE__ << endl;
+
+    if (base_id == -1) {
+        cerr << "How can there be a new cluster in BondPercolation_pb_v2 : line " << __LINE__ << endl;
+        return 0;
+    }
+
+
+    value_type base = value_type(base_id);
+    BondIndex root = _clusters[base].getRootBond(); // root index of the base cluster
+
+    _clusters[base].addBondIndex(bond);
+
+    _lattice.getBond(bond).set_groupID(base_id); // relabeling for 1 site
+
+    // put_values_to_the_cluster new values in the 0-th found index
+    size_t site_pos = 0;
+    size_t bond_pos = 0;
+
+//    bond_pos = _clusters[base].numberOfBonds();
+//    site_pos = _clusters[base].numberOfSites();
+//    _clusters[base].insert(sites);
+//    relabel_cluster(bond, _clusters[base], bond_pos, site_pos);
+    // merge clusters with common values from all other cluster
+
+
+    for(value_type ers : found_index_set){
+        // store values of other found indices to the cluster
+        bond_pos = _clusters[base].numberOfBonds();
+        site_pos = _clusters[base].numberOfSites();
+        _total_relabeling += _clusters[ers].numberOfSites(); // only for debugging purposes
+        _clusters[base].insert_v2(_clusters[ers]);
+
+        relabel_cluster(bond, _clusters[base], bond_pos, site_pos);
+        _cluster_count--; // reducing number of clusters
+        // delete the merged cluster
+        _clusters[ers].clear();
+
+    }
+
+    _index_last_modified_cluster = base;
+
+    return _index_last_modified_cluster;
+}
+
 /**
  * Applicable only when a new cluster is created
  * @param sites
  * @param id
  */
-void BondPercolation_pb_v1::relabel_new_sites_relative(const vector<Index> &sites, int id) {
+void BondPercolation_pb_v2::relabel_new_sites_relative(const vector<Index> &sites, int id) {
     for(size_t i{0}; i < sites.size(); ++i){
             _lattice.getSite(sites[i]).set_groupID(id);
             if(i > 0) {
@@ -1073,7 +1127,7 @@ void BondPercolation_pb_v1::relabel_new_sites_relative(const vector<Index> &site
  * @param bond_neighbor
  */
 void
-BondPercolation_pb_v1::connection_v1(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
+BondPercolation_pb_v2::connection_v1(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
     // for a bond there is two site. each site connects to maximum of 3 bonds.
     // select the site if one of the three bonds is active
     value_type next_column = (bond.column_ + 1) % length();
@@ -1377,7 +1431,7 @@ BondPercolation_pb_v1::connection_v1(BondIndex bond, vector<Index> &site_neighbo
  * @param bond_neighbor
  */
 void
-BondPercolation_pb_v1::connection_v2(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
+BondPercolation_pb_v2::connection_v2(BondIndex bond, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor) {
     // for a bond there is two site. each site connects to maximum of 3 bonds.
     // select the site if one of the three bonds is active
     value_type next_column = (bond.column_ + 1) % length();
@@ -1420,7 +1474,7 @@ BondPercolation_pb_v1::connection_v2(BondIndex bond, vector<Index> &site_neighbo
  * @param prev_row
  * @param next_row
  */
-void BondPercolation_pb_v1::connection_2_periodic(const BondIndex &bond, vector<Index> &site_neighbor,
+void BondPercolation_pb_v2::connection_2_periodic(const BondIndex &bond, vector<Index> &site_neighbor,
                                                   vector<BondIndex> &bond_neighbor, value_type prev_column,
                                                   value_type next_column, value_type prev_row, value_type next_row) {
     // A bond can have 2 site neighbor and 6 bond neighbor
@@ -1501,7 +1555,7 @@ void BondPercolation_pb_v1::connection_2_periodic(const BondIndex &bond, vector<
  * @param prev_row
  * @param next_row
  */
-void BondPercolation_pb_v1::connection_2_vertical_no_peridicity(const BondIndex &bond, vector<Index> &site_neighbor,
+void BondPercolation_pb_v2::connection_2_vertical_no_peridicity(const BondIndex &bond, vector<Index> &site_neighbor,
                                                                 vector<BondIndex> &bond_neighbor,
                                                                 value_type prev_column, value_type prev_row,
                                                                 value_type next_row) {
@@ -1682,7 +1736,7 @@ void BondPercolation_pb_v1::connection_2_vertical_no_peridicity(const BondIndex 
     }
 }
 
-void BondPercolation_pb_v1::connection_2_horizontal_no_periodicity(const BondIndex &bond,
+void BondPercolation_pb_v2::connection_2_horizontal_no_periodicity(const BondIndex &bond,
                                                                    vector<Index> &site_neighbor,
                                                                    vector<BondIndex> &bond_neighbor,
                                                                    value_type next_column,
@@ -1873,7 +1927,7 @@ void BondPercolation_pb_v1::connection_2_horizontal_no_periodicity(const BondInd
  * @return a set
  */
 set<value_type>
-BondPercolation_pb_v1::find_index_for_placing_new_bonds(const vector<BondIndex> &neighbors) {
+BondPercolation_pb_v2::find_index_for_placing_new_bonds(const vector<BondIndex> &neighbors) {
 
     set<value_type> found_index_set;    // use set to prevent repeated index
 
@@ -1895,7 +1949,7 @@ BondPercolation_pb_v1::find_index_for_placing_new_bonds(const vector<BondIndex> 
  * @return                  : id of the base cluster
  */
 int
-BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors,
+BondPercolation_pb_v2::find_cluster_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors,
                                                                 std::set<value_type> &found_indices){
 
     found_indices.clear();
@@ -1929,10 +1983,10 @@ BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds(const std::vecto
  * @param neighbors         :
  * @param found_index_set   : index of the clusters that will be merged together.
  *                            Does not contain the base cluster index or id.
- * @return                  : id of the base cluster
+ * @return                  : id of the base cluster which is never -1 in version 2 or BondPercolation_pb_v2
  */
 int
-BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds_v2(const std::vector<BondIndex> &neighbors,
+BondPercolation_pb_v2::find_cluster_index_for_placing_new_bonds_v2(const std::vector<BondIndex> &neighbors,
                                                                 std::set<value_type> &found_indices){
 
     found_indices.clear();
@@ -1940,10 +1994,12 @@ BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds_v2(const std::ve
     int id{0};
     value_type size_base{}, tmp, index, base{};
     for (auto n: neighbors) {
-        id = _lattice.getBond(n).get_groupID();
+        id = _lattice.getGroupID(n);
         if(id >= 0){
             index = value_type(id);
-            tmp = _clusters[index].numberOfBonds();
+            // number of sites is suitable to use. Since it is used in wrapping
+            // and all cluster have sites even if they do not have bonds
+            tmp = _clusters[index].numberOfSites();
             if(tmp > size_base){
                 size_base = tmp;
                 base_id = id;
@@ -1961,7 +2017,7 @@ BondPercolation_pb_v1::find_cluster_index_for_placing_new_bonds_v2(const std::ve
 
 
 
-void BondPercolation_pb_v1::calculate_spanning_probability() {
+void BondPercolation_pb_v2::calculate_spanning_probability() {
     calculate_spanning_probability_by_largest_cluster();
 }
 
@@ -1969,7 +2025,7 @@ void BondPercolation_pb_v1::calculate_spanning_probability() {
 /**
  * Use Group_ID to identify Bond and Site in the same cluster
  */
-void BondPercolation_pb_v1::calculate_spanning_probability_by_largest_cluster() {
+void BondPercolation_pb_v2::calculate_spanning_probability_by_largest_cluster() {
 //    cout << "calculate_spanning_probability_by_largest_cluster() : line " << __LINE__ << endl;
     // find the largest cluster
     value_type l_largest_cluster{0}; // number of site of the largest cluster
@@ -1992,7 +2048,7 @@ void BondPercolation_pb_v1::calculate_spanning_probability_by_largest_cluster() 
 /**
  * Counts the number of active sites in the lattice
  */
-value_type BondPercolation_pb_v1::count_number_of_active_site() {
+value_type BondPercolation_pb_v2::count_number_of_active_site() {
     value_type counter{};
     for (value_type i{}; i != length(); ++i) {
         for (value_type j{}; j != length(); ++j) {
@@ -2011,7 +2067,7 @@ value_type BondPercolation_pb_v1::count_number_of_active_site() {
 // * @param index
 // * @return
 // */
-//vector<Index> BondPercolation_pb_v1::get_Sites_for_bonds(BondIndex index) {
+//vector<Index> BondPercolation_pb_v2::get_Sites_for_bonds(BondIndex index) {
 //    if (debug_get_Bond_for_site) {
 //        cout << "Entry -> get_Bond_for_site() : line " << __LINE__ << endl;
 //    }
@@ -2041,7 +2097,7 @@ value_type BondPercolation_pb_v1::count_number_of_active_site() {
 
 
 
-value_type BondPercolation_pb_v1::number_of_site_in_spanning_clusters(unordered_set<int> g_ids) {
+value_type BondPercolation_pb_v2::number_of_site_in_spanning_clusters(unordered_set<int> g_ids) {
     value_type nos{};   // number of site_index_sequence
     for (auto b: g_ids) {
         for (auto a: _clusters) {
@@ -2058,7 +2114,7 @@ value_type BondPercolation_pb_v1::number_of_site_in_spanning_clusters(unordered_
  *
  * @return
  */
-bool BondPercolation_pb_v1::detectSpanning() {
+bool BondPercolation_pb_v2::detectSpanning() {
 //    cout << "Entry -> detectSpanning() : line " << __LINE__ << endl;
 
     // if any of the clusters does not have site_index_sequence > length() --> no spanning
@@ -2160,14 +2216,14 @@ bool BondPercolation_pb_v1::detectSpanning() {
  * Wrapping is detected here. using the last placed bond.
  * @return bool. True if wrapping occured.
  */
-bool BondPercolation_pb_v1::detectWrapping() {
+bool BondPercolation_pb_v2::detectWrapping() {
     bool a;
     a = detect_wrapping_v1();
 //    a = detect_wrapping_v2();
     return a;
 }
 
-std::vector<double> BondPercolation_pb_v1::spanningProbability() const {
+std::vector<double> BondPercolation_pb_v2::spanningProbability() const {
     vector<double> x(number_of_bonds_to_span.size());
     for (value_type i{}; i != x.size(); ++i) {
         x[i] = number_of_bonds_to_span[i] / double(maxSites());
@@ -2176,7 +2232,7 @@ std::vector<double> BondPercolation_pb_v1::spanningProbability() const {
 }
 
 
-double BondPercolation_pb_v1::occupationProbability() const {
+double BondPercolation_pb_v2::occupationProbability() const {
     return _number_of_occupied_bonds / double(maxBonds());
 }
 
@@ -2184,7 +2240,7 @@ double BondPercolation_pb_v1::occupationProbability() const {
 /**
  *
  */
-void BondPercolation_pb_v1::periodicity_status() {
+void BondPercolation_pb_v2::periodicity_status() {
     cout << "Periodicity = (" << _periodicity << ")" << endl;
 }
 
@@ -2203,7 +2259,7 @@ void BondPercolation_pb_v1::periodicity_status() {
  * Must be called before merging the clusters
  * @param found_index_set
  */
-void BondPercolation_pb_v1::subtract_entropy_for_site(const set<value_type>& found_index, int base){
+void BondPercolation_pb_v2::subtract_entropy_for_site(const set<value_type>& found_index, int base){
     double nos, mu_site;
     double H{};
     if(base >= 0){
@@ -2225,7 +2281,7 @@ void BondPercolation_pb_v1::subtract_entropy_for_site(const set<value_type>& fou
  * Cluster length is measured by sites
  * @param index
  */
-void BondPercolation_pb_v1::add_entropy_for_site(value_type index){
+void BondPercolation_pb_v2::add_entropy_for_site(value_type index){
     double nos = _clusters[index].numberOfSites();
     double mu = nos / maxSites();
     double H = -log(mu) * mu;
@@ -2236,7 +2292,7 @@ void BondPercolation_pb_v1::add_entropy_for_site(value_type index){
  * Very efficient approach for calculating entropy
  * @return
  */
-double BondPercolation_pb_v1::entropy() {
+double BondPercolation_pb_v2::entropy() {
 
     double mu = 1.0/ maxSites();
     double number_of_cluster_with_size_one = (maxSites() - sites_in_cluster_with_size_greater_than_one);
@@ -2247,7 +2303,7 @@ double BondPercolation_pb_v1::entropy() {
 }
 
 
-value_type BondPercolation_pb_v1::numberOfBondsInTheWrappingClusters(){
+value_type BondPercolation_pb_v2::numberOfBondsInTheWrappingClusters(){
     value_type nob{};
     int id{};
     for(auto i: _wrapping_indices){
@@ -2259,7 +2315,7 @@ value_type BondPercolation_pb_v1::numberOfBondsInTheWrappingClusters(){
     return nob;
 }
 
-value_type BondPercolation_pb_v1::numberOfSitesInTheWrappingClusters(){
+value_type BondPercolation_pb_v2::numberOfSitesInTheWrappingClusters(){
     value_type nos{};
     int id{};
     for(auto i: _wrapping_indices){
@@ -2276,7 +2332,7 @@ value_type BondPercolation_pb_v1::numberOfSitesInTheWrappingClusters(){
  * Significantly efficient than the previous version numberOfBondsInTheLargestCluster()
  * @return
  */
-value_type BondPercolation_pb_v1::numberOfBondsInTheLargestCluster() {
+value_type BondPercolation_pb_v2::numberOfBondsInTheLargestCluster() {
     return _number_of_bonds_in_the_largest_cluster;
 }
 
@@ -2285,14 +2341,14 @@ value_type BondPercolation_pb_v1::numberOfBondsInTheLargestCluster() {
  * Significantly efficient than the previous version numberOfBondsInTheLargestCluster()
  * @return
  */
-value_type BondPercolation_pb_v1::numberOfSitesInTheLargestCluster() {
+value_type BondPercolation_pb_v2::numberOfSitesInTheLargestCluster() {
     return _number_of_bonds_in_the_largest_cluster;
 }
 
 /**
  * Condition: must be called each time a site is placed
  */
-void BondPercolation_pb_v1::track_numberOfBondsInLargestCluster() {
+void BondPercolation_pb_v2::track_numberOfBondsInLargestCluster() {
 
     // calculating number of bonds in the largest cluster // by cluster index
     // checking number of bonds
@@ -2305,7 +2361,7 @@ void BondPercolation_pb_v1::track_numberOfBondsInLargestCluster() {
 /**
  *
  */
-void BondPercolation_pb_v1::track_numberOfSitesInLargestCluster(){
+void BondPercolation_pb_v2::track_numberOfSitesInLargestCluster(){
 
     // calculating number of bonds in the largest cluster // by cluster index
     // checking number of bonds
@@ -2314,7 +2370,7 @@ void BondPercolation_pb_v1::track_numberOfSitesInLargestCluster(){
     }
 }
 
-const std::vector<double> BondPercolation_pb_v1::clusterSizeDistribution() const {
+const std::vector<double> BondPercolation_pb_v2::clusterSizeDistribution() const {
     double area=0; // area under curve should be 1
     vector<double> cluster_counts;
     size_t n, sz;
@@ -2350,7 +2406,7 @@ const std::vector<double> BondPercolation_pb_v1::clusterSizeDistribution() const
     return cluster_counts;
 }
 
-bool BondPercolation_pb_v1::detect_wrapping_v1() {
+bool BondPercolation_pb_v2::detect_wrapping_v1() {
     BondIndex bond = lastPlacedBond();
     // only possible if the cluster containing 'site' has bonds >= length of the lattice
     if(_number_of_occupied_bonds < length()){
@@ -2383,6 +2439,18 @@ bool BondPercolation_pb_v1::detect_wrapping_v1() {
     // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
     // that means there is wrapping but not for the %site
     return !_wrapping_indices.empty();
+}
+
+void BondPercolation_pb_v2::initialize_cluster() {
+    // all site_index_sequence are a unit cluster initially
+
+    _clusters.resize(maxSites()); // since reset might change sice
+    for(int i{}; i < site_index_sequence.size(); ++i){
+        _clusters[i].clear(); // first clear the cluster
+        _clusters[i].addSiteIndex(site_index_sequence[i]);
+        _clusters[i].set_ID(i);
+        _lattice.setGroupID(site_index_sequence[i], i);
+    }
 }
 
 

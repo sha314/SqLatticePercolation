@@ -6,19 +6,19 @@ Available Argument
 -l      Length of the lattice. Default value is 5
 -r      Range of length. No default value
 -n      Ensemble size. Default value is 1
--i      Number of impure sites. Default value is 0
+-i      Number of impure site_index_sequence. Default value is 0
 -m      only counted for explosive percolation. default value is 0
         0   ->  sum rule
         1   ->  product rule
 
--p      place sites for
-            0   ->  Just place all the sites and printout the result in the commandline only once to see
+-p      place site_index_sequence for
+            0   ->  Just place all the site_index_sequence and printout the result in the commandline only once to see
                     what's going on there and how much time it requires.
 
-            1   ->  Place sites until first spanning. Without periodicity.
+            1   ->  Place site_index_sequence until first spanning. Without periodicity.
 
             2   ->  MicroCanonical Ensemble data of Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     Other quantities can be calculated from these data
@@ -30,11 +30,11 @@ Available Argument
                         p_c = critical occupation probability
                         id_sc = id of the spanning cluster
                         b_t_sc = birth time of the spanning cluster
-                        sites_sc = number of sites of the spanning cluster
+                        sites_sc = number of site_index_sequence of the spanning cluster
                         bonds_sc = number of bonds of the spanning cluster
 
             4   ->  MicroCanonical Ensemble data of Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     writes only the ensemble average of the above quantity.
@@ -44,11 +44,11 @@ Available Argument
                         p_c = critical occupation probability
                         id_sc = id of the spanning cluster
                         b_t_sc = birth time of the spanning cluster
-                        sites_sc = number of sites of the spanning cluster
+                        sites_sc = number of site_index_sequence of the spanning cluster
                         bonds_sc = number of bonds of the spanning cluster
 
             6   ->  MicroCanonical Ensemble data of explosive Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     writes only the ensemble average of the above quantity.
@@ -75,4 +75,4 @@ Available Argument
 
             9   ->  Box counting data for global fractal dimension and spanning fractal dimension
 
-            10  ->  Cluster length data by bonds and sites
+            10  ->  Cluster_v3 length data by bonds and site_index_sequence

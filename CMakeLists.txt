@@ -63,6 +63,7 @@ set(SOURCE_FILES
         src/util/checking.cpp
         src/util/checking.h
         src/percolation/percolation_bond_v1.cpp
+        src/percolation/percolation_bond_v2.cpp
         src/tests/test_percolation.cpp
         src/tests/test_percolation.h)
 

@@ -55,7 +55,7 @@ SqLattice::SqLattice(
             }
         }
     }
-    else if(!activate_bonds && activate_sites) {    // all sites are activated by default
+    else if(!activate_bonds && activate_sites) {    // all site_index_sequence are activated by default
         for (value_type i{}; i != _length; ++i) {
             _sites[i] = std::vector<Site>(_length);
             _h_bonds[i] = std::vector<Bond>(_length);
@@ -69,7 +69,7 @@ SqLattice::SqLattice(
         }
     }
     else {
-        for (value_type i{}; i != _length; ++i) {   // all bonds and sites are activated by default
+        for (value_type i{}; i != _length; ++i) {   // all bonds and site_index_sequence are activated by default
             _sites[i] = std::vector<Site>(_length);
             _h_bonds[i] = std::vector<Bond>(_length);
             _v_bonds[i] = std::vector<Bond>(_length);
@@ -177,7 +177,7 @@ void SqLattice::deactivate_bond(Bond bond) {
  */
 void SqLattice::view_sites()
 {
-    std::cout << "view sites" << std::endl;
+    std::cout << "view site_index_sequence" << std::endl;
     std::cout << '{';
     for(value_type i{} ; i != _length ; ++i) {
         if(i!=0) std::cout << "  ";
@@ -209,7 +209,7 @@ void SqLattice::view_sites()
  */
 void SqLattice::view_sites_extended()
 {
-    std::cout << "view sites" << std::endl;
+    std::cout << "view site_index_sequence" << std::endl;
     std::cout << '{';
     for(value_type i{} ; i != _length ; ++i) {
         if(i!=0) std::cout << "  ";
@@ -846,7 +846,7 @@ void SqLattice::reset_sites() {
  * @param site
  * @return
  */
-std::vector<Index> SqLattice::get_neighbor_site_indices(Index site){
+std::vector<Index> SqLattice::get_neighbor_sites(Index site){
     std::vector<Index> sites(4);
     sites[0] = {(site.row_ + 1) % _length, site.column_};
     sites[1] = {(site.row_ - 1 + _length) % _length, site.column_};
@@ -861,7 +861,7 @@ std::vector<Index> SqLattice::get_neighbor_site_indices(Index site){
  * @param site
  * @return
  */
-std::vector<BondIndex> SqLattice::get_neighbor_bond_indices(BondIndex bond) {
+std::vector<BondIndex> SqLattice::get_neighbor_bonds(BondIndex bond) {
     value_type next_column = (bond.column_ + 1) % _length;
     value_type prev_column = (bond.column_ - 1 + _length) % _length;
     value_type prev_row = (bond.row_ - 1 + _length) % _length;
@@ -904,7 +904,7 @@ std::vector<BondIndex> SqLattice::get_neighbor_bond_indices(BondIndex bond) {
     return bonds;
 }
 
-std::vector<Index> SqLattice::get_neighbor_indices(BondIndex bond) {
+std::vector<Index> SqLattice::get_neighbor_sites(BondIndex bond) {
     value_type r = bond.row_;
     value_type c = bond.column_;
     vector<Index> sites(2);
@@ -917,84 +917,100 @@ std::vector<Index> SqLattice::get_neighbor_indices(BondIndex bond) {
     return sites;
 }
 
-/************************************************************
- * Static methods
- */
-std::vector<Index> SqLattice::get_neighbor_site_indices(size_t length, Index site){
-    std::vector<Index> sites(4);
-    sites[0] = {(site.row_ + 1) % length, site.column_};
-    sites[1] = {(site.row_ - 1 + length) % length, site.column_};
-    sites[2] = {site.row_, (site.column_ + 1) % length};
-    sites[3] = {site.row_, (site.column_ - 1 + length) % length};
-    return sites;
+///************************************************************
+// * Static methods
+// */
+//std::vector<Index> SqLattice::get_neighbor_sites(size_t length, Index site){
+//    std::vector<Index> sites(4);
+//    sites[0] = {(site.row_ + 1) % length, site.column_};
+//    sites[1] = {(site.row_ - 1 + length) % length, site.column_};
+//    sites[2] = {site.row_, (site.column_ + 1) % length};
+//    sites[3] = {site.row_, (site.column_ - 1 + length) % length};
+//    return sites;
+//}
+//
+///**
+// * Periodic case only.
+// * Each bond has six neibhbor bonds.
+// * @param site
+// * @return
+// */
+//std::vector<BondIndex> SqLattice::get_neighbor_bond_indices(size_t length, BondIndex bond) {
+//    value_type next_column = (bond.column_ + 1) % length;
+//    value_type prev_column = (bond.column_ - 1 + length) % length;
+//    value_type prev_row = (bond.row_ - 1 + length) % length;
+//    value_type next_row = (bond.row_ + 1) % length;
+//
+//    vector<BondIndex> bonds(6);
+//
+//    // horizontal bond case
+//    if (bond.horizontal()) {
+//        // increase column index for the right neighbor
+//
+//        // left end of bond
+//        bonds[0] = {BondType::Vertical, bond.row_, bond.column_};
+//        bonds[1] = {BondType::Vertical, prev_row, bond.column_};
+//        bonds[2] = {BondType::Horizontal, bond.row_, prev_column};
+//
+//        // right end bond
+//        bonds[3] = {BondType::Vertical, prev_row, next_column};
+//        bonds[4] = {BondType::Vertical, bond.row_, next_column};
+//        bonds[5] = {BondType::Horizontal, bond.row_, next_column};
+//
+//    }
+//        // vertical bond case
+//    else if (bond.vertical()) {
+//        // increase row index
+//
+//        // top end of bond
+//        bonds[0] = {BondType::Horizontal, bond.row_, bond.column_};
+//        bonds[1] = {BondType::Horizontal, bond.row_, prev_column};
+//        bonds[2] = {BondType::Vertical, prev_row, bond.column_};
+//
+//        // bottom end of bond
+//        bonds[3] = {BondType::Horizontal, next_row, bond.column_};
+//        bonds[4] = {BondType::Horizontal, next_row, prev_column};
+//        bonds[5] = {BondType::Vertical, next_row, bond.column_};
+//
+//    }
+//
+//
+//    return bonds;
+//}
+//
+//std::vector<Index> SqLattice::get_neighbor_indices(size_t length, BondIndex bond) {
+//    value_type r = bond.row_;
+//    value_type c = bond.column_;
+//    vector<Index> sites(2);
+//    sites[0] = {r, c};
+//    if(bond.horizontal()){
+//        sites[1] = {r, (c+1) % length};
+//    }else{
+//        sites[1] = {(r+1) % length, c};
+//    }
+//    return sites;
+//}
+
+std::vector<Index> SqLattice::getSites() {
+    std::vector<Index> indices;
+    for(size_t i{}; i < _sites.size(); ++i){
+        for(size_t j{}; j < _sites[i].size(); ++j){
+            indices.push_back(_sites[i][j]._id);
+        }
+    }
+    return indices;
 }
 
-/**
- * Periodic case only.
- * Each bond has six neibhbor bonds.
- * @param site
- * @return
- */
-std::vector<BondIndex> SqLattice::get_neighbor_bond_indices(size_t length, BondIndex bond) {
-    value_type next_column = (bond.column_ + 1) % length;
-    value_type prev_column = (bond.column_ - 1 + length) % length;
-    value_type prev_row = (bond.row_ - 1 + length) % length;
-    value_type next_row = (bond.row_ + 1) % length;
-
-    vector<BondIndex> bonds(6);
-
-    // horizontal bond case
-    if (bond.horizontal()) {
-        // increase column index for the right neighbor
-
-        // left end of bond
-        bonds[0] = {BondType::Vertical, bond.row_, bond.column_};
-        bonds[1] = {BondType::Vertical, prev_row, bond.column_};
-        bonds[2] = {BondType::Horizontal, bond.row_, prev_column};
-
-        // right end bond
-        bonds[3] = {BondType::Vertical, prev_row, next_column};
-        bonds[4] = {BondType::Vertical, bond.row_, next_column};
-        bonds[5] = {BondType::Horizontal, bond.row_, next_column};
-
+std::vector<BondIndex> SqLattice::getBonds() {
+    std::vector<BondIndex> indices;
+    // number of horizontal bonds and number of vertical bonds are equal
+    for(size_t i{}; i < _h_bonds.size(); ++i){
+        for(size_t j{}; j < _h_bonds[i].size(); ++j){
+            indices.push_back(_h_bonds[i][j]._id);
+            indices.push_back(_v_bonds[i][j]._id);
+        }
     }
-        // vertical bond case
-    else if (bond.vertical()) {
-        // increase row index
-
-        // top end of bond
-        bonds[0] = {BondType::Horizontal, bond.row_, bond.column_};
-        bonds[1] = {BondType::Horizontal, bond.row_, prev_column};
-        bonds[2] = {BondType::Vertical, prev_row, bond.column_};
-
-        // bottom end of bond
-        bonds[3] = {BondType::Horizontal, next_row, bond.column_};
-        bonds[4] = {BondType::Horizontal, next_row, prev_column};
-        bonds[5] = {BondType::Vertical, next_row, bond.column_};
-
-    }
-
-
-    return bonds;
-}
-
-std::vector<Index> SqLattice::get_neighbor_indices(size_t length, BondIndex bond) {
-    value_type r = bond.row_;
-    value_type c = bond.column_;
-    vector<Index> sites(2);
-    sites[0] = {r, c};
-    if(bond.horizontal()){
-        sites[1] = {r, (c+1) % length};
-    }else{
-        sites[1] = {(r+1) % length, c};
-    }
-    return sites;
-}
-
-std::vector<Site> SqLattice::getSites() {
-    cout << "undefined : line " << __LINE__ << endl;
-//    return _sites;
-    return {};
+    return indices;
 }
 
 

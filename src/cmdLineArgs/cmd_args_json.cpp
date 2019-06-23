@@ -637,7 +637,7 @@ void write_critical_data_json_v2(
     // JSON formated header
     fout << header_info;
     fout << "#critical occupation probability or pc" << endl;
-    fout << "#Spanning Cluster Size or S" << endl;
+    fout << "#Spanning Cluster_v3 Size or S" << endl;
     fout << "#S1 is measured by bond" << endl;
     fout << "#S2 is measured by site" << endl;
     fout << "#<pc>\t<S1>\t<S2>\n";
@@ -723,7 +723,7 @@ Available Argument
                     neighbor along the first nearest neighbor only if
                     the selected site and first nearest neighbor is occupied. L0 and L1 is included here)
 
--p      place sites for. Default value is -1
+-p      place site_index_sequence for. Default value is -1
 
             0   ->  MicroCanonical Ensemble data of Site percolation (Non-Periodic)
                         Occupation Probability, p
@@ -739,7 +739,7 @@ Available Argument
                         Order Parameter, P_2 =(bonds in the wrapping cluster) / (total bonds)
                     And Critical Occupation Probabilities (pc) data
 
-            -1   ->  Just place all the sites and printout the result in the commandline only once to see
+            -1   ->  Just place all the site_index_sequence and printout the result in the commandline only once to see
                     what's going on there and how much time it requires.
 
 
@@ -889,9 +889,9 @@ void cmd_args_json_g(int argc, char **argv) {
     cout << "Ensemble size " << ensembleSize << endl;
 
     if(place_sites_for == 0) {
-        cout << "Placing all the sites" << endl;
+        cout << "Placing all the site_index_sequence" << endl;
     }else{
-        cout << "Placing sites until the spanning" << endl;
+        cout << "Placing site_index_sequence until the spanning" << endl;
     }
 
     if(percolation_type == 0){

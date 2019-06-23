@@ -99,7 +99,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
 //    cout << "current site " << current_site << endl;
     // find the bonds for this site
 
-//    connection_v1(current_site, sites, bonds);
+//    connection_v1(current_site, site_index_sequence, bonds);
     connection_v2(current_site, sites, bonds);
 
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
@@ -157,7 +157,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn(
     // find the bonds for this site
 
 
-//    connection_v1(central_site, sites, bonds);
+//    connection_v1(central_site, site_index_sequence, bonds);
     connection_v2(central_site, sites, bonds);
 
     if (_lattice.getSite(central_site).isActive()){
@@ -185,7 +185,7 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn(
             // if the neighbor is also occupied then choose the 2nd nearest neighbor in the direction of motion
             nn2 = get_2nn_in_1nn_direction(central_site, nn1, length());
             if(!_periodicity){
-                // if periodic boundary condition is not enabled then sites on the opposite edges will not contribute
+                // if periodic boundary condition is not enabled then site_index_sequence on the opposite edges will not contribute
                 vector<Index> tmp_sites;
                 vector<BondIndex> tmp_bonds;
                 // will find all possible neighbors of the selected first nearest neighbor

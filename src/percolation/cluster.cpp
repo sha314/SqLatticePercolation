@@ -13,16 +13,16 @@
 using namespace std;
 
 // add Site index
-void Cluster::addSiteIndex(Index index) {
+void Cluster_v3::addSiteIndex(Index index) {
     _site_index.push_back(index);
 }
 
-void Cluster::addBondIndex(BondIndex bondIndex) {
+void Cluster_v3::addBondIndex(BondIndex bondIndex) {
     _bond_index.push_back(bondIndex);
 }
 
 
-bool Cluster::isPresent(BondIndex bond) const {
+bool Cluster_v3::isPresent(BondIndex bond) const {
     for (auto a: _bond_index) {
         if (a == bond)
             return true;
@@ -30,7 +30,7 @@ bool Cluster::isPresent(BondIndex bond) const {
     return false;
 }
 
-bool Cluster::isPresent(Index site) const {
+bool Cluster_v3::isPresent(Index site) const {
     for (auto a: _site_index) {
         if (a == site)
             return true;
@@ -38,7 +38,7 @@ bool Cluster::isPresent(Index site) const {
     return false;
 }
 
-bool Cluster::checkPresenceAndErase(BondIndex bond) {
+bool Cluster_v3::checkPresenceAndErase(BondIndex bond) {
     for (auto it = _bond_index.begin(); it != _bond_index.end(); ++it) {
         if (*it == bond) {
             _bond_index.erase(it);
@@ -48,7 +48,7 @@ bool Cluster::checkPresenceAndErase(BondIndex bond) {
     return false;
 }
 
-bool Cluster::checkPresenceAndEraseIf(BondIndex bond, bool flag) {
+bool Cluster_v3::checkPresenceAndEraseIf(BondIndex bond, bool flag) {
     if(!flag)
         return false;
     for (auto it = _bond_index.begin(); it != _bond_index.end(); ++it) {
@@ -60,7 +60,7 @@ bool Cluster::checkPresenceAndEraseIf(BondIndex bond, bool flag) {
     return false;
 }
 
-bool Cluster::checkPresenceAndEraseIf(Index bond, bool flag) {
+bool Cluster_v3::checkPresenceAndEraseIf(Index bond, bool flag) {
     if(!flag)
         return false;
     for (auto it = _site_index.begin(); it != _site_index.end(); ++it) {
@@ -73,7 +73,7 @@ bool Cluster::checkPresenceAndEraseIf(Index bond, bool flag) {
 }
 
 
-bool Cluster::checkPresenceAndErase(Index bond) {
+bool Cluster_v3::checkPresenceAndErase(Index bond) {
     for (auto it = _site_index.begin(); it != _site_index.end(); ++it) {
         if (*it == bond) {
             _site_index.erase(it);
@@ -84,27 +84,27 @@ bool Cluster::checkPresenceAndErase(Index bond) {
 }
 
 
-void Cluster::eraseSite(value_type index) {
+void Cluster_v3::eraseSite(value_type index) {
     auto it = _site_index.begin();
     it += index;
     _site_index.erase(it);
 }
 
-void Cluster::eraseBond(value_type index) {
+void Cluster_v3::eraseBond(value_type index) {
     auto it = _bond_index.begin();
     it += index;
     _bond_index.erase(it);
 }
 
 
-void Cluster::insert(const std::vector<BondIndex>& bonds){
+void Cluster_v3::insert(const std::vector<BondIndex>& bonds){
     _bond_index.reserve(bonds.size());
     for(value_type i{} ; i != bonds.size() ; ++i){
         _bond_index.push_back(bonds[i]);
     }
 }
 
-void Cluster::insert(const std::vector<Index>& sites){
+void Cluster_v3::insert(const std::vector<Index>& sites){
     _site_index.reserve(sites.size());
     for(value_type i{} ; i != sites.size() ; ++i){
         _site_index.push_back(sites[i]);
@@ -116,7 +116,7 @@ void Cluster::insert(const std::vector<Index>& sites){
  * All intrinsic property should be considered, e.g., creation time of a cluster must be recalculated
  * @param cluster
  */
-void Cluster::insert(const Cluster &cluster) {
+void Cluster_v3::insert(const Cluster_v3 &cluster) {
     if(_id > cluster._id){
         cout << "_id > cluster._id : line " << __LINE__ << endl;
         _id = cluster._id;
@@ -135,7 +135,7 @@ void Cluster::insert(const Cluster &cluster) {
  * All intrinsic property should be considered, e.g., creation time of a cluster must be recalculated
  * @param cluster
  */
-void Cluster::insert_v2(const Cluster &cluster) {
+void Cluster_v3::insert_v2(const Cluster_v3 &cluster) {
     // older time or smaller time is the creation birthTime of the cluster
 //    cout << "Comparing " << _creation_time << " and " << cluster._creation_time;
 //    _creation_time = _creation_time < cluster._creation_time ? _creation_time : cluster._creation_time;
@@ -145,7 +145,7 @@ void Cluster::insert_v2(const Cluster &cluster) {
 }
 
 
-void Cluster::insert_with_id_v2(const Cluster &cluster, int id) {
+void Cluster_v3::insert_with_id_v2(const Cluster_v3 &cluster, int id) {
     _id = id;
     // older time or smaller time is the creation birthTime of the cluster
 //    cout << "Comparing " << _creation_time << " and " << cluster._creation_time;
@@ -156,7 +156,7 @@ void Cluster::insert_with_id_v2(const Cluster &cluster, int id) {
 }
 
 
-std::ostream &operator<<(std::ostream &os, const Cluster &cluster) {
+std::ostream &operator<<(std::ostream &os, const Cluster_v3 &cluster) {
     os << "Sites : size (" << cluster._site_index.size() << ") : ";
     os << '{';
     for(auto a: cluster._site_index){

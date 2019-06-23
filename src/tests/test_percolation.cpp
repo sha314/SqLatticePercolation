@@ -68,49 +68,51 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
     value_type twice_length_squared = 2 * length_squared;
 
     SitePercolation_ps_v9 lattice_percolation(length, true);
+    string tm = getCurrentTime();
 
     ostringstream header_info;
     header_info << "{"
                 << "\"length\":" << length
                 << ",\"ensemble_size\":" << ensemble_size
+                << ",\"time_stamp\":\"" << tm << "\""
                 << ",\"signature\":\"" << lattice_percolation.getSignature() << "\""
                 << "}" ;
 
-    string tm = getCurrentTime();
+
 
     std::string extension = "_L" + std::to_string(length) + '_' + tm + ".csv";
-    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
-    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
+//    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
+//    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
     std::string filename_critical = lattice_percolation.getSignature() + "_critical" + extension;
-    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
+//    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
     std::string filename_entropy_order_parameter = lattice_percolation.getSignature() + extension;
 
-    ofstream fout_jump(filename);
-    // JSON formated header
-    fout_jump << '#' << header_info.str() << endl;
-    fout_jump << "#each line is an independent realization" << endl;
-    fout_jump << "#each line contains information about all clusters at critical point" << endl;
-    fout_jump << "#cluster size is measured by number of bonds in it" << endl;
-    fout_jump << "#<entropy jump>,<occupation probability at which the jump occurs>" << endl;
+//    ofstream fout_jump(filename);
+//    // JSON formated header
+//    fout_jump << '#' << header_info.str() << endl;
+//    fout_jump << "#each line is an independent realization" << endl;
+//    fout_jump << "#each line contains information about all clusters at critical point" << endl;
+//    fout_jump << "#cluster size is measured by number of bonds in it" << endl;
+//    fout_jump << "#<entropy jump>,<occupation probability at which the jump occurs>" << endl;
 
-    ofstream fout_s(filename_s);
-    // JSON formated header
-    fout_s << '#' << header_info.str() << endl;
-    fout_s << "#each line is an independent realization" << endl;
-    fout_s << "#each line contains information about all clusters at critical point" << endl;
-    fout_s << "#cluster size is measured by number of sites in it" << endl;
-
-    ofstream fout_b(filename_b);
-    // JSON formated header
-    fout_b << '#' << header_info.str() << endl;
-    fout_b << "#each line is an independent realization" << endl;
-    fout_b << "#each line contains information about all clusters at critical point" << endl;
-    fout_b << "#cluster size is measured by number of bonds in it" << endl;
+//    ofstream fout_s(filename_s);
+//    // JSON formated header
+//    fout_s << '#' << header_info.str() << endl;
+//    fout_s << "#each line is an independent realization" << endl;
+//    fout_s << "#each line contains information about all clusters at critical point" << endl;
+//    fout_s << "#cluster size is measured by number of site_index_sequence in it" << endl;
+//
+//    ofstream fout_b(filename_b);
+//    // JSON formated header
+//    fout_b << '#' << header_info.str() << endl;
+//    fout_b << "#each line is an independent realization" << endl;
+//    fout_b << "#each line contains information about all clusters at critical point" << endl;
+//    fout_b << "#cluster size is measured by number of bonds in it" << endl;
 
     ofstream fout_critical(filename_critical);
     fout_critical << '#' << header_info.str() << endl;
     fout_critical << "#data at critical occupation probability or pc" << endl;
-    fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << endl;
+    fout_critical << "#<pc>,<site_index_sequence in wrapping cluster>,<bonds in wrapping cluster>" << endl;
 
     // simulation starts here
     value_type counter{};
@@ -142,16 +144,17 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
 
                     lattice_percolation.get_cluster_info(site, bond);
 
-                    for(value_type j{}; j != site.size(); ++j){
-                        fout_s << site[j] << ',';
-                    }
-                    for(value_type j{}; j != bond.size(); ++j){
-                        fout_b << bond[j] <<',';
-                    }
+//                    for(value_type j{}; j != site.size(); ++j){
+//                        fout_s << site[j] << ',';
+//                    }
+//                    for(value_type j{}; j != bond.size(); ++j){
+//                        fout_b << bond[j] <<',';
+//                    }
+//
+//
+//                    fout_s << endl;
+//                    fout_b << endl;
 
-
-                    fout_s << endl;
-                    fout_b << endl;
                     wrapping_written = true;
                 }
 
@@ -162,7 +165,7 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
                 break;
             }
         }
-        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << endl;
+//        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << endl;
         {
             auto t_end = std::chrono::system_clock::now();
             cout << "Iteration " << i
@@ -172,10 +175,10 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
 //        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
     }
 
-    fout_b.close();
-    fout_s.close();
+//    fout_b.close();
+//    fout_s.close();
     fout_critical.close();
-    fout_jump.close();
+//    fout_jump.close();
 
 
 
@@ -344,11 +347,11 @@ void simulate_bond_percolation(int argc, char **argv) {
     header += R"***(#<p>	<H(p,L)>	<P1(p,L)>	<P2(p,L)>
 #p = occupation probability
 #H(p,L) = Entropy = sum( - u_i * log(u_i))
-#P1(p,L) = Order parameter = (number of sites in largest cluster) / (total number of sites)
-#P2(p,L) = Order parameter = (number of sites in spanning or wrapping cluster) / (total number of sites)
+#P1(p,L) = Order parameter = (number of site_index_sequence in largest cluster) / (total number of site_index_sequence)
+#P2(p,L) = Order parameter = (number of site_index_sequence in spanning or wrapping cluster) / (total number of site_index_sequence)
 #C(p,L) = Specific heat = -T dH/dT
 #X(p,L) = Susceptibility = dP/dp
-#u_i = (number of sites in the i-th cluster) / (total number of sites))***";
+#u_i = (number of site_index_sequence in the i-th cluster) / (total number of site_index_sequence))***";
 
     string tm = currentTime();
     string filename = bp.getSignature() + "_" + to_string(length) + "_" + tm + ".txt";
@@ -390,48 +393,47 @@ void simulate_bond_percolation_v2(value_type length, value_type ensemble_size) {
 
     ostringstream header_info;
     header_info << "{"
-                << "\"length\":" << length
-                << ",\"ensemble_size\":" << ensemble_size
-                << ",\"signature\":\"" << lattice_percolation.getSignature() << "\""
+                << R"("length":)" << length
+                << R"(,"ensemble_size":)" << ensemble_size
+                << R"(,"signature":")" << lattice_percolation.getSignature() << "\""
+                << R"(,"delimiter":)" << "\"\t\""
                 << "}" ;
 
     std::string tm = getCurrentTime();
-    std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".csv";
-    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
-    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
+    std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".txt";
+//    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
+//    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
     std::string filename_critical = lattice_percolation.getSignature() + "_critical" + extension;
-    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
+//    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
     std::string filename_entropy_order_parameter = lattice_percolation.getSignature() + extension;
 
-    ofstream fout_jump(filename);
-    // JSON formated header
-    fout_jump << '#' << header_info.str() << endl;
-    fout_jump << "#each line is an independent realization" << endl;
-    fout_jump << "#each line contains information about all clusters at critical point" << endl;
-    fout_jump << "#cluster size is measured by number of bonds in it" << endl;
-    fout_jump << "#<entropy jump>,<occupation probability at which the jump occurs>" << endl;
+//    ofstream fout_jump(filename);
+//    // JSON formated header
+//    fout_jump << '#' << header_info.str() << endl;
+//    fout_jump << "#each line is an independent realization" << endl;
+//    fout_jump << "#each line contains information about all clusters at critical point" << endl;
+//    fout_jump << "#cluster size is measured by number of bonds in it" << endl;
+//    fout_jump << "#<entropy jump>,<occupation probability at which the jump occurs>" << endl;
 
-    ofstream fout_s(filename_s);
-    // JSON formated header
-    fout_s << '#' << header_info.str() << endl;
-    fout_s << "#each line is an independent realization" << endl;
-    fout_s << "#each line contains information about all clusters at critical point" << endl;
-    fout_s << "#cluster size is measured by number of sites in it" << endl;
+//    ofstream fout_s(filename_s);
+//    // JSON formated header
+//    fout_s << '#' << header_info.str() << endl;
+//    fout_s << "#each line is an independent realization" << endl;
+//    fout_s << "#each line contains information about all clusters at critical point" << endl;
+//    fout_s << "#cluster size is measured by number of site_index_sequence in it" << endl;
+//
+//    ofstream fout_b(filename_b);
+//    // JSON formated header
+//    fout_b << '#' << header_info.str() << endl;
+//    fout_b << "#each line is an independent realization" << endl;
+//    fout_b << "#each line contains information about all clusters at critical point" << endl;
+//    fout_b << "#cluster size is measured by number of bonds in it" << endl;
 
-    ofstream fout_b(filename_b);
-    // JSON formated header
-    fout_b << '#' << header_info.str() << endl;
-    fout_b << "#each line is an independent realization" << endl;
-    fout_b << "#each line contains information about all clusters at critical point" << endl;
-    fout_b << "#cluster size is measured by number of bonds in it" << endl;
 
-    ofstream fout_critical(filename_critical);
-    fout_critical << '#' << header_info.str() << endl;
-    fout_critical << "#data at critical occupation probability or pc" << endl;
-    fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << endl;
 
     // simulation starts here
     value_type counter{};
+    vector<double> critical_pc(ensemble_size), critical_sites(ensemble_size), critical_bonds(ensemble_size);
     vector<double> entropy(lattice_percolation.maxIterationLimit());
     vector<double> nob_wraping(lattice_percolation.maxIterationLimit()),
             nob_largest(lattice_percolation.maxIterationLimit());
@@ -452,24 +454,25 @@ void simulate_bond_percolation_v2(value_type length, value_type ensemble_size) {
                 nob_largest[counter] += lattice_percolation.numberOfBondsInTheLargestCluster();
                 lattice_percolation.jump();
                 if(!wrapping_written && lattice_percolation.detectWrapping()){
-                    fout_critical << lattice_percolation.occupationProbability() << ","
-                                  << lattice_percolation.numberOfSitesInTheWrappingClusters() << ","
-                                  << lattice_percolation.numberOfBondsInTheWrappingClusters()  << endl;
-
-                    vector<value_type> site, bond;
-
-                    lattice_percolation.get_cluster_info(site, bond);
-
-                    for(value_type j{}; j != site.size(); ++j){
-                        fout_s << site[j] << ',';
-                    }
-                    for(value_type j{}; j != bond.size(); ++j){
-                        fout_b << bond[j] <<',';
-                    }
+                    critical_pc[i] = lattice_percolation.occupationProbability();
+                    critical_sites[i] = lattice_percolation.numberOfSitesInTheWrappingClusters();
+                    critical_bonds[i] = lattice_percolation.numberOfBondsInTheWrappingClusters();
 
 
-                    fout_s << endl;
-                    fout_b << endl;
+//                    vector<value_type> site, bond;
+//
+//                    lattice_percolation.get_cluster_info(site, bond);
+//
+//                    for(value_type j{}; j != site.size(); ++j){
+//                        fout_s << site[j] << ',';
+//                    }
+//                    for(value_type j{}; j != bond.size(); ++j){
+//                        fout_b << bond[j] <<',';
+//                    }
+
+
+//                    fout_s << endl;
+//                    fout_b << endl;
                     wrapping_written = true;
                 }
 
@@ -480,22 +483,25 @@ void simulate_bond_percolation_v2(value_type length, value_type ensemble_size) {
                 break;
             }
         }
-        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << endl;
-        {
-            auto t_end = std::chrono::system_clock::now();
-            cout << "Iteration " << i
-                 //                 << " . Thread " << std::this_thread::get_id()
-                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
-        }
+//        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << endl;
+
+        auto t_end = std::chrono::system_clock::now();
+        cout << "Iteration " << i
+             //                 << " . Thread " << std::this_thread::get_id()
+             << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+
 //        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
     }
 
-    fout_b.close();
-    fout_s.close();
-    fout_critical.close();
-    fout_jump.close();
+//    fout_b.close();
+//    fout_s.close();
 
+//    fout_jump.close();
 
+    ofstream fout_critical(filename_critical);
+    fout_critical << '#' << header_info.str() << endl;
+    fout_critical << "#data at critical occupation probability or pc" << endl;
+    fout_critical << "#<pc><site_index_sequence in wrapping cluster><bonds in wrapping cluster>" << endl;
 
     ofstream fout(filename_entropy_order_parameter);
     fout << '#' << header_info.str() << endl;
@@ -508,11 +514,492 @@ void simulate_bond_percolation_v2(value_type length, value_type ensemble_size) {
     fout << "#X(p,L) = Susceptibility = dP/dp" << endl;
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << endl;
     for(size_t i{}; i < lattice_percolation.maxIterationLimit(); ++i){
-        fout << (i+1) / double(lattice_percolation.maxIterationLimit()) << ",";
-        fout << entropy[i] / double(ensemble_size) << ",";
-        fout << nob_largest[i] / double(ensemble_size /* lattice_percolation.maxBonds()*/) << ",";
-        fout << nob_wraping[i] / double(ensemble_size /* lattice_percolation.maxBonds()*/) ;
+        fout << (i+1) / double(lattice_percolation.maxIterationLimit()) << "\t";
+        fout << entropy[i] / double(ensemble_size) << "\t";
+        fout << nob_largest[i] / double(ensemble_size * lattice_percolation.maxBonds()) << "\t";
+        fout << nob_wraping[i] / double(ensemble_size * lattice_percolation.maxBonds()) ;
         fout << endl;
     }
     fout.close();
+
+    for(size_t i{}; i < ensemble_size; ++i){
+        fout_critical   << critical_pc[i] << '\t'
+                        << critical_sites[i] << '\t'
+                        << critical_bonds[i] << endl;
+    }
+    fout_critical.close();
 }
+
+/**
+ * TODO : SitePercolation_ps_v10 works but SitePercolation_ps_v9 fails because of allocation error
+ * @param length
+ * @param ensemble_size
+ */
+void cluster_size_distribution_site(value_type length, value_type ensemble_size) {
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    vector<double> cluster_size_distro;
+
+    SitePercolation_ps_v10 lp(length, true);
+
+    for(value_type i{} ; i != ensemble_size ; ++i){
+//        cout << "line " << __LINE__ << endl;
+
+        lp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        size_t counter = 0;
+        bool wrapping_written{false};
+//        cout << "line " << __LINE__ << endl;
+
+        while (true){
+            successful = lp.occupy();
+            if(successful) {
+                if(lp.detectWrapping()) {
+                    vector<double> tmp = lp.clusterSizeDistribution();
+                    cout << "after returned " << tmp.size() << endl;
+                    if (tmp.size() > cluster_size_distro.size()) {
+                        cluster_size_distro.resize(tmp.size());
+                    }
+                    for (size_t k{}; k < tmp.size(); ++k) {
+                        cluster_size_distro[k] += tmp[k];
+                    }
+                    break;
+                }
+                ++counter;
+            }
+            if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+
+        auto t_end = std::chrono::system_clock::now();
+        cout << "Iteration " << i+1
+             //                 << " . Thread " << std::this_thread::get_id()
+             << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+
+//        cout << "Relabeling time " << lp.get_relabeling_time() << endl;
+    }
+
+
+    cout  << "writing to file" << endl;
+
+    ostringstream header_info;
+    header_info << "{"
+                << R"("length":)" << length
+                << R"(,"ensemble_size":)" << ensemble_size
+                << R"(,"signature":")" << lp.getSignature() << "\""
+                << R"(,"cols":)" << R"(["S","n_S"])"
+                << "}";
+
+
+    std::string tm = getCurrentTime();
+    std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".txt";
+
+    std::string filename = lp.getSignature() + "_cluster-size-distribution" + extension;
+
+
+    ofstream fout(filename);
+    fout << '#' << header_info.str() << endl;
+    fout << "#<S>,<n_S>" << endl;
+    fout << "#S=cluster size" << endl;
+    fout << "#n_S=number of cluster of size S" << endl;
+    fout << "#cluster size is measured by number of bonds on a cluster in site percolation" << endl;
+//    cout << cluster_size_distro.size() << endl;
+    double area=0;
+    for(size_t S{0}; S < cluster_size_distro.size(); ++S){
+        if (cluster_size_distro[S] == 0) continue; // no need to write zero values
+        fout << S << "\t" << cluster_size_distro[S]/(ensemble_size *2* length_squared);
+        fout << endl;
+        area += S * cluster_size_distro[S]/(ensemble_size * 2 * length_squared);
+    }
+    fout.close();
+    cout << "area under curve " << area << endl;
+}
+
+
+/**
+ * TODO : SitePercolation_ps_v10 works but SitePercolation_ps_v9 fails because of allocation error
+ * @param length
+ * @param ensemble_size
+ */
+void cluster_size_distribution_bond(value_type length, value_type ensemble_size) {
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    vector<double> cluster_size_distro;
+    BondPercolation_pb_v1 lp(length, true);
+    lp.setRandomState(0, true);
+
+
+    for(value_type i{} ; i != ensemble_size ; ++i){
+//        cout << "line " << __LINE__ << endl;
+
+        lp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        size_t counter = 0;
+        bool wrapping_written{false};
+//        cout << "line " << __LINE__ << endl;
+
+        while (true){
+            successful = lp.occupy();
+            if(successful) {
+                if(lp.detectWrapping()) {
+                    vector<double> tmp = lp.clusterSizeDistribution();
+//                    cout << "after returned " << tmp.size() << endl;
+                    if (tmp.size() > cluster_size_distro.size()) {
+                        cluster_size_distro.resize(tmp.size());
+                    }
+                    for (size_t k{}; k < tmp.size(); ++k) {
+                        cluster_size_distro[k] += tmp[k];
+                    }
+                    break;
+                }
+                ++counter;
+            }
+            if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+
+        auto t_end = std::chrono::system_clock::now();
+        cout << "Iteration " << i+1
+             //                 << " . Thread " << std::this_thread::get_id()
+             << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+
+//        cout << "Relabeling time " << lp.get_relabeling_time() << endl;
+    }
+
+
+    cout  << "writing to file" << endl;
+
+    std::string tm = getCurrentTime();
+    ostringstream header_info;
+    header_info << "{"
+                << R"("length":)" << length
+                << R"(,"ensemble_size":)" << ensemble_size
+                << R"(,"signature":")" << lp.getSignature() << "\""
+                << R"(,"cols":)" << R"(["S","n_S"])"
+                << R"(,"random_state":)" << lp.getRandomState()
+                << R"(,"date":")" << tm << "\""
+                << "}";
+
+
+
+    std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".txt";
+
+    std::string filename = lp.getSignature() + "_cluster-size-distribution" + extension;
+
+
+    ofstream fout(filename);
+    fout << '#' << header_info.str() << endl;
+    fout << "#<S>,<n_S>" << endl;
+    fout << "#S=cluster size" << endl;
+    fout << "#n_S=number of cluster of size S" << endl;
+    fout << "#cluster size is measured by number of site_index_sequence on a cluster in bond percolation" << endl;
+//    cout << cluster_size_distro.size() << endl;
+//    double area=0;
+    for(size_t S{0}; S < cluster_size_distro.size(); ++S){
+        if (cluster_size_distro[S] == 0) continue; // no need to write zero values
+        fout << S << "\t" << cluster_size_distro[S]/(ensemble_size * length_squared);
+        fout << endl;
+//        area += S * cluster_size_distro[S]/(ensemble_size * length_squared);
+    }
+    fout.close();
+//    cout << "area under curve " << area;
+}
+
+void entropyJumps(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    BondPercolation_pb_v1 bp(length, true);
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << bp.getSignature() << "\""
+                << "}" ;
+
+    string tm = currentTime();
+
+    string filename = bp.getSignature() + "_entropy-jump_" + to_string(length) + '_' + tm;
+    filename += ".csv";
+
+    ofstream fout(filename);
+    // JSON formated header
+    fout << '#' << header_info.str() << endl;
+    fout << "#each line is an independent realization" << endl;
+    fout << "#each line contains information about all clusters at critical point" << endl;
+    fout << "#cluster size is measured by number of site_index_sequence in it" << endl;
+
+    value_type counter{};
+    double H{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        bp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = bp.occupy();
+            if(successful) {
+                H = bp.entropy();
+//                cout << H << endl;
+                bp.jump();
+
+                ++counter;
+            }
+            if(counter >= bp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+                break;
+            }
+        }
+        fout << bp.largestEntropyJump() << "," << bp.largestEntropyJump_pc() << endl;
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << bp.get_relabeling_time() << endl;
+    }
+
+    fout.close();
+}
+
+
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only
+ */
+void percolation_to_get_fractal(
+        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L
+)
+{
+    double M_spanning_sites{}, M_sites{}, M_spanning_bonds{}, M_bonds{}, N_cluster{};
+    ofstream fout("spanning_data_diff_length.txt");
+    fout << "#All data when spanning occurs for different length" << endl;
+    fout << "#<Length>\t<Number of cluster>\t<Number of spanning site_index_sequence>\t<Total number of site_index_sequence> \t<Number of spanning bonds>" << endl;
+    clock_t t, t_outer;
+    for(value_type len{L_start}; len <= l_end ; len += delta_L){
+        cout << "Length " << len << " : " << endl;
+        SitePercolation_ps_v9 sp(len);
+
+        M_spanning_sites=0;
+        M_sites=0;
+        M_spanning_bonds=0;
+        M_bonds=0;
+        N_cluster=0;
+
+        t_outer = clock();
+        for(value_type i{} ; i != ensemble_size ; ++i){
+            t = clock();
+            sp.reset();
+            while(!sp.detectWrapping()){
+                sp.occupy();
+            }
+            M_spanning_sites += sp.numberOfSitesInTheSpanningClusters();
+            M_sites += sp.numberOfOccupiedSite();
+            M_spanning_bonds += sp.numberOfBondsInTheSpanningClusters();
+            N_cluster += sp.numberOfcluster();
+            cout << "\t\tIteration " << i << " . birthTime " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+        }
+        fout << len << '\t'
+             << N_cluster / double(ensemble_size)       << '\t'
+             << M_spanning_sites /double(ensemble_size) << '\t'
+             << M_sites /double(ensemble_size)          << '\t'
+             << M_spanning_bonds /double(ensemble_size) << '\t'
+             << M_bonds /double(ensemble_size)          << endl; // writing data to file
+        cout << "Length " << len << " . Time taken "
+             << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
+    }
+    fout.close();
+}
+
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only
+ */
+void percolation_fractalDimension_by_spanning_site(
+        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L
+)
+{
+    double M{};
+    ofstream fout("mass_length_data.txt");
+    fout << "#Measuring fractal dimension by only spanning site_index_sequence" << endl;
+    fout << "#<Length>\t<Mass>" << endl;
+    clock_t t, t_outer;
+    for(value_type len{L_start}; len <= l_end ; len += delta_L){
+        cout << "Length " << len << " : " << endl;
+        SitePercolation_ps_v9 sp(len);
+        M = 0;
+        t_outer = clock();
+        for(value_type i{} ; i != ensemble_size ; ++i){
+            t = clock();
+            sp.reset();
+            while(!sp.detectWrapping()){
+                sp.occupy();
+            }
+            M += sp.numberOfSitesInTheSpanningClusters();
+            cout << "\t\tIteration " << i << " . birthTime " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+        }
+        fout << len << '\t' << M / double(ensemble_size) << endl; // writing data to file
+        cout << "Length " << len << " . Time taken "
+             << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
+    }
+    fout.close();
+}
+
+
+
+void measure_entropy_by_site(int argc, char** argv){
+    value_type length = atoi(argv[1]);
+    value_type ensemble_size = atoi(argv[2]);
+
+
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    vector<double> entropy(length_squared);
+//    vector<double> entropy2(length_squared);
+
+    SitePercolation_ps_v9 sp(length, true);
+    value_type j{};
+    for(value_type i{} ; i != ensemble_size ; ++i){
+
+        sp.reset();
+
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        j = 0;
+        while (true){
+            successful = sp.occupy();
+            if(successful) {
+                entropy[j] += sp.entropy(); // slower method
+//                entropy[j] += sp.entropy_v5_site_threaded(); // slower method
+//                entropy2[j] += sp.entropy_v4(2); // faster method
+
+//                cout << '\t' << entropy[j]  << '\t' << entropy2[j] << endl;
+
+                ++j;
+            }
+            if(j >= length_squared){ // length_squared is the number of site
+                break;
+            }
+        }
+        {
+            auto t_end = std::chrono::system_clock::now();
+            cout << "Iteration " << i
+                 //                 << " . Thread " << std::this_thread::get_id()
+                 << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << endl;
+        }
+//        cout << "Relabeling time " << sp.get_relabeling_time() << endl;
+    }
+
+    // Taking Average
+    double ensmbl = double(ensemble_size);
+    for(size_t i{}; i!= length_squared ; ++i){
+        entropy[i] /= ensmbl;
+//        entropy2[i] /= ensmbl;
+    }
+
+
+    ostringstream header_info;
+    header_info << "{"
+                << "\"length\":" << length
+                << ", \"ensemble_size\":" << ensemble_size
+                << ", \"signature\":\"" << sp.getSignature() << "\""
+                << "}" << endl;
+
+    string tm = currentTime();
+
+    string filename = sp.getSignature() + "_entropy_by_site_" + to_string(length) + '_' + tm;
+    filename += ".txt";
+
+    ofstream fout(filename);
+    // JSON formated header
+    fout << header_info.str();
+    fout << "#p=Occupation probability" << endl;
+    fout << "#H=entropy" << endl;
+    fout << "#cluster length is measured by site" << endl;
+    fout << "#<p>\t<H>\t<H fast>\n";
+
+    for(value_type i{}; i != length_squared;++i){
+        fout << (i+1)/double(length_squared)
+             << '\t' << entropy[i]
+             //             << '\t' << entropy2[i]
+             << endl;
+    }
+    fout.close();
+}
+
+void test_bond_percolation(value_type length, value_type ensemble_size) {
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    vector<double> cluster_size_distro;
+    double area=0;
+    BondPercolation_pb_v2 lp(length, true);
+    lp.setRandomState(0, true);
+    lp.init();
+//    lp.reset();
+
+    bool successful = false;
+    auto t_start = std::chrono::system_clock::now();
+    size_t counter = 0;
+    bool wrapping_written{false};
+//        cout << "line " << __LINE__ << endl;
+//    lp.ckeckCluster();
+//    lp.viewClusterExtended();
+    while (true){
+        successful = lp.occupy();
+        if(successful) {
+            cout << "step " << counter << " *************************************" << endl;
+//            lp.ckeckCluster();
+//            lp.viewClusterExtended();
+            if(lp.detectWrapping()) {
+                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+//                vector<double> tmp = lp.clusterSizeDistribution();
+////                    cout << "after returned " << tmp.size() << endl;
+//                if (tmp.size() > cluster_size_distro.size()) {
+//                    cluster_size_distro.resize(tmp.size());
+//                }
+//                for (size_t k{}; k < tmp.size(); ++k) {
+//                    cluster_size_distro[k] += tmp[k];
+//                }
+//                lp.viewClusterExtended();
+//                lp.viewLatticeByID();
+                break;
+            }
+            ++counter;
+        }
+//        break;
+//        if(counter == 15) break;
+        if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+            break;
+        }
+    }
+
+}
+
+

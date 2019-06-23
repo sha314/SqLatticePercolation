@@ -22,12 +22,12 @@
  */
 class SqLattice {
 //    std::vector<std::vector<Index>> _clusters;  // only store index in the cluster
-    std::vector<std::vector<Site>> _sites;  // holds all the sites
+    std::vector<std::vector<Site>> _sites;  // holds all the site_index_sequence
     std::vector<std::vector<Bond>> _h_bonds;  // holds all horizontal bonds
     std::vector<std::vector<Bond>> _v_bonds;  // holds all vertical bonds
 
     bool _bond_resetting_flag=true; // so that we can reset all bonds
-    bool _site_resetting_flag=true; // and all sites
+    bool _site_resetting_flag=true; // and all site_index_sequence
 
     value_type _length{};
 
@@ -59,7 +59,7 @@ public:
     void view_bonds_by_relative_index_v3();
     void view_bonds_by_relative_index_v4();
     void view_by_relative_index();
-    void view(); // view lattice bonds and sites together
+    void view(); // view lattice bonds and site_index_sequence together
 
     void view_h_bonds();
     void view_v_bonds();
@@ -105,19 +105,20 @@ public:
     int getGroupID(Index index);
     int getGroupID(BondIndex index);
 
-    std::vector<Site> getSites();
-    std::vector<Bond> getBonds();
+    std::vector<Index> getSites();
+    std::vector<BondIndex> getBonds();
 
 /******************************************************************************
  * Get Neighbor from given index
  ******************************************************************************/
-    std::vector<Index> get_neighbor_site_indices(Index site);   // site neighbor of site
-    std::vector<BondIndex> get_neighbor_bond_indices(BondIndex site); // bond neighbor of bond
-    std::vector<Index> get_neighbor_indices(BondIndex bond);   // two site neighbor of bond.
+    std::vector<Index> get_neighbor_sites(Index site);   // site neighbor of site
+    std::vector<BondIndex> get_neighbor_bonds(Index site);   // bond neighbor of site
+    std::vector<BondIndex> get_neighbor_bonds(BondIndex site); // bond neighbor of bond
+    std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.
 
-    static std::vector<Index> get_neighbor_site_indices(size_t length, Index site);   // 4 site neighbor of site
-    static std::vector<BondIndex> get_neighbor_bond_indices(size_t length, BondIndex site); // 6 bond neighbor of bond
-    static std::vector<Index> get_neighbor_indices(size_t length, BondIndex bond);   // 2 site neighbor of bond.
+//    static std::vector<Index> get_neighbor_sites(size_t length, Index site);   // 4 site neighbor of site
+//    static std::vector<BondIndex> get_neighbor_bond_indices(size_t length, BondIndex site); // 6 bond neighbor of bond
+//    static std::vector<Index> get_neighbor_indices(size_t length, BondIndex bond);   // 2 site neighbor of bond.
 
 //    std::vector<Index> getNeighborSite(Index site, bool periodicity=false);
 //    std::vector<Index> getNeighborSite(BondIndex bond, bool periodicity=false);

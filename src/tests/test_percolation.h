@@ -13,10 +13,33 @@
 #include "../util/time_tracking.h"
 
 void visual(value_type );
+void cluster_size_distribution_site(value_type length, value_type ensemble_size);
+void cluster_size_distribution_bond(value_type length, value_type ensemble_size);
 void simulate_site_percolation(value_type, value_type );
 void simulate_bond_percolation(value_type, value_type );
 void simulate_bond_percolation_v2(value_type length, value_type ensemble_size); // 2019.01.01
 void simulate_site_percolation_detailed(value_type length, value_type ensemble_size);
+
+void entropyJumps(int argc, char** argv);
+
+void test_bond_percolation(value_type length, value_type ensemble_size);
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only
+ */
+void percolation_to_get_fractal(
+        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L=20
+);
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only
+ */
+void percolation_fractalDimension_by_spanning_site(
+        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L=20
+);
+void measure_entropy_by_site(int argc, char** argv);
 
 template<class PType>
 void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
@@ -57,7 +80,7 @@ void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
     fout_s << '#' << header_info.str() << std::endl;
     fout_s << "#each line is an independent realization" << std::endl;
     fout_s << "#each line contains information about all clusters at critical point" << std::endl;
-    fout_s << "#cluster size is measured by number of sites in it" << std::endl;
+    fout_s << "#cluster size is measured by number of site_index_sequence in it" << std::endl;
 
     std::ofstream fout_b(filename_b);
     // JSON formated header
@@ -69,7 +92,7 @@ void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
     std::ofstream fout_critical(filename_critical);
     fout_critical << '#' << header_info.str() << std::endl;
     fout_critical << "#data at critical occupation probability or pc" << std::endl;
-    fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << std::endl;
+    fout_critical << "#<pc>,<site_index_sequence in wrapping cluster>,<bonds in wrapping cluster>" << std::endl;
 
     // simulation starts here
     value_type counter{};

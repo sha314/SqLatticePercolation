@@ -58,7 +58,7 @@ void sq_lattice_site_percolation_periodic(size_t length, size_t ensemble_size){
     fout_wrapping_cluster << "#p_c = critical occupation probability" << endl;
     fout_wrapping_cluster << "#id_sc = id of the wrapping cluster" << endl;
     fout_wrapping_cluster << "#b_t_sc = birth time of the wrapping cluster" << endl;
-    fout_wrapping_cluster << "#sites_sc = number of sites of the wrapping cluster" << endl;
+    fout_wrapping_cluster << "#sites_sc = number of site_index_sequence of the wrapping cluster" << endl;
     fout_wrapping_cluster << "#bonds_sc = number of bonds of the wrapping cluster" << endl;
 
 

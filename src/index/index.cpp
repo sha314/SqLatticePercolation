@@ -76,7 +76,7 @@ Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
         cout << "Both indices are same : line " << __LINE__ << endl;
     }
     else if(delta_c > 1 || delta_r > 1){
-        // meaning, the sites are on the opposite edges
+        // meaning, the site_index_sequence are on the opposite edges
 //        cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
     }
 
@@ -102,7 +102,7 @@ vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const vector<Index> &nn
             cout << "Both indices are same : line " << __LINE__ << endl;
         }
         else if(delta_c > 1 || delta_r > 1){
-            // meaning, the sites are on the opposite edges
+            // meaning, the site_index_sequence are on the opposite edges
 //            cout << "center " << center << " nn " << nn_1 << endl;
 //            cout << "2nd index is not the First nearest neighbor : line " << __LINE__ << " : file " << __FILE__ << endl;
         }

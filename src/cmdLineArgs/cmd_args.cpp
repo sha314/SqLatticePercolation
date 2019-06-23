@@ -29,19 +29,19 @@ Available Argument
 -l      Length of the lattice. Default value is 5
 -r      Range of length. No default value
 -n      Ensemble size. Default value is 1
--i      Number of impure sites. Default value is 0
+-i      Number of impure site_index_sequence. Default value is 0
 -m      only counted for explosive percolation. default value is 0
         0   ->  sum rule
         1   ->  product rule
 
--p      place sites for
-            0   ->  Just place all the sites and printout the result in the commandline only once to see
+-p      place site_index_sequence for
+            0   ->  Just place all the site_index_sequence and printout the result in the commandline only once to see
                     what's going on there and how much time it requires.
 
-            1   ->  Place sites until first spanning. Without periodicity.
+            1   ->  Place site_index_sequence until first spanning. Without periodicity.
 
             2   ->  MicroCanonical Ensemble data of Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     Other quantities can be calculated from these data
@@ -53,11 +53,11 @@ Available Argument
                         p_c = critical occupation probability
                         id_sc = id of the spanning cluster
                         b_t_sc = birth time of the spanning cluster
-                        sites_sc = number of sites of the spanning cluster
+                        sites_sc = number of site_index_sequence of the spanning cluster
                         bonds_sc = number of bonds of the spanning cluster
 
             4   ->  MicroCanonical Ensemble data of Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     writes only the ensemble average of the above quantity.
@@ -67,11 +67,11 @@ Available Argument
                         p_c = critical occupation probability
                         id_sc = id of the spanning cluster
                         b_t_sc = birth time of the spanning cluster
-                        sites_sc = number of sites of the spanning cluster
+                        sites_sc = number of site_index_sequence of the spanning cluster
                         bonds_sc = number of bonds of the spanning cluster
 
             6   ->  MicroCanonical Ensemble data of explosive Site percolation
-                        Number of occupied sites,
+                        Number of occupied site_index_sequence,
                         Entropy,
                         number of bonds in the largest cluster
                     writes only the ensemble average of the above quantity.
@@ -98,7 +98,7 @@ Available Argument
 
             9   ->  Box counting data for global fractal dimension and spanning fractal dimension
 
-            10  ->  Cluster length data by bonds and sites
+            10  ->  Cluster_v3 length data by bonds and site_index_sequence
     )***";
     std::cout << hlp << std::endl;
 }
@@ -122,8 +122,8 @@ Available Argument
 -l      Length of the lattice. Default value is 5
 -n      Ensemble size. Default value is 1
 
--p      place sites for
-            0   ->  Just place all the sites and printout the result in the commandline only once to see
+-p      place site_index_sequence for
+            0   ->  Just place all the site_index_sequence and printout the result in the commandline only once to see
                     what's going on there and how much time it requires.
 
             1   ->  Critical Point data (L1)
@@ -131,7 +131,7 @@ Available Argument
                         p_c = critical occupation probability
                         id_sc = id of the spanning cluster
                         b_t_sc = birth time of the spanning cluster
-                        sites_sc = number of sites of the spanning cluster
+                        sites_sc = number of site_index_sequence of the spanning cluster
                         bonds_sc = number of bonds of the spanning cluster
 
             2   ->  MicroCanonical Ensemble data of Site percolation Ballistic Deposition (Periodic)(L1)
@@ -182,10 +182,10 @@ void percolation_data_all_site_placed(value_type length, value_type ensembleSize
     fout << sp.getSignature() << endl;
     // here only minimum data is printed so that it would take smaller size on the storage
     fout << "#Percolation data" << endl;
-    fout << "#Number of occupied sites, Entropy, number of bonds in the largest cluster" << endl;
+    fout << "#Number of occupied site_index_sequence, Entropy, number of bonds in the largest cluster" << endl;
     fout << "#length = " << endl << length << endl;
     fout << "#Using the information above we can calculate the followings" << endl;
-    fout << "#Occupation probability = (Number of occupied sites) / (length * length)" << endl;
+    fout << "#Occupation probability = (Number of occupied site_index_sequence) / (length * length)" << endl;
     fout << "#Order parameter = (number of bonds in the largest cluster) / (2 * length * length)" << endl;
     fout << "#Format of the data" << endl;
     fout << "#\'>\' symbol indicates begining of a completely new system" << endl;
@@ -457,9 +457,9 @@ void entropy_order_parameter(value_type length, value_type ensembleSize, value_t
     fout << "data_line " << 12 << endl; // todo
     fout << "END_HEADER" << endl;
     fout << "#Percolation on a square lattice" << endl;
-    fout << "#Number of occupied sites, Entropy, number of bonds in the largest cluster" << endl;
+    fout << "#Number of occupied site_index_sequence, Entropy, number of bonds in the largest cluster" << endl;
     fout << "#Using the information above we can calculate the followings" << endl;
-    fout << "#Occupation probability = (Number of occupied sites) / (length * length)" << endl;
+    fout << "#Occupation probability = (Number of occupied site_index_sequence) / (length * length)" << endl;
     fout << "#Order parameter = (number of bonds in the largest cluster) / (2 * length * length)" << endl;
     fout << "#first column is printed as integer so that we can easily take ensemble average form given data" << endl;
 

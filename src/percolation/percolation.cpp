@@ -23,16 +23,9 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
     value_type _length_squared = length * length;
     _max_number_of_bonds = 2*_length_squared;
     _max_number_of_sites = _length_squared;
-    _clusters = vector<Cluster>();
+    _clusters = vector<Cluster_v3>();
     min_index = 0;
     max_index = _length - 1;
-
-    size_t seed = 0;
-    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
-//    std::random_device _rd;
-//    auto seed = _rd();
-    _random.seed(seed); // seeding
-    cout << "seeding with " << seed << endl;
 }
 
 
@@ -50,13 +43,12 @@ void SqLatticePercolation::viewCluster() {
         }
         cout << "cluster [" << i << "] : " << '{' << endl;
         cout << _clusters[i];
+        cout << '}' << endl;
         total_bonds += _clusters[i].numberOfBonds();
         total_sites += _clusters[i].numberOfSites();
-
-        cout << '}' << endl;
     }
     cout << "Total bonds " << total_bonds << endl;
-    cout << "Total sites " << total_sites << endl;
+    cout << "Total site_index_sequence " << total_sites << endl;
 }
 
 
@@ -76,7 +68,7 @@ void SqLatticePercolation::viewClusterExtended() {
             continue;
         }
         cout << "cluster [" << i << "] : ID (" << _clusters[i].get_ID() << "){" << endl;
-        // printing sites
+        // printing site_index_sequence
         sites = _clusters[i].getSiteIndices();
         cout << "Sites : size (" << sites.size() << ") : ";
         cout << '{';
@@ -150,7 +142,7 @@ SqLatticePercolation::get_cluster_info(
         cout << "Size mismatched : line " << __LINE__ << endl;
     }
 //    cout << "total bonds " << total_bond << endl;
-//    cout << "tatal sites " << total_site << endl;
+//    cout << "tatal site_index_sequence " << total_site << endl;
     if(type == 's'){
         for(value_type j{total_bond}; j < maxBonds(); ++j){
             bond.push_back(1); // cluster of length 1
@@ -167,13 +159,15 @@ SqLatticePercolation::get_cluster_info(
 //        cout << "Size mismatched : line " << __LINE__ << endl;
 //    }
 //    cout << "total bonds " << total_bond << endl;
-//    cout << "tatal sites " << total_site << endl;
+//    cout << "tatal site_index_sequence " << total_site << endl;
 
 }
 
 void SqLatticePercolation::reset() {
     _lattice.reset();
-    _clusters.clear();
+//    cout << _clusters.size() << " : line " << __LINE__ << endl;
+    _clusters.clear(); // SIGABRT for SitePercolation_ps_v9 in cluster size distribution
+//    cout << " line " << __LINE__ << endl;
     _index_sequence_position = 0;
     _cluster_id = 0;
     _occuption_probability = 0;
@@ -244,6 +238,74 @@ double SqLatticePercolation::entropy_by_bond() {
     H += number_of_cluster_with_size_one * log(mu) * mu;
 
     return -H;
+}
+
+void SqLatticePercolation::setRandomState(size_t seed, bool generate_seed) {
+//    size_t seed = 0;
+//    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
+    _random_state = seed;
+    if(generate_seed) {
+        std::random_device _rd;
+        _random_state = _rd();
+    }else{
+        cerr << "generate_seed = false : line " << __LINE__ << endl;
+    }
+    _random.seed(_random_state); // seeding
+    cout << "seeding with " << _random_state << endl;
+}
+
+
+value_type SqLatticePercolation::getRandomState() {
+//    size_t seed = 0;
+//    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
+//    std::random_device _rd;
+//    auto seed = _rd();
+//    _random.seed(seed); // seeding
+//    cout << "seeding with " << seed << endl;
+    return _random_state;
+}
+
+void SqLatticePercolation::ckeckCluster() {
+//    cout << "clusters with numberOfBonds greater than 1" << endl;
+    value_type total_bonds{}, total_sites{};
+
+    std::vector<Index> sites;
+    std::vector<BondIndex> bonds;
+    value_type count_bonds{},    count_sites{};
+
+    for (value_type i{}; i != _clusters.size(); ++i) {
+        if(_clusters[i].empty()){
+//            cout << "Empty cluster : line " << endl;
+            continue;
+        }
+
+
+        sites = _clusters[i].getSiteIndices();
+        bonds = _clusters[i].getBondIndices();
+
+
+        count_bonds = _clusters[i].numberOfBonds();
+        count_sites = _clusters[i].numberOfSites();
+
+        if(count_bonds != bonds.size()){
+            cout << "count_bonds != bonds.size()" << endl;
+        }
+
+        if(count_sites != sites.size()){
+            cout << "count_sites != sites.size()" << endl;
+        }
+
+        total_bonds += _clusters[i].numberOfBonds();
+        total_sites += _clusters[i].numberOfSites();
+
+
+    }
+    cout << "Total bonds " << total_bonds << endl;
+    cout << "Total sites " << total_sites << endl;
+}
+
+void SqLatticePercolation::init() {
+//    setRandomState(0, true);
 }
 
 

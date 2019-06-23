@@ -60,9 +60,12 @@ string getCurrentTime(){
     char buffer [80];
 
     time (&rawtime);
+//    cout << "rawtime " << rawtime << endl;
     timeinfo = localtime (&rawtime);
 
     strftime (buffer,80,"%F_%H%M%S",timeinfo);
-    return buffer;
+//    strftime (buffer,80,"%Y%m%d%H%M%S",timeinfo); // year month day hour minute second
+//    cout << "time buffer " << buffer << endl;
+    return string(buffer);
 }
 
