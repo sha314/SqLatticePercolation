@@ -1224,7 +1224,7 @@ public:
     ~BondPercolation_pb_v2() = default;
 
     explicit BondPercolation_pb_v2(value_type length, bool periodicity=true);
-    void init(); // some methods that are directly affected by the seed of random number generator
+    void init(bool random_seed=false); // some methods that are directly affected by the seed of random number generator
     // + methods that requires a bit computaion (so not in constructor)
     std::string getSignature() {
         std::string s = "sq_lattice_bond_percolation_";
@@ -1300,7 +1300,7 @@ public:
     IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
 
 //    const std::vector<BondIndex>& wrapping_bonds() const { return  _wrapping_indices;}
-    const std::vector<Index>& wrapping_indices() const { return  _wrapping_indices;}
+    const std::vector<Index> wrapping_indices() const { return  _wrapping_indices;}
 
     value_type numberOfBondsInTheWrappingClusters();
     value_type numberOfBondsInTheLargestCluster();

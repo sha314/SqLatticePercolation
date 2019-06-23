@@ -36,10 +36,7 @@ BondPercolation_pb_v2::BondPercolation_pb_v2(value_type length, bool periodicity
     for(value_type i{}; i < maxIterationLimit(); ++i){randomized_index[i] = i;}
     _clusters = vector<Cluster_v3>();
 
-
-    _lattice = SqLattice(length, false, true, true, true);
-
-    init();
+//    init();
 }
 
 
@@ -48,8 +45,10 @@ BondPercolation_pb_v2::BondPercolation_pb_v2(value_type length, bool periodicity
  * + methods that requires a bit computaion (so not in constructor)
  *
  */
-void BondPercolation_pb_v2::init() {
+void BondPercolation_pb_v2::init(bool random_seed) {
 //    SqLatticePercolation::init();
+    _lattice = SqLattice(length(), false, true, true, true);
+    setRandomState(0, random_seed);
     initialize_index_sequence(); // not need to put in reset method
     initialize();
     initialize_cluster();
@@ -112,7 +111,7 @@ void BondPercolation_pb_v2::initialize_index_sequence() {
  * Takes 3.031000 sec for 1000 x 1000 sites
  */
 void BondPercolation_pb_v2::randomize_v2() {
-
+//    cout << "default_seed " << _random.default_seed << endl;
     std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
@@ -583,23 +582,23 @@ value_type BondPercolation_pb_v2::placeBond_v1() {
 
     // one bond connects site
     auto sites = _lattice.get_neighbor_sites(current_bond);
-    cout << "neighbor " << sites << endl;
+//    cout << "neighbor " << sites << endl;
     if(sites.size() != 2){
         cerr << "How can a bond can link more than two sites " << __LINE__ << endl;
         return 0;
     }
     int id_1 = _lattice.getGroupID(sites[0]);
     int id_2 = _lattice.getGroupID(sites[1]);
-
+//    cout << "id1 " << id_1 << ", id2 " << id_2 << endl;
     if(id_1 < 0 || id_2 < 0){
         cerr << "negative group id!!! " << __LINE__ << endl;
         return 0;
     }
-    size_t base_index = 0;
+    int base_index = 0;
     if(id_1 == id_2){
         _clusters[id_1].addBondIndex(current_bond);
         _lattice.setGroupID(current_bond, id_1);
-        cout << "belongs to the same cluster" << endl;
+//        cout << "belongs to the same cluster" << endl;
     }else {
         size_t size_1 = _clusters[id_1].numberOfSites();
         size_t size_2 = _clusters[id_2].numberOfSites();
@@ -609,9 +608,10 @@ value_type BondPercolation_pb_v2::placeBond_v1() {
         }else{
             base_index = id_2;
             id_2 = id_1;
+            // caution : both id_1 and id_2 are equal.
         }
         _clusters[base_index].addBondIndex(current_bond);
-        _lattice.setGroupID(current_bond, id_1);
+        _lattice.setGroupID(current_bond, base_index);
         _clusters[base_index].insert_v2(_clusters[id_2]);
         relabel_cluster(current_bond, _clusters[id_2], 0, 0);
         _clusters[id_2].clear(); // clear the cluster

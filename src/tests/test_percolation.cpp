@@ -634,8 +634,9 @@ void cluster_size_distribution_bond(value_type length, value_type ensemble_size)
     value_type twice_length_squared = 2 * length_squared;
 
     vector<double> cluster_size_distro;
-    BondPercolation_pb_v1 lp(length, true);
+    BondPercolation_pb_v2 lp(length, true);
     lp.setRandomState(0, true);
+    lp.init();
 
 
     for(value_type i{} ; i != ensemble_size ; ++i){
@@ -960,7 +961,7 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
     vector<double> cluster_size_distro;
     double area=0;
     BondPercolation_pb_v2 lp(length, true);
-    lp.setRandomState(0, true);
+    lp.setRandomState(0, false);
     lp.init();
 //    lp.reset();
 
@@ -970,27 +971,31 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
     bool wrapping_written{false};
 //        cout << "line " << __LINE__ << endl;
 //    lp.ckeckCluster();
-//    lp.viewClusterExtended();
+    lp.viewClusterExtended();
+//    lp.viewSiteByRelativeIndex();
     while (true){
         successful = lp.occupy();
         if(successful) {
-            cout << "step " << counter << " *************************************" << endl;
+//            cout << "step " << counter << " *************************************" << endl;
 //            lp.ckeckCluster();
 //            lp.viewClusterExtended();
-            if(lp.detectWrapping()) {
-                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
-//                vector<double> tmp = lp.clusterSizeDistribution();
-////                    cout << "after returned " << tmp.size() << endl;
-//                if (tmp.size() > cluster_size_distro.size()) {
-//                    cluster_size_distro.resize(tmp.size());
-//                }
-//                for (size_t k{}; k < tmp.size(); ++k) {
-//                    cluster_size_distro[k] += tmp[k];
-//                }
-//                lp.viewClusterExtended();
-//                lp.viewLatticeByID();
-                break;
-            }
+//            lp.viewSiteByRelativeIndex();
+//            if(lp.detectWrapping()) {
+//                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+//                cout << lp.wrapping_indices()[0] << " and " << lp.wrapping_indices()[1] << endl;
+////                vector<double> tmp = lp.clusterSizeDistribution();
+//////                    cout << "after returned " << tmp.size() << endl;
+////                if (tmp.size() > cluster_size_distro.size()) {
+////                    cluster_size_distro.resize(tmp.size());
+////                }
+////                for (size_t k{}; k < tmp.size(); ++k) {
+////                    cluster_size_distro[k] += tmp[k];
+////                }
+////                lp.viewClusterExtended();
+////                lp.viewLatticeByID();
+////                break;
+//            }
+//            break;
             ++counter;
         }
 //        break;
@@ -1000,6 +1005,8 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
         }
     }
 
+    lp.viewClusterExtended();
+    lp.viewSiteByRelativeIndex();
 }
 
 
