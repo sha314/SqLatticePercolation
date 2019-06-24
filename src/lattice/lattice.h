@@ -105,6 +105,9 @@ public:
     int getGroupID(Index index);
     int getGroupID(BondIndex index);
 
+    void setRelativeIndex(Index index, IndexRelative ir);
+    IndexRelative getRelativeIndex(Index index);
+
     std::vector<Index> getSites();
     std::vector<BondIndex> getBonds();
 
@@ -116,6 +119,7 @@ public:
     std::vector<BondIndex> get_neighbor_bonds(BondIndex site); // bond neighbor of bond
     std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.
 
+    void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
 //    static std::vector<Index> get_neighbor_sites(size_t length, Index site);   // 4 site neighbor of site
 //    static std::vector<BondIndex> get_neighbor_bond_indices(size_t length, BondIndex site); // 6 bond neighbor of bond
 //    static std::vector<Index> get_neighbor_indices(size_t length, BondIndex bond);   // 2 site neighbor of bond.

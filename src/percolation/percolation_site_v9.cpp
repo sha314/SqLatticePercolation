@@ -38,7 +38,7 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
 
     _periodicity = periodicity;
     _index_sequence_position = 0;
-    _lattice = SqLattice(length, true, false, false, true);   // since it is a site percolation all bonds will be activated by default
+
 
     min_index = 0;
     max_index = length - 1;
@@ -47,9 +47,8 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
     randomized_index.resize(maxSites());
     _max_iteration_limit = maxSites();
 
-    initialize_index_sequence();
     initialize();
-    randomize_v2();  // randomize the untouched_site_indices
+
 }
 
 
@@ -57,6 +56,8 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
  *
  */
 void SitePercolation_ps_v9::initialize() {
+    _lattice = SqLattice(length(), true, false, false, true);   // since it is a site percolation all bonds will be activated by default
+    initialize_index_sequence();
 
     // to improve performence
     number_of_sites_to_span.reserve(maxSites());
@@ -459,40 +460,40 @@ value_type SitePercolation_ps_v9::relabel(value_type index_1, value_type index_2
 
 
 
-/**
- * Relative index of site_new with respect to root
- * @param root
- * @param site_new
- * @return
- */
-IndexRelative SitePercolation_ps_v9::getRelativeIndex(Index root, Index site_new){
-//    cout << "Entry \"SitePercolation_ps_v9::getRelativeIndex\" : line " << __LINE__ << endl;
-    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
-    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
-
-
-    // normalizing delta_x
-    if(delta_x > 1){
-        delta_x /= -delta_x;
-    }
-    else if(delta_x < -1){
-        delta_x /= delta_x;
-    }
-
-    // normalizing delta_y
-    if(delta_y > 1){
-        delta_y /= -delta_y;
-    }else if(delta_y < -1){
-        delta_y /= delta_y;
-    }
-
-    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
-//    cout << "Relative index of root " << indexRelative_root << endl;
-//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
-    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
-//    cout << "Relative index of site_new " << r << endl;
-    return r;
-}
+///**
+// * Relative index of site_new with respect to root
+// * @param root
+// * @param site_new
+// * @return
+// */
+//IndexRelative SitePercolation_ps_v9::getRelativeIndex(Index root, Index site_new){
+////    cout << "Entry \"SitePercolation_ps_v9::getRelativeIndex\" : line " << __LINE__ << endl;
+//    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+//    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+//
+//
+//    // normalizing delta_x
+//    if(delta_x > 1){
+//        delta_x /= -delta_x;
+//    }
+//    else if(delta_x < -1){
+//        delta_x /= delta_x;
+//    }
+//
+//    // normalizing delta_y
+//    if(delta_y > 1){
+//        delta_y /= -delta_y;
+//    }else if(delta_y < -1){
+//        delta_y /= delta_y;
+//    }
+//
+//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+////    cout << "Relative index of root " << indexRelative_root << endl;
+////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "Relative index of site_new " << r << endl;
+//    return r;
+//}
 
 
 

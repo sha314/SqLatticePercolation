@@ -31,27 +31,27 @@ BondPercolation_pb_v1::BondPercolation_pb_v1(value_type length, bool periodicity
     _periodicity = periodicity;
     _index_sequence_position = 0;
     _number_of_occupied_bonds = 0;
-    _lattice = SqLattice(length, false, true, true, true);
+
 
     index_sequence.reserve(maxBonds());
 
     // there are 2*L*L cluster initially but only clusters with size larger than 1 should be counted
     _clusters = vector<Cluster_v3>();
     _max_iteration_limit = maxBonds();
-    initialize_index_sequence();
-    randomized_index.resize(maxIterationLimit());
-    for(value_type i{}; i < maxIterationLimit(); ++i){randomized_index[i] = i;}
+
     initialize();
-
 //    initialize_indices();
-
-    randomize_v2();  // randomize the untouched_site_indices
+//    randomize_v2();  // randomize the untouched_site_indices
 }
 
 /**
  * Initialize the Class Object
  */
 void BondPercolation_pb_v1::initialize() {
+    _lattice = SqLattice(length(), false, true, true, true);
+    initialize_index_sequence();
+    randomized_index.resize(maxIterationLimit());
+    for(value_type i{}; i < maxIterationLimit(); ++i){randomized_index[i] = i;}
 
     // to improve performence
     number_of_sites_to_span.reserve(maxSites());
@@ -248,44 +248,45 @@ void BondPercolation_pb_v1::relabel_bonds(const Cluster_v3 &clstr, int id) {
   * @param clstr_b : 2nd cluster, which to be merged withe the root
   */
 void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 &clstr_b) {
-    const vector<BondIndex> bonds = clstr_b.getBondIndices();
-    int id_a = _lattice.getBond(bond_a).get_groupID();
-    int id_b = clstr_b.get_ID();
-    BondIndex b = clstr_b.getRootBond();
-
-    // get four site_b of bond_a
-    vector<BondIndex> sites_neighbor_a = _lattice.get_neighbor_bonds(bond_a);
-    BondIndex bond_b;
-    IndexRelative relative_index_b_after;
-    bool flag{false};
-    // find which site_b has id_a of clstr_b
-    for(auto n: sites_neighbor_a){
-        if(id_b == _lattice.getBond(n).get_groupID()){
-            // checking id_a equality is enough. since id_a is the id_a of the active site already.
-            relative_index_b_after = getRelativeIndex_v2(bond_a, n);
-            bond_b = n;
-//            cout << "neighbor  of" << bond_a << " is " << site_b << endl;
-            flag = true;
-            break; // todo ?
-
-        }
-    }
-
-    if(!flag){
-        cout << "No neibhgor found! : line " << __LINE__ << endl;
-    }
-
-    IndexRelative relative_site_a = _lattice.getBond(bond_a).relativeIndex();
-
-    // with this delta_a and delta_y find the relative index of site_b while relative index of bond_a is known
-    IndexRelative relative_site_b_before = _lattice.getBond(bond_b).relativeIndex();
-
-    int delta_x_ab = relative_index_b_after.x_ - relative_site_b_before.x_;
-    int delta_y_ab = relative_index_b_after.y_ - relative_site_b_before.y_;
-
-//    cout << relative_index_b_after << " - " << relative_site_b_before << " = delta_x, delta_y = " << delta_x_ab << ", " << delta_y_ab << endl;
-
-    relabel_bonds(bonds, id_a, delta_x_ab, delta_y_ab);
+    cout << "Commented relabel_bonds_v1 : __LINE__" << __LINE__ << endl;
+//    const vector<BondIndex> bonds = clstr_b.getBondIndices();
+//    int id_a = _lattice.getBond(bond_a).get_groupID();
+//    int id_b = clstr_b.get_ID();
+//    BondIndex b = clstr_b.getRootBond();
+//
+//    // get four site_b of bond_a
+//    vector<BondIndex> sites_neighbor_a = _lattice.get_neighbor_bonds(bond_a);
+//    BondIndex bond_b;
+//    IndexRelative relative_index_b_after;
+//    bool flag{false};
+//    // find which site_b has id_a of clstr_b
+//    for(auto n: sites_neighbor_a){
+//        if(id_b == _lattice.getBond(n).get_groupID()){
+//            // checking id_a equality is enough. since id_a is the id_a of the active site already.
+//            relative_index_b_after = getRelativeIndex_v2(bond_a, n);
+//            bond_b = n;
+////            cout << "neighbor  of" << bond_a << " is " << site_b << endl;
+//            flag = true;
+//            break; // todo ?
+//
+//        }
+//    }
+//
+//    if(!flag){
+//        cout << "No neibhgor found! : line " << __LINE__ << endl;
+//    }
+//
+//    IndexRelative relative_site_a = _lattice.getBond(bond_a).relativeIndex();
+//
+//    // with this delta_a and delta_y find the relative index of site_b while relative index of bond_a is known
+//    IndexRelative relative_site_b_before = _lattice.getBond(bond_b).relativeIndex();
+//
+//    int delta_x_ab = relative_index_b_after.x_ - relative_site_b_before.x_;
+//    int delta_y_ab = relative_index_b_after.y_ - relative_site_b_before.y_;
+//
+////    cout << relative_index_b_after << " - " << relative_site_b_before << " = delta_x, delta_y = " << delta_x_ab << ", " << delta_y_ab << endl;
+//
+//    relabel_bonds(bonds, id_a, delta_x_ab, delta_y_ab);
 
 }
 
@@ -719,80 +720,80 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //    return merged_cluster_index;
 //}
 
+///**
+// * Relative index of site_new with respect to root
+// * @param root
+// * @param site_new
+// * @return
+// */
+//IndexRelative
+//BondPercolation_pb_v1::getRelativeIndex(BondIndex root_bond, BondIndex bond_new){
+//    Index root = {root_bond.row_, root_bond.column_};
+//    Index site_new = {bond_new.row_, bond_new.column_};
+//
+////    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
+//    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+//    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+//
+//
+//    // normalizing delta_x
+//    if(delta_x > 1){
+//        delta_x /= -delta_x;
+//    }
+//    else if(delta_x < -1){
+//        delta_x /= delta_x;
+//    }
+//
+//    // normalizing delta_y
+//    if(delta_y > 1){
+//        delta_y /= -delta_y;
+//    }else if(delta_y < -1){
+//        delta_y /= delta_y;
+//    }
+//
+//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+////    cout << "Relative index of root " << indexRelative_root << endl;
+////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "Relative index of site_new " << r << endl;
+//    return r;
+//}
+
 /**
  * Relative index of site_new with respect to root
  * @param root
  * @param site_new
  * @return
  */
-IndexRelative
-BondPercolation_pb_v1::getRelativeIndex(BondIndex root_bond, BondIndex bond_new){
-    Index root = {root_bond.row_, root_bond.column_};
-    Index site_new = {bond_new.row_, bond_new.column_};
-
-//    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
-    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
-    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
-
-
-    // normalizing delta_x
-    if(delta_x > 1){
-        delta_x /= -delta_x;
-    }
-    else if(delta_x < -1){
-        delta_x /= delta_x;
-    }
-
-    // normalizing delta_y
-    if(delta_y > 1){
-        delta_y /= -delta_y;
-    }else if(delta_y < -1){
-        delta_y /= delta_y;
-    }
-
-    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
-//    cout << "Relative index of root " << indexRelative_root << endl;
-//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
-    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
-//    cout << "Relative index of site_new " << r << endl;
-    return r;
-}
-
-/**
- * Relative index of site_new with respect to root
- * @param root
- * @param site_new
- * @return
- */
-IndexRelative BondPercolation_pb_v1::getRelativeIndex(Index root, Index site_new){
-//    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
-    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
-    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
-
-
-    // normalizing delta_x
-    if(delta_x > 1){
-        delta_x /= -delta_x;
-    }
-    else if(delta_x < -1){
-        delta_x /= delta_x;
-    }
-
-    // normalizing delta_y
-    if(delta_y > 1){
-        delta_y /= -delta_y;
-    }else if(delta_y < -1){
-        delta_y /= delta_y;
-    }
-
-    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
-//    cout << "root " << root << " Relative index " << indexRelative_root << endl;
-//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
-    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
-//    cout << "site_new " << site_new << " Relative index " << r << endl;
-//    cout << "Exit \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
-    return r;
-}
+//IndexRelative BondPercolation_pb_v1::getRelativeIndex(Index root, Index site_new){
+////    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
+//    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+//    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+//
+//
+//    // normalizing delta_x
+//    if(delta_x > 1){
+//        delta_x /= -delta_x;
+//    }
+//    else if(delta_x < -1){
+//        delta_x /= delta_x;
+//    }
+//
+//    // normalizing delta_y
+//    if(delta_y > 1){
+//        delta_y /= -delta_y;
+//    }else if(delta_y < -1){
+//        delta_y /= delta_y;
+//    }
+//
+//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+////    cout << "root " << root << " Relative index " << indexRelative_root << endl;
+////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "site_new " << site_new << " Relative index " << r << endl;
+////    cout << "Exit \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
+//    return r;
+//}
 
 
 /**
@@ -804,108 +805,108 @@ IndexRelative BondPercolation_pb_v1::getRelativeIndex(Index root, Index site_new
  * @param site_new
  * @return
  */
-IndexRelative
-BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
-    cout << "Entry getRelativeIndex_v2 ; line " << __LINE__ << endl;
-    vector<Index> sites_root = _lattice.get_neighbor_sites(root);
-    cout << "site_index_sequence of " << root << " are " << sites_root << endl;
-    vector<Index> sites_new = _lattice.get_neighbor_sites(bond_new);
-    cout << "site_index_sequence of " << bond_new << " are " << sites_new << endl;
-//    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
-    // finding common site
-    Index site_common;
-    for(size_t i{}; i < sites_root.size(); ++i){
-        for(size_t j{}; j < sites_new.size(); ++j){
-            if(sites_root[i] == sites_new[j]){
-                site_common = sites_new[j];
-                sites_new.erase(sites_new.begin() + j);
-                sites_root.erase(sites_root.begin() + i);
-                break;
-            }
-        }
-    }
-
-    cout << "common site " << site_common << endl;
-    cout << "site_index_sequence of root " << sites_root << endl;
-    cout << "site_index_sequence of new " << sites_new << endl;
-
-    int delta_x {}; // if +1 then root is on the right ??
-    int delta_y {}; // if +1 then root is on the top ??
-
-// root is horizontal bond
-    if(root.horizontal()){
-        if(bond_new.horizontal()){
-            // both root and new bond is horizontal
-            if(bond_new.column_ == site_common.column_){
-                // if column of new bond equals column of common site then new bond is on the right side of root bond
-                delta_x = +1;
-            }else{
-                // left of root
-                delta_x = -1;
-            }
-            delta_y = 0;
-        }
-        else{
-            // root bond is horizontal but new bond is vertical
-            if(site_common.row_ == bond_new.row_){
-                // bottom of root bond
-                delta_y = -1;
-            }else{
-                // top of root bond
-                delta_y = +1;
-            }
-            if(site_common.column_ == root.column_){
-                // left of the root bond
-                delta_x = -1;
-            }else{
-                // right
-                delta_x = +1;
-            }
-        }
-
-    }// root is vertical bond
-    else{
-        if(bond_new.horizontal()){
-            // root bond is vertical but new bond is horizontal
-            if(bond_new.column_ == site_common.column_){
-                // if column of new bond equals column of common site then new bond is on the right side of root bond
-                delta_x = +1;
-            }else{
-                // left of root
-                delta_x = -1;
-            }
-            if(root.row_ == site_common.row_){
-                // top side of the root bond
-                delta_y = +1;
-            }else{
-                // bottom
-                delta_y = -1;
-            }
-
-        }
-        else{
-            // both bonds are vertical
-            if(site_common.row_ == bond_new.row_){
-                // bottom of root bond
-                delta_y = -1;
-            }else{
-                // top of root bond
-                delta_y = +1;
-            }
-            delta_x = 0;
-        }
-
-    }
-
-    cout << "got delta_x " << delta_x << " and delta_y " << delta_y << endl;
-
-    IndexRelative indexRelative_root = _lattice.getBond(root).relativeIndex();
-//    cout << "Relative index of root " << indexRelative_root << endl;
-//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
-    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
-//    cout << "Relative index of site_new " << r << endl;
-    return r;
-}
+//IndexRelative
+//BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
+//    cout << "Entry getRelativeIndex_v2 ; line " << __LINE__ << endl;
+//    vector<Index> sites_root = _lattice.get_neighbor_sites(root);
+//    cout << "site_index_sequence of " << root << " are " << sites_root << endl;
+//    vector<Index> sites_new = _lattice.get_neighbor_sites(bond_new);
+//    cout << "site_index_sequence of " << bond_new << " are " << sites_new << endl;
+////    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
+//    // finding common site
+//    Index site_common;
+//    for(size_t i{}; i < sites_root.size(); ++i){
+//        for(size_t j{}; j < sites_new.size(); ++j){
+//            if(sites_root[i] == sites_new[j]){
+//                site_common = sites_new[j];
+//                sites_new.erase(sites_new.begin() + j);
+//                sites_root.erase(sites_root.begin() + i);
+//                break;
+//            }
+//        }
+//    }
+//
+//    cout << "common site " << site_common << endl;
+//    cout << "site_index_sequence of root " << sites_root << endl;
+//    cout << "site_index_sequence of new " << sites_new << endl;
+//
+//    int delta_x {}; // if +1 then root is on the right ??
+//    int delta_y {}; // if +1 then root is on the top ??
+//
+//// root is horizontal bond
+//    if(root.horizontal()){
+//        if(bond_new.horizontal()){
+//            // both root and new bond is horizontal
+//            if(bond_new.column_ == site_common.column_){
+//                // if column of new bond equals column of common site then new bond is on the right side of root bond
+//                delta_x = +1;
+//            }else{
+//                // left of root
+//                delta_x = -1;
+//            }
+//            delta_y = 0;
+//        }
+//        else{
+//            // root bond is horizontal but new bond is vertical
+//            if(site_common.row_ == bond_new.row_){
+//                // bottom of root bond
+//                delta_y = -1;
+//            }else{
+//                // top of root bond
+//                delta_y = +1;
+//            }
+//            if(site_common.column_ == root.column_){
+//                // left of the root bond
+//                delta_x = -1;
+//            }else{
+//                // right
+//                delta_x = +1;
+//            }
+//        }
+//
+//    }// root is vertical bond
+//    else{
+//        if(bond_new.horizontal()){
+//            // root bond is vertical but new bond is horizontal
+//            if(bond_new.column_ == site_common.column_){
+//                // if column of new bond equals column of common site then new bond is on the right side of root bond
+//                delta_x = +1;
+//            }else{
+//                // left of root
+//                delta_x = -1;
+//            }
+//            if(root.row_ == site_common.row_){
+//                // top side of the root bond
+//                delta_y = +1;
+//            }else{
+//                // bottom
+//                delta_y = -1;
+//            }
+//
+//        }
+//        else{
+//            // both bonds are vertical
+//            if(site_common.row_ == bond_new.row_){
+//                // bottom of root bond
+//                delta_y = -1;
+//            }else{
+//                // top of root bond
+//                delta_y = +1;
+//            }
+//            delta_x = 0;
+//        }
+//
+//    }
+//
+//    cout << "got delta_x " << delta_x << " and delta_y " << delta_y << endl;
+//
+//    IndexRelative indexRelative_root = _lattice.getBond(root).relativeIndex();
+////    cout << "Relative index of root " << indexRelative_root << endl;
+////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "Relative index of site_new " << r << endl;
+//    return r;
+//}
 
 
 

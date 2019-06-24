@@ -1029,5 +1029,60 @@ std::vector<BondIndex> SqLattice::get_neighbor_bonds(Index site) {
 }
 
 
+/**
+ * Take a bond index only if the corresponding site is active
+ * takes longer? time than version 1?, i.e.,  connection()
+ * @param site
+ * @param site_neighbor
+ * @param bond_neighbor
+ */
+void SqLattice::get_neighbors(Index site, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor)
+{
+    site_neighbor.clear();
+    bond_neighbor.clear();
+
+    value_type prev_column  = (site.column_ + _length - 1) % _length;
+    value_type prev_row     = (site.row_ + _length - 1) % _length;
+    value_type next_row     = (site.row_ + 1) % _length;
+    value_type next_column  = (site.column_ + 1) % _length;
+
+    // 1 level inside the lattice
+    // not in any the boundary
+    site_neighbor.resize(4);
+    site_neighbor[0] = {site.row_, next_column};
+    site_neighbor[1] = {site.row_, prev_column};
+    site_neighbor[2] = {next_row, site.column_};
+    site_neighbor[3] = {prev_row, site.column_};
+
+    bond_neighbor.reserve(4);
+
+//    if(!_lattice.getSite(site_neighbor[0]).isActive()) {
+//        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
+//    }
+//    if(!_lattice.getSite(site_neighbor[1]).isActive()){
+//        bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
+//    }
+//    if(!_lattice.getSite(site_neighbor[2]).isActive()){
+//        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
+//    }
+//    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
+//        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
+//    }
+    bond_neighbor.resize(4);
+    bond_neighbor[0] = {BondType::Horizontal, site.row_, site.column_};
+    bond_neighbor[1] = {BondType::Horizontal, site.row_, prev_column};
+    bond_neighbor[2] = {BondType::Vertical,    site.row_, site.column_};
+    bond_neighbor[3] = {BondType::Vertical, prev_row, site.column_};
+
+}
+
+void SqLattice::setRelativeIndex(Index index, IndexRelative ir) {
+    _sites[index.row_][index.column_].relativeIndex(ir);
+}
+
+IndexRelative SqLattice::getRelativeIndex(Index index) {
+    return _sites[index.row_][index.column_].relativeIndex();
+}
+
 
 

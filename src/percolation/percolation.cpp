@@ -311,4 +311,33 @@ void SqLatticePercolation::init() {
 //    setRandomState(0, true);
 }
 
+IndexRelative SqLatticePercolation::getRelativeIndex(Index root, Index site_new){
+//    cout << "Entry \"SitePercolation_ps_v10::getRelativeIndex\" : line " << __LINE__ << endl;
+    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+
+
+    // normalizing delta_x
+    if(delta_x > 1){
+        delta_x /= -delta_x;
+    }
+    else if(delta_x < -1){
+        delta_x /= delta_x;
+    }
+
+    // normalizing delta_y
+    if(delta_y > 1){
+        delta_y /= -delta_y;
+    }else if(delta_y < -1){
+        delta_y /= delta_y;
+    }
+
+    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+//    cout << "Relative index of root " << indexRelative_root << endl;
+//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+//    cout << "Relative index of site_new " << r << endl;
+    return r;
+}
+
 

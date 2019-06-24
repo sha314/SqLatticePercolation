@@ -17,6 +17,7 @@
 #include <omp.h>
 #include <thread>
 #include <algorithm>
+#include <iterator>
 
 #include "../util/checking.h"
 #include "../util/time_tracking.h"
@@ -164,11 +165,11 @@ void SitePercolation_ps_v10::randomize_v2(){
 
     std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
 
-    cout << "randomized {";
-    for(size_t i{}; i < randomized_index.size(); ++i){
-        cout << randomized_index[i] << ",";
-    }
-    cout << "}" << endl;
+//    cout << "randomized {";
+//    for(size_t i{}; i < randomized_index.size(); ++i){
+//        cout << randomized_index[i] << ",";
+//    }
+//    cout << "}" << endl;
 }
 
 
@@ -267,40 +268,40 @@ value_type SitePercolation_ps_v10::relabel(value_type index_1, value_type index_
 
 
 
-/**
- * Relative index of site_new with respect to root
- * @param root
- * @param site_new
- * @return
- */
-IndexRelative SitePercolation_ps_v10::getRelativeIndex(Index root, Index site_new){
-//    cout << "Entry \"SitePercolation_ps_v10::getRelativeIndex\" : line " << __LINE__ << endl;
-    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
-    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
-
-
-    // normalizing delta_x
-    if(delta_x > 1){
-        delta_x /= -delta_x;
-    }
-    else if(delta_x < -1){
-        delta_x /= delta_x;
-    }
-
-    // normalizing delta_y
-    if(delta_y > 1){
-        delta_y /= -delta_y;
-    }else if(delta_y < -1){
-        delta_y /= delta_y;
-    }
-
-    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
-//    cout << "Relative index of root " << indexRelative_root << endl;
-//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
-    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
-//    cout << "Relative index of site_new " << r << endl;
-    return r;
-}
+///**
+// * Relative index of site_new with respect to root
+// * @param root
+// * @param site_new
+// * @return
+// */
+//IndexRelative SitePercolation_ps_v10::getRelativeIndex(Index root, Index site_new){
+////    cout << "Entry \"SitePercolation_ps_v10::getRelativeIndex\" : line " << __LINE__ << endl;
+//    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+//    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+//
+//
+//    // normalizing delta_x
+//    if(delta_x > 1){
+//        delta_x /= -delta_x;
+//    }
+//    else if(delta_x < -1){
+//        delta_x /= delta_x;
+//    }
+//
+//    // normalizing delta_y
+//    if(delta_y > 1){
+//        delta_y /= -delta_y;
+//    }else if(delta_y < -1){
+//        delta_y /= delta_y;
+//    }
+//
+//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+////    cout << "Relative index of root " << indexRelative_root << endl;
+////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "Relative index of site_new " << r << endl;
+//    return r;
+//}
 
 
 
@@ -751,11 +752,11 @@ void SitePercolation_ps_v10::connection_periodic(Index site, vector<Index> &site
 //    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
 //        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
 //    }
-
-    bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
-    bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
-    bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
-    bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
+    bond_neighbor.resize(4);
+    bond_neighbor[0] = {BondType::Horizontal, site.row_, site.column_};
+    bond_neighbor[1] = {BondType::Horizontal, site.row_, prev_column};
+    bond_neighbor[2] = {BondType::Vertical,    site.row_, site.column_};
+    bond_neighbor[3] = {BondType::Vertical, prev_row, site.column_};
 
 }
 
@@ -851,6 +852,7 @@ bool SitePercolation_ps_v10::occupy() {
     }
 
     Index site = selectSite();
+//    cout << "******************current site " << site  << "***********" << endl;
     placeSite(site);
     _occuption_probability = occupationProbability(); // for super class
     return true;
@@ -880,49 +882,140 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v2(Index current_site) {
     ++_number_of_occupied_sites;
 
     // find the bonds for this site
-    vector<BondIndex> bonds = _lattice.get_neighbor_bonds(current_site);
+    vector<BondIndex> bonds ;
+    vector<Index> sites ;
+    _lattice.get_neighbors(current_site, sites, bonds);
+//    cout << bonds << endl;
     subtract_entropy_for_bond(bonds);  // tracking entropy change
-    value_type base = manageClusters(bonds);
+
+    value_type base = manageClusters(sites, bonds);
     add_entropy_for_bond(base); // tracking entropy change
-//    // running tracker
+    // running tracker
     track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
     track_numberOfSitesInLargestCluster();
 
     return base;
 }
 
-value_type SitePercolation_ps_v10::merge_cluster_v2(const vector<BondIndex> &bonds) {// mergeing procedure
+/**
+ * Works fine
+ *
+ * @param sites
+ * @param bonds
+ * @return
+ */
+value_type SitePercolation_ps_v10::merge_cluster_v2(
+        const std::vector<Index>& sites, const vector<BondIndex> &bonds) {// mergeing procedure
     // we got four bonds
     int base{}, id{};
-    size_t base_size{}, size{};
+    size_t base_sites{}, size{}, base_bonds{};
     unordered_set<int> ids; // selected cluster to merge including the base cluster id
     for(const BondIndex &b: bonds){
         // choosing the largest cluster as base cluster
         id = _lattice.getGroupID(b);
         size = _clusters[id].numberOfSites();
-        if(size >= base_size){
+        if(size >= base_sites){
             // greater equal is important here.
             // since we are measuring with site and a cluster
             // can have zero sites in bond percolation
-            base_size = size;
+            base_sites = size;
             base = id;
         }
         ids.insert(id);
     }
+
+    // find which of the neighbors are of id_base as the base cluster
+    IndexRelative r;
+    for(auto n: sites){
+        if(_lattice.getSite(n).get_groupID() == base){
+            // find relative index with respect to this site
+            r = getRelativeIndex(n, _last_placed_site);
+            break; // since first time r is set running loop is doing no good
+        }
+    }
+    base_bonds = _clusters[base].numberOfBonds();
     _clusters[base].addSiteIndex(_last_placed_site);
+    _lattice.setRelativeIndex(_last_placed_site, r);
     _lattice.setGroupID(_last_placed_site, base);
-    cout << "ids {";
+//    cout << "base " << base << " ids {";
     for(int i: ids){
-        if(i == base) continue;
-        cout << i << ",";
+        if(i == base) {
+            continue;
+        }
+//        cout << i << ",";
         _clusters[base].insert_v2(_clusters[i]);
         relabel_sites_v5(_last_placed_site, _clusters[i]);
         relabel_bonds(_clusters[i], base);
+
+//        relabel_cluster(_last_placed_site, _clusters[i], 0, 0);
         _clusters[i].clear(); // clear the cluster
     }
-    cout << "}" << endl;
+
+//    relabel_cluster(_last_placed_site, _clusters[base], base_bonds, base_sites);
+//    cout << "}" << endl;
     return base;
 }
+
+/**
+ * todo On test
+ *
+ * @param sites
+ * @param bonds
+ * @return
+ */
+value_type SitePercolation_ps_v10::merge_cluster_v3(
+        const std::vector<Index>& sites, const vector<BondIndex> &bonds) {// mergeing procedure
+    // we got four bonds
+    int base{}, id{};
+    size_t base_sites{}, size{}, base_bonds{};
+    unordered_set<int> ids; // selected cluster to merge including the base cluster id
+//    cout << "found ids {";
+    for(const BondIndex &b: bonds){
+        // choosing the largest cluster as base cluster
+        id = _lattice.getGroupID(b);
+//        cout << id << ",";
+        if(_clusters[id].emptyBond()) continue; // empty cluster cannot be a part of what's coming next
+        size = _clusters[id].numberOfSites();
+        if(size >= base_sites){
+            // greater equal is important here.
+            // since we are measuring with site and a cluster
+            // can have zero sites in bond percolation
+            base_sites = size;
+            base = id;
+        }
+        ids.insert(id);
+    }
+//    cout << "}" << endl;
+//    cout << "non empty {";
+//    copy(ids.begin(), ids.end(), ostream_iterator<int>(cout, ","));
+//    cout << "}" << endl;
+
+    // find which of the neighbors are of id base
+    IndexRelative r;
+    for(auto n: sites){
+        if(_lattice.getGroupID(n) == base){
+            // find relative index with respect to this site
+            r = getRelativeIndex(n, _last_placed_site);
+            break; // since first time r is set running loop is doing no good
+        }
+    }
+    base_bonds = _clusters[base].numberOfBonds();
+    _clusters[base].addSiteIndex(_last_placed_site);
+    _lattice.setRelativeIndex(_last_placed_site, r);
+    _lattice.setGroupID(_last_placed_site, base);
+    for(int i: ids){
+        if(i == base) {
+            continue;
+        }
+        _clusters[base].insert_v2(_clusters[i]);
+        relabel_cluster(_last_placed_site, _clusters[i], 0, 0);
+        _clusters[i].clear(); // clear the cluster
+    }
+
+    return base;
+}
+
+
 
 
 /**
@@ -1501,9 +1594,12 @@ void SitePercolation_ps_v10::relabel_sites(const vector<Index> &sites, int id_a,
  */
 void SitePercolation_ps_v10::relabel_bonds(const Cluster_v3& clstr, int id) {
     vector<BondIndex> bonds = clstr.getBondIndices();
+    cout << "relabel_bonds : base id " << id << " {";
     for(auto a: bonds){
         _lattice.setGroupID(a, id);
+        cout << a << ",";
     }
+    cout << "}" << endl;
 }
 
 
@@ -1978,8 +2074,77 @@ void SitePercolation_ps_v10::init(bool gen_random) {
     randomize_v2();  // randomize
 }
 
-value_type SitePercolation_ps_v10::manageClusters(const std::vector<BondIndex> &bonds) {
-    return merge_cluster_v2(bonds);
+value_type SitePercolation_ps_v10::manageClusters(
+        const std::vector<Index>& sites, const std::vector<BondIndex> &bonds) {
+//    return merge_cluster_v2(sites, bonds);
+    return merge_cluster_v3(sites, bonds);
+}
+
+/**
+ *
+ * @param site_a : root site or the currect site
+ * @param clstr_b : the cluster whose elements should be relabeled.
+ *      this cluster should not contain sites or bonds that comes from more than once cluster at a time
+ * @param bond_pos : from which position on the clstr_b bonds should be relabeled
+ * @param site_pos : from which position on the clstr_b sites should be relabeled
+ */
+void
+SitePercolation_ps_v10::relabel_cluster(
+        Index site_a, const Cluster_v3 &clstr_b, size_t bond_pos, size_t site_pos)
+{
+
+    int id_a = _lattice.getGroupID(site_a);
+    int id_b = clstr_b.get_ID();
+
+    const vector<Index>     & sites = clstr_b.getSiteIndices();
+    const vector<BondIndex> & bonds = clstr_b.getBondIndices();
+//    cout << "relabel_cluster : base id " << id_a << " {";
+    for(size_t i{bond_pos}; i < bonds.size(); ++i){
+//        cout << bonds[i] << ",";
+        _lattice.setGroupID(bonds[i], id_a);
+    }
+//    cout << "}" << endl;
+
+    // get four site_b of site_a
+    vector<Index> sites_neighbor_a = _lattice.get_neighbor_sites(site_a);
+    Index site_b;
+    IndexRelative relative_index_b_after;
+//    bool flag{false};
+    // find which site_b has id_a of clstr_b
+    for(auto n: sites_neighbor_a){
+        if(id_b == _lattice.getSite(n).get_groupID()){
+            // checking id_a equality is enough. since id_a is the id_a of the active site already.
+            relative_index_b_after = getRelativeIndex(site_a, n);
+            site_b = n;
+//            cout << "neighbor  of" << site_a << " is " << site_b << endl;
+//            flag = true;
+            break;
+        }
+    }
+//    if(!flag){
+//        cout << "No neibhgor found! : line " << __LINE__ << endl;
+//    }
+    IndexRelative relative_site_a = _lattice.getRelativeIndex(site_a);
+
+    // with this delta_a and delta_y find the relative index of site_b while relative index of site_a is known
+    IndexRelative relative_site_b_before = _lattice.getRelativeIndex(site_b);
+
+    int delta_x_ab = relative_index_b_after.x_ - relative_site_b_before.x_;
+    int delta_y_ab = relative_index_b_after.y_ - relative_site_b_before.y_;
+//    cout << relative_index_b_after << " - " << relative_site_b_before << " = delta_x, delta_y = " << delta_x_ab << ", " << delta_y_ab << endl;
+//    relabel_sites(sites, id_a, delta_x_ab, delta_y_ab);
+
+    int x, y;
+    Index a;
+    for (value_type i = site_pos; i < sites.size(); ++i) {
+        a = sites[i];
+        _lattice.setGroupID(a, id_a);
+        relative_site_a = _lattice.getRelativeIndex(a);
+        x = relative_site_a.x_ + delta_x_ab;
+        y = relative_site_a.y_ + delta_y_ab;
+//        _lattice.getSite(a).relativeIndex(x, y);
+        _lattice.setRelativeIndex(a, {x,y});
+    }
 }
 
 

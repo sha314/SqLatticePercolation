@@ -961,7 +961,7 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
     vector<double> cluster_size_distro;
     double area=0;
     BondPercolation_pb_v2 lp(length, true);
-    lp.setRandomState(0, false);
+    lp.setRandomState(0, true);
     lp.init();
 //    lp.reset();
 
@@ -971,7 +971,7 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
     bool wrapping_written{false};
 //        cout << "line " << __LINE__ << endl;
 //    lp.ckeckCluster();
-    lp.viewClusterExtended();
+//    lp.viewClusterExtended();
 //    lp.viewSiteByRelativeIndex();
     while (true){
         successful = lp.occupy();
@@ -980,8 +980,9 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
 //            lp.ckeckCluster();
 //            lp.viewClusterExtended();
 //            lp.viewSiteByRelativeIndex();
-//            if(lp.detectWrapping()) {
-//                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+            if(lp.detectWrapping()) {
+                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+//                lp.viewSiteByRelativeIndex();
 //                cout << lp.wrapping_indices()[0] << " and " << lp.wrapping_indices()[1] << endl;
 ////                vector<double> tmp = lp.clusterSizeDistribution();
 //////                    cout << "after returned " << tmp.size() << endl;
@@ -993,8 +994,8 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
 ////                }
 ////                lp.viewClusterExtended();
 ////                lp.viewLatticeByID();
-////                break;
-//            }
+                break;
+            }
 //            break;
             ++counter;
         }
@@ -1005,8 +1006,8 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
         }
     }
 
-    lp.viewClusterExtended();
-    lp.viewSiteByRelativeIndex();
+//    lp.viewClusterExtended();
+//    lp.viewSiteByRelativeIndex();
 }
 
 void test_site_percolation(value_type length, value_type ensemble_size) {
@@ -1034,7 +1035,7 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
     while (true){
         successful = lp.occupy();
         if(successful) {
-            cout << "step " << counter << " *************************************" << lp.lastPlacedSite() << endl;
+            cout << "step " << counter << " *************************************" << endl;
 //            lp.ckeckCluster();
 //            lp.viewClusterExtended();
 //            lp.viewLatticeByID();
@@ -1042,22 +1043,22 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
             if(lp.detectWrapping()) {
                 cout << "wrapping. pc = " << lp.occupationProbability() << endl;
 //                cout << lp.wrapping_indices()[0] << " and " << lp.wrapping_indices()[1] << endl;
-////                vector<double> tmp = lp.clusterSizeDistribution();
-//////                    cout << "after returned " << tmp.size() << endl;
-////                if (tmp.size() > cluster_size_distro.size()) {
-////                    cluster_size_distro.resize(tmp.size());
-////                }
-////                for (size_t k{}; k < tmp.size(); ++k) {
-////                    cluster_size_distro[k] += tmp[k];
-////                }
-////                lp.viewClusterExtended();
-////                lp.viewLatticeByID();
-                break;
+//                vector<double> tmp = lp.clusterSizeDistribution();
+//                    cout << "after returned " << tmp.size() << endl;
+//                if (tmp.size() > cluster_size_distro.size()) {
+//                    cluster_size_distro.resize(tmp.size());
+//                }
+//                for (size_t k{}; k < tmp.size(); ++k) {
+//                    cluster_size_distro[k] += tmp[k];
+//                }
+//                lp.viewClusterExtended();
+//                lp.viewLatticeByID();
+//                break;
             }
             ++counter;
         }
 //        break;
-//        if(counter == 15) break;
+//        if(counter == 3) break;
         if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
             break;
         }

@@ -176,6 +176,8 @@ public:
     void track_numberOfSitesInLargestCluster();
 
     const std::vector<double> clusterSizeDistribution() const ;  // 2019.06.17
+
+    IndexRelative getRelativeIndex(Index root, Index site_new);
 };
 
 
@@ -296,7 +298,7 @@ public:
 //    SitePercolation_ps_v8&& operator=(SitePercolation_ps_v8 && ) = default;
     double get_relabeling_time() {return time_relabel;}
     value_type relabeling_count() const {return _total_relabeling;}
-
+    void init(){randomize_v2();}
     virtual void reset();
 
 
@@ -473,7 +475,7 @@ protected:
 
 public:
     // on test
-    IndexRelative getRelativeIndex(Index root, Index site_new);
+//    IndexRelative getRelativeIndex(Index root, Index site_new);
 
     const std::vector<double> clusterSizeDistribution() const ; // 2019.06.17
 
@@ -632,7 +634,7 @@ public:
     value_type placeSite(Index site);
 
 
-    value_type manageClusters(const std::vector<BondIndex> &bonds);
+    value_type manageClusters(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
     Index selectSite(); // selecting site
 
@@ -656,6 +658,9 @@ public:
     void relabel_sites_v6(Index root_a, const Cluster_v3& clstr_b, int id); // relative index is set accordingly
     void relabel_bonds(const Cluster_v3&  clstr, int id);  // todo
 
+
+    // relabel site_index_sequence and bonds in the cluster cluster
+    void relabel_cluster(Index site_a, const Cluster_v3& clstr_b, size_t bond_pos=0, size_t site_pos=0);
 
     /**********************************************
      * Information about current state of Class
@@ -729,14 +734,15 @@ protected:
     void randomize_v2(); // better random number generator
 
     value_type placeSite_weighted_v2(Index site);
-    value_type merge_cluster_v2(const std::vector<BondIndex> &bonds);
+    value_type merge_cluster_v2(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
+    value_type merge_cluster_v3(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
     bool anyActiveSite(value_type r, value_type c, value_type delta);
     bool anyActiveSpanningSite(value_type row, value_type col, value_type delta);
 
 public:
     // on test
-    IndexRelative getRelativeIndex(Index root, Index site_new);
+//    IndexRelative getRelativeIndex(Index root, Index site_new);
 
     const std::vector<double> clusterSizeDistribution() const ; // 2019.06.17
 
@@ -991,7 +997,7 @@ public:
     ~BondPercolation_pb_v1() = default;
 
     explicit BondPercolation_pb_v1(value_type length, bool periodicity=true);
-    void init() {};
+    void init() {randomize_v2();};
     std::string getSignature() {
         std::string s = "sq_lattice_bond_percolation_";
         if(_periodicity)
@@ -1061,9 +1067,9 @@ public:
     bool detect_wrapping_v1();
 //    bool detect_wrapping_v2();
 
-    IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
-    IndexRelative getRelativeIndex(Index root, Index site_new);
-    IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
+//    IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
+//    IndexRelative getRelativeIndex(Index root, Index site_new);
+//    IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
 
 //    const std::vector<BondIndex>& wrapping_bonds() const { return  _wrapping_indices;}
     const std::vector<Index>& wrapping_indices() const { return  _wrapping_indices;}
@@ -1236,7 +1242,7 @@ public:
         while(occupy());
     }
 
-    value_type placeBond_v0();
+
     value_type placeBond_v1();
     bool occupy();
 
@@ -1317,24 +1323,6 @@ private:
 
     void randomize_v2();
 
-//    std::vector<Index> get_Sites_for_bonds(BondIndex);
-
-    value_type manageClusters(const std::set<value_type> &found_index_set,
-                               std::vector<Index> &sites,
-                               BondIndex &bond,
-                               int base_id);
-    value_type manage_clusters_v1(
-            const std::set<value_type> &found_index_set,
-            std::vector<Index> &sites,
-            BondIndex &bond
-    );
-
-    value_type manage_clusters_v2(
-            const std::set<value_type> &found_index_set,
-            std::vector<Index> &sites,
-            BondIndex &bond,
-            int base_id
-    );
 
     value_type manage_clusters_v3(
             const std::set<value_type> &found_index_set,
@@ -1342,35 +1330,6 @@ private:
             BondIndex &bond,
             int base_id
     );
-
-    void connection_v1(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-    void connection_v2(BondIndex bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-
-    std::set<value_type> find_index_for_placing_new_bonds(const std::vector<BondIndex> &neighbors);
-    int find_cluster_index_for_placing_new_bonds(
-            const std::vector<BondIndex> &neighbors,
-            std::set<value_type> &found_indices
-    );
-
-    int find_cluster_index_for_placing_new_bonds_v2(
-            const std::vector<BondIndex> &neighbors,
-            std::set<value_type> &found_indices
-    );
-
-
-    void connection_2_horizontal_no_periodicity(const BondIndex &bond, std::vector<Index> &site_neighbor,
-                                                std::vector<BondIndex> &bond_neighbor,
-                                                value_type next_column, value_type prev_column,
-                                                value_type prev_row);
-
-    void connection_2_vertical_no_peridicity(const BondIndex &bond, std::vector<Index> &site_neighbor,
-                                             std::vector<BondIndex> &bond_neighbor, value_type prev_column, value_type prev_row,
-                                             value_type next_row);
-
-    void connection_2_periodic(const BondIndex &bond, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor,
-                               value_type next_column, value_type prev_column, value_type prev_row, value_type next_row);
-
-
 
 };
 
