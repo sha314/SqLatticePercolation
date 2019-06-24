@@ -1013,6 +1013,21 @@ std::vector<BondIndex> SqLattice::getBonds() {
     return indices;
 }
 
+std::vector<BondIndex> SqLattice::get_neighbor_bonds(Index site) {
+    value_type next_column = (site.column_ + 1) % _length;
+    value_type prev_column = (site.column_ - 1 + _length) % _length;
+    value_type prev_row = (site.row_ - 1 + _length) % _length;
+    value_type next_row = (site.row_ + 1) % _length;
+
+    vector<BondIndex> bond_neighbor(4);
+    bond_neighbor[0] = {BondType::Horizontal, site.row_, site.column_};
+    bond_neighbor[1] = {BondType::Horizontal, site.row_, prev_column};
+    bond_neighbor[2] = {BondType::Vertical,    site.row_, site.column_};
+    bond_neighbor[3] = {BondType::Vertical, prev_row, site.column_};
+
+    return bond_neighbor;
+}
+
 
 
 

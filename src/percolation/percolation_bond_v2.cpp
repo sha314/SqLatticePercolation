@@ -48,7 +48,7 @@ BondPercolation_pb_v2::BondPercolation_pb_v2(value_type length, bool periodicity
 void BondPercolation_pb_v2::init(bool random_seed) {
 //    SqLatticePercolation::init();
     _lattice = SqLattice(length(), false, true, true, true);
-    setRandomState(0, random_seed);
+    if(random_seed) setRandomState(0, random_seed);
     initialize_index_sequence(); // not need to put in reset method
     initialize();
     initialize_cluster();

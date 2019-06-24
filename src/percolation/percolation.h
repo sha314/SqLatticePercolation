@@ -528,7 +528,8 @@ protected:
     value_type max_index; // maximum index = length - 1
 
     // index sequence
-    std::vector<Index> index_sequence;  // initialized once
+    std::vector<Index> site_indices;  // initialized once
+    std::vector<BondIndex> bond_indices;  // initialized once
 //    std::vector<Index> randomized_index_sequence;
     std::vector<value_type> randomized_index;
 
@@ -554,7 +555,7 @@ protected:
 
     bool _spanning_occured = false;
 
-    std::vector<Index> _spanning_sites;
+    std::vector<Index> _spanning_sites; //todo : remove one of these
     std::vector<Index> _wrapping_sites;
 
     std::vector<value_type> number_of_sites_to_span;
@@ -580,6 +581,9 @@ public:
 
     SitePercolation_ps_v10& operator=(SitePercolation_ps_v10 & ) = default;
 //    SitePercolation_ps_v8&& operator=(SitePercolation_ps_v8 && ) = default;
+
+    void init(bool gen_random=false); // collections of statements that must be called before using
+
     double get_relabeling_time() {return time_relabel;}
     value_type relabeling_count() const {return _total_relabeling;}
 
@@ -625,17 +629,10 @@ public:
 
     virtual bool occupy();
 
-    value_type placeSite(Index site,
-                         std::vector<Index>& neighbor_sites,
-                         std::vector<BondIndex>& neighbor_bonds);
     value_type placeSite(Index site);
 
-    // uses weighted relabeling by first identifying the largest cluster
-    value_type placeSite_weighted(Index site); // todo modifying
-    value_type placeSite_weighted(Index site,
-                                  std::vector<Index>& neighbor_sites,
-                                  std::vector<BondIndex>& neighbor_bonds);
 
+    value_type manageClusters(const std::vector<BondIndex> &bonds);
 
     Index selectSite(); // selecting site
 
@@ -726,28 +723,13 @@ public:
     void writeVisualLatticeData(const std::string& filename, bool only_spanning=true);
 
 protected:
-    void initialize();
+    void initialize(); // collections of statements that must be called once while constructing
     void initialize_index_sequence();
+    void initialize_cluster();
     void randomize_v2(); // better random number generator
 
-    std::set<value_type> find_index_for_placing_new_bonds(const std::vector<Index> &neighbors);
-    int find_cluster_index_for_placing_new_bonds(const std::vector<Index> &neighbors, std::set<value_type> &found_indices);
-
-    value_type manage_clusters(
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    value_type manage_clusters(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site);
-
-    value_type manage_clusters(
-            const std::set<value_type> &found_index_set,
-            std::vector<BondIndex> &hv_bonds,
-            Index &site,
-            int base_id // since id and index is same
-    );
+    value_type placeSite_weighted_v2(Index site);
+    value_type merge_cluster_v2(const std::vector<BondIndex> &bonds);
 
     bool anyActiveSite(value_type r, value_type c, value_type delta);
     bool anyActiveSpanningSite(value_type row, value_type col, value_type delta);
@@ -757,6 +739,7 @@ public:
     IndexRelative getRelativeIndex(Index root, Index site_new);
 
     const std::vector<double> clusterSizeDistribution() const ; // 2019.06.17
+
 
 
 };

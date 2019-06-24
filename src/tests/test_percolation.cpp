@@ -707,15 +707,15 @@ void cluster_size_distribution_bond(value_type length, value_type ensemble_size)
     fout << "#n_S=number of cluster of size S" << endl;
     fout << "#cluster size is measured by number of site_index_sequence on a cluster in bond percolation" << endl;
 //    cout << cluster_size_distro.size() << endl;
-//    double area=0;
+    double area=0;
     for(size_t S{0}; S < cluster_size_distro.size(); ++S){
         if (cluster_size_distro[S] == 0) continue; // no need to write zero values
         fout << S << "\t" << cluster_size_distro[S]/(ensemble_size * length_squared);
         fout << endl;
-//        area += S * cluster_size_distro[S]/(ensemble_size * length_squared);
+        area += S * cluster_size_distro[S]/(ensemble_size * length_squared);
     }
     fout.close();
-//    cout << "area under curve " << area;
+    cout << "area under curve " << area << endl;
 }
 
 void entropyJumps(int argc, char** argv){
@@ -1007,6 +1007,64 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
 
     lp.viewClusterExtended();
     lp.viewSiteByRelativeIndex();
+}
+
+void test_site_percolation(value_type length, value_type ensemble_size) {
+    cout << "length " << length << " ensemble_size " << ensemble_size << endl;
+
+    value_type length_squared = length*length;
+    value_type twice_length_squared = 2 * length_squared;
+
+    vector<double> cluster_size_distro;
+    double area=0;
+    SitePercolation_ps_v10 lp(length, true);
+    lp.setRandomState(0, true);
+    lp.init();
+//    lp.reset();
+
+    bool successful = false;
+    auto t_start = std::chrono::system_clock::now();
+    size_t counter = 0;
+    bool wrapping_written{false};
+//        cout << "line " << __LINE__ << endl;
+//    lp.ckeckCluster();
+//    lp.viewClusterExtended();
+//    lp.viewSiteByRelativeIndex();
+
+    while (true){
+        successful = lp.occupy();
+        if(successful) {
+            cout << "step " << counter << " *************************************" << lp.lastPlacedSite() << endl;
+//            lp.ckeckCluster();
+//            lp.viewClusterExtended();
+//            lp.viewLatticeByID();
+            lp.viewSiteByRelativeIndex();
+            if(lp.detectWrapping()) {
+                cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+//                cout << lp.wrapping_indices()[0] << " and " << lp.wrapping_indices()[1] << endl;
+////                vector<double> tmp = lp.clusterSizeDistribution();
+//////                    cout << "after returned " << tmp.size() << endl;
+////                if (tmp.size() > cluster_size_distro.size()) {
+////                    cluster_size_distro.resize(tmp.size());
+////                }
+////                for (size_t k{}; k < tmp.size(); ++k) {
+////                    cluster_size_distro[k] += tmp[k];
+////                }
+////                lp.viewClusterExtended();
+////                lp.viewLatticeByID();
+                break;
+            }
+            ++counter;
+        }
+//        break;
+//        if(counter == 15) break;
+        if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+            break;
+        }
+    }
+
+//    lp.viewClusterExtended();
+//    lp.viewSiteByRelativeIndex();
 }
 
 

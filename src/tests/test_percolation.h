@@ -23,6 +23,7 @@ void simulate_site_percolation_detailed(value_type length, value_type ensemble_s
 void entropyJumps(int argc, char** argv);
 
 void test_bond_percolation(value_type length, value_type ensemble_size);
+void test_site_percolation(value_type length, value_type ensemble_size);
 
 /**
  * data for log(Mass) vs log(Length) curve

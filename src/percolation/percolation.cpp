@@ -57,11 +57,12 @@ void SqLatticePercolation::viewCluster() {
  * Extended version of view_cluster
  */
 void SqLatticePercolation::viewClusterExtended() {
-    cout << "clusters with numberOfBonds greater than 1" << endl;
+//    cout << "clusters with numberOfBonds greater than 1" << endl;
     value_type total_bonds{}, total_sites{};
 
     std::vector<Index> sites;
     std::vector<BondIndex> bonds;
+    size_t cluster_count{};
     for (value_type i{}; i != _clusters.size(); ++i) {
         if(_clusters[i].empty()){
 //            cout << "Empty cluster : line " << endl;
@@ -99,9 +100,11 @@ void SqLatticePercolation::viewClusterExtended() {
         total_sites += _clusters[i].numberOfSites();
 
         cout << '}' << endl;
+        ++cluster_count;
     }
     cout << "Total bonds " << total_bonds << endl;
     cout << "Total sites " << total_sites << endl;
+    cout << "Total clusters " << cluster_count << endl;
 }
 
 /**
