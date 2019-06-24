@@ -2032,7 +2032,7 @@ void SitePercolation_ps_v10::writeVisualLatticeData(const string &filename, bool
 const std::vector<double> SitePercolation_ps_v10::clusterSizeDistribution() const{
     vector<double> cluster_counts;
     size_t n, sz;
-    cout << "number of max clusters " << _clusters.size() << endl;
+//    cout << "number of max clusters " << _clusters.size() << endl;
     size_t mx_n{}, total_bonds{};
     for(size_t i{}; i < _clusters.size(); ++i){
         if(_clusters[i].empty())   continue;
@@ -2053,7 +2053,7 @@ const std::vector<double> SitePercolation_ps_v10::clusterSizeDistribution() cons
     }
     // since isolated bonds forms cluster of unit size and it might not be in the cluster
     cluster_counts[1] += maxBonds() - total_bonds;
-    cout << "before returning " << mx_n << endl;
+//    cout << "before returning " << mx_n << endl;
     return cluster_counts;
 }
 

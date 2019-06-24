@@ -110,12 +110,17 @@ public:
  * But keep in mind that these integers are the indices of std::vector<Index>
  * and  std::vector<BondIndex> which must be present in SitePercolation and BondPercolation class.
  * This way the program might be a little faster and memory efficient.
+ * (3/5 % less memory use): previously, each Index got 2 variables. each BondIndex got  3 variables.
+ *      assuming they are all equal size (for simplifying calculations). now for each site there is
+ *      one index and for each bond there is one index, total of 2 variables.
+ *      Therefore ((5-2)/5 %) less memory required
+ *
  *
  */
 class Cluster_v4{
     // contains bond and site
     std::vector<uint>  _bond_index; // BondIndex for indexing bonds
-    std::vector<uint>      _site_index; // Site index
+    std::vector<uint>  _site_index; // Site index
 
 
     int _creation_time;  // holds the creation birthTime of a cluster object

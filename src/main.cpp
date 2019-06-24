@@ -63,12 +63,12 @@ void run_in_main(int argc, char** argv){
 //    test_Fractal_2d();
 
 //    test_bond_percolation(length, ensemble_size);
-    test_site_percolation(length, ensemble_size);
+//    test_site_percolation(length, ensemble_size);
 //    test_ballistic_deposition(1);
 //    test_site_percolation();
 
 
-//    cluster_size_distribution_site(length, ensemble_size); // 2019.06.17
+    cluster_size_distribution_site(length, ensemble_size); // 2019.06.17
 //    cluster_size_distribution_bond(length, ensemble_size); // 2019.06.22
 //    measure_entropy_by_site(argc, argv);
 //    measure_clusters(argc, argv);

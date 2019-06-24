@@ -561,7 +561,7 @@ void cluster_size_distribution_site(value_type length, value_type ensemble_size)
             if(successful) {
                 if(lp.detectWrapping()) {
                     vector<double> tmp = lp.clusterSizeDistribution();
-                    cout << "after returned " << tmp.size() << endl;
+//                    cout << "after returned " << tmp.size() << endl;
                     if (tmp.size() > cluster_size_distro.size()) {
                         cluster_size_distro.resize(tmp.size());
                     }
