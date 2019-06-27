@@ -92,7 +92,7 @@ Index get_2nn_in_1nn_direction(Index center, Index nn_1, value_type length){
  * @param length
  * @return
  */
-vector<Index> get_2nn_s_in_1nn_s_direction(Index center, const vector<Index> &nn_1, value_type length){
+vector<Index> get_all_2nn_in_1nn_s_direction(Index center, const vector<Index> &nn_1, value_type length){
     vector<Index> nn_2(nn_1.size());
 
     for(size_t i{}; i != nn_1.size() ; ++i){

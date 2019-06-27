@@ -175,7 +175,7 @@ public:
     void track_numberOfBondsInLargestCluster();
     void track_numberOfSitesInLargestCluster();
 
-    const std::vector<double> clusterSizeDistribution() const ;  // 2019.06.17
+    virtual const std::vector<double> clusterSizeDistribution() const {std::cout << "not defined in SqLatticePercolation" << std::endl;return {};};  // 2019.06.17
 
     IndexRelative getRelativeIndex(Index root, Index site_new);
 };
@@ -796,6 +796,7 @@ protected:
     // elements of @indices_tmp will be erased if needed but not of @indices
     std::vector<value_type> indices;
     std::vector<value_type> indices_tmp;
+    value_type _search_position{};
 public:
     static constexpr const char* signature = "SitePercolation_BallisticDeposition_v2";
     virtual ~SitePercolationBallisticDeposition_v2(){
@@ -812,6 +813,9 @@ public:
     Index select_site(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
     Index select_site_upto_1nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
     Index select_site_upto_2nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
+
+    Index select_site_upto_1nn_v2(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
+    Index select_site_upto_2nn_v2(std::vector<Index> &sites, std::vector<BondIndex> &bonds);
 
 
     void reset(); // todo

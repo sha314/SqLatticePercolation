@@ -1010,6 +1010,9 @@ void test_bond_percolation(value_type length, value_type ensemble_size) {
 //    lp.viewSiteByRelativeIndex();
 }
 
+/**
+ * Site percolation by placing sites
+ */
 void test_site_percolation(value_type length, value_type ensemble_size) {
     cout << "length " << length << " ensemble_size " << ensemble_size << endl;
 
@@ -1018,7 +1021,7 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
 
     vector<double> cluster_size_distro;
     double area=0;
-    SitePercolation_ps_v10 lp(length, true);
+    SitePercolationBallisticDeposition_L2_v2 lp(length, true);
     lp.setRandomState(0, true);
     lp.init();
 //    lp.reset();
@@ -1026,7 +1029,7 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
     bool successful = false;
     auto t_start = std::chrono::system_clock::now();
     size_t counter = 0;
-    bool wrapping_written{false};
+    bool detect_wrapping{true};
 //        cout << "line " << __LINE__ << endl;
 //    lp.ckeckCluster();
 //    lp.viewClusterExtended();
@@ -1035,13 +1038,14 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
     while (true){
         successful = lp.occupy();
         if(successful) {
-            cout << "step " << counter << " *************************************" << endl;
+            cout << "step " << counter << " *************************************" << lp.lastPlacedSite() << endl;
 //            lp.ckeckCluster();
 //            lp.viewClusterExtended();
-//            lp.viewLatticeByID();
+//            lp.viewSiteByID();
             lp.viewSiteByRelativeIndex();
-            if(lp.detectWrapping()) {
+            if(detect_wrapping && lp.detectWrapping()) {
                 cout << "wrapping. pc = " << lp.occupationProbability() << endl;
+                detect_wrapping = false;
 //                cout << lp.wrapping_indices()[0] << " and " << lp.wrapping_indices()[1] << endl;
 //                vector<double> tmp = lp.clusterSizeDistribution();
 //                    cout << "after returned " << tmp.size() << endl;
@@ -1053,7 +1057,7 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
 //                }
 //                lp.viewClusterExtended();
 //                lp.viewLatticeByID();
-//                break;
+                break;
             }
             ++counter;
         }
@@ -1064,8 +1068,8 @@ void test_site_percolation(value_type length, value_type ensemble_size) {
         }
     }
 
-//    lp.viewClusterExtended();
-//    lp.viewSiteByRelativeIndex();
+    lp.viewClusterExtended();
+    lp.viewSiteByRelativeIndex();
 }
 
 

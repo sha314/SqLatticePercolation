@@ -716,6 +716,8 @@ void SitePercolation_ps_v9::connection_v1(Index site, vector<Index> &neighbors, 
 void SitePercolation_ps_v9::connection_v2(Index site, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor)
 {
 
+    site_neighbor.clear();
+    bond_neighbor.clear();
     value_type prev_column  = (site.column_ + length() - 1) % length();
     value_type prev_row     = (site.row_ + length() - 1) % length();
     value_type next_row     = (site.row_ + 1) % length();
