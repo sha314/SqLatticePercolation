@@ -19,7 +19,7 @@
 #include "cmdLineArgs/cmd_args.h"
 #include "cmdLineArgs/cmd_args_json.h"
 #include "tests/test_percolation.h"
-#include "tests/test_lattice.h"
+#include "tests/test_v11.h"
 
 
 using namespace std;
@@ -85,7 +85,10 @@ void run_in_main(int argc, char** argv){
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);
 //    site_percolation_new_version(argc, argv);
+
+    // date 2019.06.28
     test_sq_lattice_v2(length);
+    test_percolation(length);
 
 }
 

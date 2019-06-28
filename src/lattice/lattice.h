@@ -8,7 +8,7 @@
 #include <vector>
 #include <cmath>
 
-#include "../percolation/cluster.h"
+#include "../percolation/cluster/cluster.h"
 #include "../types.h"
 #include "../flags.h"
 #include "site.h"
@@ -235,14 +235,28 @@ public:
 
     void setGroupID(Index index, int group_id);
     void setGroupID(BondIndex index, int group_id);
+
+    void setGroupIDSite(size_t index, int group_id);
+    void setGroupIDBond(size_t index, int group_id);
+
     int getGroupID(Index index);
     int getGroupID(BondIndex index);
 
+    int getGroupIDSite(size_t index);
+    int getGroupIDBond(size_t index);
+
+    // relative index is only for sites
     void setRelativeIndex(Index index, IndexRelative ir);
     IndexRelative getRelativeIndex(Index index);
 
+    void setRelativeIndex(size_t index, IndexRelative ir);
+    IndexRelative getRelativeIndex(size_t index);
+
     std::vector<Index> getSites();
     std::vector<BondIndex> getBonds();
+
+    std::vector<uint> getSiteIndices();
+    std::vector<uint> getBondIndices();
 
 /******************************************************************************
  * Get Neighbor from given index

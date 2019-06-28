@@ -7,7 +7,7 @@
 
 #include "../percolation_v2.h"
 #include "../percolation.h"
-
+#include <random>
 
 
 /**
@@ -58,8 +58,8 @@ protected:
     value_type max_index; // maximum index = length - 1
 
     // index sequence
-    std::vector<Index> site_indices;  // initialized once
-    std::vector<BondIndex> bond_indices;  // initialized once
+    std::vector<uint> site_indices;  // initialized once
+    std::vector<uint> bond_indices;  // initialized once
 //    std::vector<Index> randomized_index_sequence;
     std::vector<value_type> randomized_index;
 
@@ -98,7 +98,7 @@ protected:
     value_type _total_relabeling{};
     double time_relabel{};
 
-    void relabel_sites(const std::vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
+    void relabel_sites(const std::vector<uint> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
 public:
     static constexpr const char* signature = "SitePercolation_ps_v8";
@@ -159,12 +159,12 @@ public:
 
     virtual bool occupy();
 
-    value_type placeSite(Index site);
+    value_type placeSite(uint site);
 
 
     value_type manageClusters(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
-    Index selectSite(); // selecting site
+    uint selectSite(); // selecting site
 
 
     void connection_v1(Index site, std::vector<Index> &neighbors, std::vector<BondIndex> &bonds);
@@ -179,16 +179,14 @@ public:
 
     // applicable to weighted relabeling
 
-    value_type relabel(value_type index_1, value_type index_2);
-    void relabel_sites(const Cluster_v3&  clstr, int id);  // todo pass cluster as reference
-    void relabel_sites_v4(Index root_a, const Cluster_v3& clstr_b); // relative index is set accordingly
-    void relabel_sites_v5(Index root_a, const Cluster_v3& clstr_b); // relative index is set accordingly
-    void relabel_sites_v6(Index root_a, const Cluster_v3& clstr_b, int id); // relative index is set accordingly
-    void relabel_bonds(const Cluster_v3&  clstr, int id);  // todo
+    void relabel_sites(const Cluster_v4&  clstr, int id);  // todo pass cluster as reference
+    void relabel_sites_v5(Index root_a, const Cluster_v4& clstr_b); // relative index is set accordingly
+    void relabel_sites_v6(Index root_a, const Cluster_v4& clstr_b, int id); // relative index is set accordingly
+    void relabel_bonds(const Cluster_v4&  clstr, int id);  // todo
 
 
     // relabel site_index_sequence and bonds in the cluster cluster
-    void relabel_cluster(Index site_a, const Cluster_v3& clstr_b, size_t bond_pos=0, size_t site_pos=0);
+    void relabel_cluster(Index site_a, const Cluster_v4& clstr_b, size_t bond_pos=0, size_t site_pos=0);
 
     /**********************************************
      * Information about current state of Class
@@ -261,7 +259,7 @@ protected:
     void initialize_cluster();
     void randomize_v2(); // better random number generator
 
-    value_type placeSite_weighted_v2(Index site);
+    value_type placeSite_weighted_v2(uint site);
     value_type merge_cluster_v2(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
     value_type merge_cluster_v3(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 

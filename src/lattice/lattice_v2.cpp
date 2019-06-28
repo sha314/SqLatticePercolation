@@ -677,6 +677,22 @@ int SqLattice_v2::getGroupID(BondIndex index){
     return _bonds[i].get_groupID();
 }
 
+void SqLattice_v2::setGroupIDSite(size_t index, int group_id){
+    _sites[index].set_groupID(group_id);
+}
+
+void SqLattice_v2::setGroupIDBond(size_t index, int group_id){
+    _bonds[index].set_groupID(group_id);
+}
+
+int SqLattice_v2::getGroupIDSite(size_t index){
+    return _sites[index].get_groupID();
+}
+
+int SqLattice_v2::getGroupIDBond(size_t index){
+    return _bonds[index].get_groupID();
+}
+
 
 Bond& SqLattice_v2::getBond(BondIndex index) {
     size_t i = translateBondTo1D(index);
@@ -965,6 +981,14 @@ IndexRelative SqLattice_v2::getRelativeIndex(Index index) {
     return _sites[i].relativeIndex();
 }
 
+void SqLattice_v2::setRelativeIndex(size_t index, IndexRelative ir) {
+    _sites[index].relativeIndex(ir);
+}
+
+IndexRelative SqLattice_v2::getRelativeIndex(size_t index) {
+    return _sites[index].relativeIndex();
+}
+
 /**
  *  (b) 1D index to 2D BondIndex and vice versa.
  *          (t,r,c) = t*L^2 + r*L + c = index
@@ -1023,6 +1047,18 @@ void SqLattice_v2::init(bool activate_bonds, bool activate_sites, bool bond_rese
             _sites[i].activate();
         }
     }
+}
+
+std::vector<uint> SqLattice_v2::getSiteIndices() {
+    std::vector<uint> a(_sites.size());
+    for(uint i{}; i < _sites.size(); ++i){a[i]=i;}
+    return a;
+}
+
+std::vector<uint> SqLattice_v2::getBondIndices() {
+    std::vector<uint> a(_bonds.size());
+    for(uint i{}; i < _bonds.size(); ++i){a[i]=i;}
+    return a;
 }
 
 

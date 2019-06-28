@@ -7,9 +7,9 @@
 
 #include <vector>
 #include <set>
-#include "../lattice/bond.h"
-#include "../types.h"
-#include "../lattice/site.h"
+#include "../../lattice/bond.h"
+#include "../../types.h"
+#include "../../lattice/site.h"
 
 
 /**
@@ -150,8 +150,11 @@ public:
     }
 
 
-    void addSiteIndex(uint );
-    void addBondIndex(uint );
+    void addSiteIndex(size_t length, Index index );
+    void addBondIndex(size_t length, BondIndex index);
+
+    void addSiteIndex(uint i){_site_index.push_back(i);};
+    void addBondIndex(uint i){_bond_index.push_back(i);};
 
     uint lastAddedSite(){return _site_index.back();}
     uint lastAddedBond(){return _bond_index.back();}
@@ -165,7 +168,7 @@ public:
     void insertBonds(const std::vector<uint>& bonds);
     void insertSites(const std::vector<uint>& sites);
 
-    void insert(const Cluster_v4& cluster);
+    void insert(size_t length, const Cluster_v4& cluster);
     void insert_v2(const Cluster_v4& cluster);
     void insert_with_id_v2(const Cluster_v4& cluster, int id);
 
@@ -189,6 +192,7 @@ public:
     bool emptySite() const { return _site_index.empty();}
     bool emptyBond() const { return _bond_index.empty();}
     void clear() {_bond_index.clear(); _site_index.clear(); }
+    friend std::ostream &operator<<(std::ostream &os, const Cluster_v4 &cluster);
 };
 
 
