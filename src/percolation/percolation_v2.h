@@ -1,10 +1,9 @@
 //
-// Created by shahnoor on 10/5/2017.
+// Created by shahnoor on 6/28/19.
 //
 
-#ifndef SITEPERCOLATION_PERCOLATION_H
-#define SITEPERCOLATION_PERCOLATION_H
-
+#ifndef SQLATTICEPERCOLATION_PERCOLATION_V2_H
+#define SQLATTICEPERCOLATION_PERCOLATION_V2_H
 
 #include <vector>
 #include <set>
@@ -23,11 +22,13 @@
 #include "boundary.h"
 #include <random>
 
-
 /**
- * The Square Lattice Percolation class
+ * uses object of following types
+ *  SqLattice_v2,
+ *  Cluster_v4
+ *
  */
-class SqLatticePercolation{
+class SqLatticePercolation_v2{
     // constants
     value_type  _length;
     value_type _max_number_of_bonds;
@@ -36,7 +37,7 @@ class SqLatticePercolation{
 protected:
 
     // structural variables of lattice
-    SqLattice _lattice;
+    SqLattice_v2 _lattice;
 
     value_type _index_sequence_position{};
     // cluster
@@ -44,7 +45,7 @@ protected:
     // todo. and bonds and keep track of root site_index_sequence and bonds only
     // todo. root site or bond means the first one that is stored
 
-    std::vector<Cluster_v3> _clusters;   // check and remove reapeted index manually
+    std::vector<Cluster_v4> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
 
@@ -80,8 +81,8 @@ protected:
 public:
     static constexpr const char* signature = "SqLatticePercolation";
 
-    virtual ~SqLatticePercolation() = default;
-    explicit SqLatticePercolation(value_type length);
+    virtual ~SqLatticePercolation_v2() = default;
+    explicit SqLatticePercolation_v2(value_type length);
     virtual void init();
     void setRandomState(size_t seed, bool generate_seed=true);
     value_type getRandomState();
@@ -181,23 +182,5 @@ public:
 };
 
 
-/**
- * Universal class to access all types of percolation in square lattice.
- * More userfriendly.
- */
-template <class T>
-class Percolation{
-public:
-    enum class Types{
-       SitePercolation,
-       BondPercolation,
-       SitePercolationBallisticDepositionL1,
-       SitePercolationBallisticDepositionL2
-    };
 
-    ~Percolation() = default;
-    T getClass(Types t, value_type length, bool periodicity=true);
-};
-
-#endif //SITEPERCOLATION_PERCOLATION_H
-
+#endif //SQLATTICEPERCOLATION_PERCOLATION_V2_H

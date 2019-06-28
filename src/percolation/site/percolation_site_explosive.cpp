@@ -2,7 +2,7 @@
 // Created by shahnoor on 02-Apr-18.
 //
 
-#include "percolation.h"
+#include "../percolation.h"
 
 //SitePercolationExplosive::SitePercolationExplosive(value_type length)
 //        : SitePercolation_ps_v9(length)

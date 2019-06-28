@@ -8,19 +8,20 @@
 #include <unordered_set>
 #include <mutex>
 
-#include "percolation.h"
+#include "../percolation.h"
+#include "percolation_site_v10.h"
 
-#include "../util/printer.h"
-#include "site_position.h"
-#include "../lattice/connector.h"
-#include "../index/delta.h"
+#include "../../util/printer.h"
+#include "../site_position.h"
+#include "../../lattice/connector.h"
+#include "../../index/delta.h"
 #include <omp.h>
 #include <thread>
 #include <algorithm>
 #include <iterator>
 
-#include "../util/checking.h"
-#include "../util/time_tracking.h"
+#include "../../util/checking.h"
+#include "../../util/time_tracking.h"
 
 using namespace std;
 

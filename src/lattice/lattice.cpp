@@ -25,7 +25,7 @@ SqLattice::SqLattice(
         bool bond_reset, bool site_reset)
         : _length{length}, _bond_resetting_flag{bond_reset}, _site_resetting_flag{site_reset}
 {
-    cout << "Constructing Lattice object : line " << __LINE__ << endl;
+//    cout << "Constructing Lattice object : line " << __LINE__ << endl;
     _sites = std::vector<std::vector<Site>>(_length);
     _h_bonds = std::vector<std::vector<Bond>>(_length);
     _v_bonds = std::vector<std::vector<Bond>>(_length);

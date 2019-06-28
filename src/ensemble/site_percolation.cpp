@@ -4,6 +4,7 @@
 
 #include "../percolation/percolation.h"
 #include "site_percolation.h"
+#include "../percolation/site/percolation_site_v9.h"
 #include "../util/time_tracking.h"
 #include "../cmdLineArgs/cmd_args.h"
 #include <fstream>

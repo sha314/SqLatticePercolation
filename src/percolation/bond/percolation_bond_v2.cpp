@@ -2,7 +2,7 @@
 // Created by shahnoor on 10/31/2017.
 //
 
-#include "percolation.h"
+#include "../percolation.h"
 
 
 #include <cstdlib>
@@ -10,10 +10,11 @@
 #include <unordered_set>
 #include <algorithm>
 
-#include "percolation.h"
+#include "../percolation.h"
 
-#include "../util/printer.h"
-#include "site_position.h"
+#include "../../util/printer.h"
+#include "../site_position.h"
+#include "percolation_bond_v2.h"
 
 
 using namespace std;

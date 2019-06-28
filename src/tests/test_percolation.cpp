@@ -6,6 +6,11 @@
 #include "../types.h"
 #include "../percolation/percolation.h"
 #include "../util/time_tracking.h"
+#include "../percolation/site/percolation_site_v9.h"
+#include "../percolation/bond/percolation_bond_v1.h"
+#include "../percolation/site/percolation_site_v10.h"
+#include "../percolation/bond/percolation_bond_v2.h"
+#include "../percolation/site/percolation_site_explosive.h"
 #include <iostream>
 #include <string>
 #include <chrono>

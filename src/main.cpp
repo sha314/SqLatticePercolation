@@ -19,6 +19,7 @@
 #include "cmdLineArgs/cmd_args.h"
 #include "cmdLineArgs/cmd_args_json.h"
 #include "tests/test_percolation.h"
+#include "tests/test_lattice.h"
 
 
 using namespace std;
@@ -76,14 +77,15 @@ void run_in_main(int argc, char** argv){
 //    bond_percolation(argc, argv);
 
 //    simulate_site_percolation(length, ensemble_size);
-    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
-    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
+//    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
+//    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
 //    simulate_bond_percolation_v2(length, ensemble_size);
 //    visual(length);
 //    simulate_site_percolation();
 //    entropyJumps(argc, argv);
 //    site_percolation_new_version(argc, argv);
+    test_sq_lattice_v2(length);
 
 }
 

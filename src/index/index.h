@@ -80,6 +80,25 @@ struct BondIndex{
 
 };
 
+/**
+* This is a translator class that translate
+*      (a) 1D index to 2D and vice versa for Index.
+*          (r,c) = r*L + c = index_site
+*      (b) 1D index to 2D BondIndex and vice versa.
+*          (t,r,c) = t*L^2 + r*L + c = index_bond
+*
+*      here, r -> row index
+*            c -> column index
+*            t -> bond type. 0 if horizontal and 1 if vertical
+**/
+class IndexTranslator{
+public:
+    static size_t translateBondTo1D(size_t length, BondIndex bondIndex);
+    static BondIndex translate1DToBond(size_t length, size_t index);
+    static size_t translateSiteTo1D(size_t length, Index index);
+    static Index translate1DToSite(size_t length, size_t index);
+
+};
 
 std::ostream& operator<<(std::ostream& os, const Index& index);
 bool operator==(const Index& index1, const Index& index2);

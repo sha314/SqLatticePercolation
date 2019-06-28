@@ -6,7 +6,9 @@
 #include <climits>
 #include <iterator>
 
-#include "percolation.h"
+#include "../percolation.h"
+#include "percolation_site_v9.h"
+#include "percolation_site_explosive.h"
 
 using namespace std;
 

@@ -11,6 +11,8 @@
 #include "../percolation/percolation.h"
 #include "../types.h"
 #include "../util/time_tracking.h"
+#include "../percolation/site/percolation_site_v9.h"
+#include "../percolation/site/percolation_site_explosive.h"
 
 
 using namespace std;
