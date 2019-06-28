@@ -103,11 +103,11 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
 
 //    connection_v1(current_site, site_index_sequence, bonds);
     connection_v2(current_site, sites, bonds);
-    cout << "current site " << current_site << endl;
+//    cout << "current site " << current_site << endl;
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
-        cout << "1st neighbors :{";
-        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
-        cout << "}";
+//        cout << "1st neighbors :{";
+//        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
+//        cout << "}";
         value_type r2 = _random() % (sites.size());
         current_site = sites[r2]; // select one of the neighbor randomly
 
@@ -144,6 +144,11 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn(
 /**
  * Instead of erasing the indices, place them to an inaccesible area by swapping or replacing.
  * If erasing is not performed then the performance will be better.
+ *
+ * L    time(v1)    time(v2)
+ * 200  1.12 sec    0.75 sec
+ * 400  7.8 sec     3.4 sec
+ *
  * @param sites
  * @param bonds
  * @return
@@ -160,11 +165,11 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_1nn_v2(
 
 //    connection_v1(current_site, site_index_sequence, bonds);
     connection_v2(current_site, sites, bonds);
-    cout << "current site " << current_site << " active ? " << _lattice.getSite(current_site).isActive() << endl;
+//    cout << "current site " << current_site << " active ? " << _lattice.getSite(current_site).isActive() << endl;
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
-        cout << "1st neighbors :{";
-        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
-        cout << "}";
+//        cout << "1st neighbors :{";
+//        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
+//        cout << "}";
         value_type r2 = _random() % (sites.size());
         current_site = sites[r2]; // select one of the neighbor randomly
 
@@ -315,6 +320,11 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn(
  * Select neighbor upto 2nd nearest neighbor
  * uses direcion of motion when selecting 2nd nearest neighbor
  * @param r : index of sites in the randomized array
+ *
+ * L    time(v1)    time(v2)
+ * 400  8.4 sec     3.4 sec
+ *
+ *
  * @param sites
  * @param bonds
  * @return
@@ -332,11 +342,11 @@ Index SitePercolationBallisticDeposition_v2::select_site_upto_2nn_v2(
 
 //    connection_v1(current_site, site_index_sequence, bonds);
     connection_v2(central_site, sites, bonds);
-    cout << "current site " << central_site << " active ? " << _lattice.getSite(central_site).isActive() << endl;
+//    cout << "current site " << central_site << " active ? " << _lattice.getSite(central_site).isActive() << endl;
     if (_lattice.getSite(central_site).isActive()){ // if the current site is occupied or active
-        cout << "1st neighbors :{";
-        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
-        cout << "}";
+//        cout << "1st neighbors :{";
+//        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
+//        cout << "}";
 
         bool flag_nn1 = true; // true means all 1st nearest neighbors are occupied
         bool flag_nn2 = true; // true means all 2nd nearest neighbors are occupied
@@ -451,6 +461,7 @@ value_type SitePercolationBallisticDeposition_v2::placeSite_1nn_v2() {
     vector<BondIndex> bonds;
     vector<Index>     sites;
 
+//    _last_placed_site = select_site_upto_1nn(sites, bonds);
     _last_placed_site = select_site_upto_1nn_v2(sites, bonds);
 
     return placeSite_weighted(_last_placed_site, sites, bonds);
@@ -468,6 +479,7 @@ value_type SitePercolationBallisticDeposition_v2::placeSite_2nn_v1() {
     vector<Index>     sites;
 
     try {
+//        _last_placed_site = select_site_upto_2nn(sites, bonds);
         _last_placed_site = select_site_upto_2nn_v2(sites, bonds);
         return placeSite_weighted(_last_placed_site, sites, bonds);
         //    return placeSite_v11(_last_placed_site);
