@@ -273,11 +273,6 @@ public:
     BondIndex translate1DToBond(size_t bi) const;
     Index translate1DToSite(size_t i) const;
 
-    static size_t translateBondTo1D(size_t length, BondIndex bi)  ;
-    static size_t translateSiteTo1D(size_t length,Index i) ;
-
-    static BondIndex translate1DToBond(size_t length, size_t bi) ;
-    static Index translate1DToSite(size_t length, size_t i) ;
 };
 
 

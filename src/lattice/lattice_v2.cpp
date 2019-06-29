@@ -1014,7 +1014,7 @@ BondIndex SqLattice_v2::translate1DToBond(size_t index) const{
     size_t half = index - t*_length_squared;
     size_t r = half / _length;
     size_t c = half % _length;
-    auto bt = (r == 0)? BondType::Horizontal : BondType::Vertical;
+    auto bt = (t == 0)? BondType::Horizontal : BondType::Vertical;
     return BondIndex(bt, r, c);
 }
 
@@ -1070,13 +1070,14 @@ std::vector<uint> SqLattice_v2::getBondIndices() {
 
 void SqLattice_v2::view_bonds() {
     std::cout << "view all bonds" << std::endl;
+    value_type  step = _length_squared - 1;
     std::cout << '{';
     for(value_type r{} ; r != 2*_length_squared ; ++r) {
-        if(r % _length_squared == 0) cout << "-------------|||||||||||||----------" << endl;
+        if(r % _length_squared == 0) cout << endl;
         if(r!=0) std::cout << "  ";
         else std::cout << '{';
         std::cout << _bonds[r] << ",";
-        if(r % _length == 0)  std::cout << '}' << endl;
+        if((r+1) % _length == 0)  std::cout << '}' << endl;
 
     }
     std::cout << '}';

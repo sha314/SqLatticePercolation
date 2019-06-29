@@ -129,7 +129,7 @@ BondIndex IndexTranslator::translate1DToBond(size_t length, size_t index) {
     size_t half = index - t*length_squared;
     size_t r = half / length;
     size_t c = half % length;
-    auto bt = (r == 0)? BondType::Horizontal : BondType::Vertical;
+    auto bt = (t == 0)? BondType::Horizontal : BondType::Vertical;
     return BondIndex(bt, r, c);
 }
 

@@ -89,6 +89,7 @@ void run_in_main(int argc, char** argv){
     // date 2019.06.28
     test_sq_lattice_v2(length);
 //    test_percolation(length);
+//    test_bond_index(length);
 
 }
 
