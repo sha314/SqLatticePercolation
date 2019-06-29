@@ -116,6 +116,11 @@ struct Bond{
 
     }
 
+    Bond(BondIndex bondIndex, value_type length){
+        _id = bondIndex;
+
+    }
+
     std::vector<Index> getSites() const { return {_end1, _end2};}
 
     Index id() const {
@@ -185,9 +190,52 @@ struct Bond{
     IndexRelative relativeIndex() const {return _relative_index;}
 };
 
+ /**
+  * Created on : 2019.06.29
+  * created by : shahnoor
+  * version 2 of Bond
+  */
+struct Bond_v2{
+    // check if active or not
+    bool _status{false};
+    int _group_id{-1};
+
+    BondIndex _id{};
+    ~Bond_v2() = default;
+    Bond_v2() = default;
+    Bond_v2(BondIndex bondIndex){
+        _id = bondIndex;
+    }
+    Index getSiteA()const;
+    Index getSiteB(size_t length)const;
+    std::vector<Index> getSiteIndex(size_t length) const ;
+
+    BondIndex getIndex() const {
+        return _id;
+    }
+
+    void activate() {_status = true;}
+    void deactivate() {
+        _group_id = -1;
+        _status = false;
+    }
+    bool isActive() const { return _status;}
+/*
+* Group get_ID is the set_ID of the cluster they are in
+*/
+    int get_groupID() const {return _group_id;}
+    void set_groupID(int g_id) {_group_id = g_id;}
+
+
+    bool isHorizontal() const { return _id.bondType == BondType ::Horizontal;}
+    bool isVertical()   const { return _id.bondType == BondType ::Vertical;}
+
+};
+
 
 
 std::ostream&   operator<<(std::ostream& os, const Bond& bond);
+std::ostream&   operator<<(std::ostream& os, const Bond_v2& bond);
 bool            operator==(Bond a, Bond b);
 bool            operator<(const Bond& bond1, const Bond& bond2);
 bool            operator>(const Bond& bond1, const Bond& bond2);

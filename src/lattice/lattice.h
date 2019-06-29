@@ -155,7 +155,7 @@ public:
 class SqLattice_v2 {
 //    std::vector<std::vector<Index>> _clusters;  // only store index in the cluster
     std::vector<Site> _sites;  // holds all the site_index_sequence
-    std::vector<Bond> _bonds;  // holds all horizontal bonds and vertical bonds
+    std::vector<Bond_v2> _bonds;  // holds all horizontal bonds and vertical bonds
 
     bool _bond_resetting_flag=true; // so that we can reset all bonds
     bool _site_resetting_flag=true; // and all site_index_sequence
@@ -197,10 +197,7 @@ public:
     void view_h_bonds();
     void view_v_bonds();
 
-    void view_bonds(){
-        view_h_bonds();
-        view_v_bonds();
-    }
+    void view_bonds();
 
     void view_h_bonds_extended();
     void view_v_bonds_extended();
@@ -227,9 +224,8 @@ public:
 
     Site& getSite(Index index);
 //    Site&& getSiteR(Index index);
-    Bond& get_h_bond(Index id);
-    Bond& get_v_bond(Index id);
-    Bond& getBond(BondIndex);
+
+    Bond_v2& getBond(BondIndex);
 
     const Site& getSite(Index index) const ;
 

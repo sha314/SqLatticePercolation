@@ -24,7 +24,7 @@ SqLattice_v2::SqLattice_v2(value_type length) {
     _length = length;
     _length_squared = _length * _length;
     _sites = std::vector<Site>(_length_squared);
-    _bonds = std::vector<Bond>(2 * _length_squared);
+    _bonds = std::vector<Bond_v2>(2 * _length_squared);
 }
 
 /********************************************************************
@@ -509,21 +509,22 @@ void SqLattice_v2::view() {
 void SqLattice_v2::view_h_bonds()
 {
     std::cout << "view horizontal bonds" << std::endl;
-//    std::cout << '{';
-//    for(value_type i{} ; i != _length ; ++i) {
-//        if(i!=0) std::cout << "  ";
-//        else std::cout << '{';
-//        for (value_type j{}; j != _length; ++j) {
-//            std::cout << _h_bonds[i][j] ;
-//            if(j != _length-1)
-//                std::cout << ',';
-//        }
-//        std::cout << '}';
-//        if(i != _length-1)
-//            std::cout << std::endl;
-//    }
-//    std::cout << '}';
-//    std::cout << std::endl;
+    std::cout << '{';
+    for(value_type r{} ; r != _length ; ++r) {
+        if(r!=0) std::cout << "  ";
+        else std::cout << '{';
+        for (value_type c{}; c != _length; ++c) {
+            value_type i_site = r * _length + c;
+            std::cout << _bonds[i_site] ;
+            if(c != _length-1)
+                std::cout << ',';
+        }
+        std::cout << '}';
+        if(r != _length-1)
+            std::cout << std::endl;
+    }
+    std::cout << '}';
+    std::cout << std::endl;
 }
 
 /**
@@ -532,21 +533,22 @@ void SqLattice_v2::view_h_bonds()
 void SqLattice_v2::view_v_bonds()
 {
     std::cout << "view vertical bonds" << std::endl;
-//    std::cout << '{';
-//    for(value_type i{} ; i != _length ; ++i) {
-//        if(i!=0) std::cout << "  ";
-//        else std::cout << '{';
-//        for (value_type j{}; j != _length; ++j) {
-//            std::cout << _v_bonds[i][j] ;
-//            if(j != _length-1)
-//                std::cout << ',';
-//        }
-//        std::cout << '}';
-//        if(i != _length-1)
-//            std::cout << std::endl;
-//    }
-//    std::cout << '}';
-//    std::cout << std::endl;
+    std::cout << '{';
+    for(value_type r{} ; r != _length ; ++r) {
+        if(r!=0) std::cout << "  ";
+        else std::cout << '{';
+        for (value_type c{}; c != _length; ++c) {
+            value_type i_site = r * _length + c;
+            std::cout << _bonds[i_site + _length_squared] ;
+            if(c != _length-1)
+                std::cout << ',';
+        }
+        std::cout << '}';
+        if(r != _length-1)
+            std::cout << std::endl;
+    }
+    std::cout << '}';
+    std::cout << std::endl;
 }
 
 
@@ -555,21 +557,22 @@ void SqLattice_v2::view_v_bonds()
  */
 void SqLattice_v2::view_h_bonds_extended(){
     std::cout << "view horizontal bonds" << std::endl;
-//    std::cout << '{';
-//    for(value_type i{} ; i != _length ; ++i) {
-//        if(i!=0) std::cout << "  ";
-//        else std::cout << '{';
-//        for (value_type j{}; j != _length; ++j) {
-//            std::cout << "(" << _h_bonds[i][j].get_groupID() << ":" << _h_bonds[i][j] << ")" ;
-//            if(j != _length-1)
-//                std::cout << ',';
-//        }
-//        std::cout << '}';
-//        if(i != _length-1)
-//            std::cout << std::endl;
-//    }
-//    std::cout << '}';
-//    std::cout << std::endl;
+    std::cout << '{';
+    for(value_type r{} ; r != _length ; ++r) {
+        if(r!=0) std::cout << "  ";
+        else std::cout << '{';
+        for (value_type c{}; c != _length; ++c) {
+            value_type i_site = r * _length + c;
+            std::cout << "(" << _bonds[i_site].get_groupID() << ":" << _bonds[i_site] << ")" ;
+            if(c != _length-1)
+                std::cout << ',';
+        }
+        std::cout << '}';
+        if(r != _length-1)
+            std::cout << std::endl;
+    }
+    std::cout << '}';
+    std::cout << std::endl;
 }
 
 /**
@@ -577,21 +580,22 @@ void SqLattice_v2::view_h_bonds_extended(){
  */
 void SqLattice_v2::view_v_bonds_extended(){
     std::cout << "view vertical bonds" << std::endl;
-//    std::cout << '{';
-//    for(value_type i{} ; i != _length ; ++i) {
-//        if(i!=0) std::cout << "  ";
-//        else std::cout << '{';
-//        for (value_type j{}; j != _length; ++j) {
-//            std::cout << "(" << _v_bonds[i][j].get_groupID() << ":" << _v_bonds[i][j] << ")" ;
-//            if(j != _length-1)
-//                std::cout << ',';
-//        }
-//        std::cout << '}';
-//        if(i != _length-1)
-//            std::cout << std::endl;
-//    }
-//    std::cout << '}';
-//    std::cout << std::endl;
+    std::cout << '{';
+    for(value_type r{} ; r != _length ; ++r) {
+        if(r!=0) std::cout << "  ";
+        else std::cout << '{';
+        for (value_type c{}; c != _length; ++c) {
+            value_type i_site = r * _length + c;
+            std::cout << "(" << _bonds[i_site + _length_squared].get_groupID() << ":" << _bonds[i_site] << ")" ;
+            if(c != _length-1)
+                std::cout << ',';
+        }
+        std::cout << '}';
+        if(r != _length-1)
+            std::cout << std::endl;
+    }
+    std::cout << '}';
+    std::cout << std::endl;
 }
 
 
@@ -694,7 +698,7 @@ int SqLattice_v2::getGroupIDBond(size_t index){
 }
 
 
-Bond& SqLattice_v2::getBond(BondIndex index) {
+Bond_v2& SqLattice_v2::getBond(BondIndex index) {
     size_t i = translateBondTo1D(index);
     return _bonds[i];
 
@@ -1039,9 +1043,12 @@ void SqLattice_v2::init(bool activate_bonds, bool activate_sites, bool bond_rese
     _bond_resetting_flag = bond_reset;
     _site_resetting_flag = site_reset;
     for(size_t i{}; i < _length_squared; ++i){
+        _sites[i] = Site(translate1DToSite(i), _length);
+        _bonds[i] = Bond_v2(translate1DToBond(i)); // horizontal
+        _bonds[i+_length_squared] = Bond_v2(translate1DToBond(i + _length_squared)); // vertical
         if(activate_bonds) {
             _bonds[i].activate(); // horizontal bond
-            _bonds[i+ _length_squared].activate(); // vertical bond
+            _bonds[i+_length_squared].activate(); // vertical bond
         }
         if(activate_sites){
             _sites[i].activate();
@@ -1059,6 +1066,21 @@ std::vector<uint> SqLattice_v2::getBondIndices() {
     std::vector<uint> a(_bonds.size());
     for(uint i{}; i < _bonds.size(); ++i){a[i]=i;}
     return a;
+}
+
+void SqLattice_v2::view_bonds() {
+    std::cout << "view all bonds" << std::endl;
+    std::cout << '{';
+    for(value_type r{} ; r != 2*_length_squared ; ++r) {
+        if(r % _length_squared == 0) cout << "-------------|||||||||||||----------" << endl;
+        if(r!=0) std::cout << "  ";
+        else std::cout << '{';
+        std::cout << _bonds[r] << ",";
+        if(r % _length == 0)  std::cout << '}' << endl;
+
+    }
+    std::cout << '}';
+    std::cout << std::endl;
 }
 
 

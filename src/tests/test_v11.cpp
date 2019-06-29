@@ -9,8 +9,12 @@
 void test_sq_lattice_v2(size_t length) {
     SqLattice_v2 lattice(length);
     lattice.init(true, true, true, true);
-    lattice.view_sites_by_id();
-    lattice.view_sites_by_relative_index();
+//    lattice.view();
+    lattice.view_sites();
+    lattice.view_bonds();
+//    lattice.view_sites_by_id();
+//    lattice.view_sites_by_relative_index();
+
 }
 
 void test_percolation(size_t length){
@@ -19,4 +23,7 @@ void test_percolation(size_t length){
     sp.init(false);
 
     sp.viewLattice();
+    while(sp.occupy()){
+        sp.viewLattice();
+    }
 }
