@@ -47,6 +47,8 @@
  * 10. last modified cluster id can be obtained from @var _last_placed_site
  *
  *
+ * L        Time
+ * 1000     19.3 sec
  */
 class SitePercolation_ps_v11 : public SqLatticePercolation_v2{
 protected:

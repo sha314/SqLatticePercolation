@@ -58,13 +58,28 @@ set(SOURCE_FILES
         src/util/time_tracking.cpp
         src/util/time_tracking.h
         src/util/printer.cpp
+        src/percolation/site/percolation_site_v9.h
         src/percolation/site/percolation_site_v9.cpp
+        src/percolation/site/percolation_site_v10.h
         src/percolation/site/percolation_site_v10.cpp
+        src/percolation/site/percolation_site_v11.h
+        src/percolation/site/percolation_site_v11.cpp
         src/util/checking.cpp
         src/util/checking.h
+        src/percolation/bond/percolation_bond_v1.h
+        src/percolation/bond/percolation_bond_v2.h
+        src/percolation/bond/percolation_bond_v3.h
         src/percolation/bond/percolation_bond_v1.cpp
         src/percolation/bond/percolation_bond_v2.cpp
+        src/percolation/bond/percolation_bond_v3.cpp
         src/tests/test_percolation.cpp
-        src/tests/test_percolation.h src/lattice/lattice_v2.cpp src/tests/test_v11.cpp src/tests/test_v11.h src/percolation/site/percolation_site_v11.cpp src/percolation/site/percolation_site_v11.h src/percolation/percolation_v2.cpp src/percolation/percolation_v2.h src/percolation/site/percolation_site_v10.h src/percolation/site/percolation_site_v9.h src/percolation/site/percolation_site_explosive.h src/percolation/bond/percolation_bond_v1.h src/percolation/bond/percolation_bond_v2.h src/percolation/cluster/cluster_v4.cpp)
+        src/tests/test_percolation.h
+        src/percolation/percolation_v2.cpp
+        src/percolation/percolation_v2.h
+        src/lattice/lattice_v2.cpp
+        src/tests/test_v11.cpp
+        src/tests/test_v11.h
+        src/percolation/site/percolation_site_explosive.h
+        src/percolation/cluster/cluster_v4.cpp)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})

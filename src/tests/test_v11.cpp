@@ -21,12 +21,20 @@ void test_sq_lattice_v2(size_t length) {
 
 void test_percolation(size_t length){
     SitePercolation_ps_v11 sp(length);
-    sp.setRandomState(0, false);
+    sp.setRandomState(0, true);
     sp.init(false);
 
-    sp.viewLattice();
+//    sp.viewLatticeByID();
+//    sp.viewClusterExtended();
     while(sp.occupy()){
-        sp.viewLattice();
+//        sp.viewLatticeByID();
+//        sp.viewClusterExtended();
+        if(sp.detectWrapping()){
+            cout << sp.occupationProbability() << endl;
+//            sp.viewClusterExtended();
+//            sp.viewSiteByRelativeIndex();
+            break;
+        }
     }
 }
 
