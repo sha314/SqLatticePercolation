@@ -107,21 +107,21 @@ public:
      */
     void relabel_sites(const Cluster_v3& clstr, int id);
     void relabel_bonds(const Cluster_v3& clstr, int id);
-    void relabel_bonds_v1(BondIndex site_a, const Cluster_v3 &clstr_b); // implemented on 17 Aug 2018
+//    void relabel_bonds_v1(BondIndex site_a, const Cluster_v3 &clstr_b); // implemented on 17 Aug 2018
     void relabel_bonds(const std::vector<BondIndex> &sites, int id_a, int delta_x_ab, int delta_y_ab); // implemented on 17 Aug 2018
 
-    void relabel_v1(BondIndex last_bond, const Cluster_v3& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
+//    void relabel_v1(BondIndex last_bond, const Cluster_v3& clstr_b); // relative index is set accordingly. implemented on 17 Aug 2018
     void relabel_sites(const std::vector<Index> &sites, int id_a, int delta_x_ab, int delta_y_ab) ;
 
-    void relabel_sites_relative(BondIndex bond, const std::vector<Index> &sites);
-    void relabel_new_sites_relative(const std::vector<Index> &sites, int id);
+//    void relabel_sites_relative(BondIndex bond, const std::vector<Index> &sites);
+//    void relabel_new_sites_relative(const std::vector<Index> &sites, int id);
 
     // relabel site_index_sequence and bonds in the cluster cluster
-    void relabel_cluster(BondIndex bond, const std::vector<Index>& sites);
+//    void relabel_cluster(BondIndex bond, const std::vector<Index>& sites);
     void relabel_cluster(BondIndex bond, const Cluster_v3& clstr_b, size_t bond_pos, size_t site_pos);
 
-    void numberOfActiveSites() const {std::cout << "Number of active site_index_sequence " << _total_number_of_active_bonds << std::endl;}
-    double activeSites() const { return _total_number_of_active_bonds;}
+    void numberOfActiveBonds() const {std::cout << "Number of active site_index_sequence " << _total_number_of_active_bonds << std::endl;}
+    double activeBonds() const { return _total_number_of_active_bonds;}
 
     value_type count_number_of_active_site();
 
@@ -140,9 +140,9 @@ public:
     bool detect_wrapping_v1();
 //    bool detect_wrapping_v2();
 
-    IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
-    IndexRelative getRelativeIndex(Index root, Index site_new);
-    IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
+//    IndexRelative getRelativeIndex(BondIndex root, BondIndex bond_new); // implemented on 16 Aug 2018
+//    IndexRelative getRelativeIndex(Index root, Index site_new);
+//    IndexRelative getRelativeIndex_v2(BondIndex root, BondIndex bond_new); // implemented on 17 Aug 2018
 
 //    const std::vector<BondIndex>& wrapping_bonds() const { return  _wrapping_indices;}
     const std::vector<Index> wrapping_indices() const { return  _wrapping_indices;}
@@ -180,12 +180,12 @@ private:
     void randomize_v2();
 
 
-    value_type manage_clusters_v3(
-            const std::set<value_type> &found_index_set,
-            std::vector<Index> &sites,
-            BondIndex &bond,
-            int base_id
-    );
+//    value_type manage_clusters_v3(
+//            const std::set<value_type> &found_index_set,
+//            std::vector<Index> &sites,
+//            BondIndex &bond,
+//            int base_id
+//    );
 
 };
 

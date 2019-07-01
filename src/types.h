@@ -9,6 +9,7 @@
 
 
 using value_type = unsigned long;
+using index_type = unsigned int;
 using signed_value_type =  long;
 
 //std::string log_output_file = "log.percolation.txt" + std::to_string(__DATE__);

@@ -157,6 +157,7 @@ public:
     virtual bool occupy();
 
     value_type placeSite(Index site);
+    value_type placeSite(Index site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
 
     value_type manageClusters(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
@@ -259,6 +260,7 @@ protected:
     void randomize_v2(); // better random number generator
 
     value_type placeSite_weighted_v2(Index site);
+    value_type placeSite_weighted_v3(Index site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
     value_type merge_cluster_v2(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
     value_type merge_cluster_v3(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 

@@ -50,6 +50,8 @@ set(SOURCE_FILES
         src/percolation/percolation.cpp
         src/percolation/percolation.h
         src/percolation/site/percolation_site_ballistic_deps_v2.cpp
+        src/percolation/site/percolation_site_ballistic_deps_v3.cpp
+        src/percolation/site/percolation_site_ballistic_deps_v4.cpp
         src/percolation/site/percolation_site_explosive.cpp
         src/percolation/percolation_type.h
         src/percolation/site_position.cpp
@@ -80,6 +82,7 @@ set(SOURCE_FILES
         src/tests/test_v11.cpp
         src/tests/test_v11.h
         src/percolation/site/percolation_site_explosive.h
-        src/percolation/cluster/cluster_v4.cpp)
+        src/percolation/cluster/cluster_v4.cpp
+        src/percolation/site/percolation_site_ballistic.h)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})

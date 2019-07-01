@@ -179,6 +179,11 @@ public:
     virtual const std::vector<double> clusterSizeDistribution() const {std::cout << "not defined in SqLatticePercolation" << std::endl;return {};};  // 2019.06.17
 
     IndexRelative getRelativeIndex(Index root, Index site_new);
+
+
+    void connection_periodic(Index site,
+                             std::vector<Index> &site_neighbor,
+                             std::vector<BondIndex> &bond_neighbor); // 2019.01.04
 };
 
 

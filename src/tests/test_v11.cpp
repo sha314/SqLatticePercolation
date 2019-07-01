@@ -6,6 +6,7 @@
 #include "../lattice/lattice.h"
 #include "../percolation/site/percolation_site_v11.h"
 #include "../percolation/bond/percolation_bond_v3.h"
+#include "../percolation/bond/percolation_bond_v2.h"
 
 using namespace std;
 
@@ -40,7 +41,7 @@ void test_percolation(size_t length){
 }
 
 void test_percolation_bond(size_t length){
-    BondPercolation_pb_v3 sp(length);
+    BondPercolation_pb_v2 sp(length);
     sp.setRandomState(0, true);
     sp.init(false);
 

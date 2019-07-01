@@ -114,7 +114,6 @@ void SitePercolation_ps_v11::reset() {
     number_of_bonds_to_span.clear();
 //    spanning_cluster_ids.clear();
     _spanning_sites.clear();
-    _wrapping_sites.clear();
 //    wrapping_cluster_ids.clear();
 
     _bonds_in_cluster_with_size_two_or_more = 0;
@@ -224,6 +223,7 @@ void SitePercolation_ps_v11::track_numberOfSitesInLargestCluster(){
         _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
     }
 }
+
 
 /**
  * Take a bond index only if the corresponding site is active
@@ -633,55 +633,6 @@ void SitePercolation_ps_v11::connection_v2(Index site, vector<Index> &site_neigh
 
 
 /**
- * Take a bond index only if the corresponding site is active
- * takes longer? time than version 1?, i.e.,  connection()
- * @param site
- * @param site_neighbor
- * @param bond_neighbor
- */
-void SitePercolation_ps_v11::connection_periodic(Index site, vector<Index> &site_neighbor, vector<BondIndex> &bond_neighbor)
-{
-    site_neighbor.clear();
-    bond_neighbor.clear();
-
-    value_type prev_column  = (site.column_ + length() - 1) % length();
-    value_type prev_row     = (site.row_ + length() - 1) % length();
-    value_type next_row     = (site.row_ + 1) % length();
-    value_type next_column  = (site.column_ + 1) % length();
-
-    // 1 level inside the lattice
-    // not in any the boundary
-    site_neighbor.resize(4);
-    site_neighbor[0] = {site.row_, next_column};
-    site_neighbor[1] = {site.row_, prev_column};
-    site_neighbor[2] = {next_row, site.column_};
-    site_neighbor[3] = {prev_row, site.column_};
-
-    bond_neighbor.reserve(4);
-
-//    if(!_lattice.getSite(site_neighbor[0]).isActive()) {
-//        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
-//    }
-//    if(!_lattice.getSite(site_neighbor[1]).isActive()){
-//        bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
-//    }
-//    if(!_lattice.getSite(site_neighbor[2]).isActive()){
-//        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
-//    }
-//    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
-//        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
-//    }
-    bond_neighbor.resize(4);
-    bond_neighbor[0] = {BondType::Horizontal, site.row_, site.column_};
-    bond_neighbor[1] = {BondType::Horizontal, site.row_, prev_column};
-    bond_neighbor[2] = {BondType::Vertical,    site.row_, site.column_};
-    bond_neighbor[3] = {BondType::Vertical, prev_row, site.column_};
-
-}
-
-
-
-/**
  * This function must be called after a site is placed in the
  * newest cluster
  * and an id is given from the lattice according to the cluster they are on.
@@ -783,6 +734,12 @@ value_type SitePercolation_ps_v11::placeSite(uint current_site) {
     return placeSite_weighted_v2(current_site);
 }
 
+
+value_type SitePercolation_ps_v11::placeSite(uint current_site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds) {
+    return placeSite_weighted_v3(current_site, sites, bonds);
+}
+
+
 /***
  * Index of the selected site must be provided with the argument
  * Date : 2019.06.24
@@ -804,6 +761,37 @@ value_type SitePercolation_ps_v11::placeSite_weighted_v2(uint current_site) {
     vector<BondIndex> bonds ;
     vector<Index> sites ;
     _lattice.get_neighbors(_last_placed_site, sites, bonds);
+//    cout << bonds << endl;
+    subtract_entropy_for_bond(bonds);  // tracking entropy change
+
+    value_type base = manageClusters(sites, bonds);
+    add_entropy_for_bond(base); // tracking entropy change
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfSitesInLargestCluster();
+
+    return base;
+}
+
+
+/***
+ * Index of the selected site must be provided with the argument
+ * Date : 2019.06.24
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v11::placeSite_weighted_v3(
+        uint current_site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds) {
+    // randomly choose a site
+    if (_number_of_occupied_sites == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = IndexTranslator::translate1DToSite(length(), current_site);
+//    cout << "placing site " << current_site << endl;
+    _lattice.activate_site(_last_placed_site);
+    ++_number_of_occupied_sites;
+
 //    cout << bonds << endl;
     subtract_entropy_for_bond(bonds);  // tracking entropy change
 
@@ -968,7 +956,7 @@ void SitePercolation_ps_v11::spanningIndices() const {
 
 void SitePercolation_ps_v11::wrappingIndices() const {
     cout << "Wrapping Index : id : relative index" << endl;
-    for(auto i: _wrapping_sites){
+    for(auto i: _spanning_sites){
         cout << "Index " << i << " : id "
              << _lattice.getSite(i).get_groupID()
              << " relative index : " << _lattice.getSite(i).relativeIndex() << endl;
@@ -1270,7 +1258,7 @@ bool SitePercolation_ps_v11::detect_wrapping_v1()  {
     // check if it is already a wrapping site
     int id = _lattice.getSite(site).get_groupID();
     int tmp_id{};
-    for (auto i: _wrapping_sites){
+    for (auto i: _spanning_sites){
         tmp_id = _lattice.getSite(i).get_groupID();
         if(id == tmp_id ){
 //            cout << "Already a wrappig cluster : line " << __LINE__ << endl;
@@ -1300,7 +1288,7 @@ bool SitePercolation_ps_v11::detect_wrapping_v1()  {
 //            cout << "neibhbor " << a << " relative " << b << endl;
             if(abs(irel.x_ - b.x_) > 1 || abs(irel.y_ - b.y_) > 1){
 //                cout << "Wrapping : line " << __LINE__ << endl;
-                _wrapping_sites.push_back(site);
+                _spanning_sites.push_back(site);
                 return true;
             }
         }
@@ -1309,7 +1297,7 @@ bool SitePercolation_ps_v11::detect_wrapping_v1()  {
 //    cout << "wrapping site_index_sequence " << _wrapping_indices << endl;
     // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
     // that means there is wrapping but not for the %site
-    return !_wrapping_sites.empty();
+    return !_spanning_sites.empty();
 }
 
 
@@ -1606,7 +1594,7 @@ value_type SitePercolation_ps_v11::numberOfBondsInTheSpanningClusters() {
 value_type SitePercolation_ps_v11::numberOfSitesInTheWrappingClusters(){
     value_type nos{};
     int id{};
-    for(auto i: _wrapping_sites){
+    for(auto i: _spanning_sites){
         id = _lattice.getSite(i).get_groupID();
         if(id >= 0) {
             nos += _clusters[id].numberOfSites();
@@ -1622,7 +1610,7 @@ value_type SitePercolation_ps_v11::numberOfSitesInTheWrappingClusters(){
 value_type SitePercolation_ps_v11::numberOfBondsInTheWrappingClusters(){
     value_type nob{};
     int id{};
-    for(auto i: _wrapping_sites){
+    for(auto i: _spanning_sites){
         id = _lattice.getSite(i).get_groupID();
         if(id >= 0) {
             nob += _clusters[id].numberOfBonds();
@@ -1858,8 +1846,8 @@ void SitePercolation_ps_v11::writeVisualLatticeData(const string &filename, bool
     if(!_spanning_sites.empty()){
         id = _lattice.getSite(_spanning_sites.front()).get_groupID();
     }
-    else if(!_wrapping_sites.empty()){
-        id = _lattice.getSite(_wrapping_sites.front()).get_groupID();
+    else if(!_spanning_sites.empty()){
+        id = _lattice.getSite(_spanning_sites.front()).get_groupID();
     }
 
     if(only_spanning){

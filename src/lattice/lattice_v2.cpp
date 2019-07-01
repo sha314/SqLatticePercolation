@@ -1002,14 +1002,14 @@ IndexRelative SqLattice_v2::getRelativeIndex(size_t index) {
  * @param bondIndex
  * @return
  */
-size_t SqLattice_v2::translateBondTo1D(BondIndex bondIndex) const{
+uint SqLattice_v2::translateBondTo1D(BondIndex bondIndex) const{
     size_t t = (bondIndex.bondType == BondType ::Horizontal) ? 0 : 1;
     size_t index  = _length_squared * t + _length * bondIndex.row_ + bondIndex.column_;
 
     return index;
 }
 
-BondIndex SqLattice_v2::translate1DToBond(size_t index) const{
+BondIndex SqLattice_v2::translate1DToBond(uint index) const{
     size_t t = index / _length_squared; // determine horizontal or vertical
     size_t half = index - t*_length_squared;
     size_t r = half / _length;
@@ -1027,12 +1027,12 @@ BondIndex SqLattice_v2::translate1DToBond(size_t index) const{
  * @param index
  * @return
  */
-size_t SqLattice_v2::translateSiteTo1D(Index index) const{
+uint SqLattice_v2::translateSiteTo1D(Index index) const{
     size_t i  = _length * index.row_ + index.column_;
     return i;
 }
 
-Index SqLattice_v2::translate1DToSite(size_t index) const{
+Index SqLattice_v2::translate1DToSite(uint index) const{
     size_t c = index % _length;
     size_t r = index / _length;
     return Index(r, c);

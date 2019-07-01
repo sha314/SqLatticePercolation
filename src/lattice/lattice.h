@@ -251,8 +251,8 @@ public:
     std::vector<Index> getSites();
     std::vector<BondIndex> getBonds();
 
-    std::vector<uint> getSiteIndices();
-    std::vector<uint> getBondIndices();
+    std::vector<index_type> getSiteIndices();
+    std::vector<index_type> getBondIndices();
 
 /******************************************************************************
  * Get Neighbor from given index
@@ -268,10 +268,10 @@ public:
     /**************************
      * Translator
      */
-    size_t translateBondTo1D(BondIndex bondIndex) const ;
-    size_t translateSiteTo1D(Index index) const;
-    BondIndex translate1DToBond(size_t bi) const;
-    Index translate1DToSite(size_t i) const;
+    index_type translateBondTo1D(BondIndex bondIndex) const ;
+    index_type translateSiteTo1D(Index index) const;
+    BondIndex translate1DToBond(index_type bi) const;
+    Index translate1DToSite(index_type i) const;
 
 };
 

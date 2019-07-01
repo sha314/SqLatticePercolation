@@ -119,8 +119,8 @@ public:
     void relabel_cluster(BondIndex bond, const std::vector<Index>& sites);
     void relabel_cluster(BondIndex bond, const Cluster_v3& clstr_b, size_t bond_pos, size_t site_pos);
 
-    void numberOfActiveSites() const {std::cout << "Number of active site_index_sequence " << _total_number_of_active_bonds << std::endl;}
-    double activeSites() const { return _total_number_of_active_bonds;}
+    void numberOfActiveBonds() const {std::cout << "Number of active site_index_sequence " << _total_number_of_active_bonds << std::endl;}
+    double activeBonds() const { return _total_number_of_active_bonds;}
 
     value_type count_number_of_active_site();
 

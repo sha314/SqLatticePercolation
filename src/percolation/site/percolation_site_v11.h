@@ -77,18 +77,9 @@ protected:
     /*Holds indices on the edges*/
     std::vector<Index> _top_edge, _bottom_edge, _left_edge, _right_edge;
 
-    /*
-     * Contains one site of a spanning cluster
-     * so the using the site indices saved here we can find spanning cluster ids and indices
-     * from lattice.
-     * each time one site is saved here the indices of the cluster that it belongs to must be erased from
-     * BoundaryLR and BoundaryTB containers. It would make the spanning detection process faster. todo
-     */
-
     bool _spanning_occured = false;
 
-    std::vector<Index> _spanning_sites; //todo : remove one of these
-    std::vector<Index> _wrapping_sites;
+    std::vector<Index> _spanning_sites;
 
     std::vector<value_type> number_of_sites_to_span;
     std::vector<value_type> number_of_bonds_to_span;
@@ -162,18 +153,15 @@ public:
     virtual bool occupy();
 
     value_type placeSite(uint site);
+    value_type placeSite(uint site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
 
     value_type manageClusters(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 
     uint selectSite(); // selecting site
 
-
     void connection_v1(Index site, std::vector<Index> &neighbors, std::vector<BondIndex> &bonds);
     void connection_v2(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-    void connection_periodic(Index site,
-                             std::vector<Index> &site_neighbor,
-                             std::vector<BondIndex> &bond_neighbor); // 2019.01.04
 
     /*************************************************
      * Relabeling methods
@@ -181,10 +169,10 @@ public:
 
     // applicable to weighted relabeling
 
-    void relabel_sites(const Cluster_v4&  clstr, int id);  // todo pass cluster as reference
+    void relabel_sites(const Cluster_v4&  clstr, int id);
     void relabel_sites_v5(Index root_a, const Cluster_v4& clstr_b); // relative index is set accordingly
     void relabel_sites_v6(Index root_a, const Cluster_v4& clstr_b, int id); // relative index is set accordingly
-    void relabel_bonds(const Cluster_v4&  clstr, int id);  // todo
+    void relabel_bonds(const Cluster_v4&  clstr, int id);
 
 
     // relabel site_index_sequence and bonds in the cluster cluster
@@ -262,6 +250,7 @@ protected:
     void randomize_v2(); // better random number generator
 
     value_type placeSite_weighted_v2(uint site);
+    value_type placeSite_weighted_v3(uint current_site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
     value_type merge_cluster_v2(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
     value_type merge_cluster_v3(const std::vector<Index>& sites, const std::vector<BondIndex> &bonds);
 

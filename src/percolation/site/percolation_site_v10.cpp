@@ -865,6 +865,10 @@ value_type SitePercolation_ps_v10::placeSite(Index current_site) {
     return placeSite_weighted_v2(current_site);
 }
 
+value_type SitePercolation_ps_v10::placeSite(Index current_site, const std::vector<Index>& sites, const std::vector<BondIndex> &bonds) {
+    return placeSite_weighted_v3(current_site, sites, bonds);
+}
+
 /***
  * Index of the selected site must be provided with the argument
  * Date : 2019.06.24
@@ -886,6 +890,37 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v2(Index current_site) {
     vector<BondIndex> bonds ;
     vector<Index> sites ;
     _lattice.get_neighbors(current_site, sites, bonds);
+//    cout << bonds << endl;
+    subtract_entropy_for_bond(bonds);  // tracking entropy change
+
+    value_type base = manageClusters(sites, bonds);
+    add_entropy_for_bond(base); // tracking entropy change
+    // running tracker
+    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+    track_numberOfSitesInLargestCluster();
+
+    return base;
+}
+
+/***
+ * Index of the selected site must be provided with the argument
+ * Date : 2019.06.24
+ * @param current_site
+ * @return
+ */
+value_type SitePercolation_ps_v10::placeSite_weighted_v3(
+        Index current_site, const std::vector<Index>& sites, const vector<BondIndex> &bonds)
+{
+    // randomly choose a site
+    if (_number_of_occupied_sites == maxSites()) {
+        return ULONG_MAX;// unsigned long int maximum value
+    }
+
+    _last_placed_site = current_site;
+//    cout << "placing site " << current_site << endl;
+    _lattice.activate_site(current_site);
+    ++_number_of_occupied_sites;
+
 //    cout << bonds << endl;
     subtract_entropy_for_bond(bonds);  // tracking entropy change
 

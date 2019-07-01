@@ -11,6 +11,7 @@
 #include "../percolation/site/percolation_site_v10.h"
 #include "../percolation/bond/percolation_bond_v2.h"
 #include "../percolation/site/percolation_site_explosive.h"
+#include "../percolation/site/percolation_site_ballistic.h"
 #include <iostream>
 #include <string>
 #include <chrono>
