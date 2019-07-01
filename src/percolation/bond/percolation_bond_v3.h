@@ -10,6 +10,10 @@
 
 
 /**
+ * class      : BondPercolation_pb_v3
+ * superclass : SqLatticePercolation_v2
+ * used classes : Cluster_v4,
+ *
  * Bond Percolation by Placing Bonds
  *
  * version 3
@@ -55,8 +59,8 @@ class BondPercolation_pb_v3 : public SqLatticePercolation_v2{
     bool _periodicity{false};
 
     // index sequence
-    std::vector<BondIndex> bond_index_sequence; // initialized only once
-    std::vector<Index> site_index_sequence;
+    std::vector<BondIndex>  bond_index_sequence; // initialized only once
+    std::vector<Index>      site_index_sequence;
     BondIndex _last_placed_bond;
 
     double _total_number_of_active_bonds{};
@@ -102,7 +106,7 @@ public:
     }
 
 
-    value_type placeBond_v1();
+    index_type placeBond_v1();
     bool occupy();
 
     /**********************

@@ -308,14 +308,14 @@ bool BondPercolation_pb_v3::occupy() {
  *                                      or the merged cluster index
  *
  */
-value_type BondPercolation_pb_v3::placeBond_v1() {
+index_type BondPercolation_pb_v3::placeBond_v1() {
 
     if (_number_of_occupied_bonds >= maxBonds()){
         return ULONG_MAX;// unsigned long int maximum value
     }
-    value_type index = randomized_index[_index_sequence_position];
+    index_type index = randomized_index[_index_sequence_position];
     ++_index_sequence_position;
-    BondIndex current_bond = bond_index_sequence[index];
+    BondIndex current_bond = _lattice.translate1DToBond(index);
     _last_placed_bond = current_bond;
 //    cout << "placing bond " << current_bond << " : " << __LINE__ << endl;
 

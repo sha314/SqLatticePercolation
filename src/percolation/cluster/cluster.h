@@ -159,16 +159,6 @@ public:
     uint lastAddedSite(){return _site_index.back();}
     uint lastAddedBond(){return _bond_index.back();}
 
-    bool isSitePresent(uint ) const ;
-    bool isBondPresent(uint ) const ;
-
-    void eraseSite(uint index);
-    void eraseBond(uint index);
-
-    void insertBonds(const std::vector<uint>& bonds);
-    void insertSites(const std::vector<uint>& sites);
-
-    void insert(size_t length, const Cluster_v4& cluster);
     void insert_v2(const Cluster_v4& cluster);
     void insert_with_id_v2(const Cluster_v4& cluster, int id);
 

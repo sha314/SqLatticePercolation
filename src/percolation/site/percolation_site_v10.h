@@ -8,6 +8,10 @@
 #include "../percolation.h"
 
 /**
+ * class    : SitePercolation_ps_v10
+ * superclass : SqLatticePercolation
+ * used classes :
+ *
  * Site Percolation by Placing Sites
  *
  * version 10
@@ -33,7 +37,7 @@
  * 5. Spanning is calculated by number of bonds in a spanning clusters with periodicity turned off,
  *      i.e., number of bonds in the spanning clusters divided by total number of bonds
  *
- * 6. Unweighted relabeling is ommited in this version ??
+ * 6. Unweighted relabeling is ommited in this version
  *
  * 7. Runtime is significantly improved. For example, if L=200 program will take ~1 min to place all sites.
  *

@@ -22,11 +22,12 @@
 #include "boundary.h"
 #include <random>
 
+
 /**
- * uses object of following types
- *  SqLattice_v2,
- *  Cluster_v4
+ * class : SqLatticePercolation_v2
+ * used classed : SqLattice_v2, Cluster_v4
  *
+ * The Square Lattice Percolation class : version 2
  */
 class SqLatticePercolation_v2{
     // constants
@@ -40,11 +41,6 @@ protected:
     SqLattice_v2 _lattice;
 
     value_type _index_sequence_position{};
-    // cluster
-    // todo. on the next version only count number of site_index_sequence
-    // todo. and bonds and keep track of root site_index_sequence and bonds only
-    // todo. root site or bond means the first one that is stored
-
     std::vector<Cluster_v4> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
@@ -68,7 +64,7 @@ protected:
     value_type _number_of_occupied_sites{};
     value_type _number_of_occupied_bonds{};
     value_type _max_iteration_limit{};
-    std::vector<value_type> randomized_index;
+    std::vector<index_type> randomized_index;
     // order parameter calculation ingradiants
     // id of the cluster which has maximum number of bonds. used to calculate order parameter
     value_type _number_of_bonds_in_the_largest_cluster{};

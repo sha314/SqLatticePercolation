@@ -93,10 +93,10 @@ struct BondIndex{
 **/
 class IndexTranslator{
 public:
-    static size_t translateBondTo1D(size_t length, BondIndex bondIndex);
-    static BondIndex translate1DToBond(size_t length, size_t index);
-    static size_t translateSiteTo1D(size_t length, Index index);
-    static Index translate1DToSite(size_t length, size_t index);
+    static index_type translateBondTo1D(size_t length, BondIndex bondIndex);
+    static BondIndex translate1DToBond(size_t length, index_type index);
+    static index_type translateSiteTo1D(size_t length, Index index);
+    static Index translate1DToSite(size_t length, index_type index);
 
 };
 

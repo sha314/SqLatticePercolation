@@ -112,18 +112,18 @@ vector<Index> get_all_2nn_in_1nn_s_direction(Index center, const vector<Index> &
     return nn_2;
 }
 
-Index IndexTranslator::translate1DToSite(size_t length, size_t index) {
+Index IndexTranslator::translate1DToSite(size_t length, index_type index) {
     size_t c = index % length;
     size_t r = index / length;
     return Index(r, c);
 }
 
-size_t IndexTranslator::translateSiteTo1D(size_t length, Index index) {
-    size_t i  = length * index.row_ + index.column_;
+index_type IndexTranslator::translateSiteTo1D(size_t length, Index index) {
+    index_type i  = length * index.row_ + index.column_;
     return i;
 }
 
-BondIndex IndexTranslator::translate1DToBond(size_t length, size_t index) {
+BondIndex IndexTranslator::translate1DToBond(size_t length, index_type index) {
     size_t  length_squared = length * length;
     size_t t = index / length_squared; // determine horizontal or vertical
     size_t half = index - t*length_squared;
@@ -133,10 +133,10 @@ BondIndex IndexTranslator::translate1DToBond(size_t length, size_t index) {
     return BondIndex(bt, r, c);
 }
 
-size_t IndexTranslator::translateBondTo1D(size_t length, BondIndex bondIndex) {
-    size_t  length_squared = length * length;
-    size_t t = (bondIndex.bondType == BondType ::Horizontal) ? 0 : 1;
-    size_t index  = length_squared * t + length * bondIndex.row_ + bondIndex.column_;
+index_type IndexTranslator::translateBondTo1D(size_t length, BondIndex bondIndex) {
+    index_type  length_squared = length * length;
+    index_type t = (bondIndex.bondType == BondType ::Horizontal) ? 0 : 1;
+    index_type index  = length_squared * t + length * bondIndex.row_ + bondIndex.column_;
 
     return index;
 }

@@ -9,12 +9,12 @@ using namespace std;
 
 // add Site index
 void Cluster_v4::addSiteIndex(size_t length, Index index) {
-    uint i = IndexTranslator::translateSiteTo1D(length, index);
+    index_type i = IndexTranslator::translateSiteTo1D(length, index);
     _site_index.push_back(i);
 }
 
 void Cluster_v4::addBondIndex(size_t length, BondIndex bondIndex) {
-    uint i = IndexTranslator::translateBondTo1D(length, bondIndex);
+    index_type i = IndexTranslator::translateBondTo1D(length, bondIndex);
     _bond_index.push_back(i);
 }
 

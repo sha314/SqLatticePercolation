@@ -12,7 +12,7 @@
 #include <map>
 #include <climits>
 #include <fstream>
-
+#include <random>
 #include "../flags.h"
 #include "../types.h"
 #include "../lattice/lattice.h"
@@ -21,10 +21,12 @@
 #include "site_position.h"
 #include "id_index.h"
 #include "boundary.h"
-#include <random>
 
 
 /**
+ * class : SqLatticePercolation
+ * used classed : SqLattice, Cluster_v3
+ *
  * The Square Lattice Percolation class
  */
 class SqLatticePercolation{
@@ -40,9 +42,6 @@ protected:
 
     value_type _index_sequence_position{};
     // cluster
-    // todo. on the next version only count number of site_index_sequence
-    // todo. and bonds and keep track of root site_index_sequence and bonds only
-    // todo. root site or bond means the first one that is stored
 
     std::vector<Cluster_v3> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
