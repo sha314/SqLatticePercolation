@@ -76,7 +76,7 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-//    simulate_site_percolation(length, ensemble_size);
+    simulate_site_percolation(length, ensemble_size);
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
@@ -89,7 +89,7 @@ void run_in_main(int argc, char** argv){
     // date 2019.06.28
 //    test_sq_lattice_v2(length);
 //    test_percolation(length);
-    test_percolation_bond(length);
+//    test_percolation_bond(length);
 //    test_bond_index(length);
 
 }
