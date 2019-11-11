@@ -107,6 +107,59 @@ void SqLatticePercolation::viewClusterExtended() {
     cout << "Total clusters " << cluster_count << endl;
 }
 
+void SqLatticePercolation::viewCluster(Index index){
+
+    int  i= _lattice.getGroupID(index);
+    if(i < 0){
+        cout << "negative index : " << __FILE__ << " at "<< __LINE__ << endl;
+    }
+    viewClusterByIndex(i);
+
+}
+
+void SqLatticePercolation::viewClusterByIndex(int i) {
+    if(_clusters[i].empty()){
+//            cout << "Empty cluster : line " << endl;
+        return;
+    }
+    std::vector<Index> sites;
+    std::vector<BondIndex> bonds;
+    cout << "cluster [" << i << "] : ID (" << _clusters[i].get_ID() << "){" << endl;
+    // printing site_index_sequence
+    sites = _clusters[i].getSiteIndices();
+    cout << "Sites : size (" << sites.size() << ") : ";
+    cout << '{';
+    for (auto a: sites) {
+        cout << a << ',';
+    }
+    cout << '}' << endl;
+
+    bonds = _clusters[i].getBondIndices();
+    cout << "Bonds : size (" << bonds.size() << ") : ";
+    cout << '{';
+    for (auto a: bonds) {
+        if (a.horizontal()) {
+            // horizontal bond
+            cout << _lattice.get_h_bond({a.row_, a.column_}) << ',';
+        } else if (a.vertical()) {
+            // vertical bond
+            cout << _lattice.get_v_bond({a.row_, a.column_}) << ',';
+        } else {
+            cout << '!' << a << '!' << ','; // bond is not valid
+        }
+    }
+    cout << '}';
+    cout << endl;
+}
+
+void SqLatticePercolation::viewCluster(BondIndex index){
+    int  i= _lattice.getGroupID(index);
+    if(i < 0){
+        cout << "negative index : " << __FILE__ << " at "<< __LINE__ << endl;
+    }
+    viewClusterByIndex(i);
+}
+
 /**
  *
  * @param site

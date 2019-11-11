@@ -16,6 +16,7 @@ void visual(value_type );
 void cluster_size_distribution_site(value_type length, value_type ensemble_size);
 void cluster_size_distribution_bond(value_type length, value_type ensemble_size);
 void simulate_site_percolation(value_type, value_type );
+void test_simulate_site_percolation(value_type length, value_type ensemble_size); // 2019.07.23
 void simulate_bond_percolation(value_type, value_type );
 void simulate_bond_percolation_v2(value_type length, value_type ensemble_size); // 2019.01.01
 void simulate_site_percolation_detailed(value_type length, value_type ensemble_size);

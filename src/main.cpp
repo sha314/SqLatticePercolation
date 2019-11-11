@@ -20,6 +20,7 @@
 #include "cmdLineArgs/cmd_args_json.h"
 #include "tests/test_percolation.h"
 #include "tests/test_v11.h"
+#include "tests/test_v9.h"
 
 
 using namespace std;
@@ -76,7 +77,8 @@ void run_in_main(int argc, char** argv){
 
 //    bond_percolation(argc, argv);
 
-    simulate_site_percolation(length, ensemble_size);
+//    simulate_site_percolation(length, ensemble_size); // <<<<<<<<<<<
+//    test_simulate_site_percolation(6, 1); // 2019.07.26
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L1_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_T<SitePercolationBallisticDeposition_L2_v2>(length, ensemble_size); // 2018.11.03
 //    simulate_site_percolation_detailed(length, ensemble_size); // 2018.12.18
@@ -92,6 +94,7 @@ void run_in_main(int argc, char** argv){
 //    test_percolation_bond(length);
 //    test_bond_index(length);
 
+    test_v9(argc, argv);
 }
 
 
@@ -113,6 +116,9 @@ int main(int argc, char** argv) {
 
     run_in_main(argc, argv);
 
+#ifdef DEBUG_FLAG
+    cout << "flag DEBUG_FLAG is defined !" << endl;
+#endif
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(t_end);

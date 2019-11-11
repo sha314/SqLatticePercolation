@@ -1661,14 +1661,7 @@ double SitePercolation_ps_v10::spanningProbability() const {
  * @return current entropy of the lattice
  */
 double SitePercolation_ps_v10::entropy() {
-    double H{};
-    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
-//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    double mu = 1.0/double(maxBonds());
-    H += number_of_cluster_with_size_one * log(mu) * mu;
-    H *= -1;
-    _entropy_current =  _entropy + H;
-    return _entropy_current;
+    return entropy_v2();
 }
 
 
@@ -2181,6 +2174,28 @@ SitePercolation_ps_v10::relabel_cluster(
 //        _lattice.getSite(a).relativeIndex(x, y);
         _lattice.setRelativeIndex(a, {x,y});
     }
+}
+
+double SitePercolation_ps_v10::entropy_v2() {
+    double H{};
+    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
+//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
+    double mu = 1.0/double(maxBonds());
+    H += number_of_cluster_with_size_one * log(mu) * mu;
+    H *= -1;
+    _entropy_current =  _entropy + H;
+    return _entropy_current;
+}
+
+double SitePercolation_ps_v10::entropy_v1() {
+    double nob, mu, H{};
+    for(size_t i{}; i < _clusters.size(); ++i){
+        nob = _clusters[i].numberOfBonds();
+        mu = nob/maxBonds();
+        H += mu * log(mu);
+    }
+    _entropy_current = -H;
+    return _entropy_current;
 }
 
 

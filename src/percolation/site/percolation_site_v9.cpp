@@ -47,7 +47,7 @@ SitePercolation_ps_v9::SitePercolation_ps_v9(value_type length, bool periodicity
     index_sequence.resize(maxSites());
     randomized_index.resize(maxSites());
     _max_iteration_limit = maxSites();
-
+    number_of_clusters = maxBonds();
     initialize();
 
 }

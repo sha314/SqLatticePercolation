@@ -1,0 +1,13 @@
+created : 2019.07.23 at 11:42 am
+There seems to be a bug in SitePercolation_ps_v9 or SitePercolation_ps_v10 program. Which affects all the subclasses,
+e.g., RSBD L1 and L2.
+
+exponents   old     new
+alpha/nu    0.6799  0.6587
+gamma/nu    0.6407  0.6468
+
+Or is it because of Convolution program?
+TODO:
+    1. Revise SitePercolation_ps_v9 thoroughly : pending
+    2. Revise SitePercolation_ps_v10 thoroughly : pending
+    3.. Revise Convolution program thoroughly : pending

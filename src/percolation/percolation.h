@@ -46,7 +46,7 @@ protected:
     std::vector<Cluster_v3> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
-
+    size_t number_of_clusters{};
     value_type min_index{};
     value_type max_index{};
 
@@ -100,6 +100,9 @@ public:
      */
     virtual void viewCluster();
     virtual void viewClusterExtended();
+    void viewCluster(Index i);
+    void viewCluster(BondIndex i);
+    void viewClusterByIndex(int i);
     virtual void ckeckCluster();
     virtual void view_bonds(){
         _lattice.view_bonds();
@@ -177,6 +180,9 @@ public:
     virtual const std::vector<double> clusterSizeDistribution() const {std::cout << "not defined in SqLatticePercolation" << std::endl;return {};};  // 2019.06.17
 
     IndexRelative getRelativeIndex(Index root, Index site_new);
+
+    size_t numberOfClusters() const {return number_of_clusters;}
+
 };
 
 
