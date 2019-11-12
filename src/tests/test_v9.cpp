@@ -9,7 +9,7 @@ using namespace std;
 
 
 void test_v9(int argc, char **argv) {
-    test_v9_lattice(argc, argv);
+//    test_v9_lattice(argc, argv);
     test_v9_number_of_clusters_per_site(argc, argv);
 }
 
@@ -48,9 +48,13 @@ void test_v9_number_of_clusters_per_site(int argc, char **argv) {
 
     while(sp.occupy()) {
 
-        sp.viewSiteByID();
-        sp.viewCluster();
+//        sp.viewSiteByID();
+//        sp.viewCluster();
 //        sp.viewClusterExtended();
         cout << "number of clusters = " << sp.numberOfClusters() << endl;
     }
+
+    sp.viewSiteByID();
+    sp.viewCluster();
+    sp.viewClusterExtended();
 }

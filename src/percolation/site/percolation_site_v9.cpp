@@ -341,6 +341,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
             _clusters[ers].clear(); // emptying the cluster
             
         }
+//        number_of_clusters -= (found_index.size() - 1);
         _index_last_modified_cluster = base;
 
 
@@ -416,6 +417,7 @@ value_type SitePercolation_ps_v9::manage_clusters(
             _clusters[ers].clear(); // emptying the cluster
 
         }
+//        number_of_clusters -= found_index_set.size();
         _index_last_modified_cluster = base;
 
 

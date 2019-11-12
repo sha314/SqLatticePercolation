@@ -985,10 +985,17 @@ value_type SitePercolation_ps_v10::merge_cluster_v2(
 
 //        relabel_cluster(_last_placed_site, _clusters[i], 0, 0);
         _clusters[i].clear(); // clear the cluster
+        --number_of_clusters;
     }
 
 //    relabel_cluster(_last_placed_site, _clusters[base], base_bonds, base_sites);
 //    cout << "}" << endl;
+#ifdef UNIT_TEST
+    if(base < 0){
+        cerr << "base cannot be negative: SitePercolation_ps_v10::merge_cluster_v2" << endl;
+        exit(0);
+    }
+#endif
     return base;
 }
 
@@ -1046,8 +1053,14 @@ value_type SitePercolation_ps_v10::merge_cluster_v3(
         _clusters[base].insert_v2(_clusters[i]);
         relabel_cluster(_last_placed_site, _clusters[i], 0, 0);
         _clusters[i].clear(); // clear the cluster
+        --number_of_clusters;
     }
-
+#ifdef UNIT_TEST
+    if(base < 0){
+        cerr << "base cannot be negative: SitePercolation_ps_v10::merge_cluster_v3" << endl;
+        exit(0);
+    }
+#endif
     return base;
 }
 
@@ -2101,6 +2114,7 @@ void SitePercolation_ps_v10::init(bool gen_random) {
 //    initialize_index_sequence();
     initialize_cluster();
     randomize_v2();  // randomize
+    number_of_clusters = maxBonds();
 }
 
 value_type SitePercolation_ps_v10::manageClusters(

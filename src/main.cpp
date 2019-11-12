@@ -21,6 +21,7 @@
 #include "tests/test_percolation.h"
 #include "tests/test_v11.h"
 #include "tests/test_v9.h"
+#include "tests/test_v10.h"
 
 
 using namespace std;
@@ -94,7 +95,8 @@ void run_in_main(int argc, char** argv){
 //    test_percolation_bond(length);
 //    test_bond_index(length);
 
-    test_v9(argc, argv);
+//    test_v9(argc, argv);
+    test_v10(argc, argv);
 }
 
 
@@ -118,6 +120,9 @@ int main(int argc, char** argv) {
 
 #ifdef DEBUG_FLAG
     cout << "flag DEBUG_FLAG is defined !" << endl;
+#endif
+#ifdef UNIT_TEST
+    cout << "flag UNIT_TEST is defined !" << endl;
 #endif
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;
