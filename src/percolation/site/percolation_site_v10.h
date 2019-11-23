@@ -127,7 +127,7 @@ public:
     bool periodicity() const {return _periodicity;}
 
 
-    /***********************************************
+    virtual /***********************************************
      * Properties of Percolation class
      ***********************************************/
     std::string getSignature();

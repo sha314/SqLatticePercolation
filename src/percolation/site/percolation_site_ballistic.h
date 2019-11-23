@@ -341,29 +341,64 @@ public:
 
 };
 
-/***********
- * Only L1
- */
-class SitePercolationRSBD_L1_v10: public SitePercolation_ps_v10{
+class SitePercolationRSBD_v10 : public SitePercolation_ps_v10{
+protected:
     // elements of @indices_tmp will be erased if needed but not of @indices
     std::vector<value_type> indices;
 //    std::vector<value_type> indices_tmp;
     value_type _search_position{};
 
 public:
-    ~SitePercolationRSBD_L1_v10() = default;
-    SitePercolationRSBD_L1_v10(value_type length, bool periodicity)
-            :SitePercolation_ps_v10(length, periodicity){
+    ~SitePercolationRSBD_v10() = default;
+    SitePercolationRSBD_v10(value_type length, bool periodicity)
+    :SitePercolation_ps_v10(length, periodicity){
         indices = randomized_index;
     }
 
+    void reset();
+    void viewRemainingSites() ;
+//
+    void viewIndices() const;
+};
+/***********
+ * Only L1
+ */
+class SitePercolationRSBD_L1_v10: public SitePercolationRSBD_v10{
+
+public:
+    ~SitePercolationRSBD_L1_v10() = default;
+    SitePercolationRSBD_L1_v10(value_type length, bool periodicity)
+            :SitePercolationRSBD_v10(length, periodicity){}
+
+
 //    value_type  placeSite_1nn();
     Index select_site_upto_1nn(std::vector<Index>& sites, std::vector<BondIndex>& bonds);
-    void reset();
+//    void reset();
+    bool occupy();
+
+    std::string getSignature();
+
+//    void viewRemainingSites() ;
+//    void viewIndices() const;
+};
+
+
+/***********
+ * Only L1
+ */
+class SitePercolationRSBD_L2_v10: public SitePercolationRSBD_v10{
+
+public:
+    ~SitePercolationRSBD_L2_v10() = default;
+    SitePercolationRSBD_L2_v10(value_type length, bool periodicity)
+            :SitePercolationRSBD_v10(length, periodicity){}
+
+    Index select_site_upto_2nn(std::vector<Index>& sites, std::vector<BondIndex>& bonds);
+
     bool occupy();
 
     std::string getSignature() {
-        std::string s = "sq_lattice_site_percolation_ballistic_deposition_L1";
+        std::string s = "sq_lattice_site_percolation_ballistic_deposition_L2";
         if(_periodicity)
             s += "_periodic_";
         else
@@ -371,8 +406,7 @@ public:
         return s;
     }
 
-    void viewRemainingSites() ;
-
+    bool areAllActivated(const std::vector<Index> &sites) const;
 };
 
 /************************************

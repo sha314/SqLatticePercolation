@@ -520,28 +520,15 @@ value_type SitePercolationBallisticDeposition_v2::placeSite_2nn_v1() {
 //}
 
 Index SitePercolationRSBD_L1_v10::select_site_upto_1nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds) {
-    cout << "randomized index : all { ";
-    for(auto a: indices){
-        cout << a << ",";
-    }
-    cout << "} remaining {";
-    for(size_t i{_search_position}; i<indices.size(); ++i){
-        cout << indices[i] << ",";
-    }
-    cout << "}" << endl;
+//    viewIndices();
     // randomly choose a site
 //    value_type  first = _search_position + (_random_engine() % (randomized_index.size() - _search_position));
     uniform_int_distribution<size_t> dist(_search_position, indices.size()-1);
     value_type  first = dist(_random_engine);
     value_type index = indices[first];
-    cout << "*******selected and replaceable " << index << endl;
-
     Index current_site = site_indices[index];
     _lattice.get_neighbors(current_site, sites, bonds);
 
-//    indices[first] = indices[_search_position];
-//    _search_position++;
-//    return current_site;
 
 //    cout << "current site " << current_site << " active ? " << _lattice.getSite(current_site).isActive() << endl;
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
@@ -583,6 +570,7 @@ Index SitePercolationRSBD_L1_v10::select_site_upto_1nn(std::vector<Index> &sites
                 indices[first] = indices[_search_position]; // replace r-th value with the unused value
                 ++_search_position;// increment search position so that this value is never selected again
 
+
                 throw OccupiedNeighbor{"all of the 1nd neighbors are occupied : line " + std::to_string(__LINE__)};
             }
             throw OccupiedNeighbor{"selected 1st neighbor is occupied : line " + std::to_string(__LINE__)};
@@ -597,16 +585,28 @@ Index SitePercolationRSBD_L1_v10::select_site_upto_1nn(std::vector<Index> &sites
     return current_site;
 }
 
-void SitePercolationRSBD_L1_v10::reset() {
+void SitePercolationRSBD_v10::viewIndices() const {
+    cout << "randomized  " << indices.size() << " { ";
+    for(auto a: indices){
+        cout << a << ",";
+    }
+    cout << "}" << endl << "remaining  " << indices.size() - _search_position << " {";
+    for(size_t i{_search_position}; i < indices.size(); ++i){
+        cout << indices[i] << ",";
+    }
+    cout << "}" << endl;
+}
+
+void SitePercolationRSBD_v10::reset() {
     SitePercolation_ps_v10::reset();
     indices = randomized_index;
     _search_position = 0;
 }
 
-void SitePercolationRSBD_L1_v10::viewRemainingSites() {
+void SitePercolationRSBD_v10::viewRemainingSites() {
     cout << "viewRemainingSites {";
-    for(size_t i{_search_position}; i < randomized_index.size(); ++i){
-        cout << site_indices[randomized_index[i]] << ",";
+    for(size_t i{_search_position}; i < indices.size(); ++i){
+        cout << site_indices[indices[i]] << ",";
     }
 
     cout << "}" << endl;
@@ -615,7 +615,9 @@ void SitePercolationRSBD_L1_v10::viewRemainingSites() {
 bool SitePercolationRSBD_L1_v10::occupy() {
     // if no site is available then return false
 //        std::cout << " _number_of_occupied_sites" << _number_of_occupied_sites << std::endl;
-    if(_number_of_occupied_sites == maxSites()){
+    if(_search_position == maxSites()){
+//        viewIndices();
+//        cout << "false" << endl;
         return false;
     }
 
@@ -650,3 +652,136 @@ bool SitePercolationRSBD_L1_v10::occupy() {
     }
 
 }
+
+std::string SitePercolationRSBD_L1_v10::getSignature() {
+    std::string s = "sq_lattice_site_percolation_ballistic_deposition_L1";
+    if(_periodicity)
+        s += "_periodic_";
+    else
+        s += "_non_periodic_";
+    return s;
+}
+
+Index SitePercolationRSBD_L2_v10::select_site_upto_2nn(std::vector<Index> &sites, std::vector<BondIndex> &bonds) {
+    // randomly choose a site
+//    value_type  r = _search_position + (_random_engine() % (indices.size() - _search_position));
+    uniform_int_distribution<size_t> dist(_search_position, indices.size()-1);
+    value_type  first = dist(_random_engine);
+    value_type index = randomized_index[first];
+    Index central_site = site_indices[index];
+    Index selected_site{};
+//    cout << "current site " << current_site << endl;
+    // find the bonds for this site
+
+    _lattice.get_neighbors(central_site, sites, bonds);
+//    cout << "current site " << central_site << " active ? " << _lattice.getSite(central_site).isActive() << endl;
+    if (_lattice.getSite(central_site).isActive()){ // if the current site is occupied or active
+#ifdef DEBUG_FLAG
+        cout << "1st neighbors :{";
+        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));
+        cout << "}";
+#endif
+        bool flag_nn1 = true; // true means all 1st nearest neighbors are occupied
+        bool flag_nn2 = true; // true means all 2nd nearest neighbors are occupied
+//        cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
+        flag_nn1 = areAllActivated(sites);
+
+        value_type r2 = _random_engine() % sites.size();
+        Index nn1 = sites[r2]; // select one of the neighbor randomly
+//        cout << "nn1 " << nn1 << " : line " << __LINE__ <<endl;
+        Index nn2;
+        if(_lattice.getSite(nn1).isActive()){
+            // if the neighbor is also occupied then choose the 2nd nearest neighbor in the direction of motion
+            nn2 = get_2nn_in_1nn_direction(central_site, nn1, length());
+
+//            cout << "nn2 " << nn2 << " : line " << __LINE__ <<endl;
+            // if it is also occupied the skip the step
+            if(_lattice.getSite(nn2).isActive()) {
+                flag_nn2 = true;
+
+                vector<Index> nn2_sites = get_all_2nn_in_1nn_s_direction(central_site, sites, length());
+                flag_nn2 = areAllActivated(nn2_sites);
+
+                if(flag_nn1 && flag_nn2){
+                    // since its 1st nearest neighbors are occupied
+                    // and 2nd nearest neighbors are also occupied
+                    /*
+                     * Instead of erasing the indices, place them to an inaccesible area by swapping or replacing.
+                     * If erasing is not performed then the performance will be better.
+                     */
+                    randomized_index[first] = randomized_index[_search_position]; // replace r-th value with the unused value
+                    ++_search_position;// increment search position so that this value is never selected again
+                    throw OccupiedNeighbor{"all 1st and 2nd neighbors are occupied : line " + std::to_string(__LINE__)};
+                }
+
+                throw OccupiedNeighbor{"2nd neighbor is also occupied : line " + std::to_string(__LINE__)};
+            }else{
+                selected_site = nn2;
+            }
+        }else {
+            selected_site = nn1;
+        }
+//        cout << "choosing " << selected_site << " out of the neighbors : line " << __LINE__ << endl;
+//        connection_v2(selected_site, sites, bonds);
+        _lattice.get_neighbors(selected_site, sites, bonds);
+    }else{
+        selected_site = central_site;
+    }
+    return selected_site;
+}
+
+bool SitePercolationRSBD_L2_v10::areAllActivated(const vector<Index> &sites) const {
+    bool flag_nn1=true;
+    for(auto s : sites){
+//            cout << s << "->";
+            if(!_lattice.getSite(s).isActive()){
+                // if one of the neighber is unoccupied then
+                flag_nn1 = false;
+//                cout << " inactive" << endl;
+                break;
+            }
+//            cout << " active"<< endl;
+        }
+    return flag_nn1;
+}
+
+bool SitePercolationRSBD_L2_v10::occupy() {
+    // if no site is available then return false
+//        std::cout << " _number_of_occupied_sites" << _number_of_occupied_sites << std::endl;
+    if(_search_position == maxSites()){
+//        viewIndices();
+//        cout << "false" << endl;
+        return false;
+    }
+
+    try {
+        vector<BondIndex> bonds;
+        vector<Index>     sites;
+
+        auto current_site = select_site_upto_2nn(sites, bonds);
+
+#ifdef DEBUG_FLAG
+        cout << "Neighbors of " << current_site << endl;
+        cout << "{" ;
+        for(auto a: sites){
+            cout << a << ",";
+        }
+        cout << "}" << endl;
+        cout << "{" ;
+        for(auto b: bonds){
+            cout << b << ",";
+        }
+        cout << "}" << endl;
+#endif
+        auto v =  placeSite(current_site, sites, bonds);
+//            _occuption_probability = occupationProbability(); // for super class
+        return v!= ULONG_MAX;
+    }catch (OccupiedNeighbor& on){
+#ifdef DEBUG_FLAG
+        on.what();
+#endif
+//        cout << "line : " << __LINE__ << endl;
+        return false;
+    }
+}
+
