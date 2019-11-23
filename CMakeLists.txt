@@ -6,11 +6,11 @@ set(CMAKE_CXX_STANDARD 11)
 #set (CMAKE_C_COMPILER               /usr/bin/gcc)
 #set (CMAKE_CXX_COMPILER             /home/shahnoor/software/pgi/linux86-64-llvm/2018/bin/pgc++)
 #set (CMAKE_MAKE_PROGRAM             /usr/bin/make)
-#SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG")
+SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG")
 #SET( CMAKE_CXX_FLAGS  "-Wall -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall")
-SET( CMAKE_CXX_FLAGS  "-Wall -O3")
+#SET( CMAKE_CXX_FLAGS  "-Wall -O3")
 #SET( CMAKE_CXX_FLAGS  "-Wall -O3 -pthread -fopenmp")
 #SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
@@ -88,6 +88,12 @@ set(SOURCE_FILES
         src/tests/test_v11.h
         src/percolation/site/percolation_site_explosive.h
         src/percolation/cluster/cluster_v4.cpp
-        src/percolation/site/percolation_site_ballistic.h src/tests/test_v9.cpp src/tests/test_v9.h src/tests/test_v10.cpp src/tests/test_v10.h src/percolation/percolation_v12.cpp src/percolation/percolation_v12.h)
+        src/percolation/site/percolation_site_ballistic.h
+        src/tests/test_v9.cpp
+        src/tests/test_v9.h
+        src/tests/test_v10.cpp
+        src/tests/test_v10.h
+        src/percolation/percolation_v12.cpp
+        src/percolation/percolation_v12.h)
 
 add_executable(SqLatticePercolation ${SOURCE_FILES})

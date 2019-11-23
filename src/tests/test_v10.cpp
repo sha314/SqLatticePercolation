@@ -24,12 +24,12 @@ void test_v10(int argc, char **argv) {
 //    test_v10_number_of_clusters_per_site(argc, argv);
 //    test_v10_lattice(argc, argv);
 
-//    run_v10_regular(length, ensemble_size);
+    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
 //    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
-    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
-    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
+//    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
+//    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
 }
 
 void test_v10_lattice(int argc, char **argv) {
@@ -141,11 +141,12 @@ void run_v10_regular(int length, int ensemble_size) {
     long length_squared = length*length;
     long twice_length_squared = 2 * length_squared;
 
-//    SitePercolation_ps_v10 lp(length, true);
+    SitePercolation_ps_v10 lp(length, true);
 //    SitePercolationBallisticDeposition_L2_v3 lp(length, true);
 //    SitePercolationRSBD_L1_v10 lp(length, true);
     SitePercolationRSBD_L2_v10 lp(length, true);
-    lp.setRandomState(0, false);
+
+    lp.setRandomState(1836584440, true);
     lp.init();
 
 
@@ -167,12 +168,13 @@ void run_v10_regular(int length, int ensemble_size) {
         bool detect_wrapping{true};
         while (true){
 //            lp.viewRemainingSites();
+//            lp.viewIndices();
             successful = lp.occupy();
 //            lp.viewRemainingSites();
             if(successful) {
-                cout << counter+1 << " th site ****** last " << lp.lastPlacedSite() << endl;
-                lp.viewSiteByID();
-                lp.viewCluster();
+//                cout << counter+1 << " th site ****** last " << lp.lastPlacedSite() << endl;
+//                lp.viewSiteByID();
+//                lp.viewCluster();
                 entropy[counter] += lp.entropy();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
@@ -208,7 +210,7 @@ void run_v10_regular(int length, int ensemble_size) {
 //        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << std::endl;
         {
             auto t_end = std::chrono::system_clock::now();
-            std::cout << "Iteration " << (i+1)
+            std::cout << "####################################Iteration " << (i+1)
                       //                 << " . Thread " << std::this_thread::get_id()
                       << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << std::endl;
         }
@@ -272,7 +274,7 @@ void run_v10_regular(int length, int ensemble_size) {
         fout_critical << pcs[i] << delimiter
                       << sites_pc[i] << delimiter
                       << bonds_pc[i] << std::endl;
-        cout << pcs[i] << endl;
+//        cout << pcs[i] << endl;
     }
     fout_critical.close();
 
@@ -299,10 +301,3 @@ void run_v10_regular(int length, int ensemble_size) {
     fout.close();
 }
 
-void run_v10_rsbd_l1(int argc, char **argv) {
-
-}
-
-void run_v10_rsbd_l2(int argc, char **argv) {
-
-}

@@ -359,6 +359,12 @@ public:
     void viewRemainingSites() ;
 //
     void viewIndices() const;
+
+    virtual bool occupy() = 0;
+
+    virtual std::string getSignature() = 0;
+
+    bool areAllActivated(const std::vector<Index> &sites) const;
 };
 /***********
  * Only L1
@@ -406,7 +412,7 @@ public:
         return s;
     }
 
-    bool areAllActivated(const std::vector<Index> &sites) const;
+
 };
 
 /************************************

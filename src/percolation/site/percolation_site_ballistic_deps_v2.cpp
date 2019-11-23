@@ -542,26 +542,7 @@ Index SitePercolationRSBD_L1_v10::select_site_upto_1nn(std::vector<Index> &sites
 
         if(_lattice.getSite(current_site).isActive()){
             // if the neighbor is also occupied cancel current step
-            bool flag = true;
-#ifdef DEBUG_FLAG
-            cout << "if one of the neighbor is inactive. it's engouh to go on" << endl;
-#endif
-            for(auto s : sites){
-#ifdef DEBUG_FLAG
-                cout << s << "->";
-#endif
-                if(!_lattice.getSite(s).isActive()){
-                    // if one of the neighber is unoccupied then
-                    flag = false;
-#ifdef DEBUG_FLAG
-                    cout << " inactive" << endl;
-#endif
-                    break;
-                }
-#ifdef DEBUG_FLAG
-                cout << " active"<< endl;
-#endif
-            }
+            bool flag = areAllActivated(sites);
             if(flag){
                 /*
                  * Instead of erasing the indices, place them to an inaccesible area by swapping or replacing.
@@ -667,7 +648,7 @@ Index SitePercolationRSBD_L2_v10::select_site_upto_2nn(std::vector<Index> &sites
 //    value_type  r = _search_position + (_random_engine() % (indices.size() - _search_position));
     uniform_int_distribution<size_t> dist(_search_position, indices.size()-1);
     value_type  first = dist(_random_engine);
-    value_type index = randomized_index[first];
+    value_type index = indices[first];
     Index central_site = site_indices[index];
     Index selected_site{};
 //    cout << "current site " << current_site << endl;
@@ -709,7 +690,7 @@ Index SitePercolationRSBD_L2_v10::select_site_upto_2nn(std::vector<Index> &sites
                      * Instead of erasing the indices, place them to an inaccesible area by swapping or replacing.
                      * If erasing is not performed then the performance will be better.
                      */
-                    randomized_index[first] = randomized_index[_search_position]; // replace r-th value with the unused value
+                    indices[first] = indices[_search_position]; // replace r-th value with the unused value
                     ++_search_position;// increment search position so that this value is never selected again
                     throw OccupiedNeighbor{"all 1st and 2nd neighbors are occupied : line " + std::to_string(__LINE__)};
                 }
@@ -730,7 +711,7 @@ Index SitePercolationRSBD_L2_v10::select_site_upto_2nn(std::vector<Index> &sites
     return selected_site;
 }
 
-bool SitePercolationRSBD_L2_v10::areAllActivated(const vector<Index> &sites) const {
+bool SitePercolationRSBD_v10::areAllActivated(const vector<Index> &sites) const {
     bool flag_nn1=true;
     for(auto s : sites){
 //            cout << s << "->";
@@ -748,9 +729,9 @@ bool SitePercolationRSBD_L2_v10::areAllActivated(const vector<Index> &sites) con
 bool SitePercolationRSBD_L2_v10::occupy() {
     // if no site is available then return false
 //        std::cout << " _number_of_occupied_sites" << _number_of_occupied_sites << std::endl;
-    if(_search_position == maxSites()){
+    if(_number_of_occupied_sites == maxSites()){
 //        viewIndices();
-//        cout << "false" << endl;
+        cout << "false" << endl;
         return false;
     }
 

@@ -27,7 +27,7 @@ void run_v10_rsbd(int length, int ensemble_size){
     size_t twice_length_squared = 2 * length_squared;
 
     PType lattice_percolation(length, true);
-    lattice_percolation.setRandomState(0, true);
+    lattice_percolation.setRandomState(0, false);
     lattice_percolation.init();
 
 
@@ -51,6 +51,7 @@ void run_v10_rsbd(int length, int ensemble_size){
         while (true){
             successful = lattice_percolation.occupy();
             if(successful) {
+                std::cout << "counter " << counter << std::endl;
                 entropy[counter] += lattice_percolation.entropy();
                 nob_wraping[counter] += lattice_percolation.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lattice_percolation.numberOfBondsInTheLargestCluster();
