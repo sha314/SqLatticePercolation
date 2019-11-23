@@ -144,9 +144,9 @@ void run_v10_regular(int length, int ensemble_size) {
     SitePercolation_ps_v10 lp(length, true);
 //    SitePercolationBallisticDeposition_L2_v3 lp(length, true);
 //    SitePercolationRSBD_L1_v10 lp(length, true);
-    SitePercolationRSBD_L2_v10 lp(length, true);
+//    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(1836584440, true);
+    lp.setRandomState(1836584440, false);
     lp.init();
 
 
@@ -172,9 +172,12 @@ void run_v10_regular(int length, int ensemble_size) {
             successful = lp.occupy();
 //            lp.viewRemainingSites();
             if(successful) {
-//                cout << counter+1 << " th site ****** last " << lp.lastPlacedSite() << endl;
+                cout << counter+1 << " th site ****** last " << lp.lastPlacedSite() << endl;
 //                lp.viewSiteByID();
 //                lp.viewCluster();
+                cout << lp.entropy_v1()
+                     << " vs " << lp.entropy_v2()
+                     << endl;
                 entropy[counter] += lp.entropy();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();

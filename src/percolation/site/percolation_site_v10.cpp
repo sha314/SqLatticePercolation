@@ -1674,7 +1674,8 @@ double SitePercolation_ps_v10::spanningProbability() const {
  * @return current entropy of the lattice
  */
 double SitePercolation_ps_v10::entropy() {
-    return entropy_v2();
+    return entropy_v1();
+//    return entropy_v2();
 }
 
 
@@ -2205,6 +2206,7 @@ double SitePercolation_ps_v10::entropy_v1() {
     double nob, mu, H{};
     for(size_t i{}; i < _clusters.size(); ++i){
         nob = _clusters[i].numberOfBonds();
+        if(nob == 0) continue;
         mu = nob/maxBonds();
         H += mu * log(mu);
     }
