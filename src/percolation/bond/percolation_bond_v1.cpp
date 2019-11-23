@@ -146,7 +146,7 @@ void BondPercolation_pb_v1::randomize() {
  */
 void BondPercolation_pb_v1::randomize_v2() {
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_engine);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -524,7 +524,7 @@ bool BondPercolation_pb_v1::occupy() {
     }
 
     value_type v = placeBond_v1();
-    _occuption_probability = occupationProbability(); // for super class
+//    _occuption_probability = occupationProbability(); // for super class
 
 //    auto s = _lattice.get_neighbor_sites(_last_placed_bond);
 //    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){

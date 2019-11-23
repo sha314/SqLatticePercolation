@@ -104,7 +104,7 @@ void BondPercolation_pb_v2::initialize_index_sequence() {
  */
 void BondPercolation_pb_v2::randomize_v2() {
 //    cout << "default_seed " << _random.default_seed << endl;
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_engine);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -313,7 +313,7 @@ bool BondPercolation_pb_v2::occupy() {
     }
 
     value_type v = placeBond_v1();
-    _occuption_probability = occupationProbability(); // for super class
+//    _occuption_probability = occupationProbability(); // for super class
 //    auto s = SqLattice::get_neighbor_indices(length(), _last_placed_bond);
 //    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
 //        cout << "relabeling is not perfect for site " << endl;

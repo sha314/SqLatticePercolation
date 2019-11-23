@@ -1,0 +1,1 @@
+Uses 1 D array to store lattice points.

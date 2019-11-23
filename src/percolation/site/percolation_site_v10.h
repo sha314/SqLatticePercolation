@@ -279,8 +279,8 @@ public:
 
     const std::vector<double> clusterSizeDistribution() const ; // 2019.06.17
 
-
-
+    void viewRandomizedIndices();
+    std::string getClassName(){ return "SitePercolation_ps_v10";}
 };
 
 

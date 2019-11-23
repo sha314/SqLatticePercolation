@@ -226,7 +226,7 @@ void SqLatticePercolation::reset() {
 //    cout << " line " << __LINE__ << endl;
     _index_sequence_position = 0;
     _cluster_id = 0;
-    _occuption_probability = 0;
+//    _occuption_probability = 0;
     // entropy
     _entropy=0;
     _entropy_current=0;
@@ -249,7 +249,8 @@ void SqLatticePercolation::jump() {
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
-        _entropy_jump_pc = _occuption_probability;
+//        _entropy_jump_pc = _occuption_probability;
+        _entropy_jump_pc = occupationProbability(); // must be implemented by the subclasses
     }
     _entropy_previous = _entropy_current; // be ready for next step
 }
@@ -306,7 +307,7 @@ void SqLatticePercolation::setRandomState(size_t seed, bool generate_seed) {
     }else{
         cerr << "generate_seed = false : line " << __LINE__ << endl;
     }
-    _random.seed(_random_state); // seeding
+    _random_engine.seed(_random_state); // seeding
     cout << "seeding with " << _random_state << endl;
 }
 
@@ -393,4 +394,11 @@ IndexRelative SqLatticePercolation::getRelativeIndex(Index root, Index site_new)
     return r;
 }
 
+void SqLatticePercolation::viewRandomized() {
+    cout << "randomized sequence {";
+    for(size_t i{}; i < randomized_index.size(); ++i){
+        cout << randomized_index[i] << "," << endl;
+    }
+    cout << "}" << endl;
+}
 

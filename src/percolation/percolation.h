@@ -50,7 +50,7 @@ protected:
     value_type min_index{};
     value_type max_index{};
 
-    double _occuption_probability {};
+//    double _occuption_probability {};
     // entropy
     double _entropy{};
     double _entropy_current{};
@@ -72,7 +72,7 @@ protected:
     value_type _number_of_bonds_in_the_largest_cluster{};
     value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
-    std::mt19937 _random;
+    std::mt19937 _random_engine;
     value_type _random_state;
 
     void set_type(char t){type = t;} // setting percolation type
@@ -151,7 +151,9 @@ public:
         _lattice.view();
     }
 
-    virtual double occupationProbability() const { return _occuption_probability;}
+    void viewRandomized();
+
+    virtual double occupationProbability() const = 0;
     virtual double entropy() { return _entropy_current;}
     double entropy_by_site(); // for future convenience. // the shannon entropy. the full calculations. time consuming
     double entropy_by_bond(); // for future convenience. // the shannon entropy. the full calculations. time consuming

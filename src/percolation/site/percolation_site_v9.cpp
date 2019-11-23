@@ -150,7 +150,7 @@ void SitePercolation_ps_v9::reset() {
  */
 void SitePercolation_ps_v9::randomize_v2(){
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_engine);
 //    cout << "Index sequence : " << randomized_index_sequence << endl;
 }
 
@@ -1006,8 +1006,7 @@ bool SitePercolation_ps_v9::occupy() {
 //    placeSite(site);
     placeSite_weighted(site);
 
-
-    _occuption_probability = occupationProbability(); // for super class
+//    _occuption_probability = occupationProbability(); // for super class
     return true;
 }
 

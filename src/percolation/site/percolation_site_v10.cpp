@@ -164,8 +164,8 @@ void SitePercolation_ps_v10::reset() {
  */
 void SitePercolation_ps_v10::randomize_v2(){
 
-    std::shuffle(randomized_index.begin(), randomized_index.end(), _random);
-
+    std::shuffle(randomized_index.begin(), randomized_index.end(), _random_engine);
+//
 //    cout << "randomized {";
 //    for(size_t i{}; i < randomized_index.size(); ++i){
 //        cout << randomized_index[i] << ",";
@@ -855,7 +855,7 @@ bool SitePercolation_ps_v10::occupy() {
     Index site = selectSite();
 //    cout << "******************current site " << site  << "***********" << endl;
     placeSite(site);
-    _occuption_probability = occupationProbability(); // for super class
+//    _occuption_probability = occupationProbability(); // for super class
     return true;
 }
 
@@ -2011,9 +2011,9 @@ value_type SitePercolation_ps_v10::count_number_of_active_site() {
 std::string SitePercolation_ps_v10::getSignature() {
     string s = "sq_lattice_site_percolation";
     if(_periodicity)
-        s += "_periodic_";
+        s += "_periodic";
     else
-        s += "_non_periodic_";
+        s += "_non_periodic";
     return s;
 }
 
@@ -2210,6 +2210,14 @@ double SitePercolation_ps_v10::entropy_v1() {
     }
     _entropy_current = -H;
     return _entropy_current;
+}
+
+void SitePercolation_ps_v10::viewRandomizedIndices() {
+    cout << "randomized indices {" << endl;
+    for(size_t i{}; i < randomized_index.size(); ++i){
+        cout << i << " [" << randomized_index[i] << "] -> " << site_indices[randomized_index[i]] << endl;
+    }
+    cout << "}" << endl;
 }
 
 

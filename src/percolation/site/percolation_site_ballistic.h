@@ -112,7 +112,7 @@ public:
         try {
 //        value_type v = placeSite_1nn_v0(); // debugging version
             value_type v = placeSite_1nn_v2();
-            _occuption_probability = occupationProbability(); // for super class
+//            _occuption_probability = occupationProbability(); // for super class
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
 //        on.what();
@@ -153,7 +153,7 @@ public:
 
 //            value_type v = placeSite_2nn_v0();
             value_type v = placeSite_2nn_v1();
-            _occuption_probability = occupationProbability(); // for super class
+//            _occuption_probability = occupationProbability(); // for super class
 
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
@@ -198,7 +198,7 @@ protected:
     std::vector<value_type> indices_tmp;
     value_type _search_position{};
 public:
-    static constexpr const char* signature = "SitePercolation_BallisticDeposition_v2";
+    static constexpr const char* signature = "SitePercolationBallisticDeposition_v3";
     virtual ~SitePercolationBallisticDeposition_v3(){
         indices.clear();
         indices_tmp.clear();
@@ -252,12 +252,15 @@ public:
 
     value_type placeSite_2nn_v1();
 
+    void viewRemainingSites();
+
 };
 
 /***********
  * Only L1
  */
 class SitePercolationBallisticDeposition_L1_v3: public SitePercolationBallisticDeposition_v3{
+
 public:
     ~SitePercolationBallisticDeposition_L1_v3() = default;
     SitePercolationBallisticDeposition_L1_v3(value_type length, bool periodicity)
@@ -265,7 +268,7 @@ public:
 
     bool occupy() {
         // if no site is available then return false
-
+//        std::cout << " _number_of_occupied_sites" << _number_of_occupied_sites << std::endl;
         if(_number_of_occupied_sites == maxSites()){
             return false;
         }
@@ -273,10 +276,12 @@ public:
         try {
 //        value_type v = placeSite_1nn_v0(); // debugging version
             value_type v = placeSite_1nn_v2();
-            _occuption_probability = occupationProbability(); // for super class
+//            _occuption_probability = occupationProbability(); // for super class
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
-//        on.what();
+#ifdef DEBUG_FLAG
+        on.what();
+#endif
 //        cout << "line : " << __LINE__ << endl;
             return false;
         }
@@ -314,7 +319,7 @@ public:
 
 //            value_type v = placeSite_2nn_v0();
             value_type v = placeSite_2nn_v1();
-            _occuption_probability = occupationProbability(); // for super class
+//            _occuption_probability = occupationProbability(); // for super class
 
             return v != ULLONG_MAX;
         }catch (OccupiedNeighbor& on){
@@ -336,7 +341,39 @@ public:
 
 };
 
+/***********
+ * Only L1
+ */
+class SitePercolationRSBD_L1_v10: public SitePercolation_ps_v10{
+    // elements of @indices_tmp will be erased if needed but not of @indices
+    std::vector<value_type> indices;
+//    std::vector<value_type> indices_tmp;
+    value_type _search_position{};
 
+public:
+    ~SitePercolationRSBD_L1_v10() = default;
+    SitePercolationRSBD_L1_v10(value_type length, bool periodicity)
+            :SitePercolation_ps_v10(length, periodicity){
+        indices = randomized_index;
+    }
+
+//    value_type  placeSite_1nn();
+    Index select_site_upto_1nn(std::vector<Index>& sites, std::vector<BondIndex>& bonds);
+    void reset();
+    bool occupy();
+
+    std::string getSignature() {
+        std::string s = "sq_lattice_site_percolation_ballistic_deposition_L1";
+        if(_periodicity)
+            s += "_periodic_";
+        else
+            s += "_non_periodic_";
+        return s;
+    }
+
+    void viewRemainingSites() ;
+
+};
 
 /************************************
  * Extended from SitePercolation_ps_v11
