@@ -386,6 +386,7 @@ public:
 
 //    void viewRemainingSites() ;
 //    void viewIndices() const;
+    std::string getClassName() const { return "SitePercolationRSBD_L1_v10";}
 };
 
 
@@ -411,7 +412,7 @@ public:
             s += "_non_periodic_";
         return s;
     }
-
+    std::string getClassName() const { return "SitePercolationRSBD_L2_v10";}
 
 };
 

@@ -26,9 +26,9 @@ void run_v10_rsbd(int length, int ensemble_size){
     size_t length_squared = length*length;
     size_t twice_length_squared = 2 * length_squared;
 
-    PType lattice_percolation(length, true);
-    lattice_percolation.setRandomState(0, true);
-    lattice_percolation.init();
+    PType percolation(length, true);
+    percolation.setRandomState(0, true);
+    percolation.init();
 
 
 
@@ -36,30 +36,30 @@ void run_v10_rsbd(int length, int ensemble_size){
     // simulation starts here
     std::vector<double> pcs(ensemble_size), sites_pc(ensemble_size), bonds_pc(ensemble_size);
     value_type counter{};
-    std::vector<double> entropy(lattice_percolation.maxIterationLimit());
-    std::vector<double> nob_wraping(lattice_percolation.maxIterationLimit()),
-            nob_largest(lattice_percolation.maxIterationLimit());
+    std::vector<double> entropy(percolation.maxIterationLimit());
+    std::vector<double> nob_wraping(percolation.maxIterationLimit()),
+            nob_largest(percolation.maxIterationLimit());
 
     for(value_type i{} ; i != ensemble_size ; ++i){
 
-        lattice_percolation.reset();
+        percolation.reset();
 
         bool successful = false;
         auto t_start = std::chrono::system_clock::now();
         counter = 0;
         bool detect_wrapping{true};
         while (true){
-            successful = lattice_percolation.occupy();
+            successful = percolation.occupy();
             if(successful) {
 //                std::cout << "counter " << counter << std::endl;
-                entropy[counter] += lattice_percolation.entropy();
-                nob_wraping[counter] += lattice_percolation.numberOfBondsInTheWrappingClusters();
-                nob_largest[counter] += lattice_percolation.numberOfBondsInTheLargestCluster();
-                lattice_percolation.jump();
-                if(detect_wrapping && lattice_percolation.detectWrapping()){
-                    pcs[i] = lattice_percolation.occupationProbability();
-                    sites_pc[i] = lattice_percolation.numberOfSitesInTheWrappingClusters();
-                    bonds_pc[i] = lattice_percolation.numberOfBondsInTheWrappingClusters();
+                entropy[counter] += percolation.entropy();
+                nob_wraping[counter] += percolation.numberOfBondsInTheWrappingClusters();
+                nob_largest[counter] += percolation.numberOfBondsInTheLargestCluster();
+                percolation.jump();
+                if(detect_wrapping && percolation.detectWrapping()){
+                    pcs[i] = percolation.occupationProbability();
+                    sites_pc[i] = percolation.numberOfSitesInTheWrappingClusters();
+                    bonds_pc[i] = percolation.numberOfBondsInTheWrappingClusters();
 
 
 //                    std::vector<value_type> site, bond;
@@ -79,7 +79,7 @@ void run_v10_rsbd(int length, int ensemble_size){
 
                 ++counter;
             }
-            if(counter >= lattice_percolation.maxIterationLimit()){ // twice_length_squared is the number of bonds
+            if(counter >= percolation.maxIterationLimit()){ // twice_length_squared is the number of bonds
                 break;
             }
         }
@@ -103,10 +103,10 @@ void run_v10_rsbd(int length, int ensemble_size){
     header_info << "{"
                 << R"("length":)" << length
                 << R"(,"ensemble_size":)" << ensemble_size
-                << R"(,"random_seed":)" << lattice_percolation.getRandomState()
-                << R"(,"signature":")" << lattice_percolation.getSignature() << "\""
+                << R"(,"random_seed":)" << percolation.getRandomState()
+                << R"(,"signature":")" << percolation.getSignature() << "\""
                 << R"(,"datetime":")" << tm << "\""
-                << R"(,"classname":")" << lattice_percolation.getClassName() << "\""
+                << R"(,"classname":")" << percolation.getClassName() << "\""
                 //                << R"(,"cols":)" << R"(["S","n_S"])"
                 << "}";
 
@@ -114,9 +114,9 @@ void run_v10_rsbd(int length, int ensemble_size){
     std::string extension = "_L" + std::to_string(length) + '_' + tm + ".txt";
 //    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
 //    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
-    std::string filename_critical = lattice_percolation.getSignature() + "_critical" + extension;
+    std::string filename_critical = percolation.getClassName() + "_critical" + extension;
 //    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
-    std::string filename_entropy_order_parameter = lattice_percolation.getSignature() + extension;
+    std::string filename_entropy_order_parameter = percolation.getClassName() + "_entropy-order" + extension;
 
 
 //    std::ofstream fout_jump(filename);
@@ -165,12 +165,12 @@ void run_v10_rsbd(int length, int ensemble_size){
     fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
     fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
-    for(size_t i{}; i < lattice_percolation.maxIterationLimit(); ++i){
+    for(size_t i{}; i < percolation.maxIterationLimit(); ++i){
 
-        fout << (i + 1) / double(lattice_percolation.maxIterationLimit()) << delimiter;
+        fout << (i + 1) / double(percolation.maxIterationLimit()) << delimiter;
         fout << entropy[i] / double(ensemble_size) << delimiter;
-        fout << nob_largest[i] / double(ensemble_size * lattice_percolation.maxBonds()) << delimiter;
-        fout << nob_wraping[i] / double(ensemble_size * lattice_percolation.maxBonds()) ;
+        fout << nob_largest[i] / double(ensemble_size * percolation.maxBonds()) << delimiter;
+        fout << nob_wraping[i] / double(ensemble_size * percolation.maxBonds()) ;
         fout << std::endl;
     }
     fout.close();

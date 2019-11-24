@@ -247,9 +247,9 @@ void run_v10_regular(int length, int ensemble_size) {
     std::string extension = "_L" + std::to_string(length) + '_' + tm + ".txt";
 //    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
 //    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
-    std::string filename_critical = lp.getSignature() + "_critical" + extension;
+    std::string filename_critical = lp.getClassName() + "_critical" + extension;
 //    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
-    std::string filename_entropy_order_parameter = lp.getSignature() + extension;
+    std::string filename_entropy_order_parameter = lp.getClassName() + "_entropy-order" + extension;
 
 
 //    std::ofstream fout_jump(filename);

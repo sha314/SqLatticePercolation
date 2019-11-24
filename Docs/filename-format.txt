@@ -1,0 +1,5 @@
+date 2019.11.24
+
+    getClassName() + TYPE + "_L" + LENGTH + "_" + DATE_TIME + ".txt"
+
+    TYPE={_entropy-order, _critical, _cluster_by_site, _cluster_by_bond}

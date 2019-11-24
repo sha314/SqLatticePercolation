@@ -96,4 +96,4 @@ set(SOURCE_FILES
         src/percolation/percolation_v12.cpp
         src/percolation/percolation_v12.h)
 
-add_executable(SqLatticePercolation ${SOURCE_FILES})
+add_executable(sqlattice ${SOURCE_FILES})
