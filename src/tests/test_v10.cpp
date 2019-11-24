@@ -24,12 +24,12 @@ void test_v10(int argc, char **argv) {
 //    test_v10_number_of_clusters_per_site(argc, argv);
 //    test_v10_lattice(argc, argv);
 
-    run_v10_regular(length, ensemble_size);
+//    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-//    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
-//    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
-//    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
 }
 
 void test_v10_lattice(int argc, char **argv) {

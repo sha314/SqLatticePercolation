@@ -167,7 +167,6 @@ public:
     }
 
     const std::vector<double> clusterSizeDistribution() const ;
-
 private:
     void initialize();
     void initialize_index_sequence();

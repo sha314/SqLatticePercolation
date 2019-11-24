@@ -908,8 +908,9 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v2(Index current_site) {
     value_type base = manageClusters(sites, bonds);
     add_entropy_for_bond(base); // tracking entropy change
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+    track_largestCluster(base);
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
 
     return base;
 }
@@ -939,8 +940,9 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v3(
     value_type base = manageClusters(sites, bonds);
     add_entropy_for_bond(base); // tracking entropy change
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+    track_largestCluster(base);
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
 
     return base;
 }
@@ -1686,8 +1688,8 @@ double SitePercolation_ps_v10::spanningProbability() const {
  * @return current entropy of the lattice
  */
 double SitePercolation_ps_v10::entropy() {
-    return entropy_v1();
-//    return entropy_v2();
+//    return entropy_v1();
+    return entropy_v2();
 }
 
 
@@ -2233,6 +2235,17 @@ void SitePercolation_ps_v10::viewRandomizedIndices() {
     }
     cout << "}" << endl;
 }
+
+//void SitePercolation_ps_v10::track_largestCluster(value_type base) {
+//    // calculating number of bonds in the largest cluster // by cluster index
+//    // checking number of bonds
+//    if(_clusters[base].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
+//        _number_of_bonds_in_the_largest_cluster = _clusters[base].numberOfBonds();
+//    }
+//    if(_clusters[base].numberOfSites() > _number_of_sites_in_the_largest_cluster){
+//        _number_of_sites_in_the_largest_cluster = _clusters[base].numberOfSites();
+//    }
+//}
 
 
 

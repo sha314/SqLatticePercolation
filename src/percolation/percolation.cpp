@@ -402,3 +402,15 @@ void SqLatticePercolation::viewRandomized() {
     cout << "}" << endl;
 }
 
+void SqLatticePercolation::track_largestCluster(value_type base) {
+    // calculating number of bonds in the largest cluster // by cluster index
+    // checking number of bonds
+    if(_clusters[base].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
+        _number_of_bonds_in_the_largest_cluster = _clusters[base].numberOfBonds();
+    }
+    if(_clusters[base].numberOfSites() > _number_of_sites_in_the_largest_cluster){
+        _number_of_sites_in_the_largest_cluster = _clusters[base].numberOfSites();
+    }
+
+}
+

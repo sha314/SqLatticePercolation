@@ -153,7 +153,7 @@ public:
 
     void viewRandomized();
 
-    virtual double occupationProbability() const = 0;
+
     virtual double entropy() { return _entropy_current;}
     double entropy_by_site(); // for future convenience. // the shannon entropy. the full calculations. time consuming
     double entropy_by_bond(); // for future convenience. // the shannon entropy. the full calculations. time consuming
@@ -175,15 +175,20 @@ public:
     double get_relabeling_time() const {return time_relabel;}
     value_type relabeling_count() const {return _total_relabeling;}
 
-    // tracking
-    void track_numberOfBondsInLargestCluster();
-    void track_numberOfSitesInLargestCluster();
+    virtual // tracking
+    void track_numberOfBondsInLargestCluster(){}; // delete in future
+    virtual void track_numberOfSitesInLargestCluster(){}; // delete in future
+    void track_largestCluster(value_type base);
+
 
     virtual const std::vector<double> clusterSizeDistribution() const {std::cout << "not defined in SqLatticePercolation" << std::endl;return {};};  // 2019.06.17
 
     IndexRelative getRelativeIndex(Index root, Index site_new);
 
     size_t numberOfClusters() const {return number_of_clusters;}
+
+    // must implement virtual functions
+    virtual double occupationProbability() const = 0;
 
 };
 

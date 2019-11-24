@@ -306,7 +306,7 @@ public:
     // on test
 //    IndexRelative getRelativeIndex(Index root, Index site_new);
 
-    const std::vector<double> clusterSizeDistribution() const ; // 2019.06.17
+    const std::vector<double> clusterSizeDistribution() const override; // 2019.06.17
 
 
 };

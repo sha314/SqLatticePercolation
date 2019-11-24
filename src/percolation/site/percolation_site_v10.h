@@ -241,8 +241,8 @@ public:
      *  Tracker
      *  Must be called each time a site is placed
      ***********************************/
-    void track_numberOfBondsInLargestCluster();
-    void track_numberOfSitesInLargestCluster();
+    void track_numberOfBondsInLargestCluster() override;
+    void track_numberOfSitesInLargestCluster() override;
 
     /*********************************
      * I/O functions
