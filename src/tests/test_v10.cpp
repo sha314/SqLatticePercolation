@@ -172,12 +172,18 @@ void run_v10_regular(int length, int ensemble_size) {
             successful = lp.occupy();
 //            lp.viewRemainingSites();
             if(successful) {
-                cout << counter+1 << " th site ****** last " << lp.lastPlacedSite() << endl;
-//                lp.viewSiteByID();
-//                lp.viewCluster();
-                cout << lp.entropy_v1()
-                     << " vs " << lp.entropy_v2()
+                cout << counter+1 << " th site ************########********** last " << lp.lastPlacedSite() << endl;
+                lp.viewSiteByID();
+                lp.viewCluster();
+                auto H1 = lp.entropy_v1();
+                auto H2 = lp.entropy_v2();
+                cout << H1
+                     << " vs " << H2
                      << endl;
+                if(abs(H1 - H2) > 1e-5){
+                    cout << "Entropy mismatched" << endl;
+                    exit(0);
+                }
                 entropy[counter] += lp.entropy();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();

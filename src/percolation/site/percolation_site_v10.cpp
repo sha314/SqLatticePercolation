@@ -191,13 +191,25 @@ void SitePercolation_ps_v10::randomize_v2(){
 void SitePercolation_ps_v10::subtract_entropy_for_bond(const vector<BondIndex> bonds){
     double nob, mu_bond, H{};
     int id{-1};
+#ifdef DEBUG_FLAG
+    cout << "subtracting bond of id {" ;
+#endif
+    unordered_set<int> ids;
     for(auto b: bonds){
         id = _lattice.getGroupID(b);
+        if(ids.count(id) > 0) continue; // preventing double counting
+        ids.insert(id);
+#ifdef DEBUG_FLAG
+        cout << id << ",";
+#endif
         nob = _clusters[id].numberOfBonds();
         mu_bond = nob / maxBonds();
         H += log(mu_bond) * mu_bond;
     }
-    _entropy -= -H;
+#ifdef DEBUG_FLAG
+    cout << "}" << endl;
+#endif
+    _entropy += H; // since subtracting
 }
 
 
