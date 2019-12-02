@@ -10,6 +10,7 @@
 #include <chrono>
 #include <sstream>
 #include <fstream>
+#include <iomanip>
 #include "../util/time_tracking.h"
 #include "../types.h"
 
@@ -17,6 +18,7 @@ void test_v10(int argc, char* argv[]);
 void test_v10_lattice(int argc, char* argv[]);
 void test_v10_number_of_clusters_per_site(int argc, char **argv);
 
+void test_v10_lattice(int length);
 void run_v10_regular(int length, int ensemble_size);
 
 template<class PType>
@@ -147,7 +149,8 @@ void run_v10_rsbd(int length, int ensemble_size){
     fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << std::endl;
     for(size_t i{}; i < ensemble_size; ++i){
         if(pcs[i] == 0) continue;
-        fout_critical << pcs[i] << delimiter
+        fout_critical << std::setprecision(std::numeric_limits<long double>::digits10 + 1)
+                      << pcs[i] << delimiter
                       << sites_pc[i] << delimiter
                       << bonds_pc[i] << std::endl;
     }
@@ -165,6 +168,7 @@ void run_v10_rsbd(int length, int ensemble_size){
     fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
     fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
+    fout.precision(12);
     for(size_t i{}; i < percolation.maxIterationLimit(); ++i){
 
         fout << (i + 1) / double(percolation.maxIterationLimit()) << delimiter;
