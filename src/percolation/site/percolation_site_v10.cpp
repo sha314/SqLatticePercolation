@@ -2042,37 +2042,41 @@ void SitePercolation_ps_v10::writeVisualLatticeData(const string &filename, bool
     ostringstream header_info;
     header_info << "{"
                 << "\"length\":" << length()
-                << ",\"signature\":\"" << getSignature() << "\""
-                << ",\"x\":\"" << lastPlacedSite().column_ << "\""
-                << ",\"y\":\"" << lastPlacedSite().row_ << "\""
+                << R"(,"signature":")" << getSignature() << "\""
+                << R"(,"x":")" << lastPlacedSite().column_ << "\""
+                << R"(,"y":")" << lastPlacedSite().row_ << "\""
                 << "}" ;
 
     fout << "#" << header_info.str() << endl;
+//    fout << "#" << "spannig cluster"  << endl;
     fout << "#<x>,<y>,<color>" << endl;
-    fout << "# color=0 -means-> unoccupied site" << endl;
-    int id{-1};
+    fout << "# color=0 -means-> spanning site" << endl;
+    int id{-1}, spanning_id{-1};
     if(!_spanning_sites.empty()){
-        id = _lattice.getSite(_spanning_sites.front()).get_groupID();
+        spanning_id = _lattice.getSite(_spanning_sites.front()).get_groupID();
     }
     else if(!_wrapping_sites.empty()){
-        id = _lattice.getSite(_wrapping_sites.front()).get_groupID();
+        spanning_id = _lattice.getSite(_wrapping_sites.front()).get_groupID();
     }
 
     if(only_spanning){
-        if(id < 0){
+        if(spanning_id < 0){
             cerr << "id < 0 : line " << __LINE__ << endl;
         }
         vector<Index> sites = _clusters[id].getSiteIndices();
         for(auto s: sites){
-            fout << s.column_ << ',' << s.row_ << ',' << id << endl;
+            fout << s.column_ << ',' << s.row_ << ',' << 0 << endl;
         }
     }
     else {
         for (value_type y{}; y != length(); ++y) {
             for (value_type x{}; x != length(); ++x) {
-                id = _lattice.getSite({y, x}).get_groupID();
-                if(id != -1) {
-                    fout << x << ',' << y << ',' << id << endl;
+                id = _lattice.getGroupID({y, x});
+                if(id < 0) continue; // unoccupied
+                if(id == spanning_id) {
+                    fout << x << ',' << y << ',' << 0 << endl;
+                }else{
+                    fout << x << ',' << y << ',' << id + 1 << endl;
                 }
             }
         }
