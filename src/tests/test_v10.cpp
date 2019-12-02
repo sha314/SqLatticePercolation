@@ -335,17 +335,6 @@ void test_v10_lattice(int length) {
 //    lp.reset();
 
     std::string tm = getCurrentTime();
-    const char delimiter = '\t';
-    std::ostringstream header_info;
-    header_info << "{"
-                << R"("length":)" << length
-                << R"(,"random_seed":)" << lp.getRandomState()
-                << R"(,"signature":")" << lp.getSignature() << "\""
-                << R"(,"datetime":")" << tm << "\""
-                << R"(,"classname":")" << lp.getClassName() << "\""
-                //                << R"(,"cols":)" << R"(["S","n_S"])"
-                << "}";
-
 
     std::string extension = "_L" + std::to_string(length) + '_' + tm + ".txt";
     std::string filename = lp.getClassName() + "_lattice" + extension;
