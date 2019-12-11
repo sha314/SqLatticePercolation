@@ -187,9 +187,9 @@ void BondPercolation_pb_v1::reset() {
 /**
  *
  */
-double BondPercolation_pb_v1::entropy_slow() {
+long double BondPercolation_pb_v1::entropy_slow() {
     double mu{}; // probability for the cluster
-    double H{}; // entropyDistribution
+    long double H{}; // entropyDistribution
     double x;
     double count{};
     for (value_type i{}; i < _clusters.size(); ++i) {
@@ -197,7 +197,7 @@ double BondPercolation_pb_v1::entropy_slow() {
         count += x;
         mu = x / double(maxSites());
 //        cout << "mu " << mu << endl;
-        H += mu * log(mu);
+        H += mu * logl(mu);
     }
     // for cluster with numberOfBonds 1
 //    cout << sites_in_cluster_with_size_greater_than_one  << " == ? " << count << endl;
@@ -2235,11 +2235,11 @@ void BondPercolation_pb_v1::add_entropy_for_site(value_type index){
  * Very efficient approach for calculating entropy
  * @return
  */
-double BondPercolation_pb_v1::entropy() {
+long double BondPercolation_pb_v1::entropy() {
 
     double mu = 1.0/ maxSites();
     double number_of_cluster_with_size_one = (maxSites() - sites_in_cluster_with_size_greater_than_one);
-    double H = number_of_cluster_with_size_one * mu * log(mu);
+    long double H = number_of_cluster_with_size_one * mu * logl(mu);
     H *= -1;
     _entropy_current = _entropy + H;
     return _entropy_current;

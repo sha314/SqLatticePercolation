@@ -87,8 +87,8 @@ public:
     double occupationProbability() const override;
     std::vector<double> spanningProbability() const ;
 
-    double entropy();
-    double entropy_slow();
+    long double entropy();
+    long double entropy_slow();
 
     void calculate_spanning_probability();
     void calculate_spanning_probability_by_largest_cluster();

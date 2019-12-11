@@ -1807,12 +1807,12 @@ double SitePercolation_ps_v9::spanningProbability() const {
  * Cluster size is measured by bond.
  * @return current entropy of the lattice
  */
-double SitePercolation_ps_v9::entropy() {
-    double H{};
+long double SitePercolation_ps_v9::entropy() {
+    long double H{};
     double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
     double mu = 1.0/double(maxBonds());
-    H += number_of_cluster_with_size_one * log(mu) * mu;
+    H += number_of_cluster_with_size_one * logl(mu) * mu;
     H *= -1;
     _entropy_current =  _entropy + H;
     return _entropy_current;

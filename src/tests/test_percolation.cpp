@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <chrono>
+#include <iomanip>
 
 using namespace std;
 
@@ -190,7 +191,7 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
     fout_critical << "#<pc>,<sites in wrapping cluster>,<bonds in wrapping cluster>" << std::endl;
     for(size_t i{}; i < ensemble_size; ++i){
         if(pcs[i] == 0) continue;
-        fout_critical << pcs[i] << delimiter
+        fout_critical << std::setprecision(numeric_limits<double>::digits10 + 1) <<  pcs[i] << delimiter
                       << sites_pc[i] << delimiter
                       << bonds_pc[i] << std::endl;
     }
@@ -208,6 +209,7 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
     fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
     fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
+    fout.precision(numeric_limits<double>::digits10 + 1);
     for(size_t i{}; i < lattice_percolation.maxIterationLimit(); ++i){
 
         fout << (i + 1) / double(lattice_percolation.maxIterationLimit()) << delimiter;

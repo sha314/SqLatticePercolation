@@ -209,7 +209,7 @@ public:
     double numberOfOccupiedSite() const { return _number_of_occupied_sites;}
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
-    double entropy(); // the shannon entropy
+    long double entropy(); // the shannon entropy
 
 
 

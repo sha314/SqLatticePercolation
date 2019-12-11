@@ -52,9 +52,9 @@ protected:
 
 //    double _occuption_probability {};
     // entropy
-    double _entropy{};
-    double _entropy_current{};
-    double _entropy_previous{};
+    long double _entropy{};
+    long double _entropy_current{};
+    long double _entropy_previous{};
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
     size_t _cluster_count{};
@@ -154,7 +154,7 @@ public:
     void viewRandomized();
 
 
-    virtual double entropy() { return _entropy_current;}
+    virtual long double entropy() { return _entropy_current;}
     double entropy_by_site(); // for future convenience. // the shannon entropy. the full calculations. time consuming
     double entropy_by_bond(); // for future convenience. // the shannon entropy. the full calculations. time consuming
     double orderParameter();

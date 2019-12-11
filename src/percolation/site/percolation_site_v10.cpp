@@ -189,7 +189,8 @@ void SitePercolation_ps_v10::randomize_v2(){
  * @param found_index_set
  */
 void SitePercolation_ps_v10::subtract_entropy_for_bond(const vector<BondIndex> bonds){
-    double nob, mu_bond, H{};
+    double nob, mu_bond;
+    long double H{};
     int id{-1};
 #ifdef DEBUG_FLAG
     cout << "subtracting bond of id {" ;
@@ -204,7 +205,7 @@ void SitePercolation_ps_v10::subtract_entropy_for_bond(const vector<BondIndex> b
 #endif
         nob = _clusters[id].numberOfBonds();
         mu_bond = nob / maxBonds();
-        H += log(mu_bond) * mu_bond;
+        H += logl(mu_bond) * mu_bond;
     }
 #ifdef DEBUG_FLAG
     cout << "}" << endl;
@@ -222,7 +223,7 @@ void SitePercolation_ps_v10::subtract_entropy_for_bond(const vector<BondIndex> b
 void SitePercolation_ps_v10::add_entropy_for_bond(value_type index){
     double nob = _clusters[index].numberOfBonds();
     double mu_bond = nob / maxBonds();
-    double H = log(mu_bond) * mu_bond;
+    long double H = logl(mu_bond) * mu_bond;
     _entropy += -H;
 }
 
@@ -1687,7 +1688,7 @@ double SitePercolation_ps_v10::spanningProbability() const {
  * Cluster size is measured by bond.
  * @return current entropy of the lattice
  */
-double SitePercolation_ps_v10::entropy() {
+long double SitePercolation_ps_v10::entropy() {
 //    return entropy_v1();
     return entropy_v2();
 }
@@ -2209,24 +2210,25 @@ SitePercolation_ps_v10::relabel_cluster(
     }
 }
 
-double SitePercolation_ps_v10::entropy_v2() {
-    double H{};
+long double SitePercolation_ps_v10::entropy_v2() {
+    long double H{};
     double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
     double mu = 1.0/double(maxBonds());
-    H += number_of_cluster_with_size_one * log(mu) * mu;
+    H += number_of_cluster_with_size_one * logl(mu) * mu;
     H *= -1;
     _entropy_current =  _entropy + H;
     return _entropy_current;
 }
 
-double SitePercolation_ps_v10::entropy_v1() {
-    double nob, mu, H{};
+long double SitePercolation_ps_v10::entropy_v1() {
+    double nob, mu;
+    long double H{};
     for(size_t i{}; i < _clusters.size(); ++i){
         nob = _clusters[i].numberOfBonds();
         if(nob == 0) continue;
         mu = nob/maxBonds();
-        H += mu * log(mu);
+        H += mu * logl(mu);
     }
     _entropy_current = -H;
     return _entropy_current;
