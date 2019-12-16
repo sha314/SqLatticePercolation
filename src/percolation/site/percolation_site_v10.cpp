@@ -2234,7 +2234,9 @@ long double SitePercolation_ps_v10::entropy_v2() {
 //    cout << "number_of_cluster_with_size_one  " << number_of_cluster_with_size_one << " H= " << H << " _entropy " << _entropy << endl;
 //    _entropy_current =  _entropy + H;
 //    return _entropy_current;
-    return _entropy;
+
+    _entropy_current = _entropy;
+    return _entropy_current;
 }
 
 long double SitePercolation_ps_v10::entropy_v1() {
