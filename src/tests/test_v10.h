@@ -21,6 +21,8 @@ void test_v10_number_of_clusters_per_site(int argc, char **argv);
 void test_v10_lattice(int length);
 void run_v10_regular(int length, int ensemble_size);
 
+void run_v10_largest_cluster(int length, int ensemble_size);
+
 template<class PType>
 void run_v10_rsbd(int length, int ensemble_size){
     std::cout << "length " << length << " ensemble_size " << ensemble_size << std::endl;

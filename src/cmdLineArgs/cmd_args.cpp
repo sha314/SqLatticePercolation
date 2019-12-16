@@ -393,6 +393,12 @@ void calculate_and_write_to_file(value_type length, value_type ensembleSize, val
     fout << header << endl;
 
     double p, H, P, C{}, X{};
+    /*
+ * dp = 1/L^2
+ * dP/dp = d(S_max/(2 L^2))/dp
+ *       = d(S_max)/(2 L^2) * dp
+ *       = d(S_max)/2
+ */
     for(size_t i{}; i!= length_squared; ++i){
         p = (i+1)/ double(length_squared);
         H = entrpy[i];                      // Entropy

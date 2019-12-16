@@ -276,18 +276,6 @@ public:
 };
 
 
-/**
- * Weighted Planner Stochastic Lattice
- */
-class WPSLattice{
-
-
-public:
-    WPSLattice() = default;
-    ~WPSLattice() = default;
-
-};
-
 
 
 #endif //SITEPERCOLATION_LATTICE_H

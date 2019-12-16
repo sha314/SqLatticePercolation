@@ -241,8 +241,8 @@ public:
      *  Tracker
      *  Must be called each time a site is placed
      ***********************************/
-    void track_numberOfBondsInLargestCluster() override;
-    void track_numberOfSitesInLargestCluster() override;
+    void track_numberOfBondsInLargestCluster() ;
+    void track_numberOfSitesInLargestCluster() ;
 
     /*********************************
      * I/O functions
@@ -280,6 +280,7 @@ public:
     const std::vector<double> clusterSizeDistribution() const override; // 2019.06.17
 
     void viewRandomizedIndices();
+    void viewRemainingIndices();
     std::string getClassName(){ return "SitePercolation_ps_v10";}
 };
 

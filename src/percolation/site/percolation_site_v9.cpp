@@ -201,30 +201,26 @@ void SitePercolation_ps_v9::add_entropy_for_bond(value_type index){
 
 
 
-/**
- * Condition: must be called each time a site is placed
- */
-void SitePercolation_ps_v9::track_numberOfBondsInLargestCluster() {
+///**
+// * Condition: must be called each time a site is placed
+// */
+//void SitePercolation_ps_v9::track_largestCluster() {
+//
+//    // calculating number of bonds in the largest cluster // by cluster index
+//    // checking number of bonds
+//    if(_clusters[_index_last_modified_cluster].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
+//        _number_of_bonds_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfBonds();
+//    }
+//
+//    // calculating number of bonds in the largest cluster // by cluster index
+//    // checking number of bonds
+//    if(_clusters[_index_last_modified_cluster].numberOfSites() > _number_of_sites_in_the_largest_cluster){
+//        _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
+//    }
+//
+//}
 
-    // calculating number of bonds in the largest cluster // by cluster index
-    // checking number of bonds
-    if(_clusters[_index_last_modified_cluster].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
-        _number_of_bonds_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfBonds();
-    }
 
-}
-
-/**
- *
- */
-void SitePercolation_ps_v9::track_numberOfSitesInLargestCluster(){
-
-    // calculating number of bonds in the largest cluster // by cluster index
-    // checking number of bonds
-    if(_clusters[_index_last_modified_cluster].numberOfSites() > _number_of_sites_in_the_largest_cluster){
-        _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
-    }
-}
 
 
 /**
@@ -1058,8 +1054,9 @@ value_type SitePercolation_ps_v9::placeSite(Index current_site) {
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
 
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
+    track_largestCluster(merged_cluster_index);
     return merged_cluster_index;
 }
 
@@ -1095,8 +1092,9 @@ value_type SitePercolation_ps_v9::placeSite(
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
+    track_largestCluster(merged_cluster_index);
     return merged_cluster_index;
 }
 
@@ -1148,8 +1146,9 @@ value_type SitePercolation_ps_v9::placeSite_weighted(Index current_site) {
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+//    track_largestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
+    track_largestCluster(merged_cluster_index);
 
     return merged_cluster_index;
 }
@@ -1196,8 +1195,9 @@ value_type SitePercolation_ps_v9::placeSite_weighted(
     );
     add_entropy_for_bond(merged_cluster_index); // tracking entropy change
     // running tracker
-    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-    track_numberOfSitesInLargestCluster();
+//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
+//    track_numberOfSitesInLargestCluster();
+    track_largestCluster(merged_cluster_index);
     return merged_cluster_index;
 }
 
@@ -1808,6 +1808,15 @@ double SitePercolation_ps_v9::spanningProbability() const {
  * @return current entropy of the lattice
  */
 long double SitePercolation_ps_v9::entropy() {
+    return entropy_v2();
+}
+
+/**
+ * Entropy calculation is performed here. The fastest method possible.
+ * Cluster size is measured by bond.
+ * @return current entropy of the lattice
+ */
+long double SitePercolation_ps_v9::entropy_v2() {
     long double H{};
     double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 //    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
@@ -1861,16 +1870,17 @@ double SitePercolation_ps_v9::orderParameter_v2() const{
  * @return
  */
 value_type SitePercolation_ps_v9::numberOfBondsInTheLargestCluster() {
-    cout << "Inefficient. user *_v2() : line " << __LINE__ << endl;
-    value_type  len{}, nob{};
-    for(auto c: _clusters){
-        nob = c.numberOfBonds();
-        if (len < nob){
-            len = nob;
-        }
-    }
-    _number_of_bonds_in_the_largest_cluster = len;
-    return len;
+//    cout << "Inefficient. user *_v2() : line " << __LINE__ << endl;
+//    value_type  len{}, nob{};
+//    for(auto c: _clusters){
+//        nob = c.numberOfBonds();
+//        if (len < nob){
+//            len = nob;
+//        }
+//    }
+//    _number_of_bonds_in_the_largest_cluster = len;
+//    return len;
+    return _number_of_bonds_in_the_largest_cluster;
 }
 
 

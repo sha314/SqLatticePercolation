@@ -25,14 +25,16 @@ void test_v10(int argc, char **argv) {
 //    test_v10_number_of_clusters_per_site(argc, argv);
 //    test_v10_lattice(argc, argv);
 
-//    run_v10_regular(length, ensemble_size);
+    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
 //    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
 //    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
 //    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
 
-    test_v10_lattice(length);
+//    test_v10_lattice(length);
+
+//    run_v10_largest_cluster(length, ensemble_size);
 }
 
 void test_v10_lattice(int argc, char **argv) {
@@ -149,17 +151,25 @@ void run_v10_regular(int length, int ensemble_size) {
 //    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(1836584440, false);
+    lp.setRandomState(0, false);
     lp.init();
 
+//    lp.viewLattice();
+//    lp.viewLatticeByID();
+//    lp.viewLatticeExtended();
 
+//    lp.viewCluster();
+//    lp.viewRandomizedIndices();
+//    lp.viewRemainingIndices();
+//    lp.viewBondByID();
     // simulation starts here
     auto a = size_t(ensemble_size);
     std::vector<double> pcs(a), sites_pc(a), bonds_pc(a);
     value_type counter{};
-    std::vector<double> entropy(lp.maxIterationLimit());
-    std::vector<double> nob_wraping(lp.maxIterationLimit()),
-            nob_largest(lp.maxIterationLimit());
+    value_type limit = lp.maxIterationLimit();
+    std::vector<double> entropy(limit), dHs(limit);
+    std::vector<double> nob_wraping(limit),
+            nob_largest(limit), dPs(limit);
 
     for(int i{} ; i != ensemble_size ; ++i){
 
@@ -173,24 +183,30 @@ void run_v10_regular(int length, int ensemble_size) {
 //            lp.viewRemainingSites();
 //            lp.viewIndices();
             successful = lp.occupy();
-//            lp.viewRemainingSites();
+
             if(successful) {
-                cout << counter+1 << " th site ************########********** last " << lp.lastPlacedSite() << endl;
-                lp.viewSiteByID();
-                lp.viewCluster();
-                auto H1 = lp.entropy_v1();
-                auto H2 = lp.entropy_v2();
-                cout << H1
-                     << " vs " << H2
-                     << endl;
-                if(abs(H1 - H2) > 1e-5){
-                    cout << "Entropy mismatched" << endl;
-                    exit(0);
-                }
+//                cout << counter << " th site ************########********** last " << lp.lastPlacedSite() << endl;
+//                lp.viewRandomizedIndices();
+//                lp.viewRemainingIndices();
+//                lp.viewSiteByID();
+//                lp.viewBondByID();
+//                lp.viewCluster();
+//                auto H1 = lp.entropy_v1();
+//                auto H2 = lp.entropy_v2();
+//                cout
+//                        << H1
+//                     << " vs " << H2
+//                     << endl;
+//                if(abs(H1 - H2) > 1e-10){
+//                    cout << "Entropy mismatched" << endl;
+//                    exit(0);
+//                }
                 entropy[counter] += lp.entropy();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
                 lp.jump();
+                dHs[counter] += lp.jump_entropy();
+                dPs[counter] += lp.jump_wrapping_cluster();
                 if(detect_wrapping && lp.detectWrapping()){
                     pcs[i] = lp.occupationProbability();
                     sites_pc[i] = lp.numberOfSitesInTheWrappingClusters();
@@ -215,7 +231,7 @@ void run_v10_regular(int length, int ensemble_size) {
                 ++counter;
 //                if(counter >= 3) break;
             }
-            if(counter >= lp.maxIterationLimit()){ // twice_length_squared is the number of bonds
+            if(counter >= limit){ // twice_length_squared is the number of bonds
                 break;
             }
         }
@@ -253,6 +269,8 @@ void run_v10_regular(int length, int ensemble_size) {
     std::string filename_critical = lp.getClassName() + "_critical" + extension;
 //    std::string filename = lattice_percolation.getSignature() + "_entropy-jump" + extension;
     std::string filename_entropy_order_parameter = lp.getClassName() + "_entropy-order" + extension;
+
+    std::string filename_specific_heat_susceptibility = lp.getClassName() + "_specific_heat-susceptibility" + extension;
 
 
 //    std::ofstream fout_jump(filename);
@@ -304,14 +322,136 @@ void run_v10_regular(int length, int ensemble_size) {
     fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
     fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
 //    std::cout.precision(12);
-    fout.precision(12);
-    for(size_t i{}; i < lp.maxIterationLimit(); ++i){
+    fout.precision(numeric_limits<double>::digits10);
+    for(size_t i{}; i < limit; ++i){
 
-        fout << (i + 1) / double(lp.maxIterationLimit()) << delimiter;
+        fout << (i + 1) / double(limit) << delimiter;
         fout << entropy[i] / double(ensemble_size) << delimiter;
         fout << nob_largest[i] / double(ensemble_size * lp.maxBonds()) << delimiter;
         fout << nob_wraping[i] / double(ensemble_size * lp.maxBonds()) ;
         fout << std::endl;
+    }
+    fout.close();
+
+
+
+    fout.open(filename_specific_heat_susceptibility);
+    fout << '#' << header_info.str() << std::endl;
+    fout << "#p = occupation probability" << std::endl;
+    fout << "#H(p,L) = Entropy = sum( - u_i * log(u_i))" << std::endl;
+    fout << "#P(p,L) = Order parameter = S_spanning / (2*L*L)" << std::endl;
+    fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
+    fout << "#X(p,L) = Susceptibility = dP/dp, using wrapping cluster" << std::endl;
+    fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
+    fout << "#<p>,<C(p,L)>,<X(p,L)>" << std::endl;
+//    std::cout.precision(12);
+    fout.precision(numeric_limits<double>::digits10);
+    double p;
+    /*
+     * dp = 1/L^2
+     * dP/dp = d(S_max/(2 L^2))/dp
+     *       = d(S_max)/(2 L^2) * dp
+     *       = d(S_max)/2
+     */
+    for(size_t i{}; i < limit; ++i){
+        p = (i + 1) / double(limit);
+        fout << p << delimiter;
+        fout << -1*(1.0-p)*dHs[i]*length_squared / double(ensemble_size) << delimiter;
+        fout << dPs[i] / double(2*ensemble_size) ;
+        fout << std::endl;
+    }
+    fout.close();
+}
+
+
+void run_v10_largest_cluster(int length, int ensemble_size) {
+
+    std::cout << "length=" << length << " and ensemble_size=" << ensemble_size << std::endl;
+
+    long length_squared = length*length;
+    long twice_length_squared = 2 * length_squared;
+
+    SitePercolation_ps_v10 lp(length, true);
+    double pc = 0.5927;
+    double eps = 0.05;
+    double pc0 = 0.5927-eps;
+    double pc1 = 0.5927+eps;
+//    SitePercolationBallisticDeposition_L2_v3 lp(length, true);
+//    SitePercolationRSBD_L1_v10 lp(length, true);
+//    SitePercolationRSBD_L2_v10 lp(length, true);
+
+    lp.setRandomState(1836584440, true);
+    lp.init();
+
+
+    // simulation starts here
+    auto a = size_t(ensemble_size);
+
+    value_type counter{};
+    std::vector<double>   nob_largest;
+    double p{};
+    double dp = 1.0/lp.maxIterationLimit();
+    for(int i{1} ; i <= ensemble_size ; ++i){
+
+        lp.reset();
+        bool successful = false;
+        auto t_start = std::chrono::system_clock::now();
+        counter = 0;
+        while (true){
+            successful = lp.occupy();
+            if(successful) {
+                p = lp.occupationProbability();
+
+                if(p > pc0 && p < pc1) {
+                    if(counter >= nob_largest.size()){
+                        nob_largest.resize(counter+1);
+                    }
+                    nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
+                    ++counter;
+                }
+            }
+            if(p > pc1) break;
+        }
+        auto t_end = std::chrono::system_clock::now();
+        std::cout << "Iteration " << (i+1)
+                  //                 << " . Thread " << std::this_thread::get_id()
+                  << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << std::endl;
+    }
+
+    std::string tm = getCurrentTime();
+    const char delimiter = '\t';
+    std::ostringstream header_info;
+    header_info << "{"
+                << R"("length":)" << length
+                << R"(,"ensemble_size":)" << ensemble_size
+                << R"(,"pc":)" << pc
+                << R"(,"dp":)" << dp
+                << R"(,"random_seed":)" << lp.getRandomState()
+                << R"(,"signature":")" << lp.getSignature() << "\""
+                << R"(,"datetime":")" << tm << "\""
+                << R"(,"classname":")" << lp.getClassName() << "\""
+                //                << R"(,"cols":)" << R"(["S","n_S"])"
+                << "}";
+
+
+    std::string extension = "_L" + std::to_string(length) + '_' + tm + ".txt";
+    std::string filename_largest_cluster = lp.getClassName() + "_largest-cluster" + extension;
+
+
+    std::ofstream fout(filename_largest_cluster);
+    fout << '#' << header_info.str() << std::endl;
+    fout << "#<p>,<S_max>" << std::endl;
+    fout << "#p = occupation probability" << std::endl;
+    fout << "#S_max = largest cluster size" << std::endl;
+//    std::cout.precision(12);
+    fout.precision(numeric_limits<double>::digits10);
+    p = pc0;
+    for(size_t i{}; i < nob_largest.size(); ++i){
+
+        fout << p << delimiter;
+        fout << nob_largest[i] / double(ensemble_size) << delimiter;
+        fout << std::endl;
+        p += dp;
     }
     fout.close();
 }

@@ -243,9 +243,9 @@ void SqLatticePercolation::reset() {
 
 void SqLatticePercolation::jump() {
 
-    double delta_H{};
     if(_index_sequence_position > 1) {
         delta_H = _entropy_current - _entropy_previous;
+        delta_P = _wrapping_cluster_size - _wrapping_cluster_size_previous;
     }
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
@@ -253,6 +253,7 @@ void SqLatticePercolation::jump() {
         _entropy_jump_pc = occupationProbability(); // must be implemented by the subclasses
     }
     _entropy_previous = _entropy_current; // be ready for next step
+    _wrapping_cluster_size_previous = _wrapping_cluster_size;
 }
 
 
@@ -412,5 +413,13 @@ void SqLatticePercolation::track_largestCluster(value_type base) {
         _number_of_sites_in_the_largest_cluster = _clusters[base].numberOfSites();
     }
 
+}
+
+long double SqLatticePercolation::jump_entropy() {
+    return delta_H;
+}
+
+value_type SqLatticePercolation::jump_wrapping_cluster() {
+    return delta_P;
 }
 

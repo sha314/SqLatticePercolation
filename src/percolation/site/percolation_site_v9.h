@@ -142,6 +142,7 @@ public:
      * Properties of Percolation class
      ***********************************************/
     std::string getSignature();
+    std::string getClassName(){return "SitePercolation_ps_v9";};
 
 
     void numberOfActiveSites() const {std::cout << "Number of active site_index_sequence " << _number_of_occupied_sites << std::endl;}
@@ -210,6 +211,8 @@ public:
     double occupationProbability() const { return double(_number_of_occupied_sites)/maxSites();}
     double spanningProbability() const; // number of bonds in spanning cluster / total number of bonds (2*l*l - 2*l)
     long double entropy(); // the shannon entropy
+    long double entropy_v1(); // the shannon entropy
+    long double entropy_v2(); // the shannon entropy
 
 
 
@@ -260,8 +263,8 @@ public:
      *  Tracker
      *  Must be called each time a site is placed
      ***********************************/
-    void track_numberOfBondsInLargestCluster();
-    void track_numberOfSitesInLargestCluster();
+//    void track_largestCluster();
+
 
     /*********************************
      * I/O functions

@@ -1042,9 +1042,9 @@ void SqLattice::get_neighbors(Index site, vector<Index> &site_neighbor, vector<B
     bond_neighbor.clear();
 
     value_type prev_column  = (site.column_ + _length - 1) % _length;
-    value_type prev_row     = (site.row_ + _length - 1) % _length;
-    value_type next_row     = (site.row_ + 1) % _length;
-    value_type next_column  = (site.column_ + 1) % _length;
+    value_type prev_row     = (site.row_    + _length - 1) % _length;
+    value_type next_row     = (site.row_    + 1)           % _length;
+    value_type next_column  = (site.column_ + 1)           % _length;
 
     // 1 level inside the lattice
     // not in any the boundary

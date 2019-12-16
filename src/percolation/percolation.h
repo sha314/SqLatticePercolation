@@ -52,10 +52,10 @@ protected:
 
 //    double _occuption_probability {};
     // entropy
-    long double _entropy{};
+    long double _entropy{}, delta_H;
     long double _entropy_current{};
     long double _entropy_previous{};
-    double _largest_jump_entropy{}; // lrgest jump in entropy
+    long double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
     size_t _cluster_count{};
     value_type _bonds_in_cluster_with_size_two_or_more{0};   // total number of bonds in the clusters. all cluster has bonds > 1
@@ -71,6 +71,8 @@ protected:
     // id of the cluster which has maximum number of bonds. used to calculate order parameter
     value_type _number_of_bonds_in_the_largest_cluster{};
     value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
+    value_type delta_P; // jump of order parameter, i.e., number of bonds (or sites) in wrapping cluster
+    value_type _wrapping_cluster_size, _wrapping_cluster_size_previous;
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
     std::mt19937 _random_engine;
     value_type _random_state;
@@ -160,6 +162,8 @@ public:
     double orderParameter();
     size_t numberOfcluster() const {return _cluster_count;}
     void jump();
+    long double jump_entropy();
+    value_type jump_wrapping_cluster();
     double largestEntropyJump()const { return _largest_jump_entropy;}
     double largestEntropyJump_pc()const { return _entropy_jump_pc;}
 
@@ -175,10 +179,11 @@ public:
     double get_relabeling_time() const {return time_relabel;}
     value_type relabeling_count() const {return _total_relabeling;}
 
-    virtual // tracking
-    void track_numberOfBondsInLargestCluster(){}; // delete in future
-    virtual void track_numberOfSitesInLargestCluster(){}; // delete in future
-    void track_largestCluster(value_type base);
+    // tracking
+//    virtual void track_largestCluster();
+//    void track_numberOfBondsInLargestCluster(){}; // delete in future
+//    virtual void track_numberOfSitesInLargestCluster(){}; // delete in future
+    virtual void track_largestCluster(value_type base);
 
 
     virtual const std::vector<double> clusterSizeDistribution() const {std::cout << "not defined in SqLatticePercolation" << std::endl;return {};};  // 2019.06.17

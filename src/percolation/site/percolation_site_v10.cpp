@@ -19,6 +19,7 @@
 #include <thread>
 #include <algorithm>
 #include <iterator>
+#include <iomanip>
 
 #include "../../util/checking.h"
 #include "../../util/time_tracking.h"
@@ -53,7 +54,7 @@ SitePercolation_ps_v10::SitePercolation_ps_v10(value_type length, bool periodici
     _bottom_edge.reserve(length);
     _left_edge.reserve(length);
     _right_edge.reserve(length);
-
+    _entropy=logl(maxBonds());
     initialize();
 }
 
@@ -154,7 +155,7 @@ void SitePercolation_ps_v10::reset() {
 
     time_relabel = 0;
     _total_relabeling = 0;
-
+    _entropy=logl(maxBonds());
     init();
 }
 
@@ -896,7 +897,9 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v2(Index current_site) {
 
     _last_placed_site = current_site;
 //    cout << "placing site " << current_site << endl;
+//    viewSiteByID();
     _lattice.activate_site(current_site);
+//    viewSiteByID();
     ++_number_of_occupied_sites;
 
     // find the bonds for this site
@@ -1027,11 +1030,15 @@ value_type SitePercolation_ps_v10::merge_cluster_v3(
     int base{}, id{};
     size_t base_sites{}, size{}, base_bonds{};
     unordered_set<int> ids; // selected cluster to merge including the base cluster id
-//    cout << "found ids {";
+#ifdef DEBUG_FLAG
+    cout << "found ids {";
+#endif
     for(const BondIndex &b: bonds){
         // choosing the largest cluster as base cluster
         id = _lattice.getGroupID(b);
-//        cout << id << ",";
+#ifdef DEBUG_FLAG
+        cout << id << ",";
+#endif
         if(_clusters[id].emptyBond()) continue; // empty cluster cannot be a part of what's coming next
         size = _clusters[id].numberOfSites();
         if(size >= base_sites){
@@ -1043,10 +1050,12 @@ value_type SitePercolation_ps_v10::merge_cluster_v3(
         }
         ids.insert(id);
     }
-//    cout << "}" << endl;
-//    cout << "non empty {";
-//    copy(ids.begin(), ids.end(), ostream_iterator<int>(cout, ","));
-//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "}" << endl;
+    cout << "non empty {";
+    copy(ids.begin(), ids.end(), ostream_iterator<int>(cout, ","));
+    cout << "}" << endl;
+#endif
 
     // find which of the neighbors are of id base
     IndexRelative r;
@@ -1825,6 +1834,7 @@ value_type SitePercolation_ps_v10::numberOfBondsInTheWrappingClusters(){
             nob += _clusters[id].numberOfBonds();
         }
     }
+    _wrapping_cluster_size = nob;
     return nob;
 }
 
@@ -2210,15 +2220,21 @@ SitePercolation_ps_v10::relabel_cluster(
     }
 }
 
+/**
+ * Entropy is added and subtracted  while occupying
+ * @return
+ */
 long double SitePercolation_ps_v10::entropy_v2() {
-    long double H{};
-    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
-//    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
-    double mu = 1.0/double(maxBonds());
-    H += number_of_cluster_with_size_one * logl(mu) * mu;
-    H *= -1;
-    _entropy_current =  _entropy + H;
-    return _entropy_current;
+//    long double H{};
+//    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
+////    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
+//    double mu = 1.0/double(maxBonds());
+//    H += number_of_cluster_with_size_one * logl(mu) * mu;
+//    H *= -1;
+//    cout << "number_of_cluster_with_size_one  " << number_of_cluster_with_size_one << " H= " << H << " _entropy " << _entropy << endl;
+//    _entropy_current =  _entropy + H;
+//    return _entropy_current;
+    return _entropy;
 }
 
 long double SitePercolation_ps_v10::entropy_v1() {
@@ -2237,7 +2253,15 @@ long double SitePercolation_ps_v10::entropy_v1() {
 void SitePercolation_ps_v10::viewRandomizedIndices() {
     cout << "randomized indices {" << endl;
     for(size_t i{}; i < randomized_index.size(); ++i){
-        cout << i << " [" << randomized_index[i] << "] -> " << site_indices[randomized_index[i]] << endl;
+        cout << setw(3) <<  i << " [" << setw(3) << randomized_index[i] << "] -> " << site_indices[randomized_index[i]] << endl;
+    }
+    cout << "}" << endl;
+}
+
+void SitePercolation_ps_v10::viewRemainingIndices(){
+    cout << "remaining indices {" << endl;
+    for(size_t i{_index_sequence_position}; i < randomized_index.size(); ++i){
+        cout << setw(3) <<  i << " [" << setw(3) << randomized_index[i] << "] -> " << site_indices[randomized_index[i]] << endl;
     }
     cout << "}" << endl;
 }
