@@ -151,7 +151,7 @@ void run_v10_regular(int length, int ensemble_size) {
 //    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(0, false);
+    lp.setRandomState(0, true);
     lp.init();
 
 //    lp.viewLattice();
@@ -194,7 +194,7 @@ void run_v10_regular(int length, int ensemble_size) {
 //                auto H1 = lp.entropy_v1();
 //                auto H2 = lp.entropy_v2();
 //                cout
-//                        << H1
+//                     << H1
 //                     << " vs " << H2
 //                     << endl;
 //                if(abs(H1 - H2) > 1e-10){
@@ -236,13 +236,14 @@ void run_v10_regular(int length, int ensemble_size) {
             }
         }
 //        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << std::endl;
-        {
-            auto t_end = std::chrono::system_clock::now();
-            std::cout << "####################################Iteration " << (i+1)
-                      //                 << " . Thread " << std::this_thread::get_id()
-                      << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << std::endl;
-        }
+
+        auto t_end = std::chrono::system_clock::now();
+        std::cout << "####################################Iteration " << (i+1)
+                  //                 << " . Thread " << std::this_thread::get_id()
+                  << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << std::endl;
+
 //        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
+//        lp.viewClusterExtended();
     }
 
 //    fout_b.close();

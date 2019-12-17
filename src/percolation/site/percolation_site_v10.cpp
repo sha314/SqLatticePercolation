@@ -230,33 +230,6 @@ void SitePercolation_ps_v10::add_entropy_for_bond(value_type index){
 
 
 
-/**
- * Condition: must be called each time a site is placed
- */
-void SitePercolation_ps_v10::track_numberOfBondsInLargestCluster() {
-
-    // calculating number of bonds in the largest cluster // by cluster index
-    // checking number of bonds
-    if(_clusters[_index_last_modified_cluster].numberOfBonds() > _number_of_bonds_in_the_largest_cluster){
-        _number_of_bonds_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfBonds();
-    }
-
-}
-
-/**
- *
- */
-void SitePercolation_ps_v10::track_numberOfSitesInLargestCluster(){
-
-    // calculating number of bonds in the largest cluster // by cluster index
-    // checking number of bonds
-    if(_clusters[_index_last_modified_cluster].numberOfSites() > _number_of_sites_in_the_largest_cluster){
-        _number_of_sites_in_the_largest_cluster = _clusters[_index_last_modified_cluster].numberOfSites();
-    }
-}
-
-
-
 
 /**
  * When merging two cluster this function perform relabeling based
@@ -913,8 +886,6 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v2(Index current_site) {
     add_entropy_for_bond(base); // tracking entropy change
     // running tracker
     track_largestCluster(base);
-//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-//    track_numberOfSitesInLargestCluster();
 
     return base;
 }
@@ -945,8 +916,6 @@ value_type SitePercolation_ps_v10::placeSite_weighted_v3(
     add_entropy_for_bond(base); // tracking entropy change
     // running tracker
     track_largestCluster(base);
-//    track_numberOfBondsInLargestCluster(); // tracking number of bonds in the largest cluster
-//    track_numberOfSitesInLargestCluster();
 
     return base;
 }
@@ -2225,6 +2194,7 @@ SitePercolation_ps_v10::relabel_cluster(
  * @return
  */
 long double SitePercolation_ps_v10::entropy_v2() {
+    /* no need when starting entropy from maximum initial value by default
 //    long double H{};
 //    double number_of_cluster_with_size_one = maxBonds() - _bonds_in_cluster_with_size_two_or_more;
 ////    cout << " _bonds_in_cluster_with_size_two_or_more " << _bonds_in_cluster_with_size_two_or_more << " : line " << __LINE__ << endl;
@@ -2234,9 +2204,13 @@ long double SitePercolation_ps_v10::entropy_v2() {
 //    cout << "number_of_cluster_with_size_one  " << number_of_cluster_with_size_one << " H= " << H << " _entropy " << _entropy << endl;
 //    _entropy_current =  _entropy + H;
 //    return _entropy_current;
+     */
 
-    _entropy_current = _entropy;
-    return _entropy_current;
+//    _entropy_current = _entropy;
+//    return _entropy_current;
+
+
+    return _entropy;
 }
 
 long double SitePercolation_ps_v10::entropy_v1() {

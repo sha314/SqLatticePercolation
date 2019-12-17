@@ -66,6 +66,10 @@ void SqLatticePercolation::viewClusterExtended() {
     for (value_type i{}; i != _clusters.size(); ++i) {
         if(_clusters[i].empty()){
 //            cout << "Empty cluster : line " << endl;
+            if(_clusters[i].numberOfBonds() > 0 || _clusters[i].numberOfSites() >0){
+                cerr << "empty cluster is not empty" << endl;
+                exit(-10);
+            }
             continue;
         }
         cout << "cluster [" << i << "] : ID (" << _clusters[i].get_ID() << "){" << endl;

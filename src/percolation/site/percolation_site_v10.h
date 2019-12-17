@@ -237,13 +237,6 @@ public:
     bool detect_wrapping_v1();
 
 
-    /************************************
-     *  Tracker
-     *  Must be called each time a site is placed
-     ***********************************/
-    void track_numberOfBondsInLargestCluster() ;
-    void track_numberOfSitesInLargestCluster() ;
-
     /*********************************
      * I/O functions
      * Printing Status
