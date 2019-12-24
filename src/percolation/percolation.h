@@ -198,23 +198,7 @@ public:
 };
 
 
-/**
- * Universal class to access all types of percolation in square lattice.
- * More userfriendly.
- */
-template <class T>
-class Percolation{
-public:
-    enum class Types{
-       SitePercolation,
-       BondPercolation,
-       SitePercolationBallisticDepositionL1,
-       SitePercolationBallisticDepositionL2
-    };
 
-    ~Percolation() = default;
-    T getClass(Types t, value_type length, bool periodicity=true);
-};
 
 #endif //SITEPERCOLATION_PERCOLATION_H
 

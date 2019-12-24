@@ -186,5 +186,66 @@ public:
 };
 
 
+/**
+ * Cluster of bonds and sites
+ * compitable for v12
+ *
+ * root site (bond) is the first site (bond) of the cluster. nedeed for (wrapping) site percolation
+ */
+class Cluster_v12{
+    // contains bond and site
+    std::vector<int>  _bond_ids; // BondIndex for indexing bonds
+    std::vector<int>  _site_ids; // Site index
+
+
+    int _gid; // group id of the cluster. All sites and bonds must have this same group id
+public:
+//    using iterator = std::vector<Bond>::iterator;
+
+    ~Cluster_v12()                           = default;
+    Cluster_v12()                            = default;
+    Cluster_v12(Cluster_v12&)                 = default;
+    Cluster_v12(Cluster_v12&&)                = default;
+    Cluster_v12& operator=(const Cluster_v12&)      = default;
+    Cluster_v12& operator=(Cluster_v12&&)     = default;
+
+    explicit Cluster_v12(int id){
+
+        _gid = id;       // may be modified in the program
+
+    }
+
+
+    void addSite(Index index);
+    void addBond(Index index);
+
+    void addSite(int id);
+    void addBond(int id);
+
+    int lastAddedSite(){return _site_ids.back();}
+    int lastAddedBond(){return _bond_ids.back();}
+
+    void insert(const Cluster_v12& cluster);
+
+    friend std::ostream& operator<<(std::ostream& os, const Cluster_v12& cluster);
+
+    const std::vector<int>&   getBondIDs()    {return _bond_ids;}
+    const std::vector<int>&   getSiteIDs()    {return _site_ids;}
+
+    value_type numberOfBonds() const { return _bond_ids.size();}
+    value_type numberOfSites() const { return _site_ids.size();}
+
+    int getGroupID() const { return _gid;}
+    void setGroupID(int id) { _gid = id;}
+
+
+    int getRootSite()const{return _site_ids[0];} // for site percolation
+    int getRootBond()const{return _bond_ids[0];} // for bond percolation
+    bool empty() const { return _bond_ids.empty() && _site_ids.empty();}
+    bool emptySite() const { return _site_ids.empty();}
+    bool emptyBond() const { return _bond_ids.empty();}
+    void clear() {_bond_ids.clear(); _site_ids.clear(); }
+};
+
 
 #endif //SITEPERCOLATION_CLUSTER_H

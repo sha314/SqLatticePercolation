@@ -5,6 +5,7 @@
 #include <iostream>
 #include "test_v12.h"
 #include "../lattice/lattice.h"
+#include "../percolation/percolation_v12.h"
 
 using namespace std;
 
@@ -17,7 +18,8 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-    test_v12_lattice(length);
+//    test_v12_lattice(length);
+    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
@@ -51,4 +53,11 @@ void test_v12_lattice(int length) {
     cout << lattice.getBond(17)<< endl;
     cout << lattice.getBond(22)<< endl;
     cout << lattice.getBond(35)<< endl;
+}
+
+
+void test_v12_percolation(int length) {
+    Percolation_v12 percolation(length);
+
+
 }

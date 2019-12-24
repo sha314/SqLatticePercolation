@@ -571,3 +571,31 @@ Site_v12 Lattice_v12::getSite(int id) {
     auto i = _sites[id];
     return  _sites_2d[i.row_][i.column_];
 }
+
+int Lattice_v12::getGroupIDBond(int id) {
+    auto i = _bonds[id];
+    return  _bonds_2d[i.row_][i.column_].get_groupID();
+}
+
+int Lattice_v12::getGroupIDSite(int id) {
+    auto i = _sites[id];
+    return  _sites_2d[i.row_][i.column_].get_groupID();
+}
+
+void Lattice_v12::setGroupIDBond(int id, int group_id) {
+    auto i = _bonds[id];
+    _bonds_2d[i.row_][i.column_].set_groupID(group_id);
+}
+
+void Lattice_v12::setGroupIDSite(int id, int group_id) {
+    auto i = _sites[id];
+    _sites_2d[i.row_][i.column_].set_groupID(group_id);
+}
+
+void Lattice_v12::setGroupIDBond(Index index, int group_id) {
+    _bonds_2d[index.row_][index.column_].set_groupID(group_id);
+}
+
+void Lattice_v12::setGroupIDSite(Index index, int group_id) {
+    _sites_2d[index.row_][index.column_].set_groupID(group_id);
+}

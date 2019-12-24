@@ -12,5 +12,6 @@
 void test_v12(int argc, char *argv[]);
 
 void test_v12_lattice(int length);
+void test_v12_percolation(int length);
 
 #endif //SQLATTICEPERCOLATION_TEST_V12_H

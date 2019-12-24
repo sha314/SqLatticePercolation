@@ -8,23 +8,28 @@
 #include <random>
 #include "../lattice/lattice.h"
 
-class Percolation{
+/*****
+ * Percolation class
+ * version 12
+ * Bond and Site percolation class will be extended from here
+ */
+class Percolation_v12{
     int  _length;
-    int _max_number_of_bonds;
-    int _max_number_of_sites;
+    size_t _max_number_of_bonds;
+    size_t _max_number_of_sites;
     char type{'0'}; // percolation type. 's' -> site percolation. 'b' -> bond percolation
 protected:
 
     // structural variables of lattice
-    SqLattice _lattice;
+    Lattice_v12 _lattice;
 
     value_type _index_sequence_position{};
     // cluster
 
-    std::vector<Cluster_v3> _clusters;   // check and remove reapeted index manually
+    std::vector<Cluster_v12> _clusters;   // check and remove reapeted index manually
     // every birthTime we create a cluster we assign an set_ID for them
     int _cluster_id{};
-    size_t number_of_clusters{};
+
     value_type min_index{};
     value_type max_index{};
 
@@ -36,7 +41,6 @@ protected:
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
     size_t _cluster_count{};
-    value_type _bonds_in_cluster_with_size_two_or_more{0};   // total number of bonds in the clusters. all cluster has bonds > 1
 
 
     value_type _total_relabeling{};
@@ -51,10 +55,29 @@ protected:
     value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
     std::mt19937 _random;
-    value_type _random_state;
+    size_t _random_state;
+
+public:
+    ~Percolation_v12() = default;
+    Percolation_v12() = default;
+
+    explicit Percolation_v12(int length);
+
+    void setRandomState(size_t seed, bool generate_seed=true);
+    size_t getRandomState();
+
+    size_t maxSites() const {return _max_number_of_sites;}
+    size_t maxBonds() const {return _max_number_of_bonds;}
+
 };
 
-class SqLatticeRegularSite :  public Percolation{
+class SqLatticeRegularSite :  public Percolation_v12{
+
+public:
+    SqLatticeRegularSite() = default;
+    explicit SqLatticeRegularSite(int length):Percolation_v12(length){}
+
+    void init();
 
 };
 
@@ -66,7 +89,7 @@ class SqLatticeExplosiveSite :  public SqLatticeRegularSite{
 
 };
 
-class SqLatticeRegularBond :  public Percolation{
+class SqLatticeRegularBond :  public Percolation_v12{
 
 };
 

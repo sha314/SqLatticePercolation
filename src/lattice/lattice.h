@@ -307,7 +307,7 @@ class Lattice_v12{
 public:
 
     ~Lattice_v12() = default;
-
+    Lattice_v12() = default;
     explicit Lattice_v12(int length);
 
     void reset(bool reset_all=false);
@@ -350,24 +350,21 @@ public:
 
     int length() const { return  _length;}
 
-    Site& getSite(Index index);
-//    Site&& getSiteR(Index index);
-    Bond& get_h_bond(Index id);
-    Bond& get_v_bond(Index id);
-    Bond& getBond(BondIndex);
+    void setGroupIDBond(Index index, int group_id);
+    void setGroupIDSite(Index index, int group_id);
 
-    const Site& getSite(Index index) const ;
+    void setGroupIDBond(int id, int group_id);
+    void setGroupIDSite(int id, int group_id);
 
-    void setGroupID(Index index, int group_id);
-    void setGroupID(BondIndex index, int group_id);
-    int getGroupID(Index index);
-    int getGroupID(BondIndex index);
+    int getGroupIDBond(int id);
+    int getGroupIDSite(int id);
+
 
     void setRelativeIndex(Index index, IndexRelative ir);
     IndexRelative getRelativeIndex(Index index);
 
-    std::vector<Index> getSites();
-    std::vector<BondIndex> getBonds();
+    std::vector<Index> getSites() const {return _sites;};
+    std::vector<Index> getBonds() const {return _bonds;};
 
 /******************************************************************************
  * Get Neighbor from given index
