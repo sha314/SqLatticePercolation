@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  23 DEC 2019 20:58
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  24 DEC 2019 14:52
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -176,21 +176,43 @@ Package caption3 Info: TeX engine: e-TeX on input line 64.
 \c@lotdepth=\count109
 \sf@top=\skip49
 \sf@bottom=\skip50
-) (./SquareLatticePercolation.aux)
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics-cfg/color.c
+fg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/dvipsnam.de
+f
+File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
+)) (./SquareLatticePercolation.aux)
 \openout1 = `SquareLatticePercolation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
-LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
 
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf
 .mkii
@@ -273,11 +295,11 @@ Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
 
 Chapter 1.
-LaTeX Font Info:    Try loading font information for U+msa on input line 12.
+LaTeX Font Info:    Try loading font information for U+msa on input line 14.
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 12.
+LaTeX Font Info:    Try loading font information for U+msb on input line 14.
 
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -291,33 +313,37 @@ Chapter 2.
 <fig/lattice-2.png, id=11, 753.7761pt x 753.7761pt>
 File: fig/lattice-2.png Graphic file (type png)
 <use fig/lattice-2.png>
-Package pdftex.def Info: fig/lattice-2.png  used on input line 16.
+Package pdftex.def Info: fig/lattice-2.png  used on input line 18.
 (pdftex.def)             Requested size: 276.00105pt x 276.00586pt.
 [2
 
-] [3 <./fig/lattice-2.png>] (./SquareLatticePercolation.aux) ) 
+] [3 <./fig/lattice-2.png>] [4] (./SquareLatticePercolation.aux) ) 
 Here is how much of TeX's memory you used:
- 3862 strings out of 492609
- 57459 string characters out of 6122871
- 121135 words of memory out of 5000000
- 7734 multiletter control sequences out of 15000+600000
+ 4399 strings out of 492609
+ 64027 string characters out of 6122871
+ 136302 words of memory out of 5000000
+ 8262 multiletter control sequences out of 15000+600000
  12267 words of font info for 31 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,9n,49p,299b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/home/shahnoor/s
-oftware/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</home
-/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi1
-0.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfo
-nts/cm/cmr10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/p
-ublic/cm-super/sfbx1440.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fo
-nts/type1/public/cm-super/sfbx2074.pfb></home/shahnoor/software/texlive/2019/te
-xmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></home/shahnoor/software/texl
-ive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></home/shahnoor/so
-ftware/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
-Output written on SquareLatticePercolation.pdf (3 pages, 111927 bytes).
+ 44i,10n,49p,420b,376s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/home/shahno
+or/software/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</
+home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/c
+mex10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmmi10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmmi7.pfb></home/shahnoor/software/texlive/2019/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/shahnoor/software/texlive/20
+19/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></home/shahnoor/software
+/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></home/shahno
+or/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></
+home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx
+2488.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm
+-super/sfrm0800.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type
+1/public/cm-super/sfrm1000.pfb>
+Output written on SquareLatticePercolation.pdf (4 pages, 138359 bytes).
 PDF statistics:
- 46 PDF objects out of 1000 (max. 8388607)
- 31 compressed objects within 1 object stream
+ 61 PDF objects out of 1000 (max. 8388607)
+ 42 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  6 words of extra memory for PDF output out of 10000 (max. 10000000)
 
