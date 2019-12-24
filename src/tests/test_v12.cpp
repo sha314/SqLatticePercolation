@@ -24,12 +24,31 @@ void test_v12_lattice(int length) {
     Lattice_v12 lattice(length);
 
 //    lattice.view_as_assigned();
-//    lattice.view_all();
+    lattice.view_all();
 //    lattice.view_sites();
 //    lattice.view_sites_by_id();
 //    lattice.view_sites_by_gid();
 //    lattice.view_by_id();
 //    lattice.view_by_gid();
-    lattice.view_sites_by_relative_index();
+//    lattice.view_sites_by_relative_index();
+//    lattice.view_by_relative_index();
 
+//    cout << lattice.getSiteLocation(0) << endl;
+//    cout << lattice.getSiteLocation(5) << endl;
+//    cout << lattice.getSiteLocation(12) << endl;
+//    cout << lattice.getSiteLocation(22) << endl;
+
+
+    cout << lattice.getBondLocation(11) << endl;
+    cout << lattice.getBondLocation(17) << endl;
+    cout << lattice.getBondLocation(22) << endl;
+    cout << lattice.getBondLocation(35) << endl;
+    cout << lattice.getBondLocation(51) << endl;
+
+
+    cout << lattice.getBond(0)<< endl;
+    cout << lattice.getBond(11)<< endl;
+    cout << lattice.getBond(17)<< endl;
+    cout << lattice.getBond(22)<< endl;
+    cout << lattice.getBond(35)<< endl;
 }

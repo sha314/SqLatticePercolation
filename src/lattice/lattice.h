@@ -289,9 +289,15 @@ public:
  * upper right part of a 2D grid
  */
 class Lattice_v12{
-    std::vector<std::vector<Site_v12>> _sites{};  // holds all the site_index_sequence
-    std::vector<std::vector<Bond_v12>> _bonds{};  // holds all horizontal bonds
+    std::vector<std::vector<Site_v12>> _sites_2d{};  // holds all the site_index_sequence
+    std::vector<std::vector<Bond_v12>> _bonds_2d{};  // holds all horizontal bonds
 
+/**
+ * Finding site or bond Index by their id.
+ * id is used index for the array the the value of the element is the Index
+ */
+    std::vector<Index> _sites{};  // holds all sites
+    std::vector<Index> _bonds{};  // holds all bonds
 
     bool _bond_resetting_flag=true; // so that we can reset all bonds
     bool _site_resetting_flag=true; // and all site_index_sequence
@@ -306,6 +312,11 @@ public:
 
     void reset(bool reset_all=false);
 
+    Index getSiteLocation(int id){return _sites[id];}
+    Index getBondLocation(int id){return _bonds[id];}
+
+    Bond_v12 getBond(int id);
+    Site_v12 getSite(int id);
 
     /***************************************
      * I/O functions
@@ -319,6 +330,7 @@ public:
     void view_by_id();
     void view_by_gid();
     void view_sites_by_relative_index();
+    void view_by_relative_index();
     void print_box(int i, int j);
 
 
@@ -367,6 +379,9 @@ public:
 
     void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
 
+    std::string get_string(const IndexRelative& index)const;
+    std::string get_string(const Link &lnk) const;
+    std::string get_string(const Index& index) const;
 };
 
 
