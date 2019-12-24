@@ -318,6 +318,9 @@ public:
     Bond_v12 getBond(int id);
     Site_v12 getSite(int id);
 
+    Bond_v12 getBond(Index index){return  _bonds_2d[index.row_][index.column_];}
+    Site_v12 getSite(Index index){return  _sites_2d[index.row_][index.column_];}
+
     /***************************************
      * I/O functions
      **************************************/
@@ -331,6 +334,8 @@ public:
     void view_by_gid();
     void view_sites_by_relative_index();
     void view_by_relative_index();
+    void view_sites_list();
+    void view_bonds_list();
     void print_box(int i, int j);
 
 
@@ -345,11 +350,16 @@ public:
     void activateSite(Index index){_sites_2d[index.row_][index.column_].activate();}
     void activateBond(Index index){_bonds_2d[index.row_][index.column_].activate();}
 
+    void activateSite(int id){auto index = _sites[id]; _sites_2d[index.row_][index.column_].activate();}
+    void activateBond(int id){auto index = _bonds[id]; _bonds_2d[index.row_][index.column_].activate();}
+
     void deactivate_site(Index index);
     void deactivate_bond(Bond bond);
 
 
     int length() const { return  _length;}
+
+    Link getBondLink(Index index){return _bonds_2d[index.row_][index.column_].getIndex();}
 
     int getBondID(Index index){return _bonds_2d[index.row_][index.column_].get_id();}
     int getSiteID(Index index){return _sites_2d[index.row_][index.column_].get_id();}
@@ -378,7 +388,7 @@ public:
     std::vector<BondIndex> get_neighbor_bonds(BondIndex site); // bond neighbor of bond
     std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.
 
-    void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
+    void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<Index> &bond_neighbor);
 
     std::string get_string(const IndexRelative& index)const;
     std::string get_string(const Link &lnk) const;

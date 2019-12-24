@@ -27,8 +27,6 @@ protected:
     // cluster
 
     std::vector<Cluster_v12> _clusters;   // check and remove reapeted index manually
-    // every birthTime we create a cluster we assign an set_ID for them
-    int _cluster_id{};
 
     value_type min_index{};
     value_type max_index{};
@@ -48,7 +46,8 @@ protected:
     value_type _number_of_occupied_sites{};
     value_type _number_of_occupied_bonds{};
     value_type _max_iteration_limit{};
-    std::vector<value_type> randomized_index;
+    std::vector<int> index_sequence;
+    std::vector<int> randomized_index;
     // order parameter calculation ingradiants
     // id of the cluster which has maximum number of bonds. used to calculate order parameter
     value_type _number_of_bonds_in_the_largest_cluster{};
@@ -70,6 +69,10 @@ public:
     size_t maxBonds() const {return _max_number_of_bonds;}
 
     void viewCluster();
+    void viewLattice_original(){_lattice.view_as_assigned();};
+    void viewLattice(){_lattice.view_all();};
+    void viewLattice_by_id(){_lattice.view_by_id();};
+    void viewLattice_by_gid(){_lattice.view_by_gid();};
 
 };
 
@@ -77,9 +80,11 @@ class SqLatticeRegularSite :  public Percolation_v12{
 
 public:
     SqLatticeRegularSite() = default;
-    explicit SqLatticeRegularSite(int length):Percolation_v12(length){}
+    explicit SqLatticeRegularSite(int length);
 
     void init();
+
+    bool occupy();
 
 };
 

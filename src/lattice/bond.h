@@ -270,6 +270,7 @@ public:
         return _index;
     }
 
+    std::vector<int> connectedSites() const {return {_index.nodeA(), _index.nodeB()};}
     void activate() {_status = true;}
     void deactivate() {
         _group_id = -1;

@@ -2,6 +2,7 @@
 // Created by shahnoor on 11/22/19.
 //
 
+#include <algorithm>
 #include "percolation_v12.h"
 
 using namespace std;
@@ -69,6 +70,15 @@ void Percolation_v12::viewCluster() {
 }
 
 
+SqLatticeRegularSite::SqLatticeRegularSite(int length) : Percolation_v12(length) {
+    auto sites = _lattice.getSites();
+    for(auto s: sites) {
+        auto id = _lattice.getSiteID(s);
+        index_sequence.emplace_back(id);
+    }
+
+}
+
 void SqLatticeRegularSite::init() {
     //
 
@@ -84,4 +94,31 @@ void SqLatticeRegularSite::init() {
         _clusters[i].setGroupID(i);
     }
 
+    randomized_index = index_sequence;
+
+    std::shuffle(randomized_index .begin(), randomized_index.end(), _random);
+
 }
+
+bool SqLatticeRegularSite::occupy() {
+    // select a site randomly
+    size_t i = _random() % randomized_index.size();
+    int id = randomized_index[i];
+    // activate the site
+    _lattice.activateSite(id);
+    ++_number_of_occupied_sites;
+
+    // find it's neighbors. sites and then bonds
+
+    // find which clusters the bonds belong
+
+    // find a suitble root cluster
+
+    // insert all to it
+
+    // relabel
+
+    return false;
+}
+
+

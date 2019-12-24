@@ -18,8 +18,8 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-//    test_v12_lattice(length);
-    test_v12_percolation(length);
+    test_v12_lattice(length);
+//    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
@@ -35,24 +35,27 @@ void test_v12_lattice(int length) {
 //    lattice.view_sites_by_relative_index();
 //    lattice.view_by_relative_index();
 
+    lattice.view_sites_list();
+    lattice.view_bonds_list();
+
 //    cout << lattice.getSiteLocation(0) << endl;
 //    cout << lattice.getSiteLocation(5) << endl;
 //    cout << lattice.getSiteLocation(12) << endl;
 //    cout << lattice.getSiteLocation(22) << endl;
 
 
-    cout << lattice.getBondLocation(11) << endl;
-    cout << lattice.getBondLocation(17) << endl;
-    cout << lattice.getBondLocation(22) << endl;
-    cout << lattice.getBondLocation(35) << endl;
-    cout << lattice.getBondLocation(51) << endl;
-
-
-    cout << lattice.getBond(0)<< endl;
-    cout << lattice.getBond(11)<< endl;
-    cout << lattice.getBond(17)<< endl;
-    cout << lattice.getBond(22)<< endl;
-    cout << lattice.getBond(35)<< endl;
+//    cout << lattice.getBondLocation(11) << endl;
+//    cout << lattice.getBondLocation(17) << endl;
+//    cout << lattice.getBondLocation(22) << endl;
+//    cout << lattice.getBondLocation(35) << endl;
+//    cout << lattice.getBondLocation(51) << endl;
+//
+//
+//    cout << lattice.getBond(0)<< endl;
+//    cout << lattice.getBond(11)<< endl;
+//    cout << lattice.getBond(17)<< endl;
+//    cout << lattice.getBond(22)<< endl;
+//    cout << lattice.getBond(35)<< endl;
 }
 
 
@@ -62,6 +65,8 @@ void test_v12_percolation(int length) {
     percolation.init();
 
     percolation.viewCluster();
+    percolation.viewLattice_by_id();
+    percolation.viewLattice_by_gid();
 
 
 }

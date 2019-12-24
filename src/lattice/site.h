@@ -131,6 +131,7 @@ class Site_v12{
     //very useful for detecting wrapping
     IndexRelative _relative_index{0,0}; // relative index from root Site of the cluster that it belongs
 
+    std::vector<int> _bond_ids; // connected bond ids
 
 public:
 
@@ -175,6 +176,8 @@ public:
 
     IndexRelative relativeIndex() const {return _relative_index;}
 
+    void connectBond(int id){_bond_ids.emplace_back(id);}
+    std::vector<int> connectedBondIDs() const {return _bond_ids;}
 };
 
 std::ostream& operator<<(std::ostream& os, const Site_v12& site);
