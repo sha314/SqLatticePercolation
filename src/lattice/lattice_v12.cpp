@@ -82,22 +82,31 @@ void Lattice_v12::view_all() {
 
 
 void Lattice_v12::view_sites() {
-
+    cout << "Lattice_v12::view_sites" << endl;
+    for(int x{}; x < _length; ++x) { // column
+        cout << "-------------------";
+    }
+    cout << endl << "y" << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
-            auto site =  _sites[y][x];
-            auto bond = _bonds[y][x];
+            auto site =  _sites[x][y];
 
-            cout << setw(3) << site.get_id() << "," <<  setw(7) << site.get_index() << "," << setw(3) << site.get_groupID() << "  |";
+            cout << setw(3) << site.get_id() << "," <<  setw(4) << site.get_index() << "," << setw(3) << site.get_groupID() << "  |";
 
         }
-        cout << "--------------------------------------------------";
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "-------------------";
+        }
         cout << endl;
     }
 
+    cout << "x->|";
     for(int x{}; x < _length; ++x) { // column
-        cout << setw(5) << x << " | ";
+        cout << "     " << setw(3) << x << "          |";
     }
     cout << endl;
 
