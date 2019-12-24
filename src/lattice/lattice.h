@@ -283,6 +283,10 @@ public:
  * Author : Shahnoor
  *
  * Specially build for v12
+ *
+ * nested vector have two indices. first is for row and second is for column.
+ * and row corresponds to y value and column to x value when the lattice is placed on the
+ * upper right part of a 2D grid
  */
 class Lattice_v12{
     std::vector<std::vector<Site_v12>> _sites{};  // holds all the site_index_sequence
@@ -308,6 +312,7 @@ public:
      **************************************/
     void view_all(); // view lattice bonds and site_index_sequence together
     void view_sites();
+    void view_sites_by_id();
     void print_box(int i, int j);
 
 

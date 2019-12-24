@@ -1,0 +1,323 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  23 DEC 2019 20:58
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**SquareLatticePercolation.tex
+(./SquareLatticePercolation.tex
+LaTeX2e <2018-12-01>
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/base/report.cls
+Document Class: report 2018/09/03 v1.4i Standard LaTeX document class
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/base/size10.clo
+File: size10.clo 2018/09/03 v1.4i Standard LaTeX file (size option)
+)
+\c@part=\count80
+\c@chapter=\count81
+\c@section=\count82
+\c@subsection=\count83
+\c@subsubsection=\count84
+\c@paragraph=\count85
+\c@subparagraph=\count86
+\c@figure=\count87
+\c@table=\count88
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/base/inputenc.sty
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks14
+\inpenc@posthook=\toks15
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/base/fontenc.sty
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/base/t1enc.def
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsmath/amsmath.sty
+Package: amsmath 2018/12/01 v2.17b AMS math features
+\@mathmargin=\skip43
+
+For additional information on amsmath, use the `?' option.
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsmath/amstext.sty
+Package: amstext 2000/06/29 v2.01 AMS text
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsmath/amsgen.sty
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks16
+\ex@=\dimen103
+)) (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsmath/amsbsy.st
+y
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen104
+) (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsmath/amsopn.sty
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count89
+LaTeX Info: Redefining \frac on input line 223.
+\uproot@=\count90
+\leftroot@=\count91
+LaTeX Info: Redefining \overline on input line 385.
+\classnum@=\count92
+\DOTSCASE@=\count93
+LaTeX Info: Redefining \ldots on input line 482.
+LaTeX Info: Redefining \dots on input line 485.
+LaTeX Info: Redefining \cdots on input line 606.
+\Mathstrutbox@=\box27
+\strutbox@=\box28
+\big@size=\dimen105
+LaTeX Font Info:    Redeclaring font encoding OML on input line 729.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 730.
+\macc@depth=\count94
+\c@MaxMatrixCols=\count95
+\dotsspace@=\muskip10
+\c@parentequation=\count96
+\dspbrk@lvl=\count97
+\tag@help=\toks17
+\row@=\count98
+\column@=\count99
+\maxfields@=\count100
+\andhelp@=\toks18
+\eqnshift@=\dimen106
+\alignsep@=\dimen107
+\tagshift@=\dimen108
+\tagwidth@=\dimen109
+\totwidth@=\dimen110
+\lineht@=\dimen111
+\@envbody=\toks19
+\multlinegap=\skip44
+\multlinetaggap=\skip45
+\mathdisplay@stack=\toks20
+LaTeX Info: Redefining \[ on input line 2844.
+LaTeX Info: Redefining \] on input line 2845.
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/amsfonts.st
+y
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup4
+\symAMSb=\mathgroup5
+LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/amssymb.sty
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/graphicx.st
+y
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/keyval.sty
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks21
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/graphics.st
+y
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+ (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/trig.sty
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics-cfg/graphic
+s.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics-def/pdftex.
+def
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+))
+\Gin@req@height=\dimen112
+\Gin@req@width=\dimen113
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/subfloat/subfloat.st
+y
+Package: subfloat 2003/08/21 version 2.14
+ Package `subfloat', Version 2.14 of 2003/08/21.
+
+Package subfloat Warning: Numbers of floats not counted:
+(subfloat)                If you use one of the counters subfloatfiguremax or
+(subfloat)                subfloattablemax you will get strange error messages
+(subfloat)                containing \c@subfloatfiguremax or
+(subfloat)                \c@subfloattablemax:
+(subfloat)                Please switch on countmax or remove the code using
+(subfloat)                the counter then..
+
+) (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/subfig/subfig.sty
+Package: subfig 2005/06/28 ver: 1.3 subfig package
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/caption/caption.sty
+Package: caption 2018/10/06 v3.3-154 Customizing captions (AR)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/caption/caption3.sty
+Package: caption3 2018/09/12 v1.8c caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 64.
+\captionmargin=\dimen114
+\captionmargin@=\dimen115
+\captionwidth=\dimen116
+\caption@tempdima=\dimen117
+\caption@indent=\dimen118
+\caption@parindent=\dimen119
+\caption@hangindent=\dimen120
+)
+\c@caption@flags=\count101
+\c@ContinuedFloat=\count102
+)
+\c@KVtest=\count103
+\sf@farskip=\skip46
+\sf@captopadj=\dimen121
+\sf@capskip=\skip47
+\sf@nearskip=\skip48
+\c@subfigure=\count104
+\c@subfigure@save=\count105
+\c@lofdepth=\count106
+\c@subtable=\count107
+\c@subtable@save=\count108
+\c@lotdepth=\count109
+\sf@top=\skip49
+\sf@bottom=\skip50
+) (./SquareLatticePercolation.aux)
+\openout1 = `SquareLatticePercolation.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 10.
+LaTeX Font Info:    ... okay on input line 10.
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf
+.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count110
+\scratchdimen=\dimen122
+\scratchbox=\box29
+\nofMPsegments=\count111
+\nofMParguments=\count112
+\everyMPshowfont=\toks22
+\MPscratchCnt=\count113
+\MPscratchDim=\dimen123
+\MPnumerator=\count114
+\makeMPintoPDFobject=\count115
+\everyMPtoPDFconversion=\toks23
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-ba
+se.sty
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/infwarerr
+.sty
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/oberdiek/grfext.sty
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/kvdefinek
+eys.sty
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ltxcmds.s
+ty
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)))
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/oberdiek/kvoptions.s
+ty
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/kvsetkeys
+.sty
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/etexcmds.
+sty
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ifluatex.
+sty
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+))))
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/pdftexcmd
+s.sty
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/latexconfig/epstopdf
+-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: subfig package v1.3 is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+Chapter 1.
+LaTeX Font Info:    Try loading font information for U+msa on input line 12.
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
+)
+LaTeX Font Info:    Try loading font information for U+msb on input line 12.
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
+)
+[1
+
+
+{/home/shahnoor/software/texlive/2019/texmf-var/fonts/map/pdftex/updmap/pdftex.
+map}]
+Chapter 2.
+<fig/lattice-2.png, id=11, 753.7761pt x 753.7761pt>
+File: fig/lattice-2.png Graphic file (type png)
+<use fig/lattice-2.png>
+Package pdftex.def Info: fig/lattice-2.png  used on input line 16.
+(pdftex.def)             Requested size: 276.00105pt x 276.00586pt.
+[2
+
+] [3 <./fig/lattice-2.png>] (./SquareLatticePercolation.aux) ) 
+Here is how much of TeX's memory you used:
+ 3862 strings out of 492609
+ 57459 string characters out of 6122871
+ 121135 words of memory out of 5000000
+ 7734 multiletter control sequences out of 15000+600000
+ 12267 words of font info for 31 fonts, out of 8000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 44i,9n,49p,299b,363s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/home/shahnoor/s
+oftware/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</home
+/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi1
+0.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfo
+nts/cm/cmr10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/p
+ublic/cm-super/sfbx1440.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fo
+nts/type1/public/cm-super/sfbx2074.pfb></home/shahnoor/software/texlive/2019/te
+xmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></home/shahnoor/software/texl
+ive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></home/shahnoor/so
+ftware/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb>
+Output written on SquareLatticePercolation.pdf (3 pages, 111927 bytes).
+PDF statistics:
+ 46 PDF objects out of 1000 (max. 8388607)
+ 31 compressed objects within 1 object stream
+ 0 named destinations out of 1000 (max. 500000)
+ 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+

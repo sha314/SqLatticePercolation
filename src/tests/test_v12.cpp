@@ -21,9 +21,10 @@ void test_v12(int argc, char **argv) {
 }
 
 void test_v12_lattice(int length) {
-    Lattice_v12 lattice(10);
+    Lattice_v12 lattice(5);
 
 //    lattice.view_all();
     lattice.view_sites();
+//    lattice.view_sites_by_id();
 
 }

@@ -336,14 +336,29 @@ void SqLatticePercolation::ckeckCluster() {
     value_type count_bonds{},    count_sites{};
 
     for (value_type i{}; i != _clusters.size(); ++i) {
-        if(_clusters[i].empty()){
+        if(_clusters[i].numberOfSites() == 0 && _clusters[i].numberOfBonds() == 0){
 //            cout << "Empty cluster : line " << endl;
             continue;
         }
 
+        auto id = _clusters[i].get_ID();
 
         sites = _clusters[i].getSiteIndices();
         bonds = _clusters[i].getBondIndices();
+        for(auto s: sites){
+            auto ids = _lattice.getGroupID(s);
+            if(ids != id){
+                cerr << "group id  for site is not same as cluster id. "
+                 << id << "!= " << ids << endl;
+            }
+        }
+        for(auto b: bonds){
+            auto ids = _lattice.getGroupID(b);
+            if(ids != id){
+                cerr << "group id  for bond is not same as cluster id. "
+                     << id << "!= " << ids << endl;
+            }
+        }
 
 
         count_bonds = _clusters[i].numberOfBonds();
@@ -362,8 +377,8 @@ void SqLatticePercolation::ckeckCluster() {
 
 
     }
-    cout << "Total bonds " << total_bonds << endl;
-    cout << "Total sites " << total_sites << endl;
+//    cout << "Total bonds " << total_bonds << endl;
+//    cout << "Total sites " << total_sites << endl;
 }
 
 void SqLatticePercolation::init() {

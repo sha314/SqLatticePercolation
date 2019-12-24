@@ -35,6 +35,10 @@ struct Index{
 
 };
 
+/**
+ * Link between two nodes.
+ * First node will have smaller value of id by construction
+ */
 class Link{
     // node_a must be smaller than node_b
     int node_a_{-1}, node_b_{-1};

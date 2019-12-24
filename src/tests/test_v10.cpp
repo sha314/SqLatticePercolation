@@ -28,9 +28,9 @@ void test_v10(int argc, char **argv) {
     run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
-    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
-    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
+//    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
+//    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
+//    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
 
 //    test_v10_lattice(length);
 
@@ -191,6 +191,7 @@ void run_v10_regular(int length, int ensemble_size) {
 //                lp.viewSiteByID();
 //                lp.viewBondByID();
 //                lp.viewCluster();
+                lp.ckeckCluster();
 //                auto H1 = lp.entropy_v1();
 //                auto H2 = lp.entropy_v2();
 //                cout

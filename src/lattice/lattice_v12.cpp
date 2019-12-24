@@ -19,13 +19,14 @@ Lattice_v12::Lattice_v12(int length) {
     int id{};
 
     for (int i{}; i != _length; ++i) {   // all bonds and site_index_sequence are activated by default
-        _sites[i].resize(size_t(length));
+        _sites[i].resize(size_t(length)); // resize new row
         for (int j{}; j != _length; ++j) {
             _sites[i][j] = Site_v12(Index(i, j), ++id);
 //            _sites[i][j].activate();
         }
     }
 
+    id = 0;
     for (int i{}; i != _length; ++i) {   // all bonds and site_index_sequence are activated by default
         _bonds[i] = std::vector<Bond_v12>(size_t(_length));
         _bonds[i + _length] = std::vector<Bond_v12>(size_t(_length));
@@ -50,8 +51,8 @@ void Lattice_v12::view_all() {
     for(int y{_length-1}; y >= 0; --y){ // row
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
-            auto site =  _sites[y][x];
-            auto bond = _bonds[y][x];
+            auto site =  _sites[x][y];
+            auto bond = _bonds[x][y];
 
             cout << setw(3) << site.get_id() << "," <<  setw(7) << site.get_index() << "," << setw(3) << site.get_groupID() << "  |";
 
@@ -107,6 +108,41 @@ void Lattice_v12::view_sites() {
     cout << "x->|";
     for(int x{}; x < _length; ++x) { // column
         cout << "     " << setw(3) << x << "          |";
+    }
+    cout << endl;
+
+}
+
+
+
+void Lattice_v12::view_sites_by_id() {
+    cout << "Lattice_v12::view_sites_by_id" << endl;
+    for(int x{}; x < _length; ++x) { // column
+        cout << "-----------";
+    }
+
+
+    cout << endl << "  y|" << endl;
+    for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+            auto site =  _sites[x][y];
+
+            cout << setw(3) << site.get_id() << "," << setw(3) << site.get_groupID() << "  |";
+
+        }
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "----------";
+        }
+        cout << endl;
+    }
+
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "  " << setw(3) << x << "    |";
     }
     cout << endl;
 
