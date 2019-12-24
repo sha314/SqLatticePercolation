@@ -57,7 +57,11 @@ void test_v12_lattice(int length) {
 
 
 void test_v12_percolation(int length) {
-    Percolation_v12 percolation(length);
+    SqLatticeRegularSite percolation(length);
+
+    percolation.init();
+
+    percolation.viewCluster();
 
 
 }

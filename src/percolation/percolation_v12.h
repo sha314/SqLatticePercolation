@@ -69,6 +69,8 @@ public:
     size_t maxSites() const {return _max_number_of_sites;}
     size_t maxBonds() const {return _max_number_of_bonds;}
 
+    void viewCluster();
+
 };
 
 class SqLatticeRegularSite :  public Percolation_v12{

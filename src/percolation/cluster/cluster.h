@@ -222,8 +222,8 @@ public:
     void addSite(int id);
     void addBond(int id);
 
-    int lastAddedSite(){return _site_ids.back();}
-    int lastAddedBond(){return _bond_ids.back();}
+//    int lastAddedSite(){return _site_ids.back();}
+//    int lastAddedBond(){return _bond_ids.back();}
 
     void insert(const Cluster_v12& cluster);
 
@@ -231,6 +231,9 @@ public:
 
     const std::vector<int>&   getBondIDs()    {return _bond_ids;}
     const std::vector<int>&   getSiteIDs()    {return _site_ids;}
+
+//    const std::vector<int>&   getBondIDs()    {return std::vector<int>(_bond_ids.begin(), _bond_ids.end());}
+//    const std::vector<int>&   getSiteIDs()    {return std::vector<int>(_site_ids.begin(), _site_ids.end());}
 
     value_type numberOfBonds() const { return _bond_ids.size();}
     value_type numberOfSites() const { return _site_ids.size();}

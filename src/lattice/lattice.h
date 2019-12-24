@@ -341,14 +341,18 @@ public:
      ***********************************/
     void activateAllSite();
     void activateAllBond();
-    void activate_site(Index index);
-    void activateBond(BondIndex bond);
+
+    void activateSite(Index index){_sites_2d[index.row_][index.column_].activate();}
+    void activateBond(Index index){_bonds_2d[index.row_][index.column_].activate();}
 
     void deactivate_site(Index index);
     void deactivate_bond(Bond bond);
 
 
     int length() const { return  _length;}
+
+    int getBondID(Index index){return _bonds_2d[index.row_][index.column_].get_id();}
+    int getSiteID(Index index){return _sites_2d[index.row_][index.column_].get_id();}
 
     void setGroupIDBond(Index index, int group_id);
     void setGroupIDSite(Index index, int group_id);

@@ -173,3 +173,11 @@ std::ostream &operator<<(std::ostream &os, const Cluster_v3 &cluster) {
 
     return os << endl;
 }
+
+void Cluster_v12::addBond(int id) {
+    _bond_ids.emplace_back(id);
+}
+
+void Cluster_v12::addSite(int id) {
+    _site_ids.emplace_back(id);
+}

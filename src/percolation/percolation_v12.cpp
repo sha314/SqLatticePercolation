@@ -46,6 +46,28 @@ size_t Percolation_v12::getRandomState() {
     return _random_state;
 }
 
+void Percolation_v12::viewCluster() {
+    cout << "Percolation_v12::viewCluster" << endl;
+    for(size_t i{}; i < _clusters.size(); ++i){
+        if(_clusters[i].empty()) continue;
+        cout << "cluster[" << i << "] {" << endl;
+
+        auto bonds = _clusters[i].getBondIDs();
+        auto sites = _clusters[i].getSiteIDs();
+        cout << "  Sites (" << sites.size()  << ") : {";
+        for(auto s: sites){
+            cout << s << ",";
+        }
+        cout << "}" << endl;
+        cout << "  Bonds (" << bonds.size()  << ") : {";
+        for(auto s: bonds){
+            cout << s << ",";
+        }
+        cout << "}" << endl;
+        cout << "}" << endl;
+    }
+}
+
 
 void SqLatticeRegularSite::init() {
     //
@@ -53,9 +75,13 @@ void SqLatticeRegularSite::init() {
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
     auto bonds = _lattice.getBonds();
-    for(size_t i{}; i < _clusters.size(); ++i){
+    for(int i{}; i < _clusters.size(); ++i){
 
-        _clusters[i].addBond()
+        auto id = _lattice.getBondID(bonds[i]);
+        _lattice.activateBond(bonds[i]);
+        _lattice.setGroupIDBond(bonds[i], i);
+        _clusters[i].addBond(id);
+        _clusters[i].setGroupID(i);
     }
 
 }
