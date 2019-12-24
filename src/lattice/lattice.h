@@ -318,6 +318,7 @@ public:
     void view_sites_by_id_gid();
     void view_by_id();
     void view_by_gid();
+    void view_sites_by_relative_index();
     void print_box(int i, int j);
 
 

@@ -171,10 +171,11 @@ void Lattice_v12::view_by_id() {
     /*
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
+    cout << endl << "y  |" ;
     for(int x{}; x < _length; ++x) { // column
-        cout << "--------------------";
+        cout << "__________";
     }
-    cout << endl << "y  |" << endl;
+    cout << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
         cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
@@ -227,10 +228,12 @@ void Lattice_v12::view_by_gid() {
     /*
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
+
+    cout << endl << "y  |" ;
     for(int x{}; x < _length; ++x) { // column
-        cout << "--------------------";
+        cout << "__________";
     }
-    cout << endl << "y  |" << endl;
+    cout << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
         cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
@@ -314,6 +317,45 @@ void Lattice_v12::view_sites() {
 
 }
 
+void Lattice_v12::view_sites_by_relative_index() {
+    cout << "Lattice_v12::view_sites_by_relative_index" << endl;
+
+    cout << endl << "y  |" ;
+    for(int x{}; x < _length; ++x) { // column
+        cout << "________________";
+    }
+    cout << endl;
+    // generating row backwards
+    for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+            auto site =  _sites[x][y]; // first column then row index
+
+            cout << setw(3) << site.get_groupID() << "," <<  site.relativeIndex()  << "  |";
+
+        }
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "----------------";
+        }
+        cout << endl;
+    }
+
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "________________";
+    }
+    cout << endl;
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "   " << setw(3) << x << "         |";
+    }
+    cout << endl;
+
+}
+
 void Lattice_v12::view_sites_by_id_gid() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
     for(int x{}; x < _length; ++x) { // column
@@ -390,12 +432,11 @@ void Lattice_v12::view_sites_by_id() {
 
 void Lattice_v12::view_sites_by_gid() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
+    cout << endl << "y  |" ;
     for(int x{}; x < _length; ++x) { // column
-        cout << "------";
+        cout << "_____";
     }
-
-
-    cout << endl << "  y|" << endl;
+    cout << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
         cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
@@ -414,7 +455,7 @@ void Lattice_v12::view_sites_by_gid() {
     }
     cout << "___|";
     for(int x{}; x < _length; ++x) { // column
-        cout << "______";
+        cout << "_____";
     }
     cout << endl;
     cout << "x->|";

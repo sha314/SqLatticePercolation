@@ -29,6 +29,7 @@ void test_v12_lattice(int length) {
 //    lattice.view_sites_by_id();
 //    lattice.view_sites_by_gid();
 //    lattice.view_by_id();
-    lattice.view_by_gid();
+//    lattice.view_by_gid();
+    lattice.view_sites_by_relative_index();
 
 }
