@@ -33,6 +33,7 @@ struct Index{
 
     Index(value_type x, value_type y) : row_{x}, column_{y} {}
 
+    std::string get_string() const;
 };
 
 /**
@@ -59,6 +60,7 @@ public:
         return os << "(" << lnk.node_a_ << "-" << lnk.node_b_<< ")";
     }
 
+    std::string get_string() const;
     /**
      * Since node_a is smaller by construction,
      * @param lnk

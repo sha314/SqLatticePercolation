@@ -5,6 +5,8 @@
 #include <iomanip>
 #include "site.h"
 
+using namespace std;
+
 
 std::ostream& operator<<(std::ostream& os, const Site& site)
 {

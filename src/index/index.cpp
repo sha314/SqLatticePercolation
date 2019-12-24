@@ -140,3 +140,16 @@ index_type IndexTranslator::translateBondTo1D(size_t length, BondIndex bondIndex
 
     return index;
 }
+
+
+std::string Index::get_string() const {
+    stringstream ss;
+    ss << "(" << setw(2) << row_ << "," << setw(2) << column_ << ")";
+    return ss.str();
+}
+
+std::string Link::get_string() const {
+    stringstream ss;
+    ss << "(" << setw(2) << node_a_ << "&" << setw(2) << node_b_ << ")";
+    return ss.str();
+}

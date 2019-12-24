@@ -57,10 +57,10 @@ void Lattice_v12::view_as_assigned() {
 
             auto bond = _bonds[r][c];
 
-            cout << setw(3) << site.get_id() << "," <<  setw(7) << site.get_index() << "," << setw(3) << site.get_groupID() << "  |";
+            cout << setw(3) << site.get_id() << "," <<  site.get_index().get_string() << "," << setw(3) << site.get_groupID() << "  |";
 
             cout << setw(3) << bond.get_id()
-                 << "," << setw(7) << bond.getIndex()
+                 << "," << bond.getIndex().get_string()
                  << "," <<  setw(3) << bond.get_groupID();
             cout << " |";
 
@@ -74,10 +74,10 @@ void Lattice_v12::view_as_assigned() {
             auto bond =_bonds[k][c];
 
             cout << setw(3) << bond.get_id()
-                 << "," << setw(7) << bond.getIndex()
+                 << "," << bond.getIndex().get_string()
                  << "," <<  setw(3) << bond.get_groupID();
 
-            cout << "|" << setw(23) << "|" ;
+            cout << "|" << setw(17) << "|" ;
         }
         cout << endl;
         cout << "--------------------------------------------------";
@@ -91,7 +91,12 @@ void Lattice_v12::view_all() {
     /*
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
+    for(int x{}; x < _length; ++x) { // column
+        cout << "--------------------";
+    }
+    cout << endl << "y  |" << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(x,y)=(" << x << "," << y << ")" << endl;
             auto site =  _sites[x][y];
@@ -101,29 +106,45 @@ void Lattice_v12::view_all() {
             auto bond =_bonds[k][y];
 
 
-            cout << setw(3) << site.get_id() << "," <<  setw(7) << site.get_index() << "," << setw(3) << site.get_groupID() << "  |";
+            cout << setw(3) << site.get_id() << ","
+                 << site.get_index().get_string() << ","
+                 << setw(3) << site.get_groupID() << " |";
 
             cout << setw(3) << bond.get_id()
-                 << "," << setw(7) << bond.getIndex()
+                 << "," << bond.getIndex().get_string()
                  << "," <<  setw(3) << bond.get_groupID();
             cout << " |";
 
 
         }
         cout << endl;
+        cout << "   |";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
             auto bond = _bonds[x][y];
             cout << setw(3) << bond.get_id()
-                 << "," << setw(7) << bond.getIndex()
+                 << "," << bond.getIndex().get_string()
                  << "," <<  setw(3) << bond.get_groupID();
 
-            cout << "|" << setw(23) << "|" ;
+            cout << " |" << setw(17) << "|" ;
         }
         cout << endl;
-        cout << "--------------------------------------------------";
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "----------------------------------";
+        }
         cout << endl;
     }
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "__________________________________";
+    }
+    cout << endl;
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "              " << setw(3) << x << "                |";
+    }
+    cout << endl;
 
 }
 
@@ -131,9 +152,9 @@ void Lattice_v12::view_all() {
 void Lattice_v12::view_sites() {
     cout << "Lattice_v12::view_sites" << endl;
     for(int x{}; x < _length; ++x) { // column
-        cout << "-------------------";
+        cout << "--------------------";
     }
-    cout << endl << "y" << endl;
+    cout << endl << "y  |" << endl;
     // generating row backwards
     for(int y{_length-1}; y >= 0; --y){ // row
         cout << setw(3) << y << "|";
@@ -152,6 +173,11 @@ void Lattice_v12::view_sites() {
         cout << endl;
     }
 
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "___________________";
+    }
+    cout << endl;
     cout << "x->|";
     for(int x{}; x < _length; ++x) { // column
         cout << "     " << setw(3) << x << "          |";
@@ -160,9 +186,7 @@ void Lattice_v12::view_sites() {
 
 }
 
-
-
-void Lattice_v12::view_sites_by_id() {
+void Lattice_v12::view_sites_by_id_gid() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
     for(int x{}; x < _length; ++x) { // column
         cout << "-----------";
@@ -176,7 +200,7 @@ void Lattice_v12::view_sites_by_id() {
 //            cout << "(" << x << "," << y << ")" << endl;
             auto site =  _sites[x][y];
 
-            cout << setw(3) << site.get_id() << "," << setw(3) << site.get_groupID() << "  |";
+            cout << setw(3) << site.get_id() << ","  << setw(3) << site.get_groupID() << "  |";
 
         }
         cout << endl;
@@ -194,6 +218,85 @@ void Lattice_v12::view_sites_by_id() {
     cout << endl;
 
 }
+
+void Lattice_v12::view_sites_by_id() {
+    cout << "Lattice_v12::view_sites_by_id" << endl;
+    for(int x{}; x < _length; ++x) { // column
+        cout << "-------";
+    }
+
+
+    cout << endl << "  y|" << endl;
+    for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+            auto site =  _sites[x][y];
+
+            cout << setw(3) << site.get_id()  << "  |";
+
+        }
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "------";
+        }
+        cout << endl;
+    }
+
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "______";
+    }
+    cout << endl;
+
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << setw(3) << x << "  |";
+    }
+    cout << endl;
+
+}
+
+
+
+void Lattice_v12::view_sites_by_gid() {
+    cout << "Lattice_v12::view_sites_by_id" << endl;
+    for(int x{}; x < _length; ++x) { // column
+        cout << "------";
+    }
+
+
+    cout << endl << "  y|" << endl;
+    for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+            auto site =  _sites[x][y];
+
+            cout << setw(3) << site.get_groupID() << " |";
+
+        }
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "-----";
+        }
+        cout << endl;
+    }
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "______";
+    }
+    cout << endl;
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << setw(3) << x << " |";
+    }
+    cout << endl;
+
+}
+
 
 /**
  * print two bonds for one site. one horizontal and one vertical

@@ -314,6 +314,8 @@ public:
     void view_all(); // view lattice bonds and site_index_sequence together
     void view_sites();
     void view_sites_by_id();
+    void view_sites_by_gid();
+    void view_sites_by_id_gid();
     void print_box(int i, int j);
 
 
