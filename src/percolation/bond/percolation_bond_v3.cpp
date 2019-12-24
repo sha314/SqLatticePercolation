@@ -311,7 +311,7 @@ bool BondPercolation_pb_v3::occupy() {
 index_type BondPercolation_pb_v3::placeBond_v1() {
 
     if (_number_of_occupied_bonds >= maxBonds()){
-        return ULONG_MAX;// unsigned long int maximum value
+        return numeric_limits<index_type>::max();// unsigned long int maximum value
     }
     index_type index = randomized_index[_index_sequence_position];
     ++_index_sequence_position;
