@@ -42,6 +42,11 @@ std::ostream& operator<<(std::ostream& os, const Bond_v2& bond) {
         return os << "(**)";
 }
 
+std::ostream& operator<<(std::ostream& os, const Bond_v12& bond) {
+
+    return os << bond.get_id() << "," << bond.getIndex() << "," <<  bond.get_groupID();
+}
+
 bool operator==(Bond a, Bond b)
 {
     if(a.isHorizontal() && b.isHorizontal())

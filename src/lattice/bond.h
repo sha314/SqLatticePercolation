@@ -9,6 +9,7 @@
 #include <ostream>
 #include <iostream>
 #include <sstream>
+#include <strings.h>
 
 #include "../index/index.h"
 #include "../types.h"
@@ -190,6 +191,7 @@ struct Bond{
     IndexRelative relativeIndex() const {return _relative_index;}
 };
 
+
  /**
   * Created on : 2019.06.29
   * created by : shahnoor
@@ -234,8 +236,60 @@ struct Bond_v2{
 
 
 
+/*************************
+ * Date : 2019.12.23
+ * Author : Shahnoor
+ *
+ * Specially build for v12
+ *
+ * All bonds are identical. No distinction between horizontal and vertical.
+ */
+class Bond_v12{
+
+    Link _index;
+    int _id{-1};
+
+
+
+    // check if active or not
+    bool _status{false};
+    int _group_id{-1};
+
+
+public:
+
+    ~Bond_v12() = default;
+    Bond_v12() = default;
+    Bond_v12(Link index, int id){
+        _id = id;
+        _index = index;
+    }
+
+    int get_id() const {return _id;}
+    Link getIndex() const {
+        return _index;
+    }
+
+    void activate() {_status = true;}
+    void deactivate() {
+        _group_id = -1;
+        _status = false;
+    }
+    bool isActive() const { return _status;}
+/*
+* Group get_ID is the set_ID of the cluster they are in
+*/
+    int get_groupID() const {return _group_id;}
+    void set_groupID(int g_id) {_group_id = g_id;}
+
+
+};
+
+
+
 std::ostream&   operator<<(std::ostream& os, const Bond& bond);
 std::ostream&   operator<<(std::ostream& os, const Bond_v2& bond);
+std::ostream&   operator<<(std::ostream& os, const Bond_v12& bond);
 bool            operator==(Bond a, Bond b);
 bool            operator<(const Bond& bond1, const Bond& bond2);
 bool            operator>(const Bond& bond1, const Bond& bond2);

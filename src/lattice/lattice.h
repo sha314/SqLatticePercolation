@@ -278,4 +278,87 @@ public:
 
 
 
+/*************************
+ * Date : 2019.12.23
+ * Author : Shahnoor
+ *
+ * Specially build for v12
+ */
+class Lattice_v12{
+    std::vector<std::vector<Site_v12>> _sites{};  // holds all the site_index_sequence
+    std::vector<std::vector<Bond_v12>> _bonds{};  // holds all horizontal bonds
+
+
+    bool _bond_resetting_flag=true; // so that we can reset all bonds
+    bool _site_resetting_flag=true; // and all site_index_sequence
+
+    int _length{};
+
+public:
+
+    ~Lattice_v12() = default;
+
+    explicit Lattice_v12(int length);
+
+    void reset(bool reset_all=false);
+
+
+    /***************************************
+     * I/O functions
+     **************************************/
+    void view_all(); // view lattice bonds and site_index_sequence together
+    void view_sites();
+    void print_box(int i, int j);
+
+
+
+
+    /************************************
+     * Activation functions
+     ***********************************/
+    void activateAllSite();
+    void activateAllBond();
+    void activate_site(Index index);
+    void activateBond(BondIndex bond);
+
+    void deactivate_site(Index index);
+    void deactivate_bond(Bond bond);
+
+
+    int length() const { return  _length;}
+
+    Site& getSite(Index index);
+//    Site&& getSiteR(Index index);
+    Bond& get_h_bond(Index id);
+    Bond& get_v_bond(Index id);
+    Bond& getBond(BondIndex);
+
+    const Site& getSite(Index index) const ;
+
+    void setGroupID(Index index, int group_id);
+    void setGroupID(BondIndex index, int group_id);
+    int getGroupID(Index index);
+    int getGroupID(BondIndex index);
+
+    void setRelativeIndex(Index index, IndexRelative ir);
+    IndexRelative getRelativeIndex(Index index);
+
+    std::vector<Index> getSites();
+    std::vector<BondIndex> getBonds();
+
+/******************************************************************************
+ * Get Neighbor from given index
+ ******************************************************************************/
+    std::vector<Index> get_neighbor_sites(Index site);   // site neighbor of site
+    std::vector<BondIndex> get_neighbor_bonds(Index site);   // bond neighbor of site
+    std::vector<BondIndex> get_neighbor_bonds(BondIndex site); // bond neighbor of bond
+    std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.
+
+    void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
+
+};
+
+
+
+
 #endif //SITEPERCOLATION_LATTICE_H

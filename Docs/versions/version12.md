@@ -21,3 +21,7 @@ SqLatticeExplosiveBond percolation class inherits SqLatticeRegularBond class
 
 
 Reverse percolation : remove one site or bond at each iteration
+
+
+Date 2019.12.23
+Initiating writing code.

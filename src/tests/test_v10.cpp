@@ -28,9 +28,9 @@ void test_v10(int argc, char **argv) {
     run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-//    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
-//    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
-//    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolation_ps_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolationRSBD_L1_v10>(length, ensemble_size);
+    run_v10_rsbd<SitePercolationRSBD_L2_v10>(length, ensemble_size);
 
 //    test_v10_lattice(length);
 
@@ -146,9 +146,9 @@ void run_v10_regular(int length, int ensemble_size) {
     long length_squared = length*length;
     long twice_length_squared = 2 * length_squared;
 
-    SitePercolation_ps_v10 lp(length, true);
+//    SitePercolation_ps_v10 lp(length, true);
 //    SitePercolationBallisticDeposition_L2_v3 lp(length, true);
-//    SitePercolationRSBD_L1_v10 lp(length, true);
+    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
     lp.setRandomState(0, true);
