@@ -181,3 +181,12 @@ void Cluster_v12::addBond(int id) {
 void Cluster_v12::addSite(int id) {
     _site_ids.emplace_back(id);
 }
+
+void Cluster_v12::insert(const Cluster_v12 &cluster) {
+    if(_gid == cluster._gid){
+        cerr << "self merging : Cluster_v12::insert" << endl;
+        return;
+    }
+    _site_ids.insert(_site_ids.end(), cluster._site_ids.begin(), cluster._site_ids.end());
+    _bond_ids.insert(_bond_ids.end(), cluster._bond_ids.begin(), cluster._bond_ids.end());
+}

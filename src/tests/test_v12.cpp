@@ -18,8 +18,8 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-    test_v12_lattice(length);
-//    test_v12_percolation(length);
+//    test_v12_lattice(length);
+    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
@@ -67,6 +67,13 @@ void test_v12_percolation(int length) {
     percolation.viewCluster();
     percolation.viewLattice_by_id();
     percolation.viewLattice_by_gid();
+
+    while(percolation.occupy());
+    cout << "********* last site " << percolation.lastSite() << endl;
+    percolation.viewCluster();
+    percolation.viewLattice_by_id();
+    percolation.viewLattice_by_gid();
+    percolation.viewLattice();
 
 
 }

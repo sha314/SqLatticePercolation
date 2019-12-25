@@ -81,6 +81,7 @@ SqLatticeRegularSite::SqLatticeRegularSite(int length) : Percolation_v12(length)
 
 void SqLatticeRegularSite::init() {
     //
+    _entropy = logl(maxBonds());
 
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
@@ -101,24 +102,78 @@ void SqLatticeRegularSite::init() {
 }
 
 bool SqLatticeRegularSite::occupy() {
+    if(index_counter >= randomized_index.size()) return false;
     // select a site randomly
-    size_t i = _random() % randomized_index.size();
-    int id = randomized_index[i];
+//    size_t i = _random() % randomized_index.size();
+    id_last_site = randomized_index[index_counter];
+    index_counter++;
+
     // activate the site
-    _lattice.activateSite(id);
+    _lattice.activateSite(id_last_site);
     ++_number_of_occupied_sites;
 
     // find it's neighbors. sites and then bonds
-
+    auto bond_connected = _lattice.getSite(id_last_site).connectedBondIDs();
     // find which clusters the bonds belong
-
     // find a suitble root cluster
+    int root{-1};
+    size_t root_size{}, tmp{};
+    set<int> gids; // to prevent repetition
+    for(auto b: bond_connected){
+        auto gid = _lattice.getGroupIDBond(b);
+        gids.emplace(gid);
+        tmp = _clusters[gid].numberOfSites();
+        if(tmp >= root_size){
+            root_size = tmp;
+            root = gid;
+        }
+    }
 
+    _lattice.setGroupIDSite(id_last_site, root);
+    _clusters[root].addSite(id_last_site);
     // insert all to it
+    for(auto g: gids){
+        if(g == root) continue;
+        _clusters[root].insert(_clusters[g]);
 
-    // relabel
+        // relabel
+        relabel(_clusters[g], id_last_site);
 
-    return false;
+        _clusters[g].clear();
+    }
+
+
+
+    return true;
+}
+
+void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
+    int gid_current = _lattice.getGroupIDSite(id_current);
+    auto site = _lattice.getSite(id_current);
+    auto index = site.get_index();
+    auto index_relative = site.relativeIndex();
+
+    auto bonds = clstr.getBondIDs();
+    for(auto b: bonds){
+        // relabel bond group id
+        _lattice.setGroupIDBond(b, gid_current);
+    }
+
+    // calculate relative index and relabel sites
+
+    auto sites = clstr.getSiteIDs();
+    for(auto s: sites){
+        // relabel bond group id
+        _lattice.setGroupIDSite(s, gid_current);
+    }
+
+}
+
+void SqLatticeRegularSite::reset() {
+    index_counter = 0;
+
+
+    init();
 }
 
 

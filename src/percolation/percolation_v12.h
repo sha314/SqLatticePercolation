@@ -33,9 +33,9 @@ protected:
 
     double _occuption_probability {};
     // entropy
-    double _entropy{};
-    double _entropy_current{};
-    double _entropy_previous{};
+    long double _entropy{};
+    long double _entropy_current{};
+    long double _entropy_previous{};
     double _largest_jump_entropy{}; // lrgest jump in entropy
     double _entropy_jump_pc{}; // at what pc there have been the largest jump
     size_t _cluster_count{};
@@ -77,14 +77,21 @@ public:
 };
 
 class SqLatticeRegularSite :  public Percolation_v12{
-
+    size_t index_counter{};
+    int id_last_site{};
 public:
     SqLatticeRegularSite() = default;
     explicit SqLatticeRegularSite(int length);
+    void reset();
 
     void init();
 
     bool occupy();
+
+    void relabel(Cluster_v12& clstr, int id_current);
+
+    int lastSite() const {return id_last_site;}
+    Index lastSiteIndex()  {return _lattice.getSite(id_last_site).get_index();}
 
 };
 
