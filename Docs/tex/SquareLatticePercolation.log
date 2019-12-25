@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  24 DEC 2019 15:42
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  25 DEC 2019 17:13
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -198,36 +198,65 @@ Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/graphics/dvipsnam.de
 f
 File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
-)) (./SquareLatticePercolation.aux)
+))
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/geometry/geometry.st
+y
+Package: geometry 2018/04/16 v5.8 Page Geometry
+
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ifpdf.sty
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ifvtex.st
+y
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+)
+(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/ifxetex/ifxetex.st
+y
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\Gm@cnth=\count110
+\Gm@cntv=\count111
+\c@Gm@tempcnt=\count112
+\Gm@bindingoffset=\dimen122
+\Gm@wd@mp=\dimen123
+\Gm@odd@mp=\dimen124
+\Gm@even@mp=\dimen125
+\Gm@layoutwidth=\dimen126
+\Gm@layoutheight=\dimen127
+\Gm@layouthoffset=\dimen128
+\Gm@layoutvoffset=\dimen129
+\Gm@dimlist=\toks22
+) (./SquareLatticePercolation.aux)
 \openout1 = `SquareLatticePercolation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
-LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 14.
+LaTeX Font Info:    ... okay on input line 14.
 
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/context/base/mkii/supp-pdf
 .mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count110
-\scratchdimen=\dimen122
+\scratchcounter=\count113
+\scratchdimen=\dimen130
 \scratchbox=\box29
-\nofMPsegments=\count111
-\nofMParguments=\count112
-\everyMPshowfont=\toks22
-\MPscratchCnt=\count113
-\MPscratchDim=\dimen123
-\MPnumerator=\count114
-\makeMPintoPDFobject=\count115
-\everyMPtoPDFconversion=\toks23
+\nofMPsegments=\count114
+\nofMParguments=\count115
+\everyMPshowfont=\toks23
+\MPscratchCnt=\count116
+\MPscratchDim=\dimen131
+\MPnumerator=\count117
+\makeMPintoPDFobject=\count118
+\everyMPtoPDFconversion=\toks24
 )
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/oberdiek/epstopdf-ba
 se.sty
@@ -269,10 +298,6 @@ Package ifluatex Info: LuaTeX not detected.
 s.sty
 Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
 )
-
-(/home/shahnoor/software/texlive/2019/texmf-dist/tex/generic/oberdiek/ifpdf.sty
-Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
-)
 Package pdftexcmds Info: LuaTeX not detected.
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
@@ -294,12 +319,46 @@ Package caption Info: Begin \AtBeginDocument code.
 Package caption Info: subfig package v1.3 is loaded.
 Package caption Info: End \AtBeginDocument code.
 
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: 
+* h-part:(L,W,R)=(57.81621pt, 481.87546pt, 57.81621pt)
+* v-part:(T,H,B)=(57.81621pt, 729.41443pt, 57.81621pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=481.87546pt
+* \textheight=729.41443pt
+* \oddsidemargin=-14.45378pt
+* \evensidemargin=-14.45378pt
+* \topmargin=-51.45378pt
+* \headheight=12.0pt
+* \headsep=25.0pt
+* \topskip=10.0pt
+* \footskip=30.0pt
+* \marginparwidth=57.0pt
+* \marginparsep=11.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
 Chapter 1.
-LaTeX Font Info:    Try loading font information for U+msa on input line 14.
+LaTeX Font Info:    Try loading font information for U+msa on input line 16.
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 14.
+LaTeX Font Info:    Try loading font information for U+msb on input line 16.
 
 (/home/shahnoor/software/texlive/2019/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
@@ -313,37 +372,111 @@ Chapter 2.
 <fig/lattice-2.png, id=11, 753.7761pt x 753.7761pt>
 File: fig/lattice-2.png Graphic file (type png)
 <use fig/lattice-2.png>
-Package pdftex.def Info: fig/lattice-2.png  used on input line 18.
-(pdftex.def)             Requested size: 276.00105pt x 276.00586pt.
+Package pdftex.def Info: fig/lattice-2.png  used on input line 20.
+(pdftex.def)             Requested size: 385.50183pt x 385.51338pt.
 [2
 
-] [3 <./fig/lattice-2.png>] [4] (./SquareLatticePercolation.aux) ) 
+] [3 <./fig/lattice-2.png>]
+<fig/relative-index/relative-index-2.png, id=22, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-2.png Graphic file (type png)
+<use fig/relative-index/relative-index-2.png>
+Package pdftex.def Info: fig/relative-index/relative-index-2.png  used on input
+ line 97.
+(pdftex.def)             Requested size: 144.5641pt x 144.56464pt.
+<fig/relative-index/relative-index-3.png, id=23, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-3.png Graphic file (type png)
+<use fig/relative-index/relative-index-3.png>
+Package pdftex.def Info: fig/relative-index/relative-index-3.png  used on input
+ line 98.
+(pdftex.def)             Requested size: 144.5641pt x 144.56464pt.
+<fig/relative-index/relative-index-4.png, id=24, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-4.png Graphic file (type png)
+<use fig/relative-index/relative-index-4.png>
+Package pdftex.def Info: fig/relative-index/relative-index-4.png  used on input
+ line 99.
+(pdftex.def)             Requested size: 144.5641pt x 144.56464pt.
+ [4 <./fig/relative-index/relative-index-2.png> <./fig/relative-index/relative-
+index-3.png> <./fig/relative-index/relative-index-4.png>]
+<fig/relative-index/relative-index-5.png, id=34, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-5.png Graphic file (type png)
+<use fig/relative-index/relative-index-5.png>
+Package pdftex.def Info: fig/relative-index/relative-index-5.png  used on input
+ line 143.
+(pdftex.def)             Requested size: 192.74724pt x 192.74518pt.
+<fig/relative-index/relative-index-6.png, id=35, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-6.png Graphic file (type png)
+<use fig/relative-index/relative-index-6.png>
+Package pdftex.def Info: fig/relative-index/relative-index-6.png  used on input
+ line 144.
+(pdftex.def)             Requested size: 192.74724pt x 192.74518pt.
+<fig/relative-index/relative-index-7.png, id=36, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-7.png Graphic file (type png)
+<use fig/relative-index/relative-index-7.png>
+Package pdftex.def Info: fig/relative-index/relative-index-7.png  used on input
+ line 151.
+(pdftex.def)             Requested size: 192.74724pt x 192.74518pt.
+<fig/relative-index/relative-index-8.png, id=37, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-8.png Graphic file (type png)
+<use fig/relative-index/relative-index-8.png>
+Package pdftex.def Info: fig/relative-index/relative-index-8.png  used on input
+ line 152.
+(pdftex.def)             Requested size: 192.74724pt x 192.74518pt.
+<fig/relative-index/relative-index-9.png, id=38, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-9.png Graphic file (type png)
+<use fig/relative-index/relative-index-9.png>
+Package pdftex.def Info: fig/relative-index/relative-index-9.png  used on input
+ line 163.
+(pdftex.def)             Requested size: 163.83588pt x 163.82996pt.
+<fig/relative-index/relative-index-10.png, id=39, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-10.png Graphic file (type png)
+<use fig/relative-index/relative-index-10.png>
+Package pdftex.def Info: fig/relative-index/relative-index-10.png  used on inpu
+t line 164.
+(pdftex.def)             Requested size: 163.83588pt x 163.82996pt.
+<fig/relative-index/relative-index-11.png, id=40, 753.7761pt x 753.7761pt>
+File: fig/relative-index/relative-index-11.png Graphic file (type png)
+<use fig/relative-index/relative-index-11.png>
+Package pdftex.def Info: fig/relative-index/relative-index-11.png  used on inpu
+t line 165.
+(pdftex.def)             Requested size: 163.83588pt x 163.82996pt.
+
+Overfull \hbox (9.63217pt too wide) in paragraph at lines 163--166
+ [][][][] 
+ []
+
+[5 <./fig/relative-index/relative-index-5.png> <./fig/relative-index/relative-i
+ndex-6.png>] [6 <./fig/relative-index/relative-index-7.png> <./fig/relative-ind
+ex/relative-index-8.png> <./fig/relative-index/relative-index-9.png> <./fig/rel
+ative-index/relative-index-10.png> <./fig/relative-index/relative-index-11.png>
+] (./SquareLatticePercolation.aux) ) 
 Here is how much of TeX's memory you used:
- 4399 strings out of 492609
- 64027 string characters out of 6122871
- 136302 words of memory out of 5000000
- 8262 multiletter control sequences out of 15000+600000
- 12267 words of font info for 31 fonts, out of 8000000 for 9000
+ 4966 strings out of 492609
+ 73839 string characters out of 6122871
+ 155653 words of memory out of 5000000
+ 8806 multiletter control sequences out of 15000+600000
+ 13807 words of font info for 33 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 44i,10n,49p,420b,376s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/home/shahno
-or/software/texlive/2019/texmf-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</
-home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/c
-mex10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/a
-msfonts/cm/cmmi10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/ty
-pe1/public/amsfonts/cm/cmmi7.pfb></home/shahnoor/software/texlive/2019/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmr10.pfb></home/shahnoor/software/texlive/20
-19/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy7.pfb></home/shahnoor/software
-/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></home/shahno
-or/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></
-home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx
-2488.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm
--super/sfrm0800.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type
-1/public/cm-super/sfrm1000.pfb>
-Output written on SquareLatticePercolation.pdf (4 pages, 138729 bytes).
+ 44i,15n,49p,899b,403s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/home/shahnoor/software/texlive/2019/texmf
+-dist/fonts/enc/dvips/cm-super/cm-super-t1.enc}</home/shahnoor/software/texlive
+/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></home/shahnoor/soft
+ware/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></home/s
+hahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.p
+fb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/publ
+ic/amsfonts/cm/cmsy10.pfb></home/shahnoor/software/texlive/2019/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy7.pfb></home/shahnoor/software/texlive/2019/texm
+f-dist/fonts/type1/public/cm-super/sfbx1200.pfb></home/shahnoor/software/texliv
+e/2019/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></home/shahnoor/soft
+ware/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></home/sh
+ahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pf
+b></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/
+sfrm0800.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/publi
+c/cm-super/sfrm1000.pfb>
+Output written on SquareLatticePercolation.pdf (6 pages, 540969 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
- 42 compressed objects within 1 object stream
+ 95 PDF objects out of 1000 (max. 8388607)
+ 52 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 56 words of extra memory for PDF output out of 10000 (max. 10000000)
 
