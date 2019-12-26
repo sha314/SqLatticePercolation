@@ -28,3 +28,9 @@ std::ostream& operator<<(std::ostream& os, const Site_v12& site)
     return os << site.get_id() << "," << site.get_index() << "," << site.get_groupID();
 }
 
+void Site_v12::addToRelativeIndex(int dx, int dy) {
+    cout << "old " << _relative_index << endl;
+    _relative_index.x_ += dx;
+    _relative_index.y_ += dy;
+    cout << "new " << _relative_index << endl;
+}

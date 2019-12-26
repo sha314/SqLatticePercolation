@@ -150,8 +150,8 @@ bool SqLatticeRegularSite::occupy() {
 void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     int gid_current = _lattice.getGroupIDSite(id_current);
     auto site = _lattice.getSite(id_current);
-    auto index = site.get_index();
-    auto index_relative = site.relativeIndex();
+    auto coordinate_new = site.get_index();
+    auto relative_new = site.relativeIndex();
 
     auto bonds = clstr.getBondIDs();
     for(auto b: bonds){
@@ -160,11 +160,35 @@ void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     }
 
     // calculate relative index and relabel sites
+    auto sites_neighbor = _lattice.get_neighbor_sites_of_site(id_last_site);
+    // if any of these neighboring sites belong to the same cluster that current site does then
+    // we can use that site's relative index and coordinate index to relabel the relative index of merging cluster
+    Index coordinate_old ;
+    IndexRelative relative_old;
+
+    for(auto s: sites_neighbor){
+        auto gid = _lattice.getGroupIDSite(s);
+        if(gid == gid_current){
+            relative_old = _lattice.getRelativeIndex(s);
+            coordinate_old = s;
+        }
+    }
+
+    int dx_r = relative_old.x_ - relative_new.x_;
+    int dy_r = relative_old.y_ - relative_new.y_;
+
+    int dx_c = int(coordinate_new.column_) - int(coordinate_old.column_); // since it can be negative
+    int dy_c = int(coordinate_new.row_)- int(coordinate_old.row_);
+
+    int dx = dx_r + dx_c;
+    int dy = dy_r + dy_c;
 
     auto sites = clstr.getSiteIDs();
     for(auto s: sites){
-        // relabel bond group id
+        // relabel site group id
         _lattice.setGroupIDSite(s, gid_current);
+        // relabel relative index
+        _lattice.getSite(s).addToRelativeIndex(dx, dy);
     }
 
 }

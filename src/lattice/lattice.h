@@ -120,7 +120,7 @@ public:
     std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.
 
     void get_neighbors(Index site, std::vector<Index> &site_neighbor, std::vector<BondIndex> &bond_neighbor);
-//    static std::vector<Index> get_neighbor_sites(size_t length, Index site);   // 4 site neighbor of site
+//    static std::vector<Index> get_neighbor_sites_of_site(size_t length, Index site);   // 4 site neighbor of site
 //    static std::vector<BondIndex> get_neighbor_bond_indices(size_t length, BondIndex site); // 6 bond neighbor of bond
 //    static std::vector<Index> get_neighbor_indices(size_t length, BondIndex bond);   // 2 site neighbor of bond.
 
@@ -315,11 +315,11 @@ public:
     Index getSiteLocation(int id){return _sites[id];}
     Index getBondLocation(int id){return _bonds[id];}
 
-    Bond_v12 getBond(int id);
-    Site_v12 getSite(int id);
-
-    Bond_v12 getBond(Index index){return  _bonds_2d[index.row_][index.column_];}
-    Site_v12 getSite(Index index){return  _sites_2d[index.row_][index.column_];}
+    // return by reference so that some values can be updated
+    Bond_v12& getBond(int id);
+    Site_v12& getSite(int id);
+    Bond_v12& getBond(Index index){return  _bonds_2d[index.row_][index.column_];}
+    Site_v12& getSite(Index index){return  _sites_2d[index.row_][index.column_];}
 
     /***************************************
      * I/O functions
@@ -336,7 +336,7 @@ public:
     void view_by_relative_index();
     void view_sites_list();
     void view_bonds_list();
-    void print_box(int i, int j);
+    void print_box();
 
 
 
@@ -373,6 +373,9 @@ public:
     int getGroupIDBond(int id);
     int getGroupIDSite(int id);
 
+    int getGroupIDBond(Index index);
+    int getGroupIDSite(Index index);
+
 
     void setRelativeIndex(Index index, IndexRelative ir);
     IndexRelative getRelativeIndex(Index index);
@@ -383,7 +386,8 @@ public:
 /******************************************************************************
  * Get Neighbor from given index
  ******************************************************************************/
-    std::vector<Index> get_neighbor_sites(Index site);   // site neighbor of site
+    std::vector<Index> get_neighbor_sites_of_site(Index site);   // site neighbor of site
+    std::vector<Index> get_neighbor_sites_of_site(int id);   // site neighbor of site
     std::vector<BondIndex> get_neighbor_bonds(Index site);   // bond neighbor of site
     std::vector<BondIndex> get_neighbor_bonds(BondIndex site); // bond neighbor of bond
     std::vector<Index> get_neighbor_sites(BondIndex bond);   // sites neighbor of bond.

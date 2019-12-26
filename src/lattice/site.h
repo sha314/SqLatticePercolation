@@ -178,6 +178,8 @@ public:
 
     void connectBond(int id){_bond_ids.emplace_back(id);}
     std::vector<int> connectedBondIDs() const {return _bond_ids;}
+
+    void addToRelativeIndex(int dx, int dy);
 };
 
 std::ostream& operator<<(std::ostream& os, const Site_v12& site);

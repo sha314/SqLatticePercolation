@@ -64,16 +64,23 @@ void test_v12_percolation(int length) {
 
     percolation.init();
 
-    percolation.viewCluster();
-    percolation.viewLattice_by_id();
-    percolation.viewLattice_by_gid();
+//    percolation.viewCluster();
+//    percolation.viewLattice_by_id();
+//    percolation.viewLattice_by_gid();
 
-    while(percolation.occupy());
-    cout << "********* last site " << percolation.lastSite() << endl;
+//    percolation.occupy();
+    int i=0;
+    while(percolation.occupy()) {
+        cout << "********************** last site " << percolation.lastSite() << endl;
     percolation.viewCluster();
-    percolation.viewLattice_by_id();
-    percolation.viewLattice_by_gid();
-    percolation.viewLattice();
+//    percolation.viewLattice_by_id();
+//        percolation.viewLattice_by_gid();
+//    percolation.viewLattice();
+        percolation.viewLattice_by_relative_index();
+
+        ++i;
+        if(i >= 3) break;
+    }
 
 
 }

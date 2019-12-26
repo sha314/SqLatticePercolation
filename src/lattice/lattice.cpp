@@ -920,7 +920,7 @@ std::vector<Index> SqLattice::get_neighbor_sites(BondIndex bond) {
 ///************************************************************
 // * Static methods
 // */
-//std::vector<Index> SqLattice::get_neighbor_sites(size_t length, Index site){
+//std::vector<Index> SqLattice::get_neighbor_sites_of_site(size_t length, Index site){
 //    std::vector<Index> sites(4);
 //    sites[0] = {(site.row_ + 1) % length, site.column_};
 //    sites[1] = {(site.row_ - 1 + length) % length, site.column_};

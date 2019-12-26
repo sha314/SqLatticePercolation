@@ -526,7 +526,7 @@ bool BondPercolation_pb_v1::occupy() {
     value_type v = placeBond_v1();
 //    _occuption_probability = occupationProbability(); // for super class
 
-//    auto s = _lattice.get_neighbor_sites(_last_placed_bond);
+//    auto s = _lattice.get_neighbor_sites_of_site(_last_placed_bond);
 //    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
 //        cout << "relabeling is not perfect for site " << endl;
 //        for(auto a : s) {
@@ -806,9 +806,9 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //IndexRelative
 //BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
 //    cout << "Entry getRelativeIndex_v2 ; line " << __LINE__ << endl;
-//    vector<Index> sites_root = _lattice.get_neighbor_sites(root);
+//    vector<Index> sites_root = _lattice.get_neighbor_sites_of_site(root);
 //    cout << "site_index_sequence of " << root << " are " << sites_root << endl;
-//    vector<Index> sites_new = _lattice.get_neighbor_sites(bond_new);
+//    vector<Index> sites_new = _lattice.get_neighbor_sites_of_site(bond_new);
 //    cout << "site_index_sequence of " << bond_new << " are " << sites_new << endl;
 ////    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
 //    // finding common site
