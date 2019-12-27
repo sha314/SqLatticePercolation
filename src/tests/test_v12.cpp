@@ -18,15 +18,16 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-//    test_v12_lattice(length);
-    test_v12_percolation(length);
+    test_v12_lattice(length);
+//    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
     Lattice_v12 lattice(length);
 
-//    lattice.view_as_assigned();
+    lattice.view_as_assigned();
     lattice.view_all();
+    lattice.view_all_v2();
 //    lattice.view_sites();
 //    lattice.view_sites_by_id();
 //    lattice.view_sites_by_gid();
@@ -35,8 +36,8 @@ void test_v12_lattice(int length) {
 //    lattice.view_sites_by_relative_index();
 //    lattice.view_by_relative_index();
 
-    lattice.view_sites_list();
-    lattice.view_bonds_list();
+//    lattice.view_sites_list();
+//    lattice.view_bonds_list();
 
 //    cout << lattice.getSiteLocation(0) << endl;
 //    cout << lattice.getSiteLocation(5) << endl;
@@ -72,7 +73,7 @@ void test_v12_percolation(int length) {
     int i=0;
     while(percolation.occupy()) {
         cout << "********************** last site " << percolation.lastSite() << endl;
-    percolation.viewCluster();
+//    percolation.viewCluster();
 //    percolation.viewLattice_by_id();
 //        percolation.viewLattice_by_gid();
 //    percolation.viewLattice();

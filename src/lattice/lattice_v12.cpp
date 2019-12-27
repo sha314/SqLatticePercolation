@@ -61,6 +61,10 @@ Lattice_v12::Lattice_v12(int length) {
 
 void Lattice_v12::view_as_assigned() {
     cout << "Lattice_v12::view_as_assigned" << endl;
+    cout << "-----------------------------------------" << endl;
+    cout << "| Site                |  Link to right  |" << endl;
+    cout << "| Link to bottom one  |                 |" << endl;
+    cout << "-----------------------------------------" << endl;
     for(int x{}; x < _length; ++x) { // column
         cout << "--------------------";
     }
@@ -118,7 +122,11 @@ void Lattice_v12::view_as_assigned() {
 
 void Lattice_v12::view_all() {
     cout << "Lattice_v12::view_all" << endl;
-    print_box();
+//    print_box();
+    cout << "--------------------------------------" << endl;
+    cout << "| Site             |  Link to right  |" << endl;
+    cout << "| Link to top one  |                 |" << endl;
+    cout << "--------------------------------------" << endl;
     /*
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
@@ -152,6 +160,9 @@ void Lattice_v12::view_all() {
         cout << "   |";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
+//            x = (x + _length ) % _length;
+//            auto y2 = (_length - y - 1);
+//            cout << "y = " << y << " y2 = " << y2 << endl;
             auto bond = _bonds_2d[x][y];
             cout << setw(3) << bond.get_id()
                  << "," << bond.getIndex().get_string()
@@ -165,6 +176,78 @@ void Lattice_v12::view_all() {
             cout << "----------------------------------";
         }
         cout << endl;
+//        exit(0);
+    }
+    cout << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "__________________________________";
+    }
+    cout << endl;
+    cout << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        cout << "              " << setw(3) << x << "                |";
+    }
+    cout << endl;
+
+}
+
+void Lattice_v12::view_all_v2() {
+    cout << "Lattice_v12::view_all_v2" << endl;
+//    print_box();
+    cout << "--------------------------------------" << endl;
+    cout << "| Site                | Link to right |" << endl;
+    cout << "| Link to bottom one  |               |" << endl;
+    cout << "--------------------------------------" << endl;
+    /*
+     * Switching row and column makes horizontal bonds vertical and vice versa
+     */
+    for(int x{}; x < _length; ++x) { // column
+        cout << "--------------------";
+    }
+    cout << endl << "y  |" << endl;
+    for(int y{_length-1}; y >= 0; --y){ // row
+        cout << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(x,y)=(" << x << "," << y << ")" << endl;
+            auto site =  _sites_2d[x][y];
+
+            auto k = (x+_length);
+
+            auto bond =_bonds_2d[k][y];
+
+
+            cout << setw(3) << site.get_id() << ","
+                 << site.get_index().get_string() << ","
+                 << setw(3) << site.get_groupID() << " |";
+
+            cout << setw(3) << bond.get_id()
+                 << "," << bond.getIndex().get_string()
+                 << "," <<  setw(3) << bond.get_groupID();
+            cout << " |";
+
+
+        }
+        cout << endl;
+        cout << "   |";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+//            x = (x + _length ) % _length;
+            auto y2 = (y + _length - 1) % _length;
+//            cout << "y = " << y << " y2 = " << y2 << endl;
+            auto bond = _bonds_2d[x][y2];
+            cout << setw(3) << bond.get_id()
+                 << "," << bond.getIndex().get_string()
+                 << "," <<  setw(3) << bond.get_groupID();
+
+            cout << " |" << setw(17) << "|" ;
+        }
+        cout << endl;
+        cout << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            cout << "----------------------------------";
+        }
+        cout << endl;
+//        exit(0);
     }
     cout << "___|";
     for(int x{}; x < _length; ++x) { // column
@@ -217,7 +300,8 @@ void Lattice_v12::view_by_relative_index() {
 //        cout << "   |";
 //        for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
-//            auto bond = _bonds_2d[x][y];
+//        auto y2 = (y + _length - 1) % _length;
+//            auto bond = _bonds_2d[x][y2];
 //            cout << setw(3) << bond.get_id()
 //                 << "," << get_string(bond.getIndex())
 //                 << "," <<  setw(3) << bond.get_groupID();
@@ -277,7 +361,8 @@ void Lattice_v12::view_by_id() {
         cout << "   |";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
-            auto bond = _bonds_2d[x][y];
+            auto y2 = (y + _length - 1) % _length;
+            auto bond = _bonds_2d[x][y2];
             cout << setw(3) << bond.get_id() << " |" << setw(5) << "|" ;
         }
         cout << endl;
@@ -336,7 +421,8 @@ void Lattice_v12::view_by_gid() {
         cout << "   |";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;
-            auto bond = _bonds_2d[x][y];
+            auto y2 = (y + _length - 1) % _length;
+            auto bond = _bonds_2d[x][y2];
             cout << setw(3) << bond.get_groupID() << " |" << setw(5) << "|" ;
         }
         cout << endl;
@@ -559,9 +645,14 @@ void Lattice_v12::print_box() {
 //    cout << "Bond id, Link, Bond gid        |                           |" << endl;
 //    cout << "-----------------------------------------------------------" << endl;
 
+//    cout << "--------------------------------------" << endl;
+//    cout << "| Site               |  Link to right  |" << endl;
+//    cout << "| Link to above one  |                 |" << endl;
+//    cout << "--------------------------------------" << endl;
+
     cout << "--------------------------------------" << endl;
     cout << "| Site               |  Link to right  |" << endl;
-    cout << "| Link ot above one  |                 |" << endl;
+    cout << "| Link to bottom one  |                 |" << endl;
     cout << "--------------------------------------" << endl;
 }
 

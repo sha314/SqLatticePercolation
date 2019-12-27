@@ -134,6 +134,7 @@ bool SqLatticeRegularSite::occupy() {
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;
+        cout << "g = " << g << endl;
         _clusters[root].insert(_clusters[g]);
 
         // relabel
@@ -147,12 +148,17 @@ bool SqLatticeRegularSite::occupy() {
     return true;
 }
 
+/**
+ * Relabel all sites and bonds of `clstr` cluster
+ * @param clstr
+ * @param id_current : id of the current site
+ */
 void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     int gid_current = _lattice.getGroupIDSite(id_current);
     auto site = _lattice.getSite(id_current);
     auto coordinate_new = site.get_index();
     auto relative_new = site.relativeIndex();
-
+    cout << "relative index of new site " << relative_new << endl;
     auto bonds = clstr.getBondIDs();
     for(auto b: bonds){
         // relabel bond group id
@@ -160,17 +166,22 @@ void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     }
 
     // calculate relative index and relabel sites
-    auto sites_neighbor = _lattice.get_neighbor_sites_of_site(id_last_site);
+    auto sites_neighbor = _lattice.get_neighbor_sites_of_site(id_current);
     // if any of these neighboring sites belong to the same cluster that current site does then
     // we can use that site's relative index and coordinate index to relabel the relative index of merging cluster
     Index coordinate_old ;
     IndexRelative relative_old;
 
+    cout << "gid of current " << gid_current << endl;
     for(auto s: sites_neighbor){
         auto gid = _lattice.getGroupIDSite(s);
+        cout <<"neighbor =" << s << "  gid =" << gid << endl;
         if(gid == gid_current){
             relative_old = _lattice.getRelativeIndex(s);
             coordinate_old = s;
+            cout << "relative index of old site " << relative_old << endl;
+            cout << "coordinate index of old site " << coordinate_old << endl;
+            break;
         }
     }
 
