@@ -69,6 +69,10 @@ void Percolation_v12::viewCluster() {
     }
 }
 
+void Percolation_v12::reset() {
+    _clusters.clear();
+}
+
 
 SitePercolation_ps_v12::SitePercolation_ps_v12(int length) : Percolation_v12(length) {
     auto sites = _lattice.getSites();
@@ -85,6 +89,7 @@ void SitePercolation_ps_v12::init() {
 
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
+    cout << "_clusters.size() " << _clusters.size() << endl;
     auto bonds = _lattice.getBonds();
     for(int i{}; i < _clusters.size(); ++i){
 
@@ -296,6 +301,7 @@ void SitePercolation_ps_v12::relabel_v3(int id_current_a, std::vector<Index>& ne
 }
 
 void SitePercolation_ps_v12::reset() {
+    Percolation_v12::reset();
     index_counter = 0;
     _number_of_occupied_sites = 0;
     _wrapping_site_ids.clear();

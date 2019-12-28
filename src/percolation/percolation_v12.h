@@ -62,6 +62,8 @@ public:
 
     explicit Percolation_v12(int length);
 
+    virtual void reset();
+
     void setRandomState(size_t seed, bool generate_seed=true);
     size_t getRandomState();
 
