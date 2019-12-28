@@ -70,16 +70,16 @@ void Percolation_v12::viewCluster() {
 }
 
 
-SqLatticeRegularSite::SqLatticeRegularSite(int length) : Percolation_v12(length) {
+SitePercolation_ps_v12::SitePercolation_ps_v12(int length) : Percolation_v12(length) {
     auto sites = _lattice.getSites();
     for(auto s: sites) {
         auto id = _lattice.getSiteID(s);
         index_sequence.emplace_back(id);
     }
-
+    _max_iteration_limit = size_t(length*length);
 }
 
-void SqLatticeRegularSite::init() {
+void SitePercolation_ps_v12::init() {
     //
     _entropy = logl(maxBonds());
 
@@ -101,7 +101,7 @@ void SqLatticeRegularSite::init() {
 
 }
 
-bool SqLatticeRegularSite::occupy() {
+bool SitePercolation_ps_v12::occupy() {
     if(index_counter >= randomized_index.size()) return false;
     // select a site randomly
 //    size_t i = _random() % randomized_index.size();
@@ -150,7 +150,7 @@ bool SqLatticeRegularSite::occupy() {
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;
-        cout << "g = " << g << endl;
+//        cout << "g = " << g << endl;
         _clusters[root].insert(_clusters[g]);
 
         // relabel
@@ -170,7 +170,7 @@ bool SqLatticeRegularSite::occupy() {
  * @param clstr
  * @param id_current : id of the current site
  */
-void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
+void SitePercolation_ps_v12::relabel(Cluster_v12 &clstr, int id_current) {
     int gid_current = _lattice.getGroupIDSite(id_current);
     auto site = _lattice.getSite(id_current);
     auto coordinate_new = site.get_index();
@@ -227,7 +227,7 @@ void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
 }
 
 
-void SqLatticeRegularSite::relabel_v2(Cluster_v12 &clstr, int id_current, IndexRelative dx_dy){
+void SitePercolation_ps_v12::relabel_v2(Cluster_v12 &clstr, int id_current, IndexRelative dx_dy){
     int gid_current = _lattice.getGroupIDSite(id_current);
     auto site = _lattice.getSite(id_current);
     auto coordinate_new = site.get_index();
@@ -261,13 +261,13 @@ void SqLatticeRegularSite::relabel_v2(Cluster_v12 &clstr, int id_current, IndexR
  * @param neighbors_a  : neighbors sites of `id_current` site
  * @param clstr_b        : cluster to be relabeled
  */
-void SqLatticeRegularSite::relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b){
+void SitePercolation_ps_v12::relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b){
     int gid_current = _lattice.getGroupIDSite(id_current_a);
     auto site = _lattice.getSite(id_current_a);
     auto coordinate_a = site.get_index();
     auto relative_a = site.relativeIndex();
-    cout << "coordinate index of new site " << coordinate_a << endl;
-    cout << "relative index of new site   " << relative_a << endl;
+//    cout << "coordinate index of new site " << coordinate_a << endl;
+//    cout << "relative index of new site   " << relative_a << endl;
     auto bonds = clstr_b.getBondIDs();
     for(auto b: bonds){
         // relabel bond group id
@@ -286,7 +286,7 @@ void SqLatticeRegularSite::relabel_v3(int id_current_a, std::vector<Index>& neig
 
     auto sites = clstr_b.getSiteIDs();
     for(auto s: sites){
-        cout << "relabeling " << s << endl;
+//        cout << "relabeling " << s << endl;
         // relabel site group id
         _lattice.setGroupIDSite(s, gid_current);
         // relabel relative index
@@ -295,10 +295,10 @@ void SqLatticeRegularSite::relabel_v3(int id_current_a, std::vector<Index>& neig
 
 }
 
-void SqLatticeRegularSite::reset() {
+void SitePercolation_ps_v12::reset() {
     index_counter = 0;
-
-
+    _number_of_occupied_sites = 0;
+    _wrapping_site_ids.clear();
     init();
 }
 
@@ -308,7 +308,7 @@ void SqLatticeRegularSite::reset() {
  * @param site_new : relative index is unknown
  * @return what needs to be added to `site_new` to get it's relative index right
  */
-IndexRelative SqLatticeRegularSite::getRelativeIndexDX(Index root, Index site_new){
+IndexRelative SitePercolation_ps_v12::getRelativeIndexDX(Index root, Index site_new){
 //    cout << "Entry \"SitePercolation_ps_v10::getRelativeIndex\" : line " << __LINE__ << endl;
     int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
     int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
@@ -350,7 +350,7 @@ IndexRelative SqLatticeRegularSite::getRelativeIndexDX(Index root, Index site_ne
  * @param site_new : relative index is unknown
  * @return what needs to be added to `site_new` to get it's relative index right
  */
-IndexRelative SqLatticeRegularSite::getRelativeIndexDX_v2(Index root, Index site_new){
+IndexRelative SitePercolation_ps_v12::getRelativeIndexDX_v2(Index root, Index site_new){
     auto relative_old = _lattice.getRelativeIndex(root);
     auto relative_new = _lattice.getRelativeIndex(site_new);
 
@@ -383,10 +383,11 @@ IndexRelative SqLatticeRegularSite::getRelativeIndexDX_v2(Index root, Index site
     int dx = dx_r + dx_c;
     int dy = dy_r + dy_c;
 
+#ifdef DEBUG_FLAG
     cout << "dx_r, dy_r         = " << dx_r << ", " << dy_r << endl;
     cout << "dx_c, dy_c         = " << dx_c << ", " << dy_c << endl;
     cout << "dx, dy             = " << dx << ", " << dy << endl;
-
+#endif
     return {dx, dy};
 }
 
@@ -394,7 +395,7 @@ IndexRelative SqLatticeRegularSite::getRelativeIndexDX_v2(Index root, Index site
  * New site is inserted in root cluster ?
  * @param id_current
  */
-IndexRelative  SqLatticeRegularSite::relabel_new_site(int id_current) {
+IndexRelative  SitePercolation_ps_v12::relabel_new_site(int id_current) {
     int gid_current = _lattice.getGroupIDSite(id_current);
     auto site = _lattice.getSite(id_current);
     auto coordinate_new = site.get_index();
@@ -440,12 +441,12 @@ IndexRelative  SqLatticeRegularSite::relabel_new_site(int id_current) {
     return IndexRelative{dx, dy};
 }
 
-int SqLatticeRegularSite::sign(int a) {
+int SitePercolation_ps_v12::sign(int a) {
     if(a == 0) return 0;
     return (a > 0) ? 1 : -1;
 }
 
-Index SqLatticeRegularSite::wrappingSite(){
+Index SitePercolation_ps_v12::wrappingSite(){
     if (_wrapping_site_ids.empty()) {
         cout << "No wrapping site" << endl;
         return {};
@@ -453,12 +454,12 @@ Index SqLatticeRegularSite::wrappingSite(){
     return _lattice.getSiteLocation(_wrapping_site_ids[0]);
 }
 
-int SqLatticeRegularSite::wrappingSite_id(){
+int SitePercolation_ps_v12::wrappingSite_id(){
     if (_wrapping_site_ids.empty()) return -1;
     return _wrapping_site_ids[0];
 }
 
-bool SqLatticeRegularSite::detectWrapping() {
+bool SitePercolation_ps_v12::detectWrapping() {
     auto site = _lattice.getSite(id_last_site);
     auto index = site.get_index();
     // only possible if the cluster containing 'site' has site_index_sequence >= length of the lattice
@@ -504,6 +505,62 @@ bool SqLatticeRegularSite::detectWrapping() {
     // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
     // that means there is wrapping but not for the %site
     return !_wrapping_site_ids.empty();
+}
+
+size_t SitePercolation_ps_v12::wrappingClusterSize() {
+
+
+    return 0;
+}
+
+long double SitePercolation_ps_v12::entropy() {
+    return entropy_v1();
+//    return entropy_v2();
+}
+
+long double SitePercolation_ps_v12::entropy_v1() {
+    long double H{}, mu{};
+    double n{};
+    for(auto clstr: _clusters){
+        if(clstr.empty()) continue;
+        n = clstr.numberOfBonds();
+        mu = n/maxBonds();
+        H += logl(mu) * mu;
+    }
+    _entropy = -H;
+    return -H;
+}
+
+long double SitePercolation_ps_v12::entropy_v2() {
+    return _entropy;
+}
+
+double SitePercolation_ps_v12::occupationProbability() {
+    return double(_number_of_occupied_sites)/maxSites();
+}
+
+std::string SitePercolation_ps_v12::getSignature() {
+    string s = "sq_lattice_site_percolation";
+        s += "_periodic";
+    return s;
+}
+
+size_t SitePercolation_ps_v12::numberOfBondsInTheWrappingClusters() {
+    int gid{-1};
+    for(auto id: _wrapping_site_ids){
+        gid = _lattice.getGroupIDSite(id);
+        break;
+    }
+    return _clusters[gid].numberOfBonds();
+}
+
+size_t SitePercolation_ps_v12::numberOfSitesInTheWrappingClusters() {
+    int gid{-1};
+    for(auto id: _wrapping_site_ids){
+        gid = _lattice.getGroupIDSite(id);
+        break;
+    }
+    return _clusters[gid].numberOfSites();
 }
 
 

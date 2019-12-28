@@ -45,7 +45,7 @@ protected:
     double time_relabel{};
     value_type _number_of_occupied_sites{};
     value_type _number_of_occupied_bonds{};
-    value_type _max_iteration_limit{};
+    size_t _max_iteration_limit{};
     std::vector<int> index_sequence;
     std::vector<int> randomized_index;
     // order parameter calculation ingradiants
@@ -76,17 +76,36 @@ public:
     void viewLattice_by_relative_index(){_lattice.view_by_relative_index();};
     int length(){ return  _lattice.length();}
 
+
+
+    // must define methods
+    virtual size_t maxIterationLimit() = 0;
+    // numerical properties
+    virtual long double entropy() = 0;
+    virtual double occupationProbability() = 0;
+    virtual size_t wrappingClusterSize() = 0;
+
+    virtual size_t numberOfSitesInTheWrappingClusters() = 0;
+    virtual size_t numberOfBondsInTheWrappingClusters() = 0;
+
 };
 
-class SqLatticeRegularSite :  public Percolation_v12{
+/**
+ *
+ *
+ *
+ *
+ */
+class SitePercolation_ps_v12 :  public Percolation_v12{
     size_t index_counter{};
     int id_last_site{};
     std::vector<int> _wrapping_site_ids;
 public:
-    SqLatticeRegularSite() = default;
-    explicit SqLatticeRegularSite(int length);
+    SitePercolation_ps_v12() = default;
+    explicit SitePercolation_ps_v12(int length);
     void reset();
-
+    std::string getSignature();
+    std::string getClassName(){return "SitePercolation_ps_v12";};
     void init();
 
     bool occupy();
@@ -99,7 +118,7 @@ public:
     IndexRelative getRelativeIndexDX(Index root, Index site_new);
     IndexRelative getRelativeIndexDX_v2(Index root, Index site_new);
 
-        int lastSite() const {return id_last_site;}
+    int lastSite() const {return id_last_site;}
     Index lastSiteIndex()  {return _lattice.getSite(id_last_site).get_index();}
 
     int sign(int a);
@@ -108,13 +127,24 @@ public:
     int wrappingSite_id();
     Index wrappingSite();
 
+    // numerical properties
+    long double entropy_v1();
+    long double entropy_v2();
+
+    long double entropy() override;
+    double occupationProbability() override;
+    size_t wrappingClusterSize() override;
+    size_t maxIterationLimit()override {return _max_iteration_limit;}
+    size_t numberOfSitesInTheWrappingClusters() override ;
+    size_t numberOfBondsInTheWrappingClusters() override ;
+
 };
 
-class SqLatticeRSBDSite :  public SqLatticeRegularSite{
+class SqLatticeRSBDSite :  public SitePercolation_ps_v12{
 
 };
 
-class SqLatticeExplosiveSite :  public SqLatticeRegularSite{
+class SqLatticeExplosiveSite :  public SitePercolation_ps_v12{
 
 };
 
