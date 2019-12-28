@@ -18,8 +18,8 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-    test_v12_lattice(length);
-//    test_v12_percolation(length);
+//    test_v12_lattice(length);
+    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
@@ -62,7 +62,7 @@ void test_v12_lattice(int length) {
 
 void test_v12_percolation(int length) {
     SqLatticeRegularSite percolation(length);
-
+    percolation.setRandomState(0, false);
     percolation.init();
 
 //    percolation.viewCluster();
@@ -78,9 +78,15 @@ void test_v12_percolation(int length) {
 //        percolation.viewLattice_by_gid();
 //    percolation.viewLattice();
         percolation.viewLattice_by_relative_index();
+        if(percolation.detectWrapping()){
+            cout << "wrapping site " << percolation.wrappingSite() << endl;
+            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
+//            percolation.viewLattice_by_relative_index();
+            break;
+        }
 
         ++i;
-        if(i >= 3) break;
+//        if(i >= 11) break;
     }
 
 

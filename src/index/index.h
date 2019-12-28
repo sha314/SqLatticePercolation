@@ -94,6 +94,8 @@ public:
 
     IndexRelative(int x, int y) : x_{x}, y_{y} {}
 
+    IndexRelative& operator+=(const IndexRelative& r1);
+    void add(const IndexRelative& r1);
 };
 
 /**

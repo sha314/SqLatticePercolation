@@ -379,7 +379,9 @@ public:
 
 
     void setRelativeIndex(Index index, IndexRelative ir);
-    IndexRelative getRelativeIndex(Index index);
+    void setRelativeIndex(int id, IndexRelative ir);
+    IndexRelative& getRelativeIndex(int id);
+    IndexRelative& getRelativeIndex(Index index);
 
     std::vector<Index> getSites() const {return _sites;};
     std::vector<Index> getBonds() const {return _bonds;};

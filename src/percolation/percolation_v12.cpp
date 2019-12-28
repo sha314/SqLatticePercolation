@@ -131,6 +131,22 @@ bool SqLatticeRegularSite::occupy() {
 
     _lattice.setGroupIDSite(id_last_site, root);
     _clusters[root].addSite(id_last_site);
+
+    auto site = _lattice.getSite(id_last_site);
+    auto coordinate_new = site.get_index();
+//    auto relative_new = site.relativeIndex();
+
+    auto sites = _lattice.get_neighbor_sites_of_site(id_last_site);
+    IndexRelative dx_dy;
+    for(auto n: sites){
+        if(_lattice.getGroupIDSite(n) == root){
+            // find relative index with respect to this site
+            dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
+            break; // since first time r is set running loop is doing no good
+        }
+    }
+    _lattice.getRelativeIndex(id_last_site).add(dx_dy);
+//    IndexRelative dx_dy = relabel_new_site(id_last_site);
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;
@@ -138,7 +154,8 @@ bool SqLatticeRegularSite::occupy() {
         _clusters[root].insert(_clusters[g]);
 
         // relabel
-        relabel(_clusters[g], id_last_site);
+//        relabel(_clusters[g], id_last_site);
+        relabel_v3(id_last_site, sites, _clusters[g]);
 
         _clusters[g].clear();
     }
@@ -158,7 +175,8 @@ void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     auto site = _lattice.getSite(id_current);
     auto coordinate_new = site.get_index();
     auto relative_new = site.relativeIndex();
-    cout << "relative index of new site " << relative_new << endl;
+    cout << "coordinate index of new site " << coordinate_new << endl;
+    cout << "relative index of new site   " << relative_new << endl;
     auto bonds = clstr.getBondIDs();
     for(auto b: bonds){
         // relabel bond group id
@@ -194,12 +212,85 @@ void SqLatticeRegularSite::relabel(Cluster_v12 &clstr, int id_current) {
     int dx = dx_r + dx_c;
     int dy = dy_r + dy_c;
 
+    cout << "dx_r, dy_r = " << dx_r << ", " << dy_r << endl;
+    cout << "dx_c, dy_c = " << dx_c << ", " << dy_c << endl;
+    cout << "dx, dy = " << dx << ", " << dy << endl;
     auto sites = clstr.getSiteIDs();
     for(auto s: sites){
+        cout << "relabeling " << s << endl;
         // relabel site group id
         _lattice.setGroupIDSite(s, gid_current);
         // relabel relative index
         _lattice.getSite(s).addToRelativeIndex(dx, dy);
+    }
+
+}
+
+
+void SqLatticeRegularSite::relabel_v2(Cluster_v12 &clstr, int id_current, IndexRelative dx_dy){
+    int gid_current = _lattice.getGroupIDSite(id_current);
+    auto site = _lattice.getSite(id_current);
+    auto coordinate_new = site.get_index();
+    auto relative_new = site.relativeIndex();
+    cout << "coordinate index of new site " << coordinate_new << endl;
+    cout << "relative index of new site   " << relative_new << endl;
+    auto bonds = clstr.getBondIDs();
+    for(auto b: bonds){
+        // relabel bond group id
+        _lattice.setGroupIDBond(b, gid_current);
+    }
+
+    int gid_clstr = clstr.getGroupID();
+
+
+    auto sites = clstr.getSiteIDs();
+    for(auto s: sites){
+        cout << "relabeling " << s << endl;
+        // relabel site group id
+        _lattice.setGroupIDSite(s, gid_current);
+        // relabel relative index
+        _lattice.getSite(s).addToRelativeIndex(dx_dy);
+    }
+
+}
+
+
+/**
+ *
+ * @param id_current_a : last site id
+ * @param neighbors_a  : neighbors sites of `id_current` site
+ * @param clstr_b        : cluster to be relabeled
+ */
+void SqLatticeRegularSite::relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b){
+    int gid_current = _lattice.getGroupIDSite(id_current_a);
+    auto site = _lattice.getSite(id_current_a);
+    auto coordinate_a = site.get_index();
+    auto relative_a = site.relativeIndex();
+    cout << "coordinate index of new site " << coordinate_a << endl;
+    cout << "relative index of new site   " << relative_a << endl;
+    auto bonds = clstr_b.getBondIDs();
+    for(auto b: bonds){
+        // relabel bond group id
+        _lattice.setGroupIDBond(b, gid_current);
+    }
+
+    int gid_b = clstr_b.getGroupID();
+    IndexRelative dx_dy;
+    for(auto s: neighbors_a){
+        auto tmp_id = _lattice.getGroupIDSite(s);
+        if(gid_b == tmp_id){
+            dx_dy = getRelativeIndexDX_v2(coordinate_a, s);
+        }
+    }
+
+
+    auto sites = clstr_b.getSiteIDs();
+    for(auto s: sites){
+        cout << "relabeling " << s << endl;
+        // relabel site group id
+        _lattice.setGroupIDSite(s, gid_current);
+        // relabel relative index
+        _lattice.getRelativeIndex(s).add(dx_dy);
     }
 
 }
@@ -209,6 +300,210 @@ void SqLatticeRegularSite::reset() {
 
 
     init();
+}
+
+/**
+ *
+ * @param root     : relative index is known
+ * @param site_new : relative index is unknown
+ * @return what needs to be added to `site_new` to get it's relative index right
+ */
+IndexRelative SqLatticeRegularSite::getRelativeIndexDX(Index root, Index site_new){
+//    cout << "Entry \"SitePercolation_ps_v10::getRelativeIndex\" : line " << __LINE__ << endl;
+    int delta_x = -int(root.column_) + int(site_new.column_); // if +1 then root is on the right ??
+    int delta_y = int(root.row_) - int(site_new.row_); // if +1 then root is on the top ??
+
+
+    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+    // normalizing delta_x
+    if(delta_x > 1){
+        delta_x /= -delta_x;
+    }
+    else if(delta_x < -1){
+        delta_x /= delta_x;
+    }
+
+    // normalizing delta_y
+    if(delta_y > 1){
+        delta_y /= -delta_y;
+    }else if(delta_y < -1){
+        delta_y /= delta_y;
+    }
+
+//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+////    cout << "Relative index of root " << indexRelative_root << endl;
+//    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
+//    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
+////    cout << "Relative index of site_new " << r << endl;
+//    return r;
+
+
+
+    return {delta_x, delta_y};
+}
+
+
+/**
+ * Just adding the value returned by this function to the relative index of `site_new` will
+ * transform it accurately
+ * @param root     : relative index is known
+ * @param site_new : relative index is unknown
+ * @return what needs to be added to `site_new` to get it's relative index right
+ */
+IndexRelative SqLatticeRegularSite::getRelativeIndexDX_v2(Index root, Index site_new){
+    auto relative_old = _lattice.getRelativeIndex(root);
+    auto relative_new = _lattice.getRelativeIndex(site_new);
+
+    int dx_r = relative_old.x_ - relative_new.x_;
+    int dy_r = relative_old.y_ - relative_new.y_;
+
+    // since row column is interchanged in natural view
+    // row will correspond to x here
+    int dx_c = int(site_new.row_) - int(root.row_); // since it can be negative
+    int dy_c = int(site_new.column_)- int(root.column_);
+
+    // normalizing delta_x
+    if(dx_c > 1){
+        // new site is actually below by wrapping property and boundary condition
+        // far sites are acually neighbors
+        dx_c /= -dx_c;
+    }
+    else if(dx_c < -1){
+        dx_c /= dx_c;
+    }
+
+    // normalizing delta_y
+    if(dy_c > 1){
+        dy_c /= -dy_c;
+    }else if(dy_c < -1){
+        dy_c /= dy_c;
+    }
+
+
+    int dx = dx_r + dx_c;
+    int dy = dy_r + dy_c;
+
+    cout << "dx_r, dy_r         = " << dx_r << ", " << dy_r << endl;
+    cout << "dx_c, dy_c         = " << dx_c << ", " << dy_c << endl;
+    cout << "dx, dy             = " << dx << ", " << dy << endl;
+
+    return {dx, dy};
+}
+
+/**
+ * New site is inserted in root cluster ?
+ * @param id_current
+ */
+IndexRelative  SqLatticeRegularSite::relabel_new_site(int id_current) {
+    int gid_current = _lattice.getGroupIDSite(id_current);
+    auto site = _lattice.getSite(id_current);
+    auto coordinate_new = site.get_index();
+    auto relative_new = site.relativeIndex();
+    cout << "coordinate index of new site " << coordinate_new << endl;
+    cout << "relative index of new site   " << relative_new << endl;
+
+
+    // calculate relative index and relabel sites
+    auto sites_neighbor = _lattice.get_neighbor_sites_of_site(id_current);
+    // if any of these neighboring sites belong to the same cluster that current site does then
+    // we can use that site's relative index and coordinate index to relabel the relative index of merging cluster
+    Index coordinate_old ;
+    IndexRelative relative_old;
+
+    cout << "gid of current " << gid_current << endl;
+    for(auto s: sites_neighbor){
+        auto gid = _lattice.getGroupIDSite(s);
+        cout <<"neighbor =" << s << "  gid =" << gid << endl;
+        if(gid == gid_current){
+            relative_old = _lattice.getRelativeIndex(s);
+            coordinate_old = s;
+            cout << "relative index of old site " << relative_old << endl;
+            cout << "coordinate index of old site " << coordinate_old << endl;
+            break;
+        }
+    }
+
+    int dx_r = relative_old.x_ - relative_new.x_;
+    int dy_r = relative_old.y_ - relative_new.y_;
+
+    int dy_c = int(coordinate_new.row_) - int(coordinate_old.row_); // since it can be negative
+    int dx_c = int(coordinate_new.column_)- int(coordinate_old.column_);
+
+    int dx = dx_r + sign(dx_c);
+    int dy = dy_r + sign(dy_c);
+
+    cout << "dx_r, dy_r = " << dx_r << ", " << dy_r << endl;
+    cout << "dx_c, dy_c = " << sign(dx_c) << ", " << sign(dy_c) << endl;
+    cout << "dx, dy = " << dx << ", " << dy << endl;
+
+    _lattice.getSite(id_current).addToRelativeIndex(dx, dy);
+    return IndexRelative{dx, dy};
+}
+
+int SqLatticeRegularSite::sign(int a) {
+    if(a == 0) return 0;
+    return (a > 0) ? 1 : -1;
+}
+
+Index SqLatticeRegularSite::wrappingSite(){
+    if (_wrapping_site_ids.empty()) {
+        cout << "No wrapping site" << endl;
+        return {};
+    }
+    return _lattice.getSiteLocation(_wrapping_site_ids[0]);
+}
+
+int SqLatticeRegularSite::wrappingSite_id(){
+    if (_wrapping_site_ids.empty()) return -1;
+    return _wrapping_site_ids[0];
+}
+
+bool SqLatticeRegularSite::detectWrapping() {
+    auto site = _lattice.getSite(id_last_site);
+    auto index = site.get_index();
+    // only possible if the cluster containing 'site' has site_index_sequence >= length of the lattice
+    if(_number_of_occupied_sites < length()){
+        return false;
+    }
+
+    // check if it is already a wrapping site
+    int gid = _lattice.getGroupIDSite(id_last_site);
+    int tmp_id{};
+    for (auto i: _wrapping_site_ids){
+        tmp_id = _lattice.getSite(i).get_groupID();
+        if(gid == tmp_id ){
+//            cout << "Already a wrappig cluster : line " << __LINE__ << endl;
+            return true;
+        }
+    }
+
+    // get four neighbors of site always. since wrapping is valid if periodicity is implied
+    vector<Index> sites = _lattice.get_neighbor_sites_of_site(index);
+
+
+    IndexRelative irel = _lattice.getRelativeIndex(index);
+//        cout << "pivot's " << site << " relative " << irel << endl;
+    IndexRelative b;
+    for (auto a:sites){
+        if(_lattice.getSite(a).get_groupID() != _lattice.getGroupIDSite(index)){
+            // different cluster
+            continue;
+        }
+//            cout << "belongs to the same cluster : line " << __LINE__ << endl;
+
+        b = _lattice.getSite(a).relativeIndex();
+//            cout << "neibhbor " << a << " relative " << b << endl;
+        if(abs(irel.x_ - b.x_) > 1 || abs(irel.y_ - b.y_) > 1){
+//                cout << "Wrapping : line " << __LINE__ << endl;
+            _wrapping_site_ids.push_back(id_last_site);
+            return true;
+        }
+    }
+
+//    cout << "wrapping site_index_sequence " << _wrapping_indices << endl;
+    // if %_wrapping_indices is not empty but wrapping is not detected for the current site (%site)
+    // that means there is wrapping but not for the %site
+    return !_wrapping_site_ids.empty();
 }
 
 

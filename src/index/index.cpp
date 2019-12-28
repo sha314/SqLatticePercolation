@@ -153,3 +153,14 @@ std::string Link::get_string() const {
     ss << "(" << setw(2) << node_a_ << "&" << setw(2) << node_b_ << ")";
     return ss.str();
 }
+
+IndexRelative &IndexRelative::operator+=(const IndexRelative& r1) {
+    x_ += r1.x_;
+    y_ += r1.y_;
+    return *this;
+}
+
+void IndexRelative::add(const IndexRelative &r1) {
+    x_ += r1.x_;
+    y_ += r1.y_;
+}

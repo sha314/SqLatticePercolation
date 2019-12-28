@@ -816,6 +816,21 @@ std::vector<Index> Lattice_v12::get_neighbor_sites_of_site(int id) {
     return get_neighbor_sites_of_site(site);
 }
 
-IndexRelative Lattice_v12::getRelativeIndex(Index index) {
+IndexRelative& Lattice_v12::getRelativeIndex(Index index) {
     return _sites_2d[index.row_][index.column_].relativeIndex();
+}
+
+void Lattice_v12::setRelativeIndex(Index index, IndexRelative ir) {
+    _sites_2d[index.row_][index.column_].relativeIndex(ir);
+}
+
+
+IndexRelative& Lattice_v12::getRelativeIndex(int id) {
+    Index index = _sites[id];
+    return getRelativeIndex(index);
+}
+
+void Lattice_v12::setRelativeIndex(int id, IndexRelative ir) {
+    Index index = _sites[id];
+    setRelativeIndex(index, ir);
 }

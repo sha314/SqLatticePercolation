@@ -174,12 +174,14 @@ public:
         _relative_index = {x,y};
     }
 
-    IndexRelative relativeIndex() const {return _relative_index;}
+//    IndexRelative relativeIndex() const {return _relative_index;}
+    IndexRelative& relativeIndex()  {return _relative_index;}
 
     void connectBond(int id){_bond_ids.emplace_back(id);}
     std::vector<int> connectedBondIDs() const {return _bond_ids;}
 
     void addToRelativeIndex(int dx, int dy);
+    void addToRelativeIndex(IndexRelative dx_dy);
 };
 
 std::ostream& operator<<(std::ostream& os, const Site_v12& site);

@@ -74,12 +74,14 @@ public:
     void viewLattice_by_id(){_lattice.view_by_id();};
     void viewLattice_by_gid(){_lattice.view_by_gid();};
     void viewLattice_by_relative_index(){_lattice.view_by_relative_index();};
+    int length(){ return  _lattice.length();}
 
 };
 
 class SqLatticeRegularSite :  public Percolation_v12{
     size_t index_counter{};
     int id_last_site{};
+    std::vector<int> _wrapping_site_ids;
 public:
     SqLatticeRegularSite() = default;
     explicit SqLatticeRegularSite(int length);
@@ -89,10 +91,22 @@ public:
 
     bool occupy();
 
+    IndexRelative  relabel_new_site(int id_current);
     void relabel(Cluster_v12& clstr, int id_current);
+    void relabel_v2(Cluster_v12& clstr, int id_current, IndexRelative dx_dy);
+    void relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b);
 
-    int lastSite() const {return id_last_site;}
+    IndexRelative getRelativeIndexDX(Index root, Index site_new);
+    IndexRelative getRelativeIndexDX_v2(Index root, Index site_new);
+
+        int lastSite() const {return id_last_site;}
     Index lastSiteIndex()  {return _lattice.getSite(id_last_site).get_index();}
+
+    int sign(int a);
+
+    bool detectWrapping();
+    int wrappingSite_id();
+    Index wrappingSite();
 
 };
 
