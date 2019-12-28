@@ -191,6 +191,104 @@ void Lattice_v12::view_all() {
 
 }
 
+/**
+ * If this method is fllowed then we can change what to be printed to screen before printing it.
+ * Just like we can edit strings.
+ * This function is an exact copy of Lattice_v12::view_all_v2 except for the fact that this function
+ * first stores strings inside an array then prints them.
+ *
+ * We can do this in a more sophisticated way:
+ *      1. 2D array to store sites and bonds information as strings
+ *      2. boundaries will not be stored but printed when printing elements in the end
+ *      3. This way all the information is accecible as strings at any time
+ *      May be in future I will do it.
+ */
+void Lattice_v12::view_from_str() {
+    vector<string> lines;
+    stringstream ss;
+    cout << "Lattice_v12::view_all" << endl;
+    print_box();
+
+    /*
+     * Switching row and column makes horizontal bonds vertical and vice versa
+     */
+    for(int x{}; x < _length; ++x) { // column
+        ss << "--------------------";
+    }
+    lines.emplace_back(ss.str());
+    ss.str("");
+    ss << "y  |";
+    lines.emplace_back(ss.str());
+    ss.str("");
+    for(int y{_length-1}; y >= 0; --y){ // row
+        ss << setw(3) << y << "|";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(x,y)=(" << x << "," << y << ")" << endl;
+            auto site =  _sites_2d[x][y];
+
+            auto k = (x+_length);
+
+            auto bond =_bonds_2d[k][y];
+
+
+            ss << setw(3) << site.get_id() << ","
+                 << site.get_index().get_string() << ","
+                 << setw(3) << site.get_groupID() << " |";
+
+            ss << setw(3) << bond.get_id()
+                 << "," << bond.getIndex().get_string()
+                 << "," <<  setw(3) << bond.get_groupID();
+            ss << " |";
+
+
+        }
+        lines.emplace_back(ss.str());
+        ss.str("");
+
+        ss << "   |";
+        for(int x{}; x < _length; ++x){ // column
+//            cout << "(" << x << "," << y << ")" << endl;
+            auto y2 = (y + _length - 1) % _length;
+//            cout << "y = " << y << " y2 = " << y2 << endl;
+            auto bond = _bonds_2d[x][y2];
+            ss << setw(3) << bond.get_id()
+                 << "," << bond.getIndex().get_string()
+                 << "," <<  setw(3) << bond.get_groupID();
+
+            ss << " |" << setw(17) << "|" ;
+        }
+        lines.emplace_back(ss.str());
+        ss.str("");
+
+        ss << "---|";
+        for(int x{}; x < _length; ++x) { // column
+            ss << "----------------------------------";
+        }
+
+        lines.emplace_back(ss.str());
+        ss.str("");
+//        exit(0);
+    }
+    ss << "___|";
+    for(int x{}; x < _length; ++x) { // column
+        ss << "__________________________________";
+    }
+
+    lines.emplace_back(ss.str());
+    ss.str("");
+    ss << "x->|";
+    for(int x{}; x < _length; ++x) { // column
+        ss << "              " << setw(3) << x << "                |";
+    }
+
+    lines.emplace_back(ss.str());
+    ss.str("");
+    for(const auto &line: lines){
+        cout << line << endl;
+    }
+
+}
+
 void Lattice_v12::view_all_v2() {
     cout << "Lattice_v12::view_all_v2" << endl;
 //    print_box();
@@ -652,7 +750,7 @@ void Lattice_v12::print_box() {
 
     cout << "--------------------------------------" << endl;
     cout << "| Site               |  Link to right  |" << endl;
-    cout << "| Link to bottom one  |                 |" << endl;
+    cout << "| Link to bottom one |                 |" << endl;
     cout << "--------------------------------------" << endl;
 }
 

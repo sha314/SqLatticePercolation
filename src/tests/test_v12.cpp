@@ -18,16 +18,17 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-//    test_v12_lattice(length);
-    test_v12_percolation(length);
+    test_v12_lattice(length);
+//    test_v12_percolation(length);
 }
 
 void test_v12_lattice(int length) {
     Lattice_v12 lattice(length);
 
-    lattice.view_as_assigned();
-    lattice.view_all();
-    lattice.view_all_v2();
+//    lattice.view_as_assigned();
+//    lattice.view_all();
+    lattice.view_from_str();
+//    lattice.view_all_v2();
 //    lattice.view_sites();
 //    lattice.view_sites_by_id();
 //    lattice.view_sites_by_gid();

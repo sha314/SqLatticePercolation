@@ -326,6 +326,7 @@ public:
      **************************************/
     void view_as_assigned();
     void view_all(); // view lattice bonds and site_index_sequence together
+    void view_from_str(); // view lattice bonds and site_index_sequence together
     void view_all_v2();
     void view_sites();
     void view_sites_by_id();
