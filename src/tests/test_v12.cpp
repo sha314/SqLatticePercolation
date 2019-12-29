@@ -164,9 +164,9 @@ void run_v12_regular(int length, int ensemble_size) {
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
 //                }
-//                entropy[counter] += lp.entropy();
-//                nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
-//                nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
+                entropy[counter] += lp.entropy();
+                nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
+                nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
 //                lp.jump();
 //                dHs[counter] += lp.jump_entropy();
 //                dPs[counter] += lp.jump_wrapping_cluster();
@@ -275,27 +275,27 @@ void run_v12_regular(int length, int ensemble_size) {
 
 
 
-//    std::ofstream fout(filename_entropy_order_parameter);
-//    fout << '#' << header_info.str() << std::endl;
-//    fout << "#<p>,<H(p,L)>,<P1(p,L)>,<P2(p,L)>" << std::endl;
-//    fout << "#p = occupation probability" << std::endl;
-//    fout << "#H(p,L) = Entropy = sum( - u_i * log(u_i))" << std::endl;
-//    fout << "#P1(p,L) = Order parameter = (number of bonds in largest cluster) / (total number of bonds)" << std::endl;
-//    fout << "#P2(p,L) = Order parameter = (number of bonds in spanning or wrapping cluster) / (total number of bonds)" << std::endl;
-//    fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
-//    fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
-//    fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
-////    std::cout.precision(12);
-//    fout.precision(numeric_limits<double>::digits10);
-//    for(size_t i{}; i < limit; ++i){
-//
-//        fout << (i + 1) / double(limit) << delimiter;
-//        fout << entropy[i] / double(ensemble_size) << delimiter;
-//        fout << nob_largest[i] / double(ensemble_size * lp.maxBonds()) << delimiter;
-//        fout << nob_wraping[i] / double(ensemble_size * lp.maxBonds()) ;
-//        fout << std::endl;
-//    }
-//    fout.close();
+    std::ofstream fout(filename_entropy_order_parameter);
+    fout << '#' << header_info.str() << std::endl;
+    fout << "#<p>,<H(p,L)>,<P1(p,L)>,<P2(p,L)>" << std::endl;
+    fout << "#p = occupation probability" << std::endl;
+    fout << "#H(p,L) = Entropy = sum( - u_i * log(u_i))" << std::endl;
+    fout << "#P1(p,L) = Order parameter = (number of bonds in largest cluster) / (total number of bonds)" << std::endl;
+    fout << "#P2(p,L) = Order parameter = (number of bonds in spanning or wrapping cluster) / (total number of bonds)" << std::endl;
+    fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
+    fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
+    fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
+//    std::cout.precision(12);
+    fout.precision(numeric_limits<double>::digits10);
+    for(size_t i{}; i < limit; ++i){
+
+        fout << (i + 1) / double(limit) << delimiter;
+        fout << entropy[i] / double(ensemble_size) << delimiter;
+        fout << nob_largest[i] / double(ensemble_size * lp.maxBonds()) << delimiter;
+        fout << nob_wraping[i] / double(ensemble_size * lp.maxBonds()) ;
+        fout << std::endl;
+    }
+    fout.close();
 //
 //
 //

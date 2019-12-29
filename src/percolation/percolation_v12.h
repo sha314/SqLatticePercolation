@@ -78,7 +78,8 @@ public:
     void viewLattice_by_relative_index(){_lattice.view_by_relative_index();};
     int length(){ return  _lattice.length();}
 
-
+    size_t numberOfBondsInTheLargestCluster();
+    size_t numberOfSitesInTheLargestCluster();
 
     // must define methods
     virtual size_t maxIterationLimit() = 0;
@@ -140,6 +141,11 @@ public:
     size_t numberOfSitesInTheWrappingClusters() override ;
     size_t numberOfBondsInTheWrappingClusters() override ;
 
+    void manageCluster();
+
+    void track_clusters(int root);
+    void add_entropy(int root);
+    void subtract_entropy(const std::set<int>& gids);
 };
 
 class SqLatticeRSBDSite :  public SitePercolation_ps_v12{

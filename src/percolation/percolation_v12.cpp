@@ -71,6 +71,16 @@ void Percolation_v12::viewCluster() {
 
 void Percolation_v12::reset() {
     _clusters.clear();
+    _number_of_bonds_in_the_largest_cluster = 0;
+    _number_of_sites_in_the_largest_cluster = 0;
+}
+
+size_t Percolation_v12::numberOfBondsInTheLargestCluster() {
+    return _number_of_bonds_in_the_largest_cluster;
+}
+
+size_t Percolation_v12::numberOfSitesInTheLargestCluster() {
+    return _number_of_sites_in_the_largest_cluster;
 }
 
 
@@ -89,7 +99,7 @@ void SitePercolation_ps_v12::init() {
 
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
-    cout << "_clusters.size() " << _clusters.size() << endl;
+//    cout << "_clusters.size() " << _clusters.size() << endl;
     auto bonds = _lattice.getBonds();
     for(int i{}; i < _clusters.size(); ++i){
 
@@ -116,8 +126,20 @@ bool SitePercolation_ps_v12::occupy() {
     // activate the site
     _lattice.activateSite(id_last_site);
     ++_number_of_occupied_sites;
+    manageCluster();
 
-    // find it's neighbors. sites and then bonds
+
+    return true;
+}
+
+/**
+ * Steps :
+ *  1. find the largest cluster among bond neighbors of selected site.
+ *  2. get largest cluster group id as root.
+ *  3. relabel selected site.
+ *  4.
+ */
+void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and then bonds
     auto bond_connected = _lattice.getSite(id_last_site).connectedBondIDs();
     // find which clusters the bonds belong
     // find a suitble root cluster
@@ -151,7 +173,8 @@ bool SitePercolation_ps_v12::occupy() {
         }
     }
     _lattice.getRelativeIndex(id_last_site).add(dx_dy);
-//    IndexRelative dx_dy = relabel_new_site(id_last_site);
+    // subtract entropy
+    subtract_entropy(gids);
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;
@@ -164,10 +187,10 @@ bool SitePercolation_ps_v12::occupy() {
 
         _clusters[g].clear();
     }
-
-
-
-    return true;
+    // add entropy
+    add_entropy(root);
+    // track cluster
+    track_clusters(root);
 }
 
 /**
@@ -520,19 +543,20 @@ size_t SitePercolation_ps_v12::wrappingClusterSize() {
 }
 
 long double SitePercolation_ps_v12::entropy() {
-    return entropy_v1();
-//    return entropy_v2();
+//    return entropy_v1();
+    return entropy_v2();
 }
 
 long double SitePercolation_ps_v12::entropy_v1() {
     long double H{}, mu{};
     double n{};
-    for(auto clstr: _clusters){
+    for(const auto &clstr: _clusters){
         if(clstr.empty()) continue;
         n = clstr.numberOfBonds();
         mu = n/maxBonds();
         H += logl(mu) * mu;
     }
+//    return -H;
     _entropy = -H;
     return -H;
 }
@@ -557,6 +581,7 @@ size_t SitePercolation_ps_v12::numberOfBondsInTheWrappingClusters() {
         gid = _lattice.getGroupIDSite(id);
         break;
     }
+    if(gid == -1) return 0;
     return _clusters[gid].numberOfBonds();
 }
 
@@ -568,5 +593,41 @@ size_t SitePercolation_ps_v12::numberOfSitesInTheWrappingClusters() {
     }
     return _clusters[gid].numberOfSites();
 }
+
+void SitePercolation_ps_v12::subtract_entropy(const std::set<int> &gids) {
+    long double H{}, nb{}, mu{};
+    for(auto g: gids){
+        nb = _clusters[g].numberOfBonds();
+        if(nb <= 0) continue; // empty cluster
+        mu = nb/maxBonds();
+        H += logl(mu)*mu;
+    }
+    // H is negative. so adding is subtracting
+    _entropy += H;
+}
+
+void SitePercolation_ps_v12::add_entropy(int root) {
+    long double H{}, nb{}, mu{};
+    nb = _clusters[root].numberOfBonds();
+    if(nb <= 0) { // empty cluster
+        cerr << "root cluster cannot be empty" << endl;
+    }
+    mu = nb/maxBonds();
+    H += logl(mu)*mu;
+    // H is negative. so subtracting  is adding
+    _entropy -= H;
+}
+
+void SitePercolation_ps_v12::track_clusters(int root) {
+    auto nb = _clusters[root].numberOfBonds();
+    auto ns = _clusters[root].numberOfSites();
+    if(nb > _number_of_bonds_in_the_largest_cluster){
+        _number_of_bonds_in_the_largest_cluster = nb;
+    }
+    if(ns > _number_of_sites_in_the_largest_cluster){
+        _number_of_sites_in_the_largest_cluster = ns;
+    }
+}
+
 
 
