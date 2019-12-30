@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD 11)
 #SET( CMAKE_CXX_FLAGS  "-Wall -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall")
-SET( CMAKE_CXX_FLAGS  "-Wall -O3")
+#SET( CMAKE_CXX_FLAGS  "-Wall -O3")
 #SET( CMAKE_CXX_FLAGS  "-Wall -O3 -pthread -fopenmp")
 #SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
@@ -94,6 +94,6 @@ set(SOURCE_FILES
         src/tests/test_v10.cpp
         src/tests/test_v10.h
         src/percolation/percolation_v12.cpp
-        src/percolation/percolation_v12.h src/lattice/lattice_v12.cpp src/tests/test_v12.cpp src/tests/test_v12.h)
+        src/percolation/percolation_v12.h src/lattice/lattice_v12.cpp src/tests/test_v12.cpp src/tests/test_v12.h src/percolation/bond/percolation_bond_v12.cpp src/percolation/bond/percolation_bond_v12.h src/percolation/site/percolation_site_v12.cpp src/percolation/site/percolation_site_v12.h)
 
 add_executable(sqlattice ${SOURCE_FILES})

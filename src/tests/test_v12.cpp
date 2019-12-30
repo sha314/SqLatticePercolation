@@ -10,6 +10,8 @@
 #include "../lattice/lattice.h"
 #include "../percolation/percolation_v12.h"
 #include "../util/time_tracking.h"
+#include "../percolation/bond/percolation_bond_v12.h"
+#include "../percolation/site/percolation_site_v12.h"
 
 using namespace std;
 
@@ -325,4 +327,8 @@ void run_v12_regular(int length, int ensemble_size) {
 //        fout << std::endl;
 //    }
 //    fout.close();
+}
+
+void test_v12_regular_bond(int length, int ensemble_size) {
+    BondPercolation_pb_v12 bp(length);
 }
