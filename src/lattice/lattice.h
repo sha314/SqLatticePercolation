@@ -311,6 +311,8 @@ public:
     explicit Lattice_v12(int length);
 
     void reset(bool reset_all=false);
+    void reset_sites();
+    void reset_bonds();
 
     Index getSiteLocation(int id){return _sites[id];}
     Index getBondLocation(int id){return _bonds[id];}

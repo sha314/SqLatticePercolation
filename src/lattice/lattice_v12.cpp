@@ -369,7 +369,7 @@ void Lattice_v12::view_by_relative_index() {
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
     for(int x{}; x < _length; ++x) { // column
-        cout << "-----------------";
+        cout << "-------------------";
     }
     cout << endl << "y  |" << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
@@ -409,18 +409,18 @@ void Lattice_v12::view_by_relative_index() {
         cout << endl;
         cout << "---|";
         for(int x{}; x < _length; ++x) { // column
-            cout << "-----------------";
+            cout << "-------------------";
         }
         cout << endl;
     }
     cout << "___|";
     for(int x{}; x < _length; ++x) { // column
-        cout << "_________________";
+        cout << "___________________";
     }
     cout << endl;
     cout << "x->|";
     for(int x{}; x < _length; ++x) { // column
-        cout << "      " << setw(3) << x << "       |";
+        cout << "       " << setw(3) << x << "        |";
     }
     cout << endl;
 
@@ -762,7 +762,7 @@ std::string Lattice_v12::get_string(const Link &lnk) const {
 
 std::string Lattice_v12::get_string(const IndexRelative& index) const{
     stringstream ss;
-    ss << '(' << std::setw(2) << index.x_ << ',' << std::setw(2) << index.y_ << ')';
+    ss << '(' << std::setw(3) << index.x_ << ',' << std::setw(3) << index.y_ << ')';
     return ss.str();
 }
 
@@ -931,4 +931,25 @@ IndexRelative& Lattice_v12::getRelativeIndex(int id) {
 void Lattice_v12::setRelativeIndex(int id, IndexRelative ir) {
     Index index = _sites[id];
     setRelativeIndex(index, ir);
+}
+
+void Lattice_v12::reset(bool reset_all) {
+    reset_sites();
+    reset_bonds();
+}
+
+void Lattice_v12::reset_sites() {
+    for(size_t i{}; i < _sites_2d.size(); ++i){
+        for(size_t j{}; j < _sites_2d[i].size(); ++j){
+            _sites_2d[i][j].reset();
+        }
+    }
+}
+
+void Lattice_v12::reset_bonds() {
+    for(size_t i{}; i < _bonds_2d.size(); ++i){
+        for(size_t j{}; j < _bonds_2d[i].size(); ++j){
+            _bonds_2d[i][j].reset();
+        }
+    }
 }

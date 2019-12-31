@@ -265,6 +265,11 @@ public:
         _index = index;
     }
 
+    void reset(){
+        _group_id = -1;
+        _status = false;
+    }
+
     int get_id() const {return _id;}
     Link getIndex() const {
         return _index;

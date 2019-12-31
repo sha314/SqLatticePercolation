@@ -119,10 +119,10 @@ class Site_v12{
      */
     int _id{-1};
     Index _index{};
-
+    std::vector<int> _bond_ids; // connected bond ids
 
     /*
-     * Properties that can be assigned later
+     * Properties that can be assigned later and must be reset for reuse
      */
     int _group_id{-1}; // id of the cluster of which it is a member
     bool _status{false};
@@ -131,7 +131,7 @@ class Site_v12{
     //very useful for detecting wrapping
     IndexRelative _relative_index{0,0}; // relative index from root Site of the cluster that it belongs
 
-    std::vector<int> _bond_ids; // connected bond ids
+
 
 public:
 
@@ -143,6 +143,11 @@ public:
         _id = id;
     }
 
+    void reset(){
+        _group_id = -1;
+        _status = false;
+        _relative_index = {};
+    }
 
     bool check(int length){
         // I have handle _neighbor or corner points and edge points carefully

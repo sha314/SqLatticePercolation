@@ -71,7 +71,7 @@ void test_v12_lattice(int length) {
 
 void test_v12_percolation(int length) {
     SitePercolation_ps_v12 percolation(length);
-    percolation.setRandomState(0, false);
+    percolation.setRandomState(0, true);
     percolation.init();
 
 //    percolation.viewCluster();
@@ -81,10 +81,11 @@ void test_v12_percolation(int length) {
 //    percolation.occupy();
     int i=0;
     while(percolation.occupy()) {
-        cout << "********************** last site " << percolation.lastSite() << endl;
+        cout << "********************** last site id " << percolation.lastSite() << " index " << percolation.lastSiteIndex() << endl;
 //    percolation.viewCluster();
 //    percolation.viewLattice_by_id();
 //        percolation.viewLattice_by_gid();
+        percolation.viewLattice_sites_by_gid();
 //    percolation.viewLattice();
         percolation.viewLattice_by_relative_index();
         if(percolation.detectWrapping()){
@@ -102,7 +103,12 @@ void test_v12_percolation(int length) {
 
 }
 
-
+/**
+ * TODO : ensemble size 6, length 10, at critical point. seed 2562449578
+ *
+ * @param length
+ * @param ensemble_size
+ */
 void run_v12_regular(int length, int ensemble_size) {
 
     std::cout << "length=" << length << " and ensemble_size=" << ensemble_size << std::endl;
@@ -115,7 +121,7 @@ void run_v12_regular(int length, int ensemble_size) {
 //    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(0, true);
+    lp.setRandomState(2562449578, true);
     lp.init();
 
 //    lp.viewLattice();
@@ -173,9 +179,13 @@ void run_v12_regular(int length, int ensemble_size) {
 //                dHs[counter] += lp.jump_entropy();
 //                dPs[counter] += lp.jump_wrapping_cluster();
                 if(detect_wrapping && lp.detectWrapping()){
+
                     pcs[i] = lp.occupationProbability();
                     sites_pc[i] = lp.numberOfSitesInTheWrappingClusters();
                     bonds_pc[i] = lp.numberOfBondsInTheWrappingClusters();
+//                    cout << "wrapping at "   << pcs[i] << ","
+//                              << sites_pc[i] << ","
+//                              << bonds_pc[i] << std::endl;
 
 
 //                    std::vector<value_type> site, bond;
@@ -190,6 +200,7 @@ void run_v12_regular(int length, int ensemble_size) {
 //                    fout_b << std::endl;
 
                     detect_wrapping = false;
+//                    break; // only for debugging
                 }
 
 
@@ -210,6 +221,13 @@ void run_v12_regular(int length, int ensemble_size) {
 //        cout << "Relabeling time " << lattice_percolation.get_relabeling_time() << endl;
 //        lp.viewClusterExtended();
     }
+//    cout << "wrapping site id " << lp.wrappingSite_id();
+//    cout << "  wrapping site index " << lp.wrappingSite() << endl;
+//    lp.viewLattice_by_id();
+//    lp.viewLattice_by_gid();
+//    lp.viewLattice_sites_by_gid();
+//    lp.viewLattice_by_relative_index();
+//    lp.viewCluster();
 
 //    fout_b.close();
 //    fout_s.close();

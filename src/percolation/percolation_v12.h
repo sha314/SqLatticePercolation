@@ -76,6 +76,7 @@ public:
     void viewLattice_by_id(){_lattice.view_by_id();};
     void viewLattice_by_gid(){_lattice.view_by_gid();};
     void viewLattice_by_relative_index(){_lattice.view_by_relative_index();};
+    void viewLattice_sites_by_gid(){_lattice.view_sites_by_gid();}
     int length(){ return  _lattice.length();}
 
     size_t numberOfBondsInTheLargestCluster();

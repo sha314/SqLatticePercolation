@@ -29,7 +29,7 @@ void SitePercolation_ps_v12::init() {
 
         auto id = _lattice.getBondID(bonds[i]);
         _lattice.activateBond(bonds[i]);
-        _lattice.setGroupIDBond(bonds[i], i);
+        _lattice.setGroupIDBond(bonds[i], i); // acts like bond resetting
         _clusters[i].addBond(id);
         _clusters[i].setGroupID(i);
     }
@@ -252,6 +252,7 @@ void SitePercolation_ps_v12::reset() {
     index_counter = 0;
     _number_of_occupied_sites = 0;
     _wrapping_site_ids.clear();
+    _lattice.reset_sites();
     init();
 }
 
