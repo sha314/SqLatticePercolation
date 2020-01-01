@@ -24,26 +24,27 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-//    test_v12_lattice(length);
+    test_v12_lattice(length);
 //    test_v12_percolation(length);
 
-    run_v12_regular(length, ensemble_size);
+//    run_v12_regular(length, ensemble_size);
 }
 
 void test_v12_lattice(int length) {
     Lattice_v12 lattice(length);
 
 //    lattice.view_as_assigned();
-//    lattice.view_all();
-    lattice.view_from_str();
-//    lattice.view_all_v2();
-//    lattice.view_sites();
-//    lattice.view_sites_by_id();
-//    lattice.view_sites_by_gid();
-//    lattice.view_by_id();
-//    lattice.view_by_gid();
-//    lattice.view_sites_by_relative_index();
-//    lattice.view_by_relative_index();
+    lattice.view_all_v2();
+    lattice.view_all_v1();
+//    lattice.view_from_str_v1();
+
+//    lattice.view_sites_v1();
+//    lattice.view_sites_by_id_v1();
+//    lattice.view_sites_by_gid_v1();
+//    lattice.view_by_id_v1();
+//    lattice.view_by_gid_v1();
+//    lattice.view_sites_by_relative_index_v1();
+//    lattice.view_by_relative_index_v1();
 
 //    lattice.view_sites_list();
 //    lattice.view_bonds_list();
@@ -71,33 +72,35 @@ void test_v12_lattice(int length) {
 
 void test_v12_percolation(int length) {
     SitePercolation_ps_v12 percolation(length);
-    percolation.setRandomState(0, true);
+    percolation.setRandomState(0, false);
     percolation.init();
 
-//    percolation.viewCluster();
-//    percolation.viewLattice_by_id();
-//    percolation.viewLattice_by_gid();
+    percolation.viewCluster();
+    percolation.viewLattice_by_id();
+    percolation.viewLattice_by_gid();
 
 //    percolation.occupy();
     int i=0;
     while(percolation.occupy()) {
-        cout << "********************** last site id " << percolation.lastSite() << " index " << percolation.lastSiteIndex() << endl;
+        cout << "********************** last site id " << percolation.lastSite()
+             << " index " << percolation.lastSiteIndex()
+             << " group id " << percolation.lastSiteGroupID() << endl;
 //    percolation.viewCluster();
 //    percolation.viewLattice_by_id();
 //        percolation.viewLattice_by_gid();
-        percolation.viewLattice_sites_by_gid();
+//        percolation.viewLattice_sites_by_gid();
 //    percolation.viewLattice();
-        percolation.viewLattice_by_relative_index();
-        if(percolation.detectWrapping()){
-//            percolation.viewLattice_by_relative_index();
-            cout << "wrapping site " << percolation.wrappingSite() << endl;
-            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
-            cout << "p = " << percolation.occupationProbability() << endl;
-            break;
-        }
+//        percolation.viewLattice_by_relative_index();
+//        if(percolation.detectWrapping()){
+////            percolation.viewLattice_by_relative_index();
+//            cout << "wrapping site " << percolation.wrappingSite() << endl;
+//            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
+//            cout << "p = " << percolation.occupationProbability() << endl;
+//            break;
+//        }
 
         ++i;
-//        if(i >= 11) break;
+        if(i >= 1) break;
     }
 
 

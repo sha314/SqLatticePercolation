@@ -296,6 +296,7 @@ class Lattice_v12{
  * Finding site or bond Index by their id.
  * id is used index for the array the the value of the element is the Index
  */
+    // index of these arrays are id of the corresponding sites or bonds
     std::vector<Index> _sites{};  // holds all sites
     std::vector<Index> _bonds{};  // holds all bonds
 
@@ -327,19 +328,23 @@ public:
      * I/O functions
      **************************************/
     void view_as_assigned();
-    void view_all(); // view lattice bonds and site_index_sequence together
-    void view_from_str(); // view lattice bonds and site_index_sequence together
-    void view_all_v2();
-    void view_sites();
-    void view_sites_by_id();
-    void view_sites_by_gid();
-    void view_sites_by_id_gid();
-    void view_by_id();
-    void view_by_gid();
-    void view_sites_by_relative_index();
-    void view_by_relative_index();
-    void view_sites_list();
-    void view_bonds_list();
+    // when initialized with init_lattice_v2()
+    void view_all_v2(); // view lattice bonds and site_index_sequence together
+
+
+    // when initialized with init_lattice_v1()
+    void view_from_str_v1(); // view lattice bonds and site_index_sequence together
+    void view_all_v1();
+    void view_sites_v1();
+    void view_sites_by_id_v1();
+    void view_sites_by_gid_v1();
+    void view_sites_by_id_gid_v1();
+    void view_by_id_v1();
+    void view_by_gid_v1();
+    void view_sites_by_relative_index_v1();
+    void view_by_relative_index_v1();
+    void view_sites_list_v1();
+    void view_bonds_list_v1();
     void print_box();
 
 
@@ -403,6 +408,11 @@ public:
     std::string get_string(const IndexRelative& index)const;
     std::string get_string(const Link &lnk) const;
     std::string get_string(const Index& index) const;
+
+    [[deprecated]]
+    void init_lattice_v1() ;
+
+    void init_lattice_v2() ;
 };
 
 

@@ -38,6 +38,7 @@ public:
 
     int lastSite() const {return id_last_site;}
     Index lastSiteIndex()  {return _lattice.getSite(id_last_site).get_index();}
+    int lastSiteGroupID() { return  _lattice.getSite(id_last_site).get_groupID();}
 
     int sign(int a);
 

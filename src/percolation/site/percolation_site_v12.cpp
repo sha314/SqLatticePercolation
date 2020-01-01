@@ -89,13 +89,16 @@ void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and 
 
     auto sites = _lattice.get_neighbor_sites_of_site(id_last_site);
     IndexRelative dx_dy;
+    cout << "Neighbors of " << id_last_site << " {";
     for(auto n: sites){
+        cout << n << ",";
         if(_lattice.getGroupIDSite(n) == root){
             // find relative index with respect to this site
             dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
             break; // since first time r is set running loop is doing no good
         }
     }
+    cout << "}" << endl;
     _lattice.getRelativeIndex(id_last_site).add(dx_dy);
     // subtract entropy
     subtract_entropy(gids);
