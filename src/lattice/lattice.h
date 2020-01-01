@@ -331,20 +331,28 @@ public:
     // when initialized with init_lattice_v2()
     void view_all_v2(); // view lattice bonds and site_index_sequence together
 
+    void view_by_id_v2();
+    void view_by_gid_v2();
+    void view_by_relative_index_v2();
+
+
 
     // when initialized with init_lattice_v1()
     void view_from_str_v1(); // view lattice bonds and site_index_sequence together
     void view_all_v1();
+    void view_by_id_v1();
+    void view_by_gid_v1();
+    void view_by_relative_index_v1();
+
+
+
     void view_sites_v1();
     void view_sites_by_id_v1();
     void view_sites_by_gid_v1();
     void view_sites_by_id_gid_v1();
-    void view_by_id_v1();
-    void view_by_gid_v1();
     void view_sites_by_relative_index_v1();
-    void view_by_relative_index_v1();
-    void view_sites_list_v1();
-    void view_bonds_list_v1();
+    void view_sites_list();
+    void view_bonds_list();
     void print_box();
 
 

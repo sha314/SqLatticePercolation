@@ -35,7 +35,13 @@ void test_v12_lattice(int length) {
 
 //    lattice.view_as_assigned();
     lattice.view_all_v2();
-    lattice.view_all_v1();
+//    lattice.view_by_id_v2();
+//    lattice.view_by_gid_v2();
+//    lattice.view_by_relative_index_v2();
+//    lattice.view_sites_list();
+    lattice.view_bonds_list();
+
+//    lattice.view_all_v1();
 //    lattice.view_from_str_v1();
 
 //    lattice.view_sites_v1();
