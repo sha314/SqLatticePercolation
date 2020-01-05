@@ -26,9 +26,9 @@ void test_v12(int argc, char **argv) {
 
 //    test_v12_lattice(length);
 //    test_v12_percolation_site(length);
-//    test_v12_percolation_bond(length);
+    test_v12_percolation_bond(length);
 
-    run_v12_regular_site(length, ensemble_size);
+//    run_v12_regular_site(length, ensemble_size);
 }
 
 void test_v12_lattice(int length) {
@@ -127,8 +127,8 @@ void test_v12_percolation_bond(int length) {
 //    percolation.occupy();
     int i=0;
     while(percolation.occupy()) {
-        cout << "*********" << i <<" th ************* last site id " << percolation.lastSite()
-             << " index " << percolation.lastSiteIndex()
+        cout << "*********" << i <<" th ************* last bond id " << percolation.lastBond()
+             << " index " << percolation.lastBondIndex()
              << " group id " << percolation.lastBondGroupID() << endl;
 //        percolation.viewCluster();
 //    percolation.viewLattice_by_id();
@@ -137,13 +137,13 @@ void test_v12_percolation_bond(int length) {
 //    percolation.viewLattice();
 //        percolation.viewLattice_by_relative_index();
 
-//        if(percolation.detectWrapping()){
-////            percolation.viewLattice_by_relative_index();
-//            cout << "wrapping site " << percolation.wrappingSite() << endl;
-//            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
-//            cout << "p = " << percolation.occupationProbability() << endl;
-//            break;
-//        }
+        if(percolation.detectWrapping()){
+            percolation.viewLattice_by_relative_index();
+            cout << "wrapping site " << percolation.wrappingSite() << endl;
+            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
+            cout << "p = " << percolation.occupationProbability() << endl;
+            break;
+        }
 
         ++i;
 //        if(i >= 10) break;
@@ -212,11 +212,11 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //                lp.viewCluster();
 //                lp.ckeckCluster();
 //                auto H1 = lp.entropy_v1();
-                auto H2 = lp.entropy_v2();
-                cout
+//                auto H2 = lp.entropy_v2();
+//                cout
 //                     << H1
-                     << " vs " << H2
-                     << endl;
+//                     << " vs " << H2
+//                     << endl;
 //                if(abs(H1 - H2) > 1e-10){
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
@@ -282,7 +282,7 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //    fout_s.close();
 //    fout_jump.close();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"
@@ -291,6 +291,8 @@ void run_v12_regular_site(int length, int ensemble_size) {
                 << R"(,"random_seed":)" << lp.getRandomState()
                 << R"(,"signature":")" << lp.getSignature() << "\""
                 << R"(,"datetime":")" << tm << "\""
+                << R"(,"date":")" << getCurrentDate() << "\""
+                << R"(,"time":")" << getCurrentTime() << "\""
                 << R"(,"classname":")" << lp.getClassName() << "\""
                 //                << R"(,"cols":)" << R"(["S","n_S"])"
                 << "}";

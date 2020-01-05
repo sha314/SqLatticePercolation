@@ -130,6 +130,8 @@ int main(int argc, char** argv) {
     std::chrono::duration<double> drtion = t_end - t_start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(t_end);
     cout << "Program finished at " << std::ctime(&end_time) << endl;
+    cout << "Date " << getCurrentDate() << endl;
+    cout << "Time " << getCurrentTime() << endl;
     std::cout << "Time elapsed "   << getFormattedTime(drtion.count()) << std::endl;
     return 0;
 }

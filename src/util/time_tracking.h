@@ -11,6 +11,9 @@ std::string getFormattedTime(double t);
 
 std::string currentTime();
 
+std::string getCurrentDateTime();
+
+std::string getCurrentDate();
 std::string getCurrentTime();
 
 #endif //PERCOLATION_TIME_TRACKING_H

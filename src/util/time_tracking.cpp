@@ -53,7 +53,7 @@ std::string currentTime() {
 	formated date
 	24 hour formated time
 */
-string getCurrentTime(){
+string getCurrentDateTime(){
 
     time_t rawtime;
     struct tm * timeinfo;
@@ -69,3 +69,40 @@ string getCurrentTime(){
     return string(buffer);
 }
 
+
+/**
+	formated date
+	24 hour formated time
+*/
+string getCurrentDate(){
+
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer [80];
+
+    time (&rawtime);
+//    cout << "rawtime " << rawtime << endl;
+    timeinfo = localtime (&rawtime);
+
+//    strftime (buffer,80,"%F",timeinfo);
+    strftime (buffer,80,"%Y%m%d",timeinfo); // year month day hour minute second
+//    cout << "time buffer " << buffer << endl;
+    return string(buffer);
+}
+
+
+string getCurrentTime(){
+
+    time_t rawtime;
+    struct tm * timeinfo;
+    char buffer [80];
+
+    time (&rawtime);
+//    cout << "rawtime " << rawtime << endl;
+    timeinfo = localtime (&rawtime);
+
+    strftime (buffer,80,"%H%M%S",timeinfo);
+//    strftime (buffer,80,"%Y%m%d%H%M%S",timeinfo); // year month day hour minute second
+//    cout << "time buffer " << buffer << endl;
+    return string(buffer);
+}

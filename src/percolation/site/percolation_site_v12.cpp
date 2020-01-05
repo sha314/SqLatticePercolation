@@ -105,7 +105,6 @@ void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and 
     }
 //    cout << "}" << endl;
     _lattice.getRelativeIndex(id_last_site).add(dx_dy);
-    // subtract entropy
 
     // insert all to it
     for(auto g: gids){

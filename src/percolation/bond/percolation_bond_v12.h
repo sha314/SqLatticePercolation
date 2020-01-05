@@ -28,13 +28,13 @@ public:
     bool occupy();
 
     IndexRelative  relabel_new_site(int id_current);
-    void relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b);
+    void relabel_v3(int id_current_a, Cluster_v12 &clstr_b);
 
     IndexRelative getRelativeIndexDX(Index root, Index site_new);
     IndexRelative getRelativeIndexDX_v2(Index root, Index site_new);
 
-    int lastSite() const {return id_last_bond;}
-    Index lastSiteIndex()  {return _lattice.getSite(id_last_bond).get_index();}
+    int lastBond() const {return id_last_bond;}
+    Link lastBondIndex()  {return _lattice.getBond(id_last_bond).getIndex();}
     int lastBondGroupID() { return  _lattice.getBond(id_last_bond).get_groupID();}
 
     int sign(int a);

@@ -55,7 +55,7 @@ void simulate_site_percolation_T(value_type length, value_type ensemble_size) {
     lattice_percolation.setRandomState(0, true);
     lattice_percolation.init();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"

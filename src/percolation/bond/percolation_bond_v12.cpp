@@ -49,7 +49,7 @@ bool BondPercolation_pb_v12::occupy() {
 
     // activate the site
     _lattice.activateBond(id_last_bond);
-    ++_number_of_occupied_sites;
+    ++_number_of_occupied_bonds;
     manageCluster();
 
 
@@ -93,7 +93,7 @@ void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and 
 //    auto coordinate_new = site.get_index();
 ////    auto relative_new = site.relativeIndex();
 //
-    auto sites = _lattice.get_neighbor_sites_of_site(id_last_bond);
+//    auto sites = _lattice.get_neighbor_sites_of_site(id_last_bond);
 //    IndexRelative dx_dy;
 //    for(auto n: sites){
 //        if(_lattice.getGroupIDSite(n) == root){
@@ -113,7 +113,7 @@ void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and 
 
         // relabel
 //        relabel(_clusters[g], id_last_site);
-        relabel_v3(id_last_bond, sites, _clusters[g]);
+        relabel_v3(id_last_bond, _clusters[g]);
 
         _clusters[g].clear();
     }
@@ -130,11 +130,12 @@ void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and 
  * @param neighbors_a  : neighbors sites of `id_current` site
  * @param clstr_b        : cluster to be relabeled
  */
-void BondPercolation_pb_v12::relabel_v3(int id_current_a, std::vector<Index>& neighbors_a, Cluster_v12 &clstr_b){
-    int gid_current = _lattice.getGroupIDSite(id_current_a);
-    auto site = _lattice.getSite(id_current_a);
-    auto coordinate_a = site.get_index();
-    auto relative_a = site.relativeIndex();
+void BondPercolation_pb_v12::relabel_v3(int id_current_a,  Cluster_v12 &clstr_b){
+    int gid_current = _lattice.getGroupIDBond(id_current_a);
+    auto bond = _lattice.getBond(id_current_a);
+
+//    auto coordinate_a = bond.get_index();
+//    auto relative_a = bond.relativeIndex();
 //    cout << "coordinate index of new site " << coordinate_a << endl;
 //    cout << "relative index of new site   " << relative_a << endl;
     auto bonds = clstr_b.getBondIDs();
@@ -143,14 +144,14 @@ void BondPercolation_pb_v12::relabel_v3(int id_current_a, std::vector<Index>& ne
         _lattice.setGroupIDBond(b, gid_current);
     }
 
-    int gid_b = clstr_b.getGroupID();
-    IndexRelative dx_dy;
-    for(auto s: neighbors_a){
-        auto tmp_id = _lattice.getGroupIDSite(s);
-        if(gid_b == tmp_id){
-            dx_dy = getRelativeIndexDX_v2(coordinate_a, s);
-        }
-    }
+//    int gid_b = clstr_b.getGroupID();
+//    IndexRelative dx_dy;
+//    for(auto s: neighbors_a){
+//        auto tmp_id = _lattice.getGroupIDSite(s);
+//        if(gid_b == tmp_id){
+//            dx_dy = getRelativeIndexDX_v2(coordinate_a, s);
+//        }
+//    }
 
 
     auto sites = clstr_b.getSiteIDs();
@@ -159,7 +160,7 @@ void BondPercolation_pb_v12::relabel_v3(int id_current_a, std::vector<Index>& ne
         // relabel site group id
         _lattice.setGroupIDSite(s, gid_current);
         // relabel relative index
-        _lattice.getRelativeIndex(s).add(dx_dy);
+//        _lattice.getRelativeIndex(s).add(dx_dy);
     }
 
 }
@@ -330,41 +331,14 @@ int BondPercolation_pb_v12::wrappingSite_id(){
 }
 
 bool BondPercolation_pb_v12::detectWrapping() {
-    auto site = _lattice.getSite(id_last_bond);
-    auto index = site.get_index();
-    // only possible if the cluster containing 'site' has site_index_sequence >= length of the lattice
-    if(_number_of_occupied_sites < length()){
-        return false;
-    }
+    auto bond = _lattice.getBond(id_last_bond);
+    auto sites = bond.connectedSites();// tow connected site id
 
-    // check if it is already a wrapping site
-    int gid = _lattice.getGroupIDSite(id_last_bond);
-    int tmp_id{};
-    for (auto i: _wrapping_site_ids){
-        tmp_id = _lattice.getSite(i).get_groupID();
-        if(gid == tmp_id ){
-//            cout << "Already a wrappig cluster : line " << __LINE__ << endl;
-            return true;
-        }
-    }
+    if(_lattice.getGroupIDSite(sites[0]) == _lattice.getGroupIDSite(sites[1])) {
+        auto rel_1 = _lattice.getRelativeIndex(sites[0]);
+        auto rel_2 = _lattice.getRelativeIndex(sites[1]);
 
-    // get four neighbors of site always. since wrapping is valid if periodicity is implied
-    vector<Index> sites = _lattice.get_neighbor_sites_of_site(index);
-
-
-    IndexRelative irel = _lattice.getRelativeIndex(index);
-//        cout << "pivot's " << site << " relative " << irel << endl;
-    IndexRelative b;
-    for (auto a:sites){
-        if(_lattice.getSite(a).get_groupID() != _lattice.getGroupIDSite(index)){
-            // different cluster
-            continue;
-        }
-//            cout << "belongs to the same cluster : line " << __LINE__ << endl;
-
-        b = _lattice.getSite(a).relativeIndex();
-//            cout << "neibhbor " << a << " relative " << b << endl;
-        if(abs(irel.x_ - b.x_) > 1 || abs(irel.y_ - b.y_) > 1){
+        if(abs(rel_1.x_ - rel_2.x_) > 1 || abs(rel_1.y_ - rel_2.y_) > 1){
 //                cout << "Wrapping : line " << __LINE__ << endl;
             _wrapping_site_ids.push_back(id_last_bond);
             return true;

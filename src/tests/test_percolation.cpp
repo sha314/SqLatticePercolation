@@ -33,7 +33,7 @@ void visual(value_type length){
 
     SitePercolation_ps_v9 lattice_percolation(length, true);
 
-    string tm = getCurrentTime();
+    string tm = getCurrentDateTime();
 
     // simulation starts here
     bool successful{false};
@@ -78,7 +78,7 @@ void simulate_site_percolation(value_type length, value_type ensemble_size) {
     lattice_percolation.setRandomState(0, true);
     lattice_percolation.init();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"
@@ -240,7 +240,7 @@ void simulate_site_percolation_detailed(value_type length, value_type ensemble_s
                 << ",\"signature\":\"" << lattice_percolation.getSignature() << "\""
                 << "}" ;
 
-    string tm = getCurrentTime();
+    string tm = getCurrentDateTime();
 
     string filename_entropy = lattice_percolation.getSignature()  + "entropy_L" + to_string(length) + '_' + tm;
     string filename_order_parameter = lattice_percolation.getSignature() + "order-parameter_L" + to_string(length) + '_' + tm;
@@ -418,7 +418,7 @@ void simulate_bond_percolation_v2(value_type length, value_type ensemble_size) {
                 << R"(,"delimiter":)" << "\"\t\""
                 << "}" ;
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".txt";
 //    std::string filename_s = lattice_percolation.getSignature() + "_cluster_by_site" + extension;
 //    std::string filename_b = lattice_percolation.getSignature() + "_cluster_by_bond" + extension;
@@ -616,7 +616,7 @@ void cluster_size_distribution_site(value_type length, value_type ensemble_size)
                 << "}";
 
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     std::string extension  = "_L" + std::to_string(length) + '_' + tm + ".txt";
 
     std::string filename = lp.getSignature() + "_cluster-size-distribution" + extension;
@@ -701,7 +701,7 @@ void cluster_size_distribution_bond(value_type length, value_type ensemble_size)
 
     cout  << "writing to file" << endl;
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     ostringstream header_info;
     header_info << "{"
                 << R"("length":)" << length

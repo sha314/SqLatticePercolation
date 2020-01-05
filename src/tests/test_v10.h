@@ -101,7 +101,7 @@ void run_v10_rsbd(int length, int ensemble_size){
 //    fout_s.close();
 //    fout_jump.close();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"

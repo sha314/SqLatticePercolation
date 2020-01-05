@@ -105,7 +105,7 @@ void test_v10_number_of_clusters_per_site(int argc, char **argv) {
     }
 
     double size = sp.maxSites();
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"
@@ -251,7 +251,7 @@ void run_v10_regular(int length, int ensemble_size) {
 //    fout_s.close();
 //    fout_jump.close();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"
@@ -420,7 +420,7 @@ void run_v10_largest_cluster(int length, int ensemble_size) {
                   << " . Elapsed time " << std::chrono::duration<double>(t_end - t_start).count() << " sec" << std::endl;
     }
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
     const char delimiter = '\t';
     std::ostringstream header_info;
     header_info << "{"
@@ -476,7 +476,7 @@ void test_v10_lattice(int length) {
 
 //    lp.reset();
 
-    std::string tm = getCurrentTime();
+    std::string tm = getCurrentDateTime();
 
     std::string extension = "_L" + std::to_string(length) + '_' + tm + ".txt";
     std::string filename = lp.getClassName() + "_lattice" + extension;
