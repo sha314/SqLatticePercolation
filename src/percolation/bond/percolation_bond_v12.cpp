@@ -57,20 +57,18 @@ bool BondPercolation_pb_v12::occupy() {
 }
 
 /**
- * Steps :
- *  1. find the largest cluster among bond neighbors of selected site.
- *  2. get largest cluster group id as root.
- *  3. relabel selected site.
- *  4.
+ * Each bond can have only two site neighbors.
+ * Select suitable root cluster and other cluster is the one to be merged
  */
 void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and then bonds
-    auto site_connected = _lattice.getBond(id_last_bond).connectedSites();
+    auto sites_connected = _lattice.getBond(id_last_bond).connectedSites();
+//    cout << "neighbor count " << sites_connected.size() << endl;
     // find which clusters the bonds belong
     // find a suitble root cluster
-    int root{-1};
+    int root_gid{-1};
     size_t root_size{}, tmp{};
     set<int> gids; // to prevent repetition
-    for(auto ss: site_connected){
+    for(auto ss: sites_connected){
         auto gid = _lattice.getGroupIDSite(ss);
         if(gids.count(gid) > 0) continue; // already taken care of
         gids.emplace(gid);
@@ -78,61 +76,67 @@ void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and 
 //        tmp = _clusters[gid].numberOfBonds();
         if(tmp >= root_size){
             root_size = tmp;
-            root = gid;
+            root_gid = gid;
         }
     }
 
     // subtract entropy before new sites or bonds are added to any clusters. and before merging any clusters
     subtract_entropy(gids);
 
-    cout << "root id " << root << endl;
-    _lattice.setGroupIDBond(id_last_bond, root);
-    _clusters[root].addBond(id_last_bond);
 
-//    auto site = _lattice.getSite(id_last_bond);
-//    auto coordinate_new = site.get_index();
-////    auto relative_new = site.relativeIndex();
+
+//    cout << "root gid " << root_gid << endl;
+    _lattice.setGroupIDBond(id_last_bond, root_gid);
+    _clusters[root_gid].addBond(id_last_bond);
+
+
+//    int other_id{-1};
+//    if(sites_connected[0] == root_id){
+//        other_id = sites_connected[1];
+//    }else{
+//        other_id = sites_connected[0];
+//    }
+//    cout << "root id " << root_id  << " other_id " << other_id << endl;
+//    auto site_a = _lattice.getSite(root_id);
+//    auto coordinate_a = site_a.get_index();
+//    auto relative_a = site_a.relativeIndex();
+//
+//    auto site_b = _lattice.getSite(other_id);
+//    auto coordinate_b = site_b.get_index();
+//    auto relative_b = site_b.relativeIndex();
 //
 //    auto sites = _lattice.get_neighbor_sites_of_site(id_last_bond);
-//    IndexRelative dx_dy;
-//    for(auto n: sites){
-//        if(_lattice.getGroupIDSite(n) == root){
-//            // find relative index with respect to this site
-//            dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
-//            break; // since first time r is set running loop is doing no good
-//        }
-//    }
-//    _lattice.getRelativeIndex(id_last_bond).add(dx_dy);
+//    IndexRelative dx_dy = getRelativeIndexDX_v2(coordinate_a, coordinate_b);
+//
+//    _lattice.getRelativeIndex(coordinate_b).add(dx_dy);
 
 
     // insert all to it
     for(auto g: gids){
-        if(g == root) continue;
+        if(g == root_gid) continue;
 //        cout << "g = " << g << endl;
-        _clusters[root].insert(_clusters[g]);
+        _clusters[root_gid].insert(_clusters[g]);
 
         // relabel
-//        relabel(_clusters[g], id_last_site);
-        relabel_v3(id_last_bond, _clusters[g]);
+        relabel_v3(id_last_bond, sites_connected, _clusters[g]);
 
         _clusters[g].clear();
     }
     // add entropy
-    add_entropy(root);
+    add_entropy(root_gid);
     // track cluster
-    track_clusters(root);
+    track_clusters(root_gid);
 }
 
 
 /**
  *
- * @param id_current_a : last site id
- * @param neighbors_a  : neighbors sites of `id_current` site
+ * @param id_current_bond : last site id
  * @param clstr_b        : cluster to be relabeled
  */
-void BondPercolation_pb_v12::relabel_v3(int id_current_a,  Cluster_v12 &clstr_b){
-    int gid_current = _lattice.getGroupIDBond(id_current_a);
-    auto bond = _lattice.getBond(id_current_a);
+void BondPercolation_pb_v12::relabel_v3(int id_current_bond, vector<int>& id_sites_connected, Cluster_v12 &clstr_b){
+    int root_gid = _lattice.getGroupIDBond(id_current_bond);
+//    auto bond = _lattice.getBond(id_current_bond);
 
 //    auto coordinate_a = bond.get_index();
 //    auto relative_a = bond.relativeIndex();
@@ -141,26 +145,45 @@ void BondPercolation_pb_v12::relabel_v3(int id_current_a,  Cluster_v12 &clstr_b)
     auto bonds = clstr_b.getBondIDs();
     for(auto b: bonds){
         // relabel bond group id
-        _lattice.setGroupIDBond(b, gid_current);
+        _lattice.setGroupIDBond(b, root_gid);
     }
 
-//    int gid_b = clstr_b.getGroupID();
-//    IndexRelative dx_dy;
-//    for(auto s: neighbors_a){
-//        auto tmp_id = _lattice.getGroupIDSite(s);
-//        if(gid_b == tmp_id){
-//            dx_dy = getRelativeIndexDX_v2(coordinate_a, s);
-//        }
-//    }
+    int gid_b = clstr_b.getGroupID();
+    IndexRelative dx_dy;
+
+    Index root_a{}, other_b{};
+    for(auto ss: id_sites_connected){
+        if(_lattice.getGroupIDSite(ss) == root_gid){
+            root_a = _lattice.getSite(ss).get_index();
+        }
+        if(_lattice.getGroupIDSite(ss) == gid_b){
+            other_b = _lattice.getSite(ss).get_index();
+        }
+    }
+
+#ifdef DEBUG_FLAG
+    cout << "connected sites ids {";
+    for(auto ss: id_sites_connected){
+        cout << ss << ",";
+    }
+    cout << "}" << endl;
+    cout << "root index " << root_a << " , new site " << other_b << endl;
+#endif
+
+    dx_dy = getRelativeIndexDX_v2(root_a, other_b);
+
+#ifdef DEBUG_FLAG
+    cout << dx_dy << " will be added as relative index " << endl;
+#endif
 
 
     auto sites = clstr_b.getSiteIDs();
     for(auto s: sites){
 //        cout << "relabeling " << s << endl;
         // relabel site group id
-        _lattice.setGroupIDSite(s, gid_current);
+        _lattice.setGroupIDSite(s, root_gid);
         // relabel relative index
-//        _lattice.getRelativeIndex(s).add(dx_dy);
+        _lattice.getRelativeIndex(s).add(dx_dy);
     }
 
 }
@@ -168,7 +191,7 @@ void BondPercolation_pb_v12::relabel_v3(int id_current_a,  Cluster_v12 &clstr_b)
 void BondPercolation_pb_v12::reset() {
     Percolation_v12::reset();
     index_counter = 0;
-    _number_of_occupied_sites = 0;
+    _number_of_occupied_bonds = 0;
     _wrapping_site_ids.clear();
     init();
 }
@@ -222,11 +245,14 @@ IndexRelative BondPercolation_pb_v12::getRelativeIndexDX(Index root, Index site_
  * @return what needs to be added to `site_new` to get it's relative index right
  */
 IndexRelative BondPercolation_pb_v12::getRelativeIndexDX_v2(Index root, Index site_new){
-    auto relative_old = _lattice.getRelativeIndex(root);
+
+    auto relative_root = _lattice.getRelativeIndex(root);
     auto relative_new = _lattice.getRelativeIndex(site_new);
 
-    int dx_r = relative_old.x_ - relative_new.x_;
-    int dy_r = relative_old.y_ - relative_new.y_;
+
+
+    int dx_r = relative_root.x_ - relative_new.x_;
+    int dy_r = relative_root.y_ - relative_new.y_;
 
     // since row column is interchanged in natural view
     // row will correspond to x here
@@ -255,9 +281,13 @@ IndexRelative BondPercolation_pb_v12::getRelativeIndexDX_v2(Index root, Index si
     int dy = dy_r + dy_c;
 
 #ifdef DEBUG_FLAG
+    cout << "root index " << root << " , new site " << site_new << endl;
+    cout << "root relative " << relative_root << " , new relative " << relative_new << endl;
     cout << "dx_r, dy_r         = " << dx_r << ", " << dy_r << endl;
     cout << "dx_c, dy_c         = " << dx_c << ", " << dy_c << endl;
     cout << "dx, dy             = " << dx << ", " << dy << endl;
+
+    cout << IndexRelative{dx, dy} << " will be added as relative index " << endl;
 #endif
     return {dx, dy};
 }
@@ -340,7 +370,7 @@ bool BondPercolation_pb_v12::detectWrapping() {
 
         if(abs(rel_1.x_ - rel_2.x_) > 1 || abs(rel_1.y_ - rel_2.y_) > 1){
 //                cout << "Wrapping : line " << __LINE__ << endl;
-            _wrapping_site_ids.push_back(id_last_bond);
+            _wrapping_site_ids.push_back(sites[0]);
             return true;
         }
     }

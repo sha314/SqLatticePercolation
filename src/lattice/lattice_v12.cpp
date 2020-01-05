@@ -504,6 +504,7 @@ void Lattice_v12::view_by_relative_index_v1() {
  */
 void Lattice_v12::view_by_relative_index_v2() {
     cout << "Lattice_v12::view_by_relative_index_v2" << endl;
+    cout << "id (index) gid" << endl;
     /*
      * Switching row and column makes horizontal bonds vertical and vice versa
      */
