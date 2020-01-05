@@ -73,10 +73,10 @@ public:
     void viewCluster();
     void viewLattice_original(){_lattice.view_as_assigned();};
     void viewLattice(){ _lattice.view_all_v2();};
-    void viewLattice_by_id(){ _lattice.view_by_id_v1();};
-    void viewLattice_by_gid(){ _lattice.view_by_gid_v1();};
-    void viewLattice_by_relative_index(){ _lattice.view_by_relative_index_v1();};
-    void viewLattice_sites_by_gid(){ _lattice.view_sites_by_gid_v1();}
+    void viewLattice_by_id(){ _lattice.view_by_id_v2();};
+    void viewLattice_by_gid(){ _lattice.view_by_gid_v2();};
+    void viewLattice_by_relative_index(){ _lattice.view_by_relative_index_v2();};
+    void viewLattice_sites_by_gid(){ _lattice.view_sites_by_gid();}
     int length(){ return  _lattice.length();}
 
     size_t numberOfBondsInTheLargestCluster();

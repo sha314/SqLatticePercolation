@@ -794,7 +794,7 @@ void Lattice_v12::view_by_gid_v2() {
 
 
 
-void Lattice_v12::view_sites_v1() {
+void Lattice_v12::view_sites() {
     cout << "Lattice_v12::view_sites" << endl;
     for(int x{}; x < _length; ++x) { // column
         cout << "--------------------";
@@ -831,7 +831,7 @@ void Lattice_v12::view_sites_v1() {
 
 }
 
-void Lattice_v12::view_sites_by_relative_index_v1() {
+void Lattice_v12::view_sites_by_relative_index() {
     cout << "Lattice_v12::view_sites_by_relative_index" << endl;
 
     cout << endl << "y  |" ;
@@ -870,7 +870,7 @@ void Lattice_v12::view_sites_by_relative_index_v1() {
 
 }
 
-void Lattice_v12::view_sites_by_id_gid_v1() {
+void Lattice_v12::view_sites_by_id_gid() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
     for(int x{}; x < _length; ++x) { // column
         cout << "-----------";
@@ -903,7 +903,7 @@ void Lattice_v12::view_sites_by_id_gid_v1() {
 
 }
 
-void Lattice_v12::view_sites_by_id_v1() {
+void Lattice_v12::view_sites_by_id() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
     for(int x{}; x < _length; ++x) { // column
         cout << "-------";
@@ -944,7 +944,7 @@ void Lattice_v12::view_sites_by_id_v1() {
 
 
 
-void Lattice_v12::view_sites_by_gid_v1() {
+void Lattice_v12::view_sites_by_gid() {
     cout << "Lattice_v12::view_sites_by_id" << endl;
     cout << endl << "y  |" ;
     for(int x{}; x < _length; ++x) { // column

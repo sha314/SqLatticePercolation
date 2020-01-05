@@ -35,6 +35,7 @@ public:
 
     int lastSite() const {return id_last_bond;}
     Index lastSiteIndex()  {return _lattice.getSite(id_last_bond).get_index();}
+    int lastBondGroupID() { return  _lattice.getBond(id_last_bond).get_groupID();}
 
     int sign(int a);
 

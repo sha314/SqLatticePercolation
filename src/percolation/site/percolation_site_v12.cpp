@@ -19,7 +19,8 @@ SitePercolation_ps_v12::SitePercolation_ps_v12(int length) : Percolation_v12(len
 
 void SitePercolation_ps_v12::init() {
     //
-    _entropy = logl(maxBonds());
+//    _entropy = logl(maxBonds());
+    _entropy = 0; // traditional
 
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
@@ -72,13 +73,17 @@ void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and 
     set<int> gids; // to prevent repetition
     for(auto b: bond_connected){
         auto gid = _lattice.getGroupIDBond(b);
+        if(gids.count(gid) > 0) continue; // already taken care of
         gids.emplace(gid);
-        tmp = _clusters[gid].numberOfSites();
+//        tmp = _clusters[gid].numberOfSites();
+        tmp = _clusters[gid].numberOfBonds(); // since bonds are always present use this
         if(tmp >= root_size){
             root_size = tmp;
             root = gid;
         }
     }
+    // subtract entropy before new sites or bonds are added to any clusters. and before merging any clusters
+    subtract_entropy(gids);
 
     _lattice.setGroupIDSite(id_last_site, root);
     _clusters[root].addSite(id_last_site);
@@ -89,19 +94,19 @@ void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and 
 
     auto sites = _lattice.get_neighbor_sites_of_site(id_last_site);
     IndexRelative dx_dy;
-    cout << "Neighbors of " << id_last_site << " {";
+//    cout << "Neighbors of " << id_last_site << " {";
     for(auto n: sites){
-        cout << n << ",";
+//        cout << n << ",";
         if(_lattice.getGroupIDSite(n) == root){
             // find relative index with respect to this site
             dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
             break; // since first time r is set running loop is doing no good
         }
     }
-    cout << "}" << endl;
+//    cout << "}" << endl;
     _lattice.getRelativeIndex(id_last_site).add(dx_dy);
     // subtract entropy
-    subtract_entropy(gids);
+
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;
@@ -471,17 +476,33 @@ size_t SitePercolation_ps_v12::wrappingClusterSize() {
 }
 
 long double SitePercolation_ps_v12::entropy() {
-//    return entropy_v1();
+//    return entropy_v1_bond();
+//    return entropy_v1_site();//traditional
     return entropy_v2();
 }
 
-long double SitePercolation_ps_v12::entropy_v1() {
+long double SitePercolation_ps_v12::entropy_v1_bond() {
     long double H{}, mu{};
     double n{};
     for(const auto &clstr: _clusters){
         if(clstr.empty()) continue;
         n = clstr.numberOfBonds();
         mu = n/maxBonds();
+        H += logl(mu) * mu;
+    }
+//    return -H;
+    _entropy = -H;
+    return -H;
+}
+
+long double SitePercolation_ps_v12::entropy_v1_site() {
+    long double H{}, mu{};
+    double n{};
+    for(const auto &clstr: _clusters){
+        if(clstr.empty()) continue;
+        n = clstr.numberOfSites();
+        if(n == 0) continue;
+        mu = n/maxSites();
         H += logl(mu) * mu;
     }
 //    return -H;
@@ -524,10 +545,13 @@ size_t SitePercolation_ps_v12::numberOfSitesInTheWrappingClusters() {
 
 void SitePercolation_ps_v12::subtract_entropy(const std::set<int> &gids) {
     long double H{}, nb{}, mu{};
+//    double mb = maxBonds();
+    double mb = maxSites(); // traditional
     for(auto g: gids){
-        nb = _clusters[g].numberOfBonds();
+//        nb = _clusters[g].numberOfBonds();
+        nb = _clusters[g].numberOfSites(); // traditional
         if(nb <= 0) continue; // empty cluster
-        mu = nb/maxBonds();
+        mu = nb/mb;
         H += logl(mu)*mu;
     }
     // H is negative. so adding is subtracting
@@ -536,11 +560,14 @@ void SitePercolation_ps_v12::subtract_entropy(const std::set<int> &gids) {
 
 void SitePercolation_ps_v12::add_entropy(int root) {
     long double H{}, nb{}, mu{};
-    nb = _clusters[root].numberOfBonds();
+//    nb = _clusters[root].numberOfBonds();
+    nb = _clusters[root].numberOfSites(); // traditional
     if(nb <= 0) { // empty cluster
         cerr << "root cluster cannot be empty" << endl;
+        return;
     }
-    mu = nb/maxBonds();
+//    mu = nb/maxBonds();
+    mu = nb/maxSites(); // traditional
     H += logl(mu)*mu;
     // H is negative. so subtracting  is adding
     _entropy -= H;

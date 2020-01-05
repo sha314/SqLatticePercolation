@@ -48,7 +48,7 @@ bool BondPercolation_pb_v12::occupy() {
     index_counter++;
 
     // activate the site
-    _lattice.activateSite(id_last_bond);
+    _lattice.activateBond(id_last_bond);
     ++_number_of_occupied_sites;
     manageCluster();
 
@@ -64,41 +64,47 @@ bool BondPercolation_pb_v12::occupy() {
  *  4.
  */
 void BondPercolation_pb_v12::manageCluster() {// find it's neighbors. sites and then bonds
-    auto bond_connected = _lattice.getSite(id_last_bond).connectedBondIDs();
+    auto site_connected = _lattice.getBond(id_last_bond).connectedSites();
     // find which clusters the bonds belong
     // find a suitble root cluster
     int root{-1};
     size_t root_size{}, tmp{};
     set<int> gids; // to prevent repetition
-    for(auto b: bond_connected){
-        auto gid = _lattice.getGroupIDBond(b);
+    for(auto ss: site_connected){
+        auto gid = _lattice.getGroupIDSite(ss);
+        if(gids.count(gid) > 0) continue; // already taken care of
         gids.emplace(gid);
-        tmp = _clusters[gid].numberOfSites();
+        tmp = _clusters[gid].numberOfSites();// since sites are always present use this
+//        tmp = _clusters[gid].numberOfBonds();
         if(tmp >= root_size){
             root_size = tmp;
             root = gid;
         }
     }
 
-    _lattice.setGroupIDSite(id_last_bond, root);
-    _clusters[root].addSite(id_last_bond);
-
-    auto site = _lattice.getSite(id_last_bond);
-    auto coordinate_new = site.get_index();
-//    auto relative_new = site.relativeIndex();
-
-    auto sites = _lattice.get_neighbor_sites_of_site(id_last_bond);
-    IndexRelative dx_dy;
-    for(auto n: sites){
-        if(_lattice.getGroupIDSite(n) == root){
-            // find relative index with respect to this site
-            dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
-            break; // since first time r is set running loop is doing no good
-        }
-    }
-    _lattice.getRelativeIndex(id_last_bond).add(dx_dy);
-    // subtract entropy
+    // subtract entropy before new sites or bonds are added to any clusters. and before merging any clusters
     subtract_entropy(gids);
+
+    cout << "root id " << root << endl;
+    _lattice.setGroupIDBond(id_last_bond, root);
+    _clusters[root].addBond(id_last_bond);
+
+//    auto site = _lattice.getSite(id_last_bond);
+//    auto coordinate_new = site.get_index();
+////    auto relative_new = site.relativeIndex();
+//
+    auto sites = _lattice.get_neighbor_sites_of_site(id_last_bond);
+//    IndexRelative dx_dy;
+//    for(auto n: sites){
+//        if(_lattice.getGroupIDSite(n) == root){
+//            // find relative index with respect to this site
+//            dx_dy = getRelativeIndexDX_v2(n, coordinate_new);
+//            break; // since first time r is set running loop is doing no good
+//        }
+//    }
+//    _lattice.getRelativeIndex(id_last_bond).add(dx_dy);
+
+
     // insert all to it
     for(auto g: gids){
         if(g == root) continue;

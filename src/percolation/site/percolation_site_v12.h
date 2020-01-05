@@ -47,7 +47,8 @@ public:
     Index wrappingSite();
 
     // numerical properties
-    long double entropy_v1();
+    long double entropy_v1_site();
+    long double entropy_v1_bond();
     long double entropy_v2();
 
     long double entropy() override;

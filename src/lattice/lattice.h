@@ -346,11 +346,11 @@ public:
 
 
 
-    void view_sites_v1();
-    void view_sites_by_id_v1();
-    void view_sites_by_gid_v1();
-    void view_sites_by_id_gid_v1();
-    void view_sites_by_relative_index_v1();
+    void view_sites();
+    void view_sites_by_id();
+    void view_sites_by_gid();
+    void view_sites_by_id_gid();
+    void view_sites_by_relative_index();
     void view_sites_list();
     void view_bonds_list();
     void print_box();

@@ -24,10 +24,11 @@ void test_v12(int argc, char **argv) {
     int ensemble_size = stoi(argv[2]);
 
 
-    test_v12_lattice(length);
-//    test_v12_percolation(length);
+//    test_v12_lattice(length);
+//    test_v12_percolation_site(length);
+//    test_v12_percolation_bond(length);
 
-//    run_v12_regular(length, ensemble_size);
+    run_v12_regular_site(length, ensemble_size);
 }
 
 void test_v12_lattice(int length) {
@@ -76,9 +77,9 @@ void test_v12_lattice(int length) {
 }
 
 
-void test_v12_percolation(int length) {
+void test_v12_percolation_site(int length) {
     SitePercolation_ps_v12 percolation(length);
-    percolation.setRandomState(0, false);
+    percolation.setRandomState(1549510744, false);
     percolation.init();
 
     percolation.viewCluster();
@@ -91,12 +92,13 @@ void test_v12_percolation(int length) {
         cout << "********************** last site id " << percolation.lastSite()
              << " index " << percolation.lastSiteIndex()
              << " group id " << percolation.lastSiteGroupID() << endl;
-//    percolation.viewCluster();
+    percolation.viewCluster();
 //    percolation.viewLattice_by_id();
 //        percolation.viewLattice_by_gid();
-//        percolation.viewLattice_sites_by_gid();
+        percolation.viewLattice_sites_by_gid();
 //    percolation.viewLattice();
-//        percolation.viewLattice_by_relative_index();
+        percolation.viewLattice_by_relative_index();
+
 //        if(percolation.detectWrapping()){
 ////            percolation.viewLattice_by_relative_index();
 //            cout << "wrapping site " << percolation.wrappingSite() << endl;
@@ -106,7 +108,45 @@ void test_v12_percolation(int length) {
 //        }
 
         ++i;
-        if(i >= 1) break;
+//        if(i >= 10) break;
+    }
+
+
+}
+
+
+void test_v12_percolation_bond(int length) {
+    BondPercolation_pb_v12 percolation(length);
+    percolation.setRandomState(1549510744, false);
+    percolation.init();
+
+//    percolation.viewCluster();
+//    percolation.viewLattice_by_id();
+//    percolation.viewLattice_by_gid();
+
+//    percolation.occupy();
+    int i=0;
+    while(percolation.occupy()) {
+        cout << "*********" << i <<" th ************* last site id " << percolation.lastSite()
+             << " index " << percolation.lastSiteIndex()
+             << " group id " << percolation.lastBondGroupID() << endl;
+//        percolation.viewCluster();
+//    percolation.viewLattice_by_id();
+//        percolation.viewLattice_by_gid();
+//        percolation.viewLattice_sites_by_gid();
+//    percolation.viewLattice();
+//        percolation.viewLattice_by_relative_index();
+
+//        if(percolation.detectWrapping()){
+////            percolation.viewLattice_by_relative_index();
+//            cout << "wrapping site " << percolation.wrappingSite() << endl;
+//            cout << "wrapping site id " << percolation.wrappingSite_id() << endl;
+//            cout << "p = " << percolation.occupationProbability() << endl;
+//            break;
+//        }
+
+        ++i;
+//        if(i >= 10) break;
     }
 
 
@@ -118,7 +158,7 @@ void test_v12_percolation(int length) {
  * @param length
  * @param ensemble_size
  */
-void run_v12_regular(int length, int ensemble_size) {
+void run_v12_regular_site(int length, int ensemble_size) {
 
     std::cout << "length=" << length << " and ensemble_size=" << ensemble_size << std::endl;
 
@@ -172,11 +212,11 @@ void run_v12_regular(int length, int ensemble_size) {
 //                lp.viewCluster();
 //                lp.ckeckCluster();
 //                auto H1 = lp.entropy_v1();
-//                auto H2 = lp.entropy_v2();
-//                cout
+                auto H2 = lp.entropy_v2();
+                cout
 //                     << H1
-//                     << " vs " << H2
-//                     << endl;
+                     << " vs " << H2
+                     << endl;
 //                if(abs(H1 - H2) > 1e-10){
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
