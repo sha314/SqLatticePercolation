@@ -23,7 +23,7 @@ public:
     void reset();
     std::string getSignature();
     std::string getClassName(){return "BondPercolation_pb_v12";};
-    void init();
+    void init(std::vector<int> sequence={});
 
     bool occupy();
 

@@ -26,9 +26,9 @@ void test_v12(int argc, char **argv) {
 
 //    test_v12_lattice(length);
 //    test_v12_percolation_site(length);
-//    test_v12_percolation_bond(length);
+    test_v12_percolation_bond(length);
 
-    run_v12_regular_site(length, ensemble_size);
+//    run_v12_regular_site(length, ensemble_size);
 //    run_v12_regular_bond(length, ensemble_size);
 }
 

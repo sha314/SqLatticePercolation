@@ -17,7 +17,11 @@ BondPercolation_pb_v12::BondPercolation_pb_v12(int length) : Percolation_v12(len
     _max_iteration_limit = size_t(2*length*length);
 }
 
-void BondPercolation_pb_v12::init() {
+/**
+ *
+ * @param sequence : custome sequence of bond ids. useful for debugging purposes
+ */
+void BondPercolation_pb_v12::init(std::vector<int> sequence) {
     //
     _entropy_site = logl(maxSites());
 
@@ -38,6 +42,17 @@ void BondPercolation_pb_v12::init() {
 
     std::shuffle(randomized_index .begin(), randomized_index.end(), _random);
 
+    if(!sequence.empty()){
+        cout << "Debugging mode !" << endl;
+        // use custome sequence
+        for(auto s: sequence){
+            if (s >= maxBonds()){
+                cerr << "error in input sequence" << endl;
+            }
+        }
+//        index_sequence = sequence;
+        randomized_index = sequence;
+    }
 }
 
 bool BondPercolation_pb_v12::occupy() {
