@@ -19,7 +19,7 @@ BondPercolation_pb_v12::BondPercolation_pb_v12(int length) : Percolation_v12(len
 
 void BondPercolation_pb_v12::init() {
     //
-    _entropy = logl(maxSites());
+    _entropy_site = logl(maxSites());
 
     // activate bonds and initialize cluster
     _clusters.resize(maxSites());
@@ -402,12 +402,12 @@ long double BondPercolation_pb_v12::entropy_v1() {
         H += logl(mu) * mu;
     }
 //    return -H;
-    _entropy = -H;
+    _entropy_site = -H;
     return -H;
 }
 
 long double BondPercolation_pb_v12::entropy_v2() {
-    return _entropy;
+    return _entropy_site;
 }
 
 double BondPercolation_pb_v12::occupationProbability() {
@@ -448,7 +448,7 @@ void BondPercolation_pb_v12::subtract_entropy(const std::set<int> &gids) {
         H += logl(mu)*mu;
     }
     // H is negative. so adding is subtracting
-    _entropy += H;
+    _entropy_site += H;
 }
 
 void BondPercolation_pb_v12::add_entropy(int root) {
@@ -460,7 +460,7 @@ void BondPercolation_pb_v12::add_entropy(int root) {
     mu = nb/maxSites();
     H += logl(mu)*mu;
     // H is negative. so subtracting  is adding
-    _entropy -= H;
+    _entropy_site -= H;
 }
 
 void BondPercolation_pb_v12::track_clusters(int root) {

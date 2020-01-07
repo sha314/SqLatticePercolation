@@ -33,7 +33,13 @@ protected:
 
     double _occuption_probability {};
     // entropy
-    long double _entropy{};
+    /*
+     * _entropy_list contains value of entropy for different clusters.
+     * id of a cluster is the index of this array that will give the entropy for that cluster
+     */
+    std::vector<long double> _entropy_list;
+    long double _entropy_{}; // for jump and specific heat caclculation
+    long double _entropy_site{},_entropy_bond{};
     long double _entropy_current{};
     long double _entropy_previous{};
     double _largest_jump_entropy{}; // lrgest jump in entropy

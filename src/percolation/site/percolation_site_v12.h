@@ -24,7 +24,7 @@ public:
     void reset();
     std::string getSignature();
     std::string getClassName(){return "SitePercolation_ps_v12";};
-    void init();
+    void init(std::vector<int> sequence={});
 
     bool occupy();
 
@@ -49,7 +49,9 @@ public:
     // numerical properties
     long double entropy_v1_site();
     long double entropy_v1_bond();
-    long double entropy_v2();
+    long double entropy_v2_site();
+    long double entropy_v2_bond();
+    long double entropy_v3_list();
 
     long double entropy() override;
     double occupationProbability() override;
@@ -63,6 +65,9 @@ public:
     void track_clusters(int root);
     void add_entropy(int root);
     void subtract_entropy(const std::set<int>& gids);
+    long double entropy_of_cluster_bond(int root);
+    long double entropy_of_cluster_site(int root) ;
+    void process_entropy_list(const std::set<int>& gids, int root);
 };
 
 

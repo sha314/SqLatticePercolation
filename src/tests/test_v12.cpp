@@ -28,8 +28,8 @@ void test_v12(int argc, char **argv) {
 //    test_v12_percolation_site(length);
 //    test_v12_percolation_bond(length);
 
-//    run_v12_regular_site(length, ensemble_size);
-    run_v12_regular_bond(length, ensemble_size);
+    run_v12_regular_site(length, ensemble_size);
+//    run_v12_regular_bond(length, ensemble_size);
 }
 
 void test_v12_lattice(int length) {
@@ -81,24 +81,32 @@ void test_v12_lattice(int length) {
 void test_v12_percolation_site(int length) {
     SitePercolation_ps_v12 percolation(length);
     percolation.setRandomState(1549510744, false);
+//    percolation.init({6,14,9,11,10});
     percolation.init();
 
-    percolation.viewCluster();
+//    percolation.viewCluster();
     percolation.viewLattice_by_id();
-    percolation.viewLattice_by_gid();
+//    percolation.viewLattice_by_gid();
 
 //    percolation.occupy();
     int i=0;
+    cout << "entropy redefined   " << percolation.entropy_v1_bond() << endl;
     while(percolation.occupy()) {
         cout << "********************** last site id " << percolation.lastSite()
              << " index " << percolation.lastSiteIndex()
              << " group id " << percolation.lastSiteGroupID() << endl;
-    percolation.viewCluster();
+        cout << "entropy traditional " << percolation.entropy_v1_site() << endl;
+        cout << "entropy traditional " << percolation.entropy_v2_site() << endl;
+
+        cout << "entropy redefined   " << percolation.entropy_v1_bond() << endl;
+        cout << "entropy redefined   " << percolation.entropy_v2_bond() << endl;
+        cout << "entropy list        " << percolation.entropy_v3_list() << endl;
+//    percolation.viewCluster();
 //    percolation.viewLattice_by_id();
-//        percolation.viewLattice_by_gid();
-        percolation.viewLattice_sites_by_gid();
+        percolation.viewLattice_by_gid();
+//        percolation.viewLattice_sites_by_gid();
 //    percolation.viewLattice();
-        percolation.viewLattice_by_relative_index();
+//        percolation.viewLattice_by_relative_index();
 
 //        if(percolation.detectWrapping()){
 ////            percolation.viewLattice_by_relative_index();
@@ -171,7 +179,7 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(2562449578, true);
+    lp.setRandomState(2562449578, false);
     lp.init();
 
 //    lp.viewLattice();
@@ -212,7 +220,7 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //                lp.viewBondByID();
 //                lp.viewCluster();
 //                lp.ckeckCluster();
-//                auto H1 = lp.entropy_v1();
+//                auto H1 = lp.entropy_v1_site();
 //                auto H2 = lp.entropy_v2();
 //                cout
 //                     << H1
@@ -222,7 +230,7 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
 //                }
-                entropy[counter] += lp.entropy();
+                entropy[counter] += lp.entropy_v1_bond();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
 //                lp.jump();
@@ -460,8 +468,8 @@ void run_v12_regular_bond(int length, int ensemble_size) {
 //                    exit(0);
 //                }
                 entropy[counter] += bp.entropy();
-                nob_wraping[counter] += bp.numberOfBondsInTheWrappingClusters();
-                nob_largest[counter] += bp.numberOfBondsInTheLargestCluster();
+                nob_wraping[counter] += bp.numberOfSitesInTheWrappingClusters();
+                nob_largest[counter] += bp.numberOfSitesInTheLargestCluster();
 //                lp.jump();
 //                dHs[counter] += lp.jump_entropy();
 //                dPs[counter] += lp.jump_wrapping_cluster();
@@ -589,11 +597,11 @@ void run_v12_regular_bond(int length, int ensemble_size) {
     fout << "#<p>,<H(p,L)>,<P1(p,L)>,<P2(p,L)>" << std::endl;
     fout << "#p = occupation probability" << std::endl;
     fout << "#H(p,L) = Entropy = sum( - u_i * log(u_i))" << std::endl;
-    fout << "#P1(p,L) = Order parameter = (number of bonds in largest cluster) / (total number of bonds)" << std::endl;
-    fout << "#P2(p,L) = Order parameter = (number of bonds in spanning or wrapping cluster) / (total number of bonds)" << std::endl;
+    fout << "#P1(p,L) = Order parameter = (number of sites in largest cluster) / (total number of sites)" << std::endl;
+    fout << "#P2(p,L) = Order parameter = (number of sites in spanning or wrapping cluster) / (total number of sites)" << std::endl;
     fout << "#C(p,L) = Specific heat = -T dH/dT" << std::endl;
     fout << "#X(p,L) = Susceptibility = dP/dp" << std::endl;
-    fout << "#u_i = (number of bonds in the i-th cluster) / (total number of bonds)" << std::endl;
+    fout << "#u_i = (number of sites in the i-th cluster) / (total number of sites)" << std::endl;
 //    std::cout.precision(12);
     fout.precision(numeric_limits<double>::digits10);
     for(size_t i{}; i < limit; ++i){

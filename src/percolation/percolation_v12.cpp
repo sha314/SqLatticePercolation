@@ -49,8 +49,10 @@ size_t Percolation_v12::getRandomState() {
 
 void Percolation_v12::viewCluster() {
     cout << "Percolation_v12::viewCluster" << endl;
+    size_t cluster_count = 0;
     for(size_t i{}; i < _clusters.size(); ++i){
         if(_clusters[i].empty()) continue;
+        ++cluster_count;
         cout << "cluster[" << i << "] {" << endl;
 
         auto bonds = _clusters[i].getBondIDs();
@@ -67,6 +69,7 @@ void Percolation_v12::viewCluster() {
         cout << "}" << endl;
         cout << "}" << endl;
     }
+    cout << "Total clusters " << cluster_count << endl;
 }
 
 void Percolation_v12::reset() {

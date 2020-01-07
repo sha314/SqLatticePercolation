@@ -17,15 +17,21 @@ SitePercolation_ps_v12::SitePercolation_ps_v12(int length) : Percolation_v12(len
     _max_iteration_limit = size_t(length*length);
 }
 
-void SitePercolation_ps_v12::init() {
+/**
+ * Initialize the required variables
+ * @param sequence : custome sequence of site ids. for debugging purposes only
+ */
+void SitePercolation_ps_v12::init(std::vector<int> sequence) {
     //
-//    _entropy = logl(maxBonds());
-    _entropy = 0; // traditional
+    _entropy_bond = logl(maxBonds());
+    _entropy_site = 0; // traditional
+
 
     // activate bonds and initialize cluster
     _clusters.resize(maxBonds());
 //    cout << "_clusters.size() " << _clusters.size() << endl;
     auto bonds = _lattice.getBonds();
+    _entropy_list.resize(_clusters.size());
     for(int i{}; i < _clusters.size(); ++i){
 
         auto id = _lattice.getBondID(bonds[i]);
@@ -33,11 +39,25 @@ void SitePercolation_ps_v12::init() {
         _lattice.setGroupIDBond(bonds[i], i); // acts like bond resetting
         _clusters[i].addBond(id);
         _clusters[i].setGroupID(i);
+
+        _entropy_list[i] = entropy_of_cluster_bond(i);
+//        _entropy_list[i] = entropy_of_cluster_site(i); // traditional
     }
 
     randomized_index = index_sequence;
 
     std::shuffle(randomized_index .begin(), randomized_index.end(), _random);
+    if(!sequence.empty()){
+        cout << "Debugging mode !" << endl;
+        // use custome sequence
+        for(auto s: sequence){
+            if (s >= maxSites()){
+                cerr << "error in input sequence" << endl;
+            }
+        }
+//        index_sequence = sequence;
+        randomized_index = sequence;
+    }
 
 }
 
@@ -122,6 +142,7 @@ void SitePercolation_ps_v12::manageCluster() {// find it's neighbors. sites and 
     add_entropy(root);
     // track cluster
     track_clusters(root);
+    process_entropy_list(gids, root);
 }
 
 /**
@@ -254,12 +275,16 @@ void SitePercolation_ps_v12::relabel_v3(int id_current_a, std::vector<Index>& ne
 
 }
 
+/**
+ * for multiple ensemble, you reset the class using this method. so init() cannot have any argument in here
+ */
 void SitePercolation_ps_v12::reset() {
     Percolation_v12::reset();
     index_counter = 0;
     _number_of_occupied_sites = 0;
     _wrapping_site_ids.clear();
     _lattice.reset_sites();
+    _entropy_list.clear();
     init();
 }
 
@@ -477,7 +502,7 @@ size_t SitePercolation_ps_v12::wrappingClusterSize() {
 long double SitePercolation_ps_v12::entropy() {
 //    return entropy_v1_bond();
 //    return entropy_v1_site();//traditional
-    return entropy_v2();
+    return entropy_v2_site();
 }
 
 long double SitePercolation_ps_v12::entropy_v1_bond() {
@@ -490,27 +515,35 @@ long double SitePercolation_ps_v12::entropy_v1_bond() {
         H += logl(mu) * mu;
     }
 //    return -H;
-    _entropy = -H;
+//    _entropy = -H;
     return -H;
 }
 
 long double SitePercolation_ps_v12::entropy_v1_site() {
     long double H{}, mu{};
     double n{};
+    size_t cluster_count = 0;
     for(const auto &clstr: _clusters){
-        if(clstr.empty()) continue;
+//        if(clstr.empty()) continue;
         n = clstr.numberOfSites();
         if(n == 0) continue;
+        ++cluster_count;
         mu = n/maxSites();
         H += logl(mu) * mu;
+//        cout << mu << ", " << H << endl;
     }
+//    cout << "non empty cluster in this method " << cluster_count << endl;
 //    return -H;
-    _entropy = -H;
+//    _entropy = -H;
     return -H;
 }
 
-long double SitePercolation_ps_v12::entropy_v2() {
-    return _entropy;
+long double SitePercolation_ps_v12::entropy_v2_site() {
+    return _entropy_site;
+}
+
+long double SitePercolation_ps_v12::entropy_v2_bond() {
+    return _entropy_bond;
 }
 
 double SitePercolation_ps_v12::occupationProbability() {
@@ -543,33 +576,67 @@ size_t SitePercolation_ps_v12::numberOfSitesInTheWrappingClusters() {
 }
 
 void SitePercolation_ps_v12::subtract_entropy(const std::set<int> &gids) {
-    long double H{}, nb{}, mu{};
-//    double mb = maxBonds();
-    double mb = maxSites(); // traditional
+    long double Hs{}, Hb{}, nb{}, ns{}, mu_b{}, mu_s{};
+    double mb = maxBonds();
+    double ms = maxSites(); // traditional
     for(auto g: gids){
-//        nb = _clusters[g].numberOfBonds();
-        nb = _clusters[g].numberOfSites(); // traditional
-        if(nb <= 0) continue; // empty cluster
-        mu = nb/mb;
-        H += logl(mu)*mu;
+        nb = _clusters[g].numberOfBonds();
+        ns = _clusters[g].numberOfSites(); // traditional
+        if(nb > 0) {
+            // for bonds
+            mu_b = nb/mb;
+            Hb += logl(mu_b)*mu_b;
+        }
+        if(ns > 0){
+            //for sites
+            mu_s = ns/ms;
+            Hs += logl(mu_s)*mu_s;
+        }
+
     }
     // H is negative. so adding is subtracting
-    _entropy += H;
+    _entropy_site += Hs;
+    _entropy_bond += Hb;
 }
 
 void SitePercolation_ps_v12::add_entropy(int root) {
+    _entropy_site += entropy_of_cluster_site(root);
+    _entropy_bond += entropy_of_cluster_bond(root);
+}
+
+/**
+ * entropy of a single cluster
+ * @param root
+ */
+long double SitePercolation_ps_v12::entropy_of_cluster_bond(int root) {
     long double H{}, nb{}, mu{};
-//    nb = _clusters[root].numberOfBonds();
+    nb = _clusters[root].numberOfBonds();
+    if(nb <= 0) { // empty cluster
+        cerr << "root cluster cannot be empty" << endl;
+        return 0;
+    }
+    mu = nb/maxBonds();
+    H += logl(mu)*mu;
+    // H is negative. so subtracting  is adding
+    return -H;
+}
+
+/**
+ * entropy of a single cluster
+ * @param root
+ */
+long double SitePercolation_ps_v12::entropy_of_cluster_site(int root) {
+    long double H{}, nb{}, mu{};
     nb = _clusters[root].numberOfSites(); // traditional
     if(nb <= 0) { // empty cluster
         cerr << "root cluster cannot be empty" << endl;
-        return;
+        return 0;
     }
-//    mu = nb/maxBonds();
+
     mu = nb/maxSites(); // traditional
     H += logl(mu)*mu;
     // H is negative. so subtracting  is adding
-    _entropy -= H;
+    return -H;
 }
 
 void SitePercolation_ps_v12::track_clusters(int root) {
@@ -581,4 +648,19 @@ void SitePercolation_ps_v12::track_clusters(int root) {
     if(ns > _number_of_sites_in_the_largest_cluster){
         _number_of_sites_in_the_largest_cluster = ns;
     }
+}
+
+void SitePercolation_ps_v12::process_entropy_list(const std::set<int> &gids, int root) {
+    for(auto cc: gids){
+        _entropy_list[cc] = 0;
+    }
+    _entropy_list[root] = entropy_of_cluster_bond(root);
+//    _entropy_list[root] = entropy_of_cluster_site(root); // traditional
+
+}
+
+long double SitePercolation_ps_v12::entropy_v3_list() {
+    long double sm=0;
+    sm = std::accumulate (_entropy_list.begin(), _entropy_list.end(), sm, std::plus<long double>());
+    return sm;
 }
