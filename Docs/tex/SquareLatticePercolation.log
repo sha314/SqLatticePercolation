@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  25 DEC 2019 17:13
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (TeX Live 2019) (preloaded format=pdflatex 2019.12.5)  8 JAN 2020 23:31
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -448,12 +448,16 @@ Overfull \hbox (9.63217pt too wide) in paragraph at lines 163--166
 ndex-6.png>] [6 <./fig/relative-index/relative-index-7.png> <./fig/relative-ind
 ex/relative-index-8.png> <./fig/relative-index/relative-index-9.png> <./fig/rel
 ative-index/relative-index-10.png> <./fig/relative-index/relative-index-11.png>
+]
+Chapter 3.
+[7
+
 ] (./SquareLatticePercolation.aux) ) 
 Here is how much of TeX's memory you used:
- 4966 strings out of 492609
- 73839 string characters out of 6122871
- 155653 words of memory out of 5000000
- 8806 multiletter control sequences out of 15000+600000
+ 4968 strings out of 492609
+ 73877 string characters out of 6122871
+ 155663 words of memory out of 5000000
+ 8808 multiletter control sequences out of 15000+600000
  13807 words of font info for 33 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  44i,15n,49p,899b,403s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -471,12 +475,13 @@ e/2019/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></home/shahnoor/soft
 ware/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2074.pfb></home/sh
 ahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pf
 b></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/public/cm-super/
-sfrm0800.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/publi
-c/cm-super/sfrm1000.pfb>
-Output written on SquareLatticePercolation.pdf (6 pages, 540969 bytes).
+sfrm0700.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/type1/publi
+c/cm-super/sfrm0800.pfb></home/shahnoor/software/texlive/2019/texmf-dist/fonts/
+type1/public/cm-super/sfrm1000.pfb>
+Output written on SquareLatticePercolation.pdf (7 pages, 571270 bytes).
 PDF statistics:
- 95 PDF objects out of 1000 (max. 8388607)
- 52 compressed objects within 1 object stream
+ 104 PDF objects out of 1000 (max. 8388607)
+ 59 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  56 words of extra memory for PDF output out of 10000 (max. 10000000)
 

@@ -167,4 +167,40 @@ Wrapping detection is done using relative index. In fact this is the only reason
 	\label{fig:relative-index-4}
 \end{figure}
 
+\chapter{Calculating Entropy Efficiently}
+	There are three different ways of calculating Shannon entropy. Theoretically all are equivalent but due to computer precision these different methods are slightly different which is visible when calculating specific heat, i.e., derivative of entropy.
+	\section{method 1: Slow Entropy measuring}
+	In this method one just perform the sum over all cluster to get the entropy by using the definition for Shannon entropy.
+	\begin{equation}
+		H = - \sum_{i}^{n} \mu_i \log \mu_i
+		\label{eqn.shannon-entropy}
+	\end{equation}
+	where $n$ is the number of cluster and $\mu_i = \frac{\text{size of i-th cluster}}{\text{sum of size of all cluster}}$ is the cluster picking probability.
+	
+	Although this method is the slowest but it is the most accurate if suitable data type is used, e.g. $long\ double$ in $C++$.
+	
+	\section{method 2: Fastest entropy measuring}
+	At each step of percolation process we join smaller clusters to one big cluster and thus entropy changes. Say cluster $A_i : i={10,11,12,13}$'s are merged together to form cluster $B$ then we can subtract entropy for $A_i : i={10,11,12,13}$ and add entropy for $B_j : j = {10}$ to the total entropy. This method is the fastest and theoretically is the same but due to computer precision it may give a slightly different result for large system. This is visible if we calculate specific heat.
+	
+	\section{method 3}
+	We create a list of size $n$, where $n$ is the maximum number of cluster the system can have. We store $i$-th value of the sum in equation (\ref{eqn.shannon-entropy}) to the $i$-th element of this list and call it $entropy_list$. 
+	Now if we perform a sum over all the elements of this array then we get the total entropy.
+	
+	If we are to merge $A_i : i={10,11,12,13}$ clusters to cluster $B_j : j = {10}$ then we set $i={10,11,12,13}$-th element of $entropy_list$ to zero and merge the clusters. Then we calculate the entropy for $B_j$ cluster and store it in the $j$-th element.
+	
+	Note that if $i={10,11,12,13}$ then $j$ will be one of these $i$ indices, meaning out of the four element that we have set to zero, one will regain a non zero value.
+	
+	\section{Time comparison}
+	\begin{table}
+		\centering
+		\begin{tabular}{c|c|c|c}
+			length & method &  time (sec) & accuracy \\
+			\hline
+			$200$ & $1$ & $62$ & best\\
+			$200$ & $2$ & $0.122$ &	--\\
+			$200$ & $3$ & $3.84$ & to be measured
+		\end{tabular}
+	\caption{comparison of different entropy calculation methods}
+	\end{table}
+
 \end{document}

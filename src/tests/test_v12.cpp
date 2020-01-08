@@ -26,9 +26,9 @@ void test_v12(int argc, char **argv) {
 
 //    test_v12_lattice(length);
 //    test_v12_percolation_site(length);
-    test_v12_percolation_bond(length);
+//    test_v12_percolation_bond(length);
 
-//    run_v12_regular_site(length, ensemble_size);
+    run_v12_regular_site(length, ensemble_size);
 //    run_v12_regular_bond(length, ensemble_size);
 }
 
@@ -230,7 +230,8 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
 //                }
-                entropy[counter] += lp.entropy_v1_bond();
+                entropy[counter] += lp.entropy_v2_bond();
+//                entropy[counter] += lp.entropy_v3_list();
                 nob_wraping[counter] += lp.numberOfBondsInTheWrappingClusters();
                 nob_largest[counter] += lp.numberOfBondsInTheLargestCluster();
 //                lp.jump();
