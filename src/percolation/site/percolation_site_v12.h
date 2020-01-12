@@ -18,6 +18,7 @@ class SitePercolation_ps_v12 :  public Percolation_v12{
     size_t index_counter{};
     int id_last_site{};
     std::vector<int> _wrapping_site_ids;
+
 public:
     SitePercolation_ps_v12() = default;
     explicit SitePercolation_ps_v12(int length);
@@ -68,6 +69,8 @@ public:
     long double entropy_of_cluster_bond(int root);
     long double entropy_of_cluster_site(int root) ;
     void process_entropy_list(const std::set<int>& gids, int root);
+
+    bool isSelfClusterJump();
 };
 
 

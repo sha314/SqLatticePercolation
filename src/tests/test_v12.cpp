@@ -28,8 +28,9 @@ void test_v12(int argc, char **argv) {
 //    test_v12_percolation_site(length);
 //    test_v12_percolation_bond(length);
 
-    run_v12_regular_site(length, ensemble_size);
+//    run_v12_regular_site(length, ensemble_size);
 //    run_v12_regular_bond(length, ensemble_size);
+    demarcationLine_v12(length);
 }
 
 void test_v12_lattice(int length) {
@@ -179,7 +180,7 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //    SitePercolationRSBD_L1_v10 lp(length, true);
 //    SitePercolationRSBD_L2_v10 lp(length, true);
 
-    lp.setRandomState(2562449578, false);
+    lp.setRandomState(2562449578, true);
     lp.init();
 
 //    lp.viewLattice();
@@ -220,13 +221,18 @@ void run_v12_regular_site(int length, int ensemble_size) {
 //                lp.viewBondByID();
 //                lp.viewCluster();
 //                lp.ckeckCluster();
-//                auto H1 = lp.entropy_v1_site();
-//                auto H2 = lp.entropy_v2();
+//                auto H1 = lp.entropy_v1_bond();
+//                auto H2 = lp.entropy_v2_bond();
 //                cout
 //                     << H1
 //                     << " vs " << H2
 //                     << endl;
-//                if(abs(H1 - H2) > 1e-10){
+//                if(abs(H1 - H2) > 1e-12){
+//                    cout.precision(numeric_limits<long double>::digits10);
+//                    cout    << "iteration " << counter << " "
+//                            << H1
+//                            << " vs " << H2
+//                            << endl;
 //                    cout << "Entropy mismatched" << endl;
 //                    exit(0);
 //                }
@@ -643,4 +649,106 @@ void run_v12_regular_bond(int length, int ensemble_size) {
 //        fout << std::endl;
 //    }
 //    fout.close();
+}
+
+void demarcationLine_v12(int length){
+    cout << "length " << length << endl;
+
+//    SitePercolation_ps_v12 percolation(length);
+//    size_t sz = percolation.maxSites();
+
+    BondPercolation_pb_v12 percolation(length);
+    size_t sz = percolation.maxBonds();
+
+    percolation.setRandomState(0, true);
+    percolation.init();
+
+
+
+//    double t;
+    double P{}, P_old{}, dP;
+    bool c{false};
+
+
+
+
+    vector<double> dP_list(sz);
+    vector<int> color_list(sz);
+
+    size_t i{1};
+
+//    sp.occupy();
+//    P_old = sp.numberOfBondsInTheLargestCluster();
+//    t = net.occupationProbability();
+//    fout << t << '\t' << 0 << '\t' << c << endl;
+
+//    sp.viewLattice_sites_by_gid();
+    P_old = 0;
+    while (percolation.occupy()){
+//        cout << " ************* **************** *************" << endl;
+
+        P = percolation.numberOfBondsInTheLargestCluster();
+
+        dP = abs(P- P_old);
+
+        P_old = P;
+        c = percolation.isSelfClusterJump();
+
+        dP_list[i] = dP;
+        color_list[i] = c;
+        ++i;
+
+
+//        net.viewClusterExtended();
+//        sp.viewLattice_sites_by_gid();
+//        sp.viewCluster();
+//        cout << "****log   " << sp.occupationProbability() << '\t' << P << '\t' << dP << " self jump "<< c << endl; // takes ~80% of the total time
+//        if(i >= 6) break;
+    }
+
+    auto tm = getCurrentDateTime();
+    string signature = percolation.getSignature();
+    string filename = signature + "_L" + to_string(length) + "_demarcationLine_" + tm + ".txt";
+
+
+
+    ofstream fout(filename);
+    stringstream ss;
+    ss   << "{\"signature\":" << "\"" << signature << "\""
+         << R"*(,"class":")*" << percolation.getClassName() << "\""
+         << ",\"L\":" << length  // in case of explosive percolation
+         << R"*(,"date":")*" << getCurrentDate() << "\""
+         << R"*(,"time":")*" << getCurrentTime() << "\""
+         << R"*(,"datetime":")*" << tm << "\""
+         << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
+
+
+    fout << "#" << ss.str() << endl;
+    fout << "#p = occupation probability" << endl;
+    fout << "#cluster size = number of bonds in the cluster" << endl;
+    fout << "#P = order parameter = largest cluster size / N" << endl;
+    fout << "#N = L*L" << endl;
+    fout << "#S_max = largest cluster size" << endl;
+    fout << "#dS = largest clusteter jump" << endl;
+    fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
+    fout << "#<t>\t<dP>\t<c>" << endl;
+
+
+    for(size_t i{}; i < sz; ++i){
+        if (dP_list[i] != 0) {
+            fout << (i+1)/double(sz) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
+
+//            auto ch = (color_list[i] == 0)? "b" : "r";
+//            fout << (i+1)/double(sz) << '\t' << dP_list[i] << '\t'
+//                 << ch << endl;
+            if(color_list[i] == 0){
+                cout << "got one" << endl;
+            }
+        }
+    }
+
+    fout.close();
+
+    auto sss = set<int>(color_list.begin(), color_list.end());
+    cout << sss.size() << endl;
 }

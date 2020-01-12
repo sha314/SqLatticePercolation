@@ -285,6 +285,8 @@ void SitePercolation_ps_v12::reset() {
     _wrapping_site_ids.clear();
     _lattice.reset_sites();
     _entropy_list.clear();
+    _self_cluster_jump_bond = false;
+    _self_cluster_jump_site = false;
     init();
 }
 
@@ -551,8 +553,8 @@ double SitePercolation_ps_v12::occupationProbability() {
 }
 
 std::string SitePercolation_ps_v12::getSignature() {
-    string s = "sq_lattice_site_percolation";
-    s += "_periodic";
+    string s = "SitePercolation_ps_v12";
+//    s += "_periodic";
     return s;
 }
 
@@ -644,10 +646,17 @@ void SitePercolation_ps_v12::track_clusters(int root) {
     auto ns = _clusters[root].numberOfSites();
     if(nb > _number_of_bonds_in_the_largest_cluster){
         _number_of_bonds_in_the_largest_cluster = nb;
+//        _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+        bond_largest_cluster_index = root;
     }
     if(ns > _number_of_sites_in_the_largest_cluster){
         _number_of_sites_in_the_largest_cluster = ns;
+//        _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
+        site_largest_cluster_index = root;
     }
+
+    _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+    _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
 }
 
 void SitePercolation_ps_v12::process_entropy_list(const std::set<int> &gids, int root) {
@@ -663,4 +672,9 @@ long double SitePercolation_ps_v12::entropy_v3_list() {
     long double sm=0;
     sm = std::accumulate (_entropy_list.begin(), _entropy_list.end(), sm, std::plus<long double>());
     return sm;
+}
+
+bool SitePercolation_ps_v12::isSelfClusterJump() {
+    return _self_cluster_jump_bond;
+//    return _self_cluster_jump_site;
 }

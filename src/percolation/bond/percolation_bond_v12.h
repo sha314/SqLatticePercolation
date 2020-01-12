@@ -59,6 +59,8 @@ public:
     void track_clusters(int root);
     void add_entropy(int root);
     void subtract_entropy(const std::set<int>& gids);
+
+    bool isSelfClusterJump();
 };
 
 

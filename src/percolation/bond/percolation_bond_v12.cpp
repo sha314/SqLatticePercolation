@@ -430,8 +430,8 @@ double BondPercolation_pb_v12::occupationProbability() {
 }
 
 std::string BondPercolation_pb_v12::getSignature() {
-    string s = "sq_lattice_site_percolation";
-    s += "_periodic";
+    string s = "BondPercolation_pb_v12";
+//    s += "_periodic";
     return s;
 }
 
@@ -483,9 +483,19 @@ void BondPercolation_pb_v12::track_clusters(int root) {
     auto ns = _clusters[root].numberOfSites();
     if(nb > _number_of_bonds_in_the_largest_cluster){
         _number_of_bonds_in_the_largest_cluster = nb;
+        bond_largest_cluster_index = root;
     }
     if(ns > _number_of_sites_in_the_largest_cluster){
         _number_of_sites_in_the_largest_cluster = ns;
+        site_largest_cluster_index = root;
     }
+
+    _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+    _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
 }
 
+
+bool BondPercolation_pb_v12::isSelfClusterJump() {
+//    return _self_cluster_jump_bond;
+    return _self_cluster_jump_site;
+}

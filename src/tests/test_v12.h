@@ -17,4 +17,6 @@ void test_v12_percolation_bond(int length);
 void run_v12_regular_site(int length, int ensemble_size) ;
 void run_v12_regular_bond(int length, int ensemble_size) ;
 
+void demarcationLine_v12(int length);
+
 #endif //SQLATTICEPERCOLATION_TEST_V12_H

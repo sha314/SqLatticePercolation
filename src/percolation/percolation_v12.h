@@ -58,10 +58,15 @@ protected:
     // id of the cluster which has maximum number of bonds. used to calculate order parameter
     value_type _number_of_bonds_in_the_largest_cluster{};
     value_type _number_of_sites_in_the_largest_cluster{};   // might be useful later
+    int bond_largest_cluster_index{};
+    int site_largest_cluster_index{};
     value_type _index_last_modified_cluster{};  // id of the last modified cluster
     std::mt19937 _random;
     size_t _random_state;
 
+    // self cluster jump flag
+    bool _self_cluster_jump_bond{false};
+    bool _self_cluster_jump_site{false};
 public:
     ~Percolation_v12() = default;
     Percolation_v12() = default;
