@@ -641,23 +641,23 @@ long double SitePercolation_ps_v12::entropy_of_cluster_site(int root) {
     return -H;
 }
 
-void SitePercolation_ps_v12::track_clusters(int root) {
-    auto nb = _clusters[root].numberOfBonds();
-    auto ns = _clusters[root].numberOfSites();
-    if(nb > _number_of_bonds_in_the_largest_cluster){
-        _number_of_bonds_in_the_largest_cluster = nb;
-//        _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
-        bond_largest_cluster_index = root;
-    }
-    if(ns > _number_of_sites_in_the_largest_cluster){
-        _number_of_sites_in_the_largest_cluster = ns;
-//        _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
-        site_largest_cluster_index = root;
-    }
-
-    _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
-    _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
-}
+//void SitePercolation_ps_v12::track_clusters(int root) {
+//    auto nb = _clusters[root].numberOfBonds();
+//    auto ns = _clusters[root].numberOfSites();
+//    if(nb > _number_of_bonds_in_the_largest_cluster){
+//        _number_of_bonds_in_the_largest_cluster = nb;
+////        _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+//        bond_largest_cluster_index = root;
+//    }
+//    if(ns > _number_of_sites_in_the_largest_cluster){
+//        _number_of_sites_in_the_largest_cluster = ns;
+////        _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
+//        site_largest_cluster_index = root;
+//    }
+//
+//    _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+//    _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
+//}
 
 void SitePercolation_ps_v12::process_entropy_list(const std::set<int> &gids, int root) {
     for(auto cc: gids){

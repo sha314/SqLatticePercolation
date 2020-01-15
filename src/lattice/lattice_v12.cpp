@@ -953,6 +953,7 @@ void Lattice_v12::view_sites_by_gid() {
     }
     cout << endl;
     for(int y{_length-1}; y >= 0; --y){ // row
+//        cout << "size " << _sites_2d[y].size() << endl;
         cout << setw(3) << y << "|";
         for(int x{}; x < _length; ++x){ // column
 //            cout << "(" << x << "," << y << ")" << endl;

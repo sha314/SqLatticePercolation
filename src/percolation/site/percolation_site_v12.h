@@ -63,7 +63,7 @@ public:
 
     void manageCluster();
 
-    void track_clusters(int root);
+//    void track_clusters(int root);
     void add_entropy(int root);
     void subtract_entropy(const std::set<int>& gids);
     long double entropy_of_cluster_bond(int root);

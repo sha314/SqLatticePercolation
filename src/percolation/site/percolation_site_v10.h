@@ -275,6 +275,11 @@ public:
     void viewRandomizedIndices();
     void viewRemainingIndices();
     std::string getClassName(){ return "SitePercolation_ps_v10";}
+
+    bool isSelfClusterJump() {
+        return _self_cluster_jump_bond;
+//    return _self_cluster_jump_site;
+    }
 };
 
 

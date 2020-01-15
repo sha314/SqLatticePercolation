@@ -513,3 +513,113 @@ void test_v10_lattice(int length) {
 
 }
 
+/**
+ * Not Tested
+ * @param length
+ */
+void demarcationLine_v10(int length){
+    cout << "length " << length << endl;
+    cout << "Needs testing" << endl;
+
+//    SitePercolation_ps_v10 percolation(length);
+//    size_t sz = percolation.maxSites();
+//
+////    BondPercolation_pb_v10 percolation(length);
+////    size_t sz = percolation.maxBonds();
+//
+//    percolation.setRandomState(0, true);
+//    percolation.init();
+//
+//
+//
+////    double t;
+//    double P{}, P_old{}, dP;
+//    bool c{false};
+//
+//
+//
+//
+//    vector<double> dP_list(sz);
+//    vector<int> color_list(sz);
+//
+//    size_t i{0};
+//
+////    sp.occupy();
+////    P_old = sp.numberOfBondsInTheLargestCluster();
+////    t = net.occupationProbability();
+////    fout << t << '\t' << 0 << '\t' << c << endl;
+//
+////    sp.viewLattice_sites_by_gid();
+//    P_old = 0;
+//    while (percolation.occupy()){
+////        cout << " ****************************** gid "
+////             << percolation.lastBondGroupID() << " id " << percolation.lastBond() << endl;
+////            << percolation.lastSiteGroupID() << " id " << percolation.lastSite() << endl;
+//
+//        P = percolation.numberOfBondsInTheLargestCluster();
+//
+//        dP = abs(P- P_old);
+//
+//        P_old = P;
+//        c = percolation.isSelfClusterJump();
+//
+//        dP_list[i] = dP;
+//        color_list[i] = c;
+//        ++i;
+//
+//
+////        percolation.viewClusterExtended();
+////        percolation.viewLattice_sites_by_gid();
+////        percolation.viewLattice();
+////        percolation.viewCluster();
+////        cout << "****log   " << percolation.occupationProbability() << '\t' << P << '\t' << dP << " self jump "<< c << endl; // takes ~80% of the total time
+////        if(i >= 6) break;
+//        if(percolation.detectWrapping()){break;}
+//    }
+//
+//    auto tm = getCurrentDateTime();
+//    string signature = percolation.getSignature();
+//    string filename = signature + "_L" + to_string(length) + "_demarcationLine_" + tm + ".txt";
+//
+//
+//
+//    ofstream fout(filename);
+//    stringstream ss;
+//    ss   << "{\"signature\":" << "\"" << signature << "\""
+//         << R"*(,"class":")*" << percolation.getClassName() << "\""
+//         << ",\"L\":" << length  // in case of explosive percolation
+//         << R"*(,"date":")*" << getCurrentDate() << "\""
+//         << R"*(,"time":")*" << getCurrentTime() << "\""
+//         << R"*(,"datetime":")*" << tm << "\""
+//         << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
+//
+//
+//    fout << "#" << ss.str() << endl;
+//    fout << "#p = occupation probability" << endl;
+//    fout << "#cluster size = number of bonds in the cluster" << endl;
+//    fout << "#P = order parameter = largest cluster size / N" << endl;
+//    fout << "#N = L*L" << endl;
+//    fout << "#S_max = largest cluster size" << endl;
+//    fout << "#dS = largest clusteter jump" << endl;
+//    fout << "#c = 0 or 1 (different cluster jump or self cluster jump)"<< endl;
+//    fout << "#<t>\t<dP>\t<c>" << endl;
+//
+//
+//    for(size_t i{}; i < sz; ++i){
+////        if (dP_list[i] != 0) {
+//        fout << (i+1)/double(sz) << '\t' << dP_list[i] << '\t' << color_list[i] << endl;
+//
+////            auto ch = (color_list[i] == 0)? "b" : "r";
+////            fout << (i+1)/double(sz) << '\t' << dP_list[i] << '\t'
+////                 << ch << endl;
+//        if(color_list[i] == 0){
+//            cout << "got one" << endl;
+//        }
+////        }
+//    }
+//
+//    fout.close();
+//
+//    auto sss = set<int>(color_list.begin(), color_list.end());
+//    cout << sss.size() << endl;
+}

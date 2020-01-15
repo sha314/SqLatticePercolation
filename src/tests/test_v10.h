@@ -23,6 +23,9 @@ void run_v10_regular(int length, int ensemble_size);
 
 void run_v10_largest_cluster(int length, int ensemble_size);
 
+// 2020.01.15
+void demarcationLine_v10(int length);
+
 template<class PType>
 void run_v10_rsbd(int length, int ensemble_size){
     std::cout << "length " << length << " ensemble_size " << ensemble_size << std::endl;

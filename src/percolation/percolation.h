@@ -78,6 +78,8 @@ protected:
     value_type _random_state;
 
     void set_type(char t){type = t;} // setting percolation type
+    bool _self_cluster_jump_bond{false};
+    bool _self_cluster_jump_site{false};
 public:
     static constexpr const char* signature = "SqLatticePercolation";
 

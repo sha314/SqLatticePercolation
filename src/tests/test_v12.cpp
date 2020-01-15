@@ -660,7 +660,7 @@ void demarcationLine_v12(int length){
     BondPercolation_pb_v12 percolation(length);
     size_t sz = percolation.maxBonds();
 
-    percolation.setRandomState(0, false);
+    percolation.setRandomState(0, true);
     percolation.init();
 
 
@@ -675,7 +675,7 @@ void demarcationLine_v12(int length){
     vector<double> dP_list(sz);
     vector<int> color_list(sz);
 
-    size_t i{1};
+    size_t i{0};
 
 //    sp.occupy();
 //    P_old = sp.numberOfBondsInTheLargestCluster();
@@ -687,6 +687,7 @@ void demarcationLine_v12(int length){
     while (percolation.occupy()){
 //        cout << " ****************************** gid "
 //             << percolation.lastBondGroupID() << " id " << percolation.lastBond() << endl;
+//            << percolation.lastSiteGroupID() << " id " << percolation.lastSite() << endl;
 
         P = percolation.numberOfBondsInTheLargestCluster();
 
@@ -706,6 +707,7 @@ void demarcationLine_v12(int length){
 //        percolation.viewCluster();
 //        cout << "****log   " << percolation.occupationProbability() << '\t' << P << '\t' << dP << " self jump "<< c << endl; // takes ~80% of the total time
 //        if(i >= 6) break;
+//        if(percolation.detectWrapping()){break;}
     }
 
     auto tm = getCurrentDateTime();
@@ -722,6 +724,8 @@ void demarcationLine_v12(int length){
          << R"*(,"date":")*" << getCurrentDate() << "\""
          << R"*(,"time":")*" << getCurrentTime() << "\""
          << R"*(,"datetime":")*" << tm << "\""
+         << R"*(,"L":")*" << length << "\""
+         << R"*(,"length":")*" << length << "\""
          << ",\"cols\":" << "[\"t\", \"dP\", \"color\"]" << "}";
 
 
