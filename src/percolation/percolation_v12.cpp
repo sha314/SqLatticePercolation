@@ -87,5 +87,22 @@ size_t Percolation_v12::numberOfSitesInTheLargestCluster() {
 }
 
 
+void Percolation_v12::track_clusters(int root) {
+    auto nb = _clusters[root].numberOfBonds();
+    auto ns = _clusters[root].numberOfSites();
+
+    _self_cluster_jump_bond = (bond_largest_cluster_index == root); // true only in case of self jump
+    _self_cluster_jump_site = (site_largest_cluster_index  == root); // true only in case of self jump
+
+    if(nb > _number_of_bonds_in_the_largest_cluster){
+        _number_of_bonds_in_the_largest_cluster = nb;
+        bond_largest_cluster_index = root;
+    }
+    if(ns > _number_of_sites_in_the_largest_cluster){
+        _number_of_sites_in_the_largest_cluster = ns;
+        site_largest_cluster_index = root;
+    }
+}
+
 
 

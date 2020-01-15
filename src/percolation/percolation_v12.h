@@ -103,6 +103,7 @@ public:
     virtual size_t numberOfSitesInTheWrappingClusters() = 0;
     virtual size_t numberOfBondsInTheWrappingClusters() = 0;
 
+    void track_clusters(int root);
 };
 
 //

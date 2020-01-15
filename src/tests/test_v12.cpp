@@ -660,7 +660,7 @@ void demarcationLine_v12(int length){
     BondPercolation_pb_v12 percolation(length);
     size_t sz = percolation.maxBonds();
 
-    percolation.setRandomState(0, true);
+    percolation.setRandomState(0, false);
     percolation.init();
 
 
@@ -685,7 +685,8 @@ void demarcationLine_v12(int length){
 //    sp.viewLattice_sites_by_gid();
     P_old = 0;
     while (percolation.occupy()){
-//        cout << " ************* **************** *************" << endl;
+//        cout << " ****************************** gid "
+//             << percolation.lastBondGroupID() << " id " << percolation.lastBond() << endl;
 
         P = percolation.numberOfBondsInTheLargestCluster();
 
@@ -699,10 +700,11 @@ void demarcationLine_v12(int length){
         ++i;
 
 
-//        net.viewClusterExtended();
-//        sp.viewLattice_sites_by_gid();
-//        sp.viewCluster();
-//        cout << "****log   " << sp.occupationProbability() << '\t' << P << '\t' << dP << " self jump "<< c << endl; // takes ~80% of the total time
+//        percolation.viewClusterExtended();
+//        percolation.viewLattice_sites_by_gid();
+//        percolation.viewLattice();
+//        percolation.viewCluster();
+//        cout << "****log   " << percolation.occupationProbability() << '\t' << P << '\t' << dP << " self jump "<< c << endl; // takes ~80% of the total time
 //        if(i >= 6) break;
     }
 
