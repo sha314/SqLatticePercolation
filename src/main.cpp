@@ -22,6 +22,7 @@
 #include "tests/test_v11.h"
 #include "tests/test_v9.h"
 #include "tests/test_v10.h"
+#include "tests/test_v13.h"
 
 
 using namespace std;
@@ -96,7 +97,8 @@ void run_in_main(int argc, char** argv){
 //    test_bond_index(length);
 
 //    test_v9(argc, argv);
-    test_v10(argc, argv);
+//    test_v10(argc, argv);
+    test_v13(argc, argv);
 }
 
 
