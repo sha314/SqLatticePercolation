@@ -38,7 +38,7 @@ public:
         bond_ids = std::vector<int>(bond_count);
         std::cout << "reached " << __LINE__ << std::endl;
 //        site_matrix.resize(site_count);
-//        site_ids.resize(site_count);
+//        _site_ids.resize(site_count);
 //        bond_matrix.resize(bond_count);
 //        bond_ids.resize(bond_count);
 
