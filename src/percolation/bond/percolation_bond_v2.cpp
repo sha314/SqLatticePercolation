@@ -226,8 +226,8 @@ void BondPercolation_pb_v2::relabel_cluster(BondIndex bond, const Cluster_v3& cl
     Index site_a = neighbor_sites[0];
     Index site_b = neighbor_sites[1];
 
-//    int id_a = _lattice.getSite(site_a).get_groupID();
-//    int id_b = _lattice.getSite(site_b).get_groupID();
+//    int id_a = lattice_ref.getSite(site_a).get_groupID();
+//    int id_b = lattice_ref.getSite(site_b).get_groupID();
 
     Index base_site;
     if(_lattice.getSite(site_a).get_groupID() == id){
@@ -238,8 +238,8 @@ void BondPercolation_pb_v2::relabel_cluster(BondIndex bond, const Cluster_v3& cl
     }
 
     /*// BEGIN debugging
-    cout << "base site " << base_site << " id " << _lattice.getSite(base_site).get_groupID()
-         << " relative index " << _lattice.getSite(base_site).relativeIndex() << endl;
+    cout << "base site " << base_site << " id " << lattice_ref.getSite(base_site).get_groupID()
+         << " relative index " << lattice_ref.getSite(base_site).relativeIndex() << endl;
     cout << "site_index_sequence to be relabeled :" ;
     copy(site_index_sequence.begin()+site_pos, site_index_sequence.end(), std::ostream_iterator<Index>(cout));
     cout << endl;
@@ -281,7 +281,7 @@ void BondPercolation_pb_v2::relabel_cluster(BondIndex bond, const Cluster_v3& cl
         x = relative_site__a.x_ + delta_x_ab;
         y = relative_site__a.y_ + delta_y_ab;
         _lattice.getSite(a).relativeIndex(x, y);
-//        cout << _lattice.getSite(a).relativeIndex() << endl;
+//        cout << lattice_ref.getSite(a).relativeIndex() << endl;
     }
 }
 
@@ -315,10 +315,10 @@ bool BondPercolation_pb_v2::occupy() {
     value_type v = placeBond_v1();
 //    _occuption_probability = occupationProbability(); // for super class
 //    auto s = SqLattice::get_neighbor_indices(length(), _last_placed_bond);
-//    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
+//    if(lattice_ref.getSite(s[0]).get_groupID() != lattice_ref.getSite(s[1]).get_groupID()){
 //        cout << "relabeling is not perfect for site " << endl;
 //        for(auto a : s) {
-//            cout << a << " id " << _lattice.getSite(a).get_groupID() << endl;
+//            cout << a << " id " << lattice_ref.getSite(a).get_groupID() << endl;
 //        }
 //        return false; // to reminate iteration
 //    }
@@ -465,14 +465,14 @@ value_type BondPercolation_pb_v2::count_number_of_active_site() {
 //
 //    if(index.horizontal()) {
 //        // for horizontal bond, row remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
+//        connected_sites[0] = lattice_ref.getSite({index.x_, index.column_}).set_ID();
 //        auto c = (index.column_ + 1) % length();
-//        connected_sites[1] = _lattice.getSite({index.x_, c}).set_ID();
+//        connected_sites[1] = lattice_ref.getSite({index.x_, c}).set_ID();
 //    }else{
 //        // for vertical bond, column remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
+//        connected_sites[0] = lattice_ref.getSite({index.x_, index.column_}).set_ID();
 //        auto r = (index.x_ + 1) % length();
-//        connected_sites[1] = _lattice.getSite({r, index.column_}).set_ID();
+//        connected_sites[1] = lattice_ref.getSite({r, index.column_}).set_ID();
 //    }
 //
 //

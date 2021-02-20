@@ -16,7 +16,7 @@ SqLatticePercolation::SqLatticePercolation(value_type length) {
          * Because if _length=2
          * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
          */
-        cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
+        cerr << "_length <= 2 does not satisfy lattice_ref properties for percolation : line" << __LINE__ << endl;
         exit(1);
     }
     _length = length;

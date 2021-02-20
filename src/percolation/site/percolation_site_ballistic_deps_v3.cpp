@@ -117,7 +117,7 @@ Index SitePercolationBallisticDeposition_v3::select_site_upto_1nn_v2(
 //    connection_v1(current_site, site_index_sequence, bonds);
 //    connection_v2(current_site, sites, bonds);
     _lattice.get_neighbors(current_site, sites, bonds);
-//    cout << "current site " << current_site << " active ? " << _lattice.getSite(current_site).isActive() << endl;
+//    cout << "current site " << current_site << " active ? " << lattice_ref.getSite(current_site).isActive() << endl;
     if (_lattice.getSite(current_site).isActive()){ // if the current site is occupied or active
 #ifdef DEBUG_FLAG
         cout << "1st neighbors of " << current_site << ":{";
@@ -200,7 +200,7 @@ Index SitePercolationBallisticDeposition_v3::select_site_upto_2nn_v2(
 //    connection_v1(current_site, site_index_sequence, bonds);
 //    connection_v2(central_site, sites, bonds);
     _lattice.get_neighbors(central_site, sites, bonds);
-//    cout << "current site " << central_site << " active ? " << _lattice.getSite(central_site).isActive() << endl;
+//    cout << "current site " << central_site << " active ? " << lattice_ref.getSite(central_site).isActive() << endl;
     if (_lattice.getSite(central_site).isActive()){ // if the current site is occupied or active
 //        cout << "1st neighbors :{";
 //        copy(sites.begin(), sites.end(), ostream_iterator<Index>(cout, ","));

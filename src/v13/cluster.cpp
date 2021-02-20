@@ -43,6 +43,30 @@ void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int
     _cluster_list.push_back(clsstr);
 }
 
+void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref) {
+//# print("method : create_new_cluster")
+    auto clsstr = OneCluster();
+
+//# print("setting gid ")
+    clsstr.set_gid(cluster_id);
+    clsstr.set_id(cluster_id);
+//# print("bond_ids ", bond_ids)
+
+    if(site_id < 0){
+        clsstr.add_site(site_id);
+        lattice_ref.set_site_gid_by_id(site_id, cluster_id); // reassign group id
+    }
+    if(bond_id < 0) {
+        clsstr.add_bond(bond_id);
+        lattice_ref.set_bond_gid_by_id(bond_id, cluster_id); // reassign group id
+    }
+
+    cluster_id += 1;
+//# print("clsstr ")
+//# print(clsstr)
+    _cluster_list.push_back(clsstr);
+}
+
 /**
  *
  * @param cluster_A_id : the cluster. group id of cluster A will persist.

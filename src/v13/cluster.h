@@ -65,11 +65,15 @@ public:
         _cluster_list[index].add_sites(site_ids);
     }
 
+    void add_sites(int index, int site_ids) {
+        _cluster_list[index].add_site(site_ids);
+    }
+
     void add_bonds(int index, std::vector<int> &bond_ids){
         _cluster_list[index].add_bonds(bond_ids);
     }
 
-    std::vector<int> & get_sites(int index) {
+    std::vector<int>  get_sites(int index) {
         return _cluster_list[index].get_sites();
     }
 
@@ -90,6 +94,7 @@ public:
     }
 
     void create_new_cluster(std::vector<int> &site_ids, std::vector<int> &bond_ids, Lattice_v13 &lattice_ref);
+    void create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref);
     void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13& lattice_ref);
     void view(int view_mode=0);
 

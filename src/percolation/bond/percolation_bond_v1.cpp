@@ -248,18 +248,18 @@ void BondPercolation_pb_v1::relabel_bonds(const Cluster_v3 &clstr, int id) {
 void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 &clstr_b) {
     cout << "Commented relabel_bonds_v1 : __LINE__" << __LINE__ << endl;
 //    const vector<BondIndex> bonds = clstr_b.getBondIndices();
-//    int id_a = _lattice.getBond(bond_a).get_groupID();
+//    int id_a = lattice_ref.getBond(bond_a).get_groupID();
 //    int id_b = clstr_b.get_ID();
 //    BondIndex b = clstr_b.getRootBond();
 //
 //    // get four site_b of bond_a
-//    vector<BondIndex> sites_neighbor_a = _lattice.get_neighbor_bonds(bond_a);
+//    vector<BondIndex> sites_neighbor_a = lattice_ref.get_neighbor_bonds(bond_a);
 //    BondIndex bond_b;
 //    IndexRelative relative_index_b_after;
 //    bool flag{false};
 //    // find which site_b has id_a of clstr_b
 //    for(auto n: sites_neighbor_a){
-//        if(id_b == _lattice.getBond(n).get_groupID()){
+//        if(id_b == lattice_ref.getBond(n).get_groupID()){
 //            // checking id_a equality is enough. since id_a is the id_a of the active site already.
 //            relative_index_b_after = getRelativeIndex_v2(bond_a, n);
 //            bond_b = n;
@@ -274,10 +274,10 @@ void BondPercolation_pb_v1::relabel_bonds_v1(BondIndex bond_a, const Cluster_v3 
 //        cout << "No neibhgor found! : line " << __LINE__ << endl;
 //    }
 //
-//    IndexRelative relative_site_a = _lattice.getBond(bond_a).relativeIndex();
+//    IndexRelative relative_site_a = lattice_ref.getBond(bond_a).relativeIndex();
 //
 //    // with this delta_a and delta_y find the relative index of site_b while relative index of bond_a is known
-//    IndexRelative relative_site_b_before = _lattice.getBond(bond_b).relativeIndex();
+//    IndexRelative relative_site_b_before = lattice_ref.getBond(bond_b).relativeIndex();
 //
 //    int delta_x_ab = relative_index_b_after.x_ - relative_site_b_before.x_;
 //    int delta_y_ab = relative_index_b_after.y_ - relative_site_b_before.y_;
@@ -402,8 +402,8 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& cl
     }
 
     /*// BEGIN debugging
-    cout << "base site " << base_site << " id " << _lattice.getSite(base_site).get_groupID()
-         << " relative index " << _lattice.getSite(base_site).relativeIndex() << endl;
+    cout << "base site " << base_site << " id " << lattice_ref.getSite(base_site).get_groupID()
+         << " relative index " << lattice_ref.getSite(base_site).relativeIndex() << endl;
     cout << "site_index_sequence to be relabeled :" ;
     copy(site_index_sequence.begin()+site_pos, site_index_sequence.end(), std::ostream_iterator<Index>(cout));
     cout << endl;
@@ -445,7 +445,7 @@ void BondPercolation_pb_v1::relabel_cluster(BondIndex bond, const Cluster_v3& cl
         x = relative_site__a.x_ + delta_x_ab;
         y = relative_site__a.y_ + delta_y_ab;
         _lattice.getSite(a).relativeIndex(x, y);
-//        cout << _lattice.getSite(a).relativeIndex() << endl;
+//        cout << lattice_ref.getSite(a).relativeIndex() << endl;
     }
 }
 
@@ -526,11 +526,11 @@ bool BondPercolation_pb_v1::occupy() {
     value_type v = placeBond_v1();
 //    _occuption_probability = occupationProbability(); // for super class
 
-//    auto s = _lattice.get_neighbor_sites(_last_placed_bond);
-//    if(_lattice.getSite(s[0]).get_groupID() != _lattice.getSite(s[1]).get_groupID()){
+//    auto s = lattice_ref.get_neighbor_sites(_last_placed_bond);
+//    if(lattice_ref.getSite(s[0]).get_groupID() != lattice_ref.getSite(s[1]).get_groupID()){
 //        cout << "relabeling is not perfect for site " << endl;
 //        for(auto a : s) {
-//            cout << a << " id " << _lattice.getSite(a).get_groupID() << endl;
+//            cout << a << " id " << lattice_ref.getSite(a).get_groupID() << endl;
 //        }
 //        return false; // to reminate iteration
 //    }
@@ -675,7 +675,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //    if (!found_index_set.empty()) {
 //        value_type base = found_index[0];
 //        _clusters[base].addBondIndex(bond);
-//        _lattice.getBond(bond).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
+//        lattice_ref.getBond(bond).set_groupID(_clusters[base].get_ID()); // relabeling for 1 site
 //
 //        // put_values_to_the_cluster new values in the 0-th found index
 //        _clusters[base].insert(site_index_sequence); // todo
@@ -704,7 +704,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //        merged_cluster_index = _clusters.size() - 1;  // this new cluster index
 ////        _cluster_index_from_id[_cluster_id] = _clusters.size() - 1; // keeps track of cluster id and cluster index
 //        _cluster_index_from_id.insert(_cluster_id); // new version
-//        _lattice.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
+//        lattice_ref.getBond(bond).set_groupID(_cluster_id); // relabeling for 1 site
 //        _cluster_id++;  // increase the cluster id for next round
 //        _clusters.back().insert(site_index_sequence);
 //        _clusters[merged_cluster_index].addBondIndex(bond);
@@ -749,7 +749,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //        delta_y /= delta_y;
 //    }
 //
-//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+//    IndexRelative indexRelative_root = lattice_ref.getSite(root).relativeIndex();
 ////    cout << "Relative index of root " << indexRelative_root << endl;
 ////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
 //    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
@@ -784,7 +784,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //        delta_y /= delta_y;
 //    }
 //
-//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+//    IndexRelative indexRelative_root = lattice_ref.getSite(root).relativeIndex();
 ////    cout << "root " << root << " Relative index " << indexRelative_root << endl;
 ////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
 //    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
@@ -806,9 +806,9 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //IndexRelative
 //BondPercolation_pb_v1::getRelativeIndex_v2(BondIndex root, BondIndex bond_new){
 //    cout << "Entry getRelativeIndex_v2 ; line " << __LINE__ << endl;
-//    vector<Index> sites_root = _lattice.get_neighbor_sites(root);
+//    vector<Index> sites_root = lattice_ref.get_neighbor_sites(root);
 //    cout << "site_index_sequence of " << root << " are " << sites_root << endl;
-//    vector<Index> sites_new = _lattice.get_neighbor_sites(bond_new);
+//    vector<Index> sites_new = lattice_ref.get_neighbor_sites(bond_new);
 //    cout << "site_index_sequence of " << bond_new << " are " << sites_new << endl;
 ////    cout << "Entry \"SitePercolation_ps_v8::getRelativeIndex\" : line " << __LINE__ << endl;
 //    // finding common site
@@ -898,7 +898,7 @@ value_type BondPercolation_pb_v1::placeBond_v1() {
 //
 //    cout << "got delta_x " << delta_x << " and delta_y " << delta_y << endl;
 //
-//    IndexRelative indexRelative_root = _lattice.getBond(root).relativeIndex();
+//    IndexRelative indexRelative_root = lattice_ref.getBond(root).relativeIndex();
 ////    cout << "Relative index of root " << indexRelative_root << endl;
 ////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
 //    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
@@ -2018,14 +2018,14 @@ value_type BondPercolation_pb_v1::count_number_of_active_site() {
 //
 //    if(index.horizontal()) {
 //        // for horizontal bond, row remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
+//        connected_sites[0] = lattice_ref.getSite({index.x_, index.column_}).set_ID();
 //        auto c = (index.column_ + 1) % length();
-//        connected_sites[1] = _lattice.getSite({index.x_, c}).set_ID();
+//        connected_sites[1] = lattice_ref.getSite({index.x_, c}).set_ID();
 //    }else{
 //        // for vertical bond, column remains the same
-//        connected_sites[0] = _lattice.getSite({index.x_, index.column_}).set_ID();
+//        connected_sites[0] = lattice_ref.getSite({index.x_, index.column_}).set_ID();
 //        auto r = (index.x_ + 1) % length();
-//        connected_sites[1] = _lattice.getSite({r, index.column_}).set_ID();
+//        connected_sites[1] = lattice_ref.getSite({r, index.column_}).set_ID();
 //    }
 //
 //

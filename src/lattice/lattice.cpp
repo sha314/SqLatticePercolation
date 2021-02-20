@@ -1056,16 +1056,16 @@ void SqLattice::get_neighbors(Index site, vector<Index> &site_neighbor, vector<B
 
     bond_neighbor.reserve(4);
 
-//    if(!_lattice.getSite(site_neighbor[0]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[0]).isActive()) {
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[1]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[1]).isActive()){
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
 //    }
-//    if(!_lattice.getSite(site_neighbor[2]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[2]).isActive()){
 //        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[3]).isActive()) {
 //        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
 //    }
     bond_neighbor.resize(4);

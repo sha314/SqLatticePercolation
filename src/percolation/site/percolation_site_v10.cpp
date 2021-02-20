@@ -308,7 +308,7 @@ value_type SitePercolation_ps_v10::relabel(value_type index_1, value_type index_
 //        delta_y /= delta_y;
 //    }
 //
-//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+//    IndexRelative indexRelative_root = lattice_ref.getSite(root).relativeIndex();
 ////    cout << "Relative index of root " << indexRelative_root << endl;
 ////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
 //    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
@@ -753,16 +753,16 @@ void SitePercolation_ps_v10::connection_periodic(Index site, vector<Index> &site
 
     bond_neighbor.reserve(4);
 
-//    if(!_lattice.getSite(site_neighbor[0]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[0]).isActive()) {
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[1]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[1]).isActive()){
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
 //    }
-//    if(!_lattice.getSite(site_neighbor[2]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[2]).isActive()){
 //        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[3]).isActive()) {
 //        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
 //    }
     bond_neighbor.resize(4);
@@ -818,7 +818,7 @@ bool SitePercolation_ps_v10::check_if_id_matches(Index site, const vector<Index>
     for(auto s :edge){
         if(_lattice.getSite(site).get_groupID() == _lattice.getSite(s).get_groupID()){
             // no need to put the site here
-//            cout << "Site " << site << " and Id " << _lattice.getSite(site).set_groupID()
+//            cout << "Site " << site << " and Id " << lattice_ref.getSite(site).set_groupID()
 //                 << " is already in the edge : line " << __LINE__ << endl;
             return true;
         }
@@ -1181,7 +1181,7 @@ bool SitePercolation_ps_v10::detectSpanning_v5() {
             if(_lattice.getSite(*it_top).get_groupID() == _lattice.getSite(*it_bot).get_groupID()){
                 _spanning_sites.push_back(*it_top);
 //                _spanning_occured = true;
-//                spanning_id = _lattice.getSite(*it_bot).set_groupID();
+//                spanning_id = lattice_ref.getSite(*it_bot).set_groupID();
                 found_spanning_site = true;
                 _bottom_edge.erase(it_bot);
             }
@@ -1203,7 +1203,7 @@ bool SitePercolation_ps_v10::detectSpanning_v5() {
             if(_lattice.getSite(*it_lft).get_groupID() == _lattice.getSite(*it_rht).get_groupID()){
                 _spanning_sites.push_back(*it_lft);
 //                _spanning_occured = true;
-//                spanning_id = _lattice.getSite(*it_bot).set_groupID();
+//                spanning_id = lattice_ref.getSite(*it_bot).set_groupID();
                 found_spanning_site = true;
                 _right_edge.erase(it_rht);
             }
@@ -1641,7 +1641,7 @@ void SitePercolation_ps_v10::relabel_sites(const vector<Index> &sites, int id_a,
     IndexRelative relative_site__a;
     for (value_type i = 0; i < sites.size(); ++i) {
         a = sites[i];
-//        _lattice.getSite(a).set_groupID(id_a);
+//        lattice_ref.getSite(a).set_groupID(id_a);
         _lattice.setGroupID(a, id_a);
         relative_site__a = _lattice.getSite(a).relativeIndex();
         x = relative_site__a.x_ + delta_x_ab;
@@ -1836,7 +1836,7 @@ int SitePercolation_ps_v10::birthTimeOfSpanningCluster() const {
     if(!_spanning_sites.empty()) {
         cout << "number of spanning site_index_sequence " << _spanning_sites.size() << " : line " << __LINE__ << endl;
 //        Index site = _spanning_sites.front();
-//        int id = _lattice.getSite(site).set_groupID();
+//        int id = lattice_ref.getSite(site).set_groupID();
 //        value_type clster_index = _cluster_index_from_id[id];
 //        return _clusters[clster_index].birthTime();
         cout << "TODO : line " << __LINE__ << endl;
@@ -2200,7 +2200,7 @@ SitePercolation_ps_v10::relabel_cluster(
         relative_site_a = _lattice.getRelativeIndex(a);
         x = relative_site_a.x_ + delta_x_ab;
         y = relative_site_a.y_ + delta_y_ab;
-//        _lattice.getSite(a).relativeIndex(x, y);
+//        lattice_ref.getSite(a).relativeIndex(x, y);
         _lattice.setRelativeIndex(a, {x,y});
     }
 }

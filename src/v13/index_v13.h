@@ -11,6 +11,7 @@
 #include <iomanip>
 
 class Index_v13{
+protected:
     int _component_1=-1;
     int _component_2=-1;
 
@@ -22,20 +23,33 @@ public:
         _component_2 = col;
     }
 
-    Index_v13(Index_v13& index){
-        _component_1 = index._component_1;
-        _component_2 = index._component_2;
-    }
+    Index_v13(Index_v13& index) = default;
 
-    Index_v13 operator+(Index_v13&& other){
+    Index_v13(Index_v13&& index) = default;
+
+    Index_v13& operator=(const Index_v13&) = default;
+
+    Index_v13 operator+(const Index_v13& other){
         int del_row = _component_1 + other._component_1;
         int del_col = _component_2 + other._component_2;
         return {del_row, del_col};
     }
 
-    Index_v13 operator-(Index_v13& other){
-        int del_row = _component_1 - other._component_1;
-        int del_col = _component_2 - other._component_2;
+    Index_v13 operator-(Index_v13 const& second){
+        int del_row = _component_1 - second._component_1;
+        int del_col = _component_2 - second._component_2;
+        return {del_row, del_col};
+    }
+
+    Index_v13 subtract(const Index_v13& second){
+        int del_row = _component_1 - second._component_1;
+        int del_col = _component_2 - second._component_2;
+        return Index_v13(del_row, del_col);
+    }
+
+    Index_v13 add(const Index_v13 & second){
+        int del_row = _component_1 + second._component_1;
+        int del_col = _component_2 + second._component_2;
         return {del_row, del_col};
     }
 
@@ -58,6 +72,10 @@ public:
     RelativeIndex_v13(int x_rel, int y_rel):Index_v13(x_rel, y_rel){
 
     }
+
+    RelativeIndex_v13(RelativeIndex_v13&& relI):Index_v13(relI.x_coord(), relI.y_coord()) {}
+    RelativeIndex_v13(RelativeIndex_v13& relI):Index_v13(relI.x_coord(), relI.y_coord()) {}
+    RelativeIndex_v13& operator=(const RelativeIndex_v13& relI) = default;
 
     explicit RelativeIndex_v13(Index_v13 index):Index_v13(index){
 

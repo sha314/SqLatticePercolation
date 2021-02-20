@@ -490,7 +490,7 @@ value_type SitePercolation_ps_v9::relabel(value_type index_1, value_type index_2
 //        delta_y /= delta_y;
 //    }
 //
-//    IndexRelative indexRelative_root = _lattice.getSite(root).relativeIndex();
+//    IndexRelative indexRelative_root = lattice_ref.getSite(root).relativeIndex();
 ////    cout << "Relative index of root " << indexRelative_root << endl;
 ////    cout << "Delta x,y " << delta_x << ", " << delta_y << endl;
 //    IndexRelative r =  {indexRelative_root.x_ + delta_x, indexRelative_root.y_ + delta_y};
@@ -954,7 +954,7 @@ bool SitePercolation_ps_v9::check_if_id_matches(Index site, const vector<Index> 
     for(auto s :edge){
         if(_lattice.getSite(site).get_groupID() == _lattice.getSite(s).get_groupID()){
             // no need to put the site here
-//            cout << "Site " << site << " and Id " << _lattice.getSite(site).set_groupID()
+//            cout << "Site " << site << " and Id " << lattice_ref.getSite(site).set_groupID()
 //                 << " is already in the edge : line " << __LINE__ << endl;
             return true;
         }
@@ -1303,7 +1303,7 @@ bool SitePercolation_ps_v9::detectSpanning_v5(const Index& site) {
             if(_lattice.getSite(*it_top).get_groupID() == _lattice.getSite(*it_bot).get_groupID()){
                 _spanning_sites.push_back(*it_top);
 //                _spanning_occured = true;
-//                spanning_id = _lattice.getSite(*it_bot).set_groupID();
+//                spanning_id = lattice_ref.getSite(*it_bot).set_groupID();
                 found_spanning_site = true;
                 _bottom_edge.erase(it_bot);
             }
@@ -1325,7 +1325,7 @@ bool SitePercolation_ps_v9::detectSpanning_v5(const Index& site) {
             if(_lattice.getSite(*it_lft).get_groupID() == _lattice.getSite(*it_rht).get_groupID()){
                 _spanning_sites.push_back(*it_lft);
 //                _spanning_occured = true;
-//                spanning_id = _lattice.getSite(*it_bot).set_groupID();
+//                spanning_id = lattice_ref.getSite(*it_bot).set_groupID();
                 found_spanning_site = true;
                 _right_edge.erase(it_rht);
             }
@@ -2046,7 +2046,7 @@ int SitePercolation_ps_v9::birthTimeOfSpanningCluster() const {
     if(!_spanning_sites.empty()) {
         cout << "number of spanning site_index_sequence " << _spanning_sites.size() << " : line " << __LINE__ << endl;
 //        Index site = _spanning_sites.front();
-//        int id = _lattice.getSite(site).set_groupID();
+//        int id = lattice_ref.getSite(site).set_groupID();
 //        value_type clster_index = _cluster_index_from_id[id];
 //        return _clusters[clster_index].birthTime();
         cout << "TODO : line " << __LINE__ << endl;

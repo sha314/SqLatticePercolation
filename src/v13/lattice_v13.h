@@ -24,7 +24,7 @@ class Lattice_v13{
     std::vector<int> site_ids;
 
 public:
-    explicit Lattice_v13(int length){
+    explicit Lattice_v13(int length=3){
         if (length < 0){
             std::cout << "length cannot be negative" << std::endl;
         }
@@ -47,11 +47,12 @@ public:
         init_ids();
         std::cout << "reached " << __LINE__ << std::endl;
     }
-
+    int get_length() { return length;}
     void reset();
     void init_lattice();
     void init_ids();
-
+    long get_bond_count(){ return bond_count;}
+    long get_site_count(){ return site_count;}
     int bottom_bond_of_site(int s0_index);
     int top_bond_of_site(int s0_index);
     int right_bond_of_site(int s0_index);

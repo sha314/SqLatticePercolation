@@ -6,6 +6,7 @@
 #define SQLATTICEPERCOLATION_TEST_V13_H
 
 void test_lattice();
+void test_detect_wrapping();
 
 void test_v13(int argc, char** argv);
 

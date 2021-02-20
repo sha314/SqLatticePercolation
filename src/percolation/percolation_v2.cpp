@@ -17,7 +17,7 @@ SqLatticePercolation_v2::SqLatticePercolation_v2(value_type length) {
          * Because if _length=2
          * there are total of 4 distinct bond. But it should have been 8, i.e, (2 * _length * _length = 8)
          */
-        cerr << "_length <= 2 does not satisfy _lattice properties for percolation : line" << __LINE__ << endl;
+        cerr << "_length <= 2 does not satisfy lattice_ref properties for percolation : line" << __LINE__ << endl;
         exit(1);
     }
     _length = length;
@@ -375,16 +375,16 @@ void SqLatticePercolation_v2::connection_periodic(Index site, vector<Index> &sit
 
     bond_neighbor.reserve(4);
 
-//    if(!_lattice.getSite(site_neighbor[0]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[0]).isActive()) {
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[1]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[1]).isActive()){
 //        bond_neighbor.push_back({BondType::Horizontal, site.row_, prev_column});
 //    }
-//    if(!_lattice.getSite(site_neighbor[2]).isActive()){
+//    if(!lattice_ref.getSite(site_neighbor[2]).isActive()){
 //        bond_neighbor.push_back({BondType::Vertical,    site.row_, site.column_});
 //    }
-//    if(!_lattice.getSite(site_neighbor[3]).isActive()) {
+//    if(!lattice_ref.getSite(site_neighbor[3]).isActive()) {
 //        bond_neighbor.push_back({BondType::Vertical, prev_row, site.column_});
 //    }
     bond_neighbor.resize(4);
