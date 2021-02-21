@@ -52,11 +52,11 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
     clsstr.set_id(cluster_id);
 //# print("bond_ids ", bond_ids)
 
-    if(site_id < 0){
+    if(site_id >= 0){
         clsstr.add_site(site_id);
         lattice_ref.set_site_gid_by_id(site_id, cluster_id); // reassign group id
     }
-    if(bond_id < 0) {
+    if(bond_id >= 0) {
         clsstr.add_bond(bond_id);
         lattice_ref.set_bond_gid_by_id(bond_id, cluster_id); // reassign group id
     }
@@ -74,7 +74,7 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
  * @param lattice_ref  : so that it gid of sites and bonds can be modified here
  */
 void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13 &lattice_ref) {
-//# print("merge_cluster_with")
+    cout << "merge_cluster_with" << endl;
     int gid = _cluster_list[cluster_A_id].get_gid();
 //# print("cluster ", cluster_A_id, " gid ", gid)
     for (auto bb : _cluster_list[cluster_B_id].get_bonds()){
@@ -87,12 +87,14 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
 //      int tmp = lattice_ref.get_site_by_id(ss).get_gid();
 //# print("done: site ", ss, " gid => ", tmp)
     }
-
-    _cluster_list[cluster_A_id].add_bonds(_cluster_list[cluster_B_id].get_bonds());
+//    cout << "SIGSEGV : line " << __LINE__ << endl;
+    std::vector<int> &bonds = _cluster_list[cluster_B_id].get_bonds();
+    _cluster_list[cluster_A_id].add_bonds(bonds);
 
 //# print("before ", self.cluster_list[cluster_A_id].site_ids)
 //# print("adding ", self.cluster_list[cluster_B_id].site_ids)
-    _cluster_list[cluster_A_id].add_sites(_cluster_list[cluster_B_id].get_sites());
+    std::vector<int> &sites = _cluster_list[cluster_B_id].get_sites();
+    _cluster_list[cluster_A_id].add_sites(sites);
 //# print("after ", self.cluster_list[cluster_A_id].site_ids)
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
 }
@@ -118,7 +120,7 @@ int OneCluster::view() {
 }
 
 void OneCluster::add_bonds(std::vector<int> &bond_ids) {
-    _bond_ids.insert(bond_ids.end(), bond_ids.begin(), bond_ids.end());
+    _bond_ids.insert(_bond_ids.end(), bond_ids.begin(), bond_ids.end());
 }
 
 void OneCluster::add_bond(int bond_id) {

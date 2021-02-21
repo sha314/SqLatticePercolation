@@ -21,6 +21,10 @@ void Lattice_v13::init_lattice() {
             bond_matrix[s_index].set_id(s_index);
             bond_matrix[v_bond_index] = Bond_v13(rr, cc, 1);
             bond_matrix[v_bond_index].set_id(v_bond_index)   ;
+
+            site_ids.push_back(s_index);
+            bond_ids.push_back(s_index);
+            bond_ids.push_back(v_bond_index);
         }
     }
 

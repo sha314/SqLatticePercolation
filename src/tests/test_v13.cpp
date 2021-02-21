@@ -34,7 +34,8 @@ void test_detect_wrapping() {
              " order " << sq_lattice_p.order_param_wrapping() << endl;
         sq_lattice_p.viewLattice(3);
         sq_lattice_p.viewLattice(4);
-        sq_lattice_p.lattice_ref.print_bonds();
+//        sq_lattice_p.lattice_ref.print_bonds();
+        sq_lattice_p.viewCluster();
         i += 1;
         if (sq_lattice_p.detect_wrapping()) {
             cout << "p= " << sq_lattice_p.occupation_prob() <<
@@ -48,10 +49,10 @@ void test_detect_wrapping() {
         if (i > 2) break;
 
     }
-    sq_lattice_p.viewLattice(3);
-    sq_lattice_p.viewLattice(4);
-    sq_lattice_p.viewLattice(1);
-    sq_lattice_p.viewCluster();
+//    sq_lattice_p.viewLattice(3);
+//    sq_lattice_p.viewLattice(4);
+//    sq_lattice_p.viewLattice(1);
+//    sq_lattice_p.viewCluster();
 }
 
 void test_v13(int argc, char **argv) {

@@ -77,7 +77,7 @@ public:
         return _cluster_list[index].get_sites();
     }
 
-    std::vector<int> & get_bonds(int index) {
+    std::vector<int> get_bonds(int index) {
         return _cluster_list[index].get_bonds();
     }
 

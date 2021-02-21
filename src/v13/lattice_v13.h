@@ -33,9 +33,9 @@ public:
         bond_count = 2*site_count;
         std::cout << "reached " << __LINE__ << std::endl;
         site_matrix = std::vector<Site_v13>(site_count);
-        site_ids = std::vector<int>(site_count);
+//        site_ids = std::vector<int>(site_count);
         bond_matrix = std::vector<Bond_v13>(bond_count);
-        bond_ids = std::vector<int>(bond_count);
+//        bond_ids = std::vector<int>(bond_count);
         std::cout << "reached " << __LINE__ << std::endl;
 //        site_matrix.resize(site_count);
 //        _site_ids.resize(site_count);

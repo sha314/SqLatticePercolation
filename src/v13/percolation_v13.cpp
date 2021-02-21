@@ -122,6 +122,11 @@ SitePercolation_v13::SitePercolation_v13(int length, int seed) : Percolation_v13
     init_clusters();
 
     site_ids_indices = lattice_ref.get_site_id_list();
+    cout << "{";
+    for(auto s: site_ids_indices){
+        cout << s << ",";
+    }
+    cout << "}" << endl;
     int current_idx = 0;
     shuffle_indices();
     selected_id = -1;
@@ -136,7 +141,8 @@ SitePercolation_v13::SitePercolation_v13(int length, int seed) : Percolation_v13
 
 void SitePercolation_v13::init_clusters() {
     cluster_pool_ref.reset();
-    for (auto bb: lattice_ref.get_bond_id_list()){
+    auto bonds = lattice_ref.get_bond_id_list();
+    for (auto bb: bonds){
         cluster_pool_ref.create_new_cluster(-1, bb, lattice_ref);
     }
 }
@@ -226,7 +232,7 @@ bool SitePercolation_v13::select_site() {
     }
     selected_id = site_ids_indices[current_idx];
     current_site = lattice_ref.get_site_by_id(selected_id);
-//# print("selected id ", selected_id)
+    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
     return true;
 
 }
