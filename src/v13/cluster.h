@@ -36,7 +36,7 @@ public:
 
     void clear(){_site_ids.clear();_bond_ids.clear();_gid=-1;_id=-1;}
 
-    int view();
+    int view(int view_mode=0);
 
 };
 

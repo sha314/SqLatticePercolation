@@ -199,6 +199,7 @@ void Lattice_v13::print_sites(){
 
 
 Site_v13 Lattice_v13::get_site_by_id(int  id) {
+    cout << "return site[" << id << "] => " << site_matrix[id].get_str(0) << endl;
     return site_matrix[id];
 }
 

@@ -32,8 +32,8 @@ public:
     }
 
     void viewLattice(int formatt=0);
-    void viewCluster() {
-        cluster_pool_ref.view();
+    void viewCluster(int view_mode) {
+        cluster_pool_ref.view(view_mode);
     }
 
     std::vector<int>  get_bond_gids(std::vector<int>& bond_ids);
@@ -137,6 +137,16 @@ bool find_elm(std::vector<tType> &vec, tType elem) {
         }
     }
     return false;
+}
+
+template<class tType>
+void print_vectors(std::vector<tType> &vec, const std::string &end_str) {
+    for(auto b: vec){
+        std::cout << b << ",";
+    }
+    std::cout << end_str;
+
+
 }
 
 

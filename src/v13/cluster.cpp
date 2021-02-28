@@ -12,7 +12,7 @@ void ClusterPool::view(int view_mode) {
     int counter = 0;
     for (auto clstr : _cluster_list) {
 //# print("clstr ", clstr)
-        counter += clstr.view();
+        counter += clstr.view(view_mode);
     }
 
     cout << "\n View cluster END >" << endl;
@@ -99,18 +99,28 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
 }
 
-int OneCluster::view() {
+/**
+ *
+ * @param view_mode : if 0 then only culsters with non-zero sites and bonds will be shown.
+ * @return
+ */
+int OneCluster::view(int view_mode) {
     if (is_empty()) {
         return 0;
     }
+    if(view_mode == 0){
+        if(_site_ids.empty() || _bond_ids.empty()) {
+            return 1;
+        }
+    }
     cout <<  "cluster [" <<  _id << "] (gid " << _gid << ") :{" << endl;
-    cout << "sites (" << _site_ids.size() << ") {";
+    cout << "  sites (" << _site_ids.size() << ") {";
     for(auto aa: _site_ids){
         cout << aa << ",";
     }
     cout << "}" << endl;
 
-    cout << "bonds (" << _bond_ids.size() << ") {";
+    cout << "  bonds (" << _bond_ids.size() << ") {";
     for(auto aa: _bond_ids){
         cout << aa << ",";
     }

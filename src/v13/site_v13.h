@@ -24,7 +24,7 @@ public:
         relativeIndex = RelativeIndex_v13();
     }
 
-    Index_v13& get_index(){ return index;}
+    Index_v13 get_index(){ return index;}
     RelativeIndex_v13 get_relative_index(){ return relativeIndex;}
     int get_gid(){ return Element_v13::get_gid();}
     int get_id(){ return Element_v13::get_id();}

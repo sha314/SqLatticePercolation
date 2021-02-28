@@ -67,7 +67,7 @@ class RelativeIndex_v13: public Index_v13{
 
 
 public:
-    RelativeIndex_v13() : Index_v13(-1, -1){}
+    RelativeIndex_v13() : Index_v13(0, 0){}
 
     RelativeIndex_v13(int x_rel, int y_rel):Index_v13(x_rel, y_rel){
 
