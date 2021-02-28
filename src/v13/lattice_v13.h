@@ -69,9 +69,9 @@ public:
     void print_bonds();
     void print_sites();
 
-    Site_v13 get_site_by_id(int id);
+    Site_v13& get_site_by_id(int id);
 
-    Bond_v13 get_bond_by_id(int id);
+    Bond_v13& get_bond_by_id(int id);
 
     void set_site_gid_by_id(int id, int gid);
 

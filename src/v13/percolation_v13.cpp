@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <set>
+#include <random>
 #include "percolation_v13.h"
 
 using namespace std;
@@ -115,6 +116,20 @@ RelativeIndex_v13 Percolation_v13::get_relative_index(int central_site_id, int n
 //# print("new_relative_index type ", type(new_relative_index))
 //# print("new_relative_index type ", type(RelativeIndex(index=new_relative_index)))
     return RelativeIndex_v13(new_relative_index);
+}
+
+void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
+//    size_t seed = 0;
+//    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
+    _random_state = seed;
+    if(generate_seed) {
+        std::random_device _rd;
+        _random_state = _rd();
+    }else{
+        cerr << "generate_seed = false : line " << __LINE__ << endl;
+    }
+    _random_engine.seed(_random_state); // seeding
+    cout << "seeding with " << _random_state << endl;
 }
 
 SitePercolation_v13::SitePercolation_v13(int length, int seed) : Percolation_v13(length, seed) {
@@ -238,7 +253,7 @@ bool SitePercolation_v13::select_site() {
 }
 
 bool SitePercolation_v13::place_one_site() {
-    cout << "************************ place_one_site. count " << current_idx + 1 << endl;
+    cout << "************************ place_one_site. count " << current_idx << endl;
     auto flag = select_site();
     if(flag) {
 
@@ -355,6 +370,7 @@ void SitePercolation_v13::relabel_relative_indices(int connecting_bond) {
             cout << "relative index after  : " << ss_relative_index.get_str() << endl;
 //            cout << "new_relative_index " << new_relative_index << endl;
             lattice_ref.get_site_by_id(ss).set_relative_index(ss_relative_index);
+            cout << "get relative index " << lattice_ref.get_site_by_id(ss).get_relative_index().get_str() << endl;
         }
     }
 }
@@ -527,7 +543,7 @@ void SitePercolationL0_v13::reset() {
     order_largest_list.resize(l_squared);
 }
 
-SitePercolationL0_v13::SitePercolationL0_v13(int length, int seed) : SitePercolation_v13(length, seed) {
+SitePercolationL0_v13::SitePercolationL0_v13(int length, int seed, bool generate_seed) : SitePercolation_v13(length, seed) {
     first_run = true;
 
     int ll = get_length();
@@ -536,6 +552,7 @@ SitePercolationL0_v13::SitePercolationL0_v13(int length, int seed) : SitePercola
     entropy_list.resize(l_squared);
     order_wrapping_list.resize(l_squared);
     order_largest_list.resize(l_squared);
+    setRandomState(seed, generate_seed);
 }
 
 void SitePercolationL0_v13::run_once() {

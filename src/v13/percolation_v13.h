@@ -8,13 +8,18 @@
 
 #include "lattice_v13.h"
 #include "cluster.h"
+#include "../types.h"
 #include <set>
+#include <algorithm>
+#include <random>
 
 class Percolation_v13{
 
 public:
     int _length = 0;
     int _seed = 0;
+    value_type _random_state = 0;
+    std::mt19937 _random_engine;
 
     Lattice_v13 lattice_ref;
     ClusterPool cluster_pool_ref;
@@ -43,6 +48,9 @@ public:
 
     RelativeIndex_v13 get_relative_index(int central_site_id, int neighbor_site_id);
     RelativeIndex_v13 get_change_in_relative_index(RelativeIndex_v13 old_relative_index, RelativeIndex_v13 new_relative_index);
+
+    void setRandomState(size_t seed, bool generate_seed=true);
+    value_type getRandomState() { return _random_state;}
 };
 
 class SitePercolation_v13: public Percolation_v13{
@@ -67,7 +75,7 @@ public:
     void init_clusters();
     void shuffle_indices() {
         std::cout << "shuffle_indices not set up" << std::endl;
-//        random.shuffle(site_ids_indices);
+        std::shuffle(site_ids_indices.begin(), site_ids_indices.end(), _random_engine);
     }
     int get_length(){ return lattice_ref.get_length();}
     void reset() override;
@@ -105,7 +113,7 @@ class SitePercolationL0_v13: public SitePercolation_v13{
     std::vector<double> order_largest_list;
 public:
 
-    SitePercolationL0_v13(int length, int seed=-1);
+    SitePercolationL0_v13(int length, int seed=-1, bool generate_seed=true);
     SitePercolationL0_v13(SitePercolationL0_v13&&) = default;
     std::string get_signature() override { return SitePercolation_v13::get_signature() + "L0_";};
     void reset() override;
