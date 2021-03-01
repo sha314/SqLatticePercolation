@@ -57,7 +57,7 @@ class SitePercolation_v13: public Percolation_v13{
     std::string signature = "SitePercolation";
     std::vector<int> site_ids_indices;
     int current_idx = 0;
-    Site_v13 current_site;
+//    Site_v13 current_site;
     int selected_id =-1;
     long cluster_count = -1;
     long largest_cluster_sz = 0;

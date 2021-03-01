@@ -246,8 +246,9 @@ bool SitePercolation_v13::select_site() {
         return false;
     }
     selected_id = site_ids_indices[current_idx];
-    current_site = lattice_ref.get_site_by_id(selected_id);
-    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
+//    current_site = lattice_ref.get_site_by_id(selected_id);
+//    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
+    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
     return true;
 
 }
@@ -259,7 +260,9 @@ bool SitePercolation_v13::place_one_site() {
 
 //        cout << "selected site ", self.current_site.get_index(), " id ", self.current_site.get_id())
         lattice_ref.init_relative_index(selected_id);  // initialize        relative index
-        auto bond_neighbors = current_site.get_connecting_bonds();
+//        auto bond_neighbors = current_site.get_connecting_bonds();
+
+        auto bond_neighbors = get_current_site().get_connecting_bonds();
 //# site_neighbors = self.get_connected_sites(self.current_site, bond_neighbors)
 
         entropy_subtract(bond_neighbors);
@@ -333,7 +336,8 @@ void SitePercolation_v13::relabel_relative_indices(int connecting_bond) {
     cout << "SitePercolation_v13::relabel_relative_indices" << endl;
     auto bond = lattice_ref.get_bond_by_id(connecting_bond);
     auto bbg = bond.get_gid();
-    auto central_site = current_site.get_id();
+//    auto central_site = current_site.get_id();
+    auto central_site = get_current_site().get_id();
     auto neighbor_site = get_neighbor_site(central_site, bond.get_id());
     cout <<"central_site " << central_site << " and neighbor_site " << neighbor_site << endl;
     cout << "sites of cluster " << bbg << " will be relabeled" << endl;
@@ -438,7 +442,8 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
             lattice_ref.set_site_gid_by_id(selected_id, root_clstr);
             cluster_pool_ref.add_sites(root_clstr, {selected_id});
 //# relabeling current site. relative index
-            auto neighbor_site = get_neighbor_site(current_site.get_id(), bb);
+//            auto neighbor_site = get_neighbor_site(current_site.get_id(), bb);
+            auto neighbor_site = get_neighbor_site(get_current_site().get_id(), bb);
             cout << "central site " << selected_id << " neighbor site " << neighbor_site << endl;
             if (lattice_ref.get_site_gid_by_id(neighbor_site) >= 0) {
 //# relabel selected site with respect to neighbor site. so neighbor_site is the central site
@@ -450,7 +455,7 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
                 cout << selected_id << " => rri " << rri.get_str() << endl;
 
                 lattice_ref.set_relative_index(selected_id, rri);
-                current_site.set_relative_index(rri); // local variable. needs to be updated
+//                current_site.set_relative_index(rri); // local variable. needs to be updated
             }else{
                 cout << "Does not belong to any cluster yet" << endl;
             }
@@ -506,7 +511,8 @@ bool SitePercolation_v13::detect_wrapping() {
 //# print("detect_wrapping")
     auto neighbors = lattice_ref.get_sites_for_wrapping_test(selected_id);
 //# print("neighbors of self.selected_id with same gid : ", neighbors)
-    auto central_r_index = current_site.get_relative_index();
+//    auto central_r_index = current_site.get_relative_index();
+    auto central_r_index = get_current_site().get_relative_index();
     for (auto ss : neighbors) {
         auto rss = lattice_ref.get_site_by_id(ss).get_relative_index();
         auto delta_x = central_r_index.x_coord() - rss.x_coord();
