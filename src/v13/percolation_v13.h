@@ -69,7 +69,7 @@ class SitePercolation_v13: public Percolation_v13{
 
 public:
     SitePercolation_v13() = default;
-    explicit SitePercolation_v13(int length, int seed=-1);
+    explicit SitePercolation_v13(int length, value_type seed=0);
 
     virtual std::string get_signature(){return signature;}
     void init_clusters();
@@ -102,6 +102,7 @@ public:
     int merge_clusters_v2(std::vector<int>& bond_neighbors);
     void relabel_relative_indices(int connecting_bond);
     bool detect_wrapping();
+    Site_v13& get_current_site(); // TODO
 };
 
 
@@ -113,7 +114,7 @@ class SitePercolationL0_v13: public SitePercolation_v13{
     std::vector<double> order_largest_list;
 public:
 
-    SitePercolationL0_v13(int length, int seed=-1, bool generate_seed=true);
+    SitePercolationL0_v13(int length, value_type seed=0, bool generate_seed=true);
     SitePercolationL0_v13(SitePercolationL0_v13&&) = default;
     std::string get_signature() override { return SitePercolation_v13::get_signature() + "L0_";};
     void reset() override;

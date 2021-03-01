@@ -22,7 +22,7 @@ void test_lattice() {
 
 void test_detect_wrapping() {
 //# take arguments from commandline
-    auto sq_lattice_p = SitePercolationL0_v13(6, 18, false);
+    auto sq_lattice_p = SitePercolationL0_v13(100, 18, true);
 //    sq_lattice_p.setRandomState(0, false);
 
 //# sq_lattice_p.viewLattice(3)
@@ -33,7 +33,7 @@ void test_detect_wrapping() {
 //             " entropy_v1 " << sq_lattice_p.entropy_v1() <<
 //             " entropy_v2 " << sq_lattice_p.entropy_v2() <<
 //             " order " << sq_lattice_p.order_param_wrapping() << endl;
-        sq_lattice_p.viewLattice(3);
+//        sq_lattice_p.viewLattice(3);
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
 //        sq_lattice_p.viewCluster(1);
@@ -47,7 +47,7 @@ void test_detect_wrapping() {
             break;
         }
 
-        if (i > 8) break;
+//        if (i > 8) break;
 
     }
 //    sq_lattice_p.viewLattice(3);

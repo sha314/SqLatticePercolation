@@ -132,7 +132,7 @@ void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
     cout << "seeding with " << _random_state << endl;
 }
 
-SitePercolation_v13::SitePercolation_v13(int length, int seed) : Percolation_v13(length, seed) {
+SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolation_v13(length, seed) {
 
     init_clusters();
 
@@ -450,6 +450,7 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
                 cout << selected_id << " => rri " << rri.get_str() << endl;
 
                 lattice_ref.set_relative_index(selected_id, rri);
+                current_site.set_relative_index(rri); // local variable. needs to be updated
             }else{
                 cout << "Does not belong to any cluster yet" << endl;
             }
@@ -511,16 +512,20 @@ bool SitePercolation_v13::detect_wrapping() {
         auto delta_x = central_r_index.x_coord() - rss.x_coord();
         auto delta_y = central_r_index.y_coord() - rss.y_coord();
         if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
-//# print(self.selected_id, " and ", ss, " are connected via wrapping")
-//# print("indices are ", self.lattice_ref.get_site_by_id(self.selected_id).get_index(),
-//#       " and ", self.lattice_ref.get_site_by_id(ss).get_index())
-//# print("relative ", central_r_index, " - ", rss)
+            cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
+            cout << "indices are " << lattice_ref.get_site_by_id(selected_id).get_index().get_str() <<
+           " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
+            cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
             after_wrapping = true;
             wrapping_cluster_id = lattice_ref.get_site_by_id(selected_id).get_gid();
             return true;
         }
     }
     return false;
+}
+
+Site_v13 &SitePercolation_v13::get_current_site() {
+    return lattice_ref.get_site_by_id(selected_id);
 }
 
 void SitePercolationL0_v13::reset() {
@@ -543,7 +548,7 @@ void SitePercolationL0_v13::reset() {
     order_largest_list.resize(l_squared);
 }
 
-SitePercolationL0_v13::SitePercolationL0_v13(int length, int seed, bool generate_seed) : SitePercolation_v13(length, seed) {
+SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool generate_seed) : SitePercolation_v13(length, seed) {
     first_run = true;
 
     int ll = get_length();
