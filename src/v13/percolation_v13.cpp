@@ -178,13 +178,18 @@ void SitePercolation_v13::reset() {
 
 double SitePercolation_v13::entropy_v1() {
     double H = 0;
+    int empty_count = 0;
     for(int i=0; i < cluster_count;++i){
-        int b_count = cluster_pool_ref.get_cluster_bond_count(i);
-        long mu = b_count / lattice_ref.get_bond_count();
-        if (mu==0) continue;
+        double b_count = cluster_pool_ref.get_cluster_bond_count(i);
+        double mu = b_count / lattice_ref.get_bond_count();
+        if (mu==0) {
+            empty_count += 1;
+            continue;
+        }
         double log_mu = log(mu);
         H += mu * log_mu;
     }
+//    cout << "empty cluster count " << empty_count << endl;
 
     return -H;
 }

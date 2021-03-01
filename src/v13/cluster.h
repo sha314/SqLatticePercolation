@@ -53,7 +53,9 @@ public:
     }
 
     int get_cluster_bond_count(int id) {
-        return _cluster_list[id].get_bond_count();
+//        auto tmp =
+//        std::cout << "get_cluster_bond_count : id " << id << " bond count = " << tmp << std::endl;
+        return _cluster_list[id].get_bond_count();;
     }
 
     int get_cluster_site_count(int id) {

@@ -113,7 +113,7 @@ int OneCluster::view(int view_mode) {
             return 1;
         }
     }
-    cout <<  "cluster [" <<  _id << "] (gid " << _gid << ") :{" << endl;
+    cout <<  "cluster[" << setw(3) <<  _id << "] (gid " << _gid << ") :{" << endl;
     cout << "  sites (" << _site_ids.size() << ") {";
     for(auto aa: _site_ids){
         cout << aa << ",";
