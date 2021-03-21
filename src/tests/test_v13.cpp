@@ -50,7 +50,7 @@ void test_detect_wrapping() {
 //        if (i > 8) break;
 
     }
-//    sq_lattice_p.viewLattice(3);
+    sq_lattice_p.viewLattice(3);
 //    sq_lattice_p.viewLattice(4);
 //    sq_lattice_p.viewLattice(1);
 //    sq_lattice_p.viewCluster();

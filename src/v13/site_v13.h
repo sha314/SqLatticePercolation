@@ -23,6 +23,11 @@ public:
         index = Index_v13(row, col);
         relativeIndex = RelativeIndex_v13();
     }
+    void reset(){
+        Element_v13::reset();
+        connecting_bond_ids.clear();
+        relativeIndex = RelativeIndex_v13();
+    }
 
     Index_v13 get_index(){ return index;}
     RelativeIndex_v13 get_relative_index(){ return relativeIndex;}

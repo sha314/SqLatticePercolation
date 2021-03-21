@@ -27,6 +27,11 @@ public:
         _type = type;
     }
 
+    void reset(){
+        Element_v13::reset();
+        connected_site_ids.clear();
+    }
+
     std::string get_str(int formatt=0){
         std::stringstream ss;
         if (formatt == 1){

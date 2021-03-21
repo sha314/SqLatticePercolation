@@ -49,7 +49,12 @@ void Lattice_v13::init_ids() {
 }
 
 void Lattice_v13::reset() {
-
+    for(Site_v13& site: site_matrix){
+        site.reset();
+    }
+    for(Bond_v13& bond: bond_matrix){
+        bond.reset();
+    }
 }
 
 int Lattice_v13::bottom_bond_of_site(int s0_index) {
