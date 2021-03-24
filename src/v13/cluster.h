@@ -28,11 +28,11 @@ public:
     void add_bond(int bond_id);
     void add_bonds(std::vector<int>& bond_ids);
 
-    std::vector<int>& get_sites() { return _site_ids;}
-    std::vector<int>& get_bonds() { return _bond_ids;}
+    std::vector<int> get_sites() { return _site_ids;}
+    std::vector<int> get_bonds() { return _bond_ids;}
 
-    int get_site_count() { return _site_ids.size();}
-    int get_bond_count() { return _bond_ids.size();}
+    size_t get_site_count() { return _site_ids.size();}
+    size_t get_bond_count() { return _bond_ids.size();}
 
     void clear(){_site_ids.clear();_bond_ids.clear();_gid=-1;_id=-1;}
 
@@ -48,8 +48,9 @@ public:
     ClusterPool() = default;
 
     void reset() {
-        int cluster_id = 0;
+        cluster_id = 0;
         _cluster_list.clear();
+        std::cout << "clear cluster " << _cluster_list.size() << std::endl;
     }
 
     int get_cluster_bond_count(int id) {

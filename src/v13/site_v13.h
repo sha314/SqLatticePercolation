@@ -25,7 +25,7 @@ public:
     }
     void reset(){
         Element_v13::reset();
-        connecting_bond_ids.clear();
+//        connecting_bond_ids.clear();
         relativeIndex = RelativeIndex_v13();
     }
 

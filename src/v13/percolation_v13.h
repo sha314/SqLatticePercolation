@@ -18,6 +18,9 @@ class Percolation_v13{
 public:
     int _length = 0;
     int _seed = 0;
+    size_t wrapping_cluster_site_count_pc = 0;
+    size_t wrapping_cluster_bond_count_pc = 0;
+
     value_type _random_state = 0;
     std::mt19937 _random_engine;
 
@@ -34,6 +37,8 @@ public:
     virtual void reset() {
         lattice_ref.reset();
         cluster_pool_ref.reset();
+        wrapping_cluster_site_count_pc = 0;
+        wrapping_cluster_bond_count_pc = 0;
     }
 
     void viewLattice(int formatt=0);
@@ -57,6 +62,8 @@ class SitePercolation_v13: public Percolation_v13{
     std::string signature = "SitePercolation";
     std::vector<int> site_ids_indices;
     int current_idx = 0;
+    int occupied_site_count = 0;
+    size_t site_count_pc = 0;
 //    Site_v13 current_site;
     int selected_id =-1;
     long cluster_count = -1;
@@ -89,6 +96,9 @@ public:
     void entropy_add(int new_cluster_id);
 
     double occupation_prob();
+    double get_pc(){ return double(site_count_pc)/(_length*_length);}
+    double get_pc_wrapping_cluster_site_count(){ return double(wrapping_cluster_site_count_pc)/(_length*_length);}
+    double get_pc_wrapping_cluster_bond_count(){ return double(wrapping_cluster_bond_count_pc)/(_length*_length);}
 
     double entropy();
     double entropy_v1();
@@ -125,6 +135,7 @@ public:
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
 
     void run_once();
+    size_t maxIterationLimit(){ return _length*_length;}
 };
 
 

@@ -13,7 +13,7 @@ class Element_v13{
 public:
     void reset(){
         g_id = -1;
-        id = -1;
+//        id = -1;
     }
     void set_id(int id){
         this->id = id;

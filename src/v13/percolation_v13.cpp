@@ -155,7 +155,7 @@ SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolat
 }
 
 void SitePercolation_v13::init_clusters() {
-    cluster_pool_ref.reset();
+//    cluster_pool_ref.reset();
     auto bonds = lattice_ref.get_bond_id_list();
     for (auto bb: bonds){
         cluster_pool_ref.create_new_cluster(-1, bb, lattice_ref);
@@ -173,6 +173,10 @@ void SitePercolation_v13::reset() {
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
     entropy_value = max_entropy;
+    occupied_site_count = 0;
+    site_count_pc = 0;
+    selected_id=-1;
+    cluster_count=-1;
 //# print("Initial entropy ", self.entropy_value)
 }
 
@@ -251,6 +255,7 @@ bool SitePercolation_v13::select_site() {
         return false;
     }
     selected_id = site_ids_indices[current_idx];
+    current_idx += 1;
 //    current_site = lattice_ref.get_site_by_id(selected_id);
 //    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
     cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
@@ -279,7 +284,7 @@ bool SitePercolation_v13::place_one_site() {
 
 //# self.lattice_ref.set_site_gid_by_id(selected_id, merged_cluster_index)
 //# self.cluster_pool_ref.add_sites(merged_cluster_index, selected_id)
-        current_idx += 1;
+        occupied_site_count += 1;
     }
     return flag;
 }
@@ -385,7 +390,7 @@ void SitePercolation_v13::relabel_relative_indices(int connecting_bond) {
 }
 
 double SitePercolation_v13::occupation_prob() {
-    return double(current_idx) / lattice_ref.get_site_count();
+    return double(occupied_site_count) / lattice_ref.get_site_count();
 }
 
 int SitePercolation_v13::merge_clusters(std::vector<int> &bond_neighbors) {
@@ -423,6 +428,8 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
     auto bond_gids = get_bond_gids(bond_neighbors);
 //# site_gids = self.get_site_gids(site_neighbors)
 //# print("site_gids ", site_gids)
+    cout << "bond_neighbors {";
+    print_vectors(bond_neighbors, "}\n");
     cout << "bond_gids {";
     print_vectors(bond_gids, "}\n");
 
@@ -497,6 +504,8 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
 }
 
 std::vector<int> SitePercolation_v13::uniqe_gid_bond_neighbors(std::vector<int> &bond_neighbors) {
+    cout << "bond_neighbors {";
+    print_vectors(bond_neighbors, "}\n");
     vector<int> gids, unique_bond_ids;
     for (int bb : bond_neighbors) {
         int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
@@ -527,8 +536,13 @@ bool SitePercolation_v13::detect_wrapping() {
             cout << "indices are " << lattice_ref.get_site_by_id(selected_id).get_index().get_str() <<
            " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
             cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
+
             after_wrapping = true;
             wrapping_cluster_id = lattice_ref.get_site_by_id(selected_id).get_gid();
+            site_count_pc = occupied_site_count;
+            wrapping_cluster_site_count_pc = 0;
+            wrapping_cluster_bond_count_pc = 0;
+
             return true;
         }
     }
@@ -541,12 +555,12 @@ Site_v13 &SitePercolation_v13::get_current_site() {
 
 void SitePercolationL0_v13::reset() {
     SitePercolation_v13::reset();
-    int ll = get_length();
-    int l_squared = ll*ll;
+//    int ll = get_length();
+//    int l_squared = ll*ll;
 
     if (first_run) {
         occupation_prob_list.clear();
-        occupation_prob_list.resize(l_squared);
+//        occupation_prob_list.resize(l_squared);
     }
 
     entropy_list.clear();
@@ -554,9 +568,9 @@ void SitePercolationL0_v13::reset() {
     order_largest_list.clear();
 
 
-    entropy_list.resize(l_squared);
-    order_wrapping_list.resize(l_squared);
-    order_largest_list.resize(l_squared);
+//    entropy_list.resize(l_squared);
+//    order_wrapping_list.resize(l_squared);
+//    order_largest_list.resize(l_squared);
 }
 
 SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool generate_seed) : SitePercolation_v13(length, seed) {
@@ -564,10 +578,10 @@ SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool g
 
     int ll = get_length();
     int l_squared = ll*ll;
-    occupation_prob_list.resize(l_squared);
-    entropy_list.resize(l_squared);
-    order_wrapping_list.resize(l_squared);
-    order_largest_list.resize(l_squared);
+//    occupation_prob_list.resize(l_squared);
+//    entropy_list.resize(l_squared);
+//    order_wrapping_list.resize(l_squared);
+//    order_largest_list.resize(l_squared);
     setRandomState(seed, generate_seed);
 }
 

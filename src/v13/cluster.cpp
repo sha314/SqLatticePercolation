@@ -76,8 +76,12 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
 void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13 &lattice_ref) {
     cout << "merge_cluster_with" << endl;
     int gid = _cluster_list[cluster_A_id].get_gid();
-//# print("cluster ", cluster_A_id, " gid ", gid)
-    for (auto bb : _cluster_list[cluster_B_id].get_bonds()){
+    cout << "cluster " << cluster_A_id << " gid " << gid << endl;
+    cout << "cluster " << cluster_B_id << " gid " << endl;
+    cout << "cauing error " << __FILE__ << " " << __LINE__ << endl;
+    auto bondstmp = _cluster_list[cluster_B_id].get_bonds();
+    cout << "bonds size " << bondstmp.size() << " why?" << endl;
+    for (auto bb : bondstmp){ //
         lattice_ref.set_bond_gid_by_id(bb, gid);
     }
 
@@ -88,12 +92,12 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
 //# print("done: site ", ss, " gid => ", tmp)
     }
 //    cout << "SIGSEGV : line " << __LINE__ << endl;
-    std::vector<int> &bonds = _cluster_list[cluster_B_id].get_bonds();
+    std::vector<int> bonds = _cluster_list[cluster_B_id].get_bonds();
     _cluster_list[cluster_A_id].add_bonds(bonds);
 
 //# print("before ", self.cluster_list[cluster_A_id].site_ids)
 //# print("adding ", self.cluster_list[cluster_B_id].site_ids)
-    std::vector<int> &sites = _cluster_list[cluster_B_id].get_sites();
+    std::vector<int> sites = _cluster_list[cluster_B_id].get_sites();
     _cluster_list[cluster_A_id].add_sites(sites);
 //# print("after ", self.cluster_list[cluster_A_id].site_ids)
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster

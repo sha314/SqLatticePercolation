@@ -9,5 +9,6 @@ void test_lattice();
 void test_detect_wrapping();
 
 void test_v13(int argc, char** argv);
+void run_ensemble_v13(int argc, char** argv);
 
 #endif //SQLATTICEPERCOLATION_TEST_V13_H

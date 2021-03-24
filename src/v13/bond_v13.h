@@ -29,7 +29,7 @@ public:
 
     void reset(){
         Element_v13::reset();
-        connected_site_ids.clear();
+//        connected_site_ids.clear();
     }
 
     std::string get_str(int formatt=0){
