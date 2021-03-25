@@ -13,7 +13,9 @@ void plus_equal(vector<double> &left_vec, const vector<double> &right_vec){
         return;
     }
     for(size_t i{}; i < right_vec.size(); ++i){
+//        cout << left_vec[i] << " + " << right_vec[i];
         left_vec[i] += right_vec[i];
+//        cout << " = " << left_vec[i] << endl;
     }
 
 }
@@ -40,6 +42,7 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
     vector<double> tmp;
 
     for(value_type i{} ; i != ensemble_size ; ++i){
+        auto t_start = std::chrono::system_clock::now();
 
         percolation.reset();
 //        percolation.viewCluster(1);
@@ -47,24 +50,21 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
 //        percolation.viewCluster(1);
 
         pcs[i] = percolation.get_pc();
-        sites_pc[i] = percolation.get_pc_wrapping_cluster_site_count();
-        bonds_pc[i] = percolation.get_pc_wrapping_cluster_bond_count();
+        sites_pc[i] = percolation.get_wrapping_cluster_site_count_at_pc();
+        bonds_pc[i] = percolation.get_wrapping_cluster_bond_count_at_pc();
+
+//        cout << "entropy " << endl;
         tmp = percolation.get_entropy_array();
-
         plus_equal(entropy, tmp);
+
+//        cout << "order param " << endl;
         tmp = percolation.get_order_param_wrapping_array();
-        plus_equal(entropy, order_wraping);
+        plus_equal(order_wraping, tmp);
+
+//        cout << "order " << endl;
         tmp = percolation.get_order_param_largest_array();
-        plus_equal(entropy, order_largest);
+        plus_equal(order_largest, tmp);
 
-
-
-
-        auto t_start = std::chrono::system_clock::now();
-        counter = 0;
-        bool detect_wrapping{true};
-
-//        fout_jump << lattice_percolation.largestEntropyJump() << "," << lattice_percolation.largestEntropyJump_pc() << std::endl;
 
         auto t_end = std::chrono::system_clock::now();
         std::cout << "Iteration " << i

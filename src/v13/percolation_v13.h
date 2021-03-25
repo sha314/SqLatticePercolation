@@ -81,7 +81,7 @@ public:
     virtual std::string get_signature(){return signature;}
     void init_clusters();
     void shuffle_indices() {
-        std::cout << "shuffle_indices not set up" << std::endl;
+//        std::cout << "shuffle_indices not set up" << std::endl;
         std::shuffle(site_ids_indices.begin(), site_ids_indices.end(), _random_engine);
     }
     int get_length(){ return lattice_ref.get_length();}
@@ -97,8 +97,8 @@ public:
 
     double occupation_prob();
     double get_pc(){ return double(site_count_pc)/(_length*_length);}
-    double get_pc_wrapping_cluster_site_count(){ return double(wrapping_cluster_site_count_pc)/(_length*_length);}
-    double get_pc_wrapping_cluster_bond_count(){ return double(wrapping_cluster_bond_count_pc)/(_length*_length);}
+    double get_wrapping_cluster_site_count_at_pc(){ return wrapping_cluster_site_count_pc;}
+    double get_wrapping_cluster_bond_count_at_pc(){ return wrapping_cluster_bond_count_pc;}
 
     double entropy();
     double entropy_v1();

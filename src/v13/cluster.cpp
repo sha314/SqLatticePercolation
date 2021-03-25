@@ -74,13 +74,13 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
  * @param lattice_ref  : so that it gid of sites and bonds can be modified here
  */
 void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13 &lattice_ref) {
-    cout << "merge_cluster_with" << endl;
+//    cout << "merge_cluster_with" << endl;
     int gid = _cluster_list[cluster_A_id].get_gid();
-    cout << "cluster " << cluster_A_id << " gid " << gid << endl;
-    cout << "cluster " << cluster_B_id << " gid " << endl;
-    cout << "cauing error " << __FILE__ << " " << __LINE__ << endl;
+//    cout << "cluster " << cluster_A_id << " gid " << gid << endl;
+//    cout << "cluster " << cluster_B_id << " gid " << endl;
+//    cout << "cauing error " << __FILE__ << " " << __LINE__ << endl;
     auto bondstmp = _cluster_list[cluster_B_id].get_bonds();
-    cout << "bonds size " << bondstmp.size() << " why?" << endl;
+//    cout << "bonds size " << bondstmp.size() << " why?" << endl;
     for (auto bb : bondstmp){ //
         lattice_ref.set_bond_gid_by_id(bb, gid);
     }
