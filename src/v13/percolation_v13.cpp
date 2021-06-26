@@ -165,18 +165,22 @@ void SitePercolation_v13::init_clusters() {
 void SitePercolation_v13::reset() {
     Percolation_v13::reset();
 
-    init_clusters();
-    shuffle_indices();
+    site_ids_indices = lattice_ref.get_site_id_list();;
     current_idx = 0;
-    after_wrapping = false;
-    wrapping_cluster_id = -1;
-    largest_cluster_sz = 0;
-    largest_cluster_id = -1;
-    entropy_value = max_entropy;
     occupied_site_count = 0;
     site_count_pc = 0;
-    selected_id=-1;
+    selected_id =-1;
+    cluster_count = -1;
+    largest_cluster_sz = 0;
+    largest_cluster_id = -1;
+    max_entropy = 0;
+    entropy_value = max_entropy;
+    after_wrapping = false;
+    wrapping_cluster_id = -1;
+
 //# print("Initial entropy ", self.entropy_value)
+    init_clusters();
+    shuffle_indices();
 }
 
 double SitePercolation_v13::entropy_v1() {
@@ -201,6 +205,14 @@ double SitePercolation_v13::order_param_wrapping() {
     if (after_wrapping) {
 //# print("wrapping cluster id ", self.wrapping_cluster_id)
         double count = cluster_pool_ref.get_cluster_bond_count(wrapping_cluster_id);
+#ifdef UNIT_TEST
+    if(count <= 0){
+        cout << "Error . After wrapping, number of bond in the wrapping cluster cannot be zero " << count << endl;
+        cout << "wrapping_cluster_id " << wrapping_cluster_id << endl;
+        cluster_pool_ref.view(0);
+        exit(-1);
+    }
+#endif
         return count / lattice_ref.get_bond_count();
     }
     return 0;
@@ -443,12 +455,28 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
 //# print("merging clusters ", bond_gids)
     int ref_sz = 0,    root_clstr = bond_gids[0];
     for (auto bbg : bond_gids) {
+        if(after_wrapping && bbg == wrapping_cluster_id){
+            root_clstr = wrapping_cluster_id;
+            break;
+        }
         int sz = cluster_pool_ref.get_cluster_bond_count(bbg);
         if (sz >= ref_sz) {
             root_clstr = bbg;
             ref_sz = sz;
         }
     }
+#ifdef UNIT_TEST
+    if(after_wrapping){
+        for(auto bbg: bond_gids){
+            if (bbg == wrapping_cluster_id && root_clstr != wrapping_cluster_id){
+                cout << "Error. Wrapping cluster is connected to one of the neighbors but it's not the root cluster" << endl;
+
+                exit(-1);
+            }
+        }
+    }
+
+#endif
 
 //    cout << "root cluster is " << root_clstr << endl;
 //    cout << "Assign and relabel currently selected site" << endl;
@@ -612,16 +640,17 @@ void SitePercolationL0_v13::run_once() {
     }
 
 #ifdef UNIT_TEST
-//    P2 = order_param_wrapping();
-//    P1 = order_param_largest_clstr();
+//    P1 = order_param_wrapping();
+//    P2 = order_param_largest_clstr();
 
     if (abs(P1-1.0) > 1e-6){
-        cout << "Error : order parameter P1 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "Error : order parameter wrapping P1 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P1 = " << P1 << endl;
         exit(-1);
     }
 
     if (abs(P2-1.0) > 1e-6){
-        cout << "Error : order parameter P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "Error : order parameter largest P2 not equal to 1.0. line " << __LINE__ << endl;
         cout << "P2 = " << P2 << endl;
         exit(-1);
     }
