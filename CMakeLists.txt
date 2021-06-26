@@ -8,7 +8,7 @@ set(CMAKE_CXX_STANDARD 11)
 #set (CMAKE_MAKE_PROGRAM             /usr/bin/make)
 #SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG")
 #SET( CMAKE_CXX_FLAGS  "-Wall -D UNIT_TEST")
-#SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
+SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall")
 #SET( CMAKE_CXX_FLAGS  "-Wall -O3")
 #SET( CMAKE_CXX_FLAGS  "-Wall -O3 -pthread -fopenmp")
@@ -94,6 +94,24 @@ set(SOURCE_FILES
         src/tests/test_v10.cpp
         src/tests/test_v10.h
         src/percolation/percolation_v12.cpp
-        src/percolation/percolation_v12.h src/v13/bond_v13.cpp src/v13/bond_v13.h src/v13/cluster.cpp src/v13/cluster.h src/v13/element_v13.cpp src/v13/element_v13.h src/v13/index_v13.cpp src/v13/index_v13.h src/v13/percolation_v13.cpp src/v13/percolation_v13.h src/v13/site_v13.cpp src/v13/site_v13.h src/tests/test_v13.cpp src/tests/test_v13.h src/v13/lattice_v13.cpp src/v13/lattice_v13.h src/v13/run_v13.cpp src/v13/run_v13.h)
+        src/percolation/percolation_v12.h
+        src/v13/bond_v13.cpp
+        src/v13/bond_v13.h
+        src/v13/cluster.cpp
+        src/v13/cluster.h
+        src/v13/element_v13.cpp
+        src/v13/element_v13.h
+        src/v13/index_v13.cpp
+        src/v13/index_v13.h
+        src/v13/percolation_v13.cpp
+        src/v13/percolation_v13.h
+        src/v13/site_v13.cpp
+        src/v13/site_v13.h
+        src/tests/test_v13.cpp
+        src/tests/test_v13.h
+        src/v13/lattice_v13.cpp
+        src/v13/lattice_v13.h
+        src/v13/run_v13.cpp
+        src/v13/run_v13.h)
 
 add_executable(sqlattice ${SOURCE_FILES})

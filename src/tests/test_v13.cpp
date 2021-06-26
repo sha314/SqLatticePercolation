@@ -25,26 +25,38 @@ void test_lattice() {
 
 void test_detect_wrapping() {
 //# take arguments from commandline
+    cout << "Got here " << __LINE__ << endl;
     auto sq_lattice_p = SitePercolationL0_v13(6, 18, false);
+    cout << "Got here " << __LINE__ << endl;
 //    sq_lattice_p.setRandomState(0, true);
 
 //# sq_lattice_p.viewLattice(3)
 //# sq_lattice_p.viewCluster()
     int i = 0;
+    cout << "Got here " << __LINE__ << endl;
     while (sq_lattice_p.place_one_site()) {
+        double H1 = sq_lattice_p.entropy_v1();
+        double H2 = sq_lattice_p.entropy_v2();
         cout << "p= " << sq_lattice_p.occupation_prob() <<
-             " entropy_v1 " << sq_lattice_p.entropy_v1() <<
-             " entropy_v2 " << sq_lattice_p.entropy_v2() <<
+             " entropy_v1 " << H1 <<
+             " entropy_v2 " << H2 <<
              " order " << sq_lattice_p.order_param_wrapping() << endl;
 //        sq_lattice_p.viewLattice(3);
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
+#ifdef UNIT_TEST
+    if (abs(H1-H2) > 1e-5){
+        cout << "Error : entropy not equal " << __LINE__ << endl;
+        exit(-1);
+    }
+
+#endif
         sq_lattice_p.viewCluster(1);
         i += 1;
         if (sq_lattice_p.detect_wrapping()) {
             cout << "p= " << sq_lattice_p.occupation_prob() <<
-                 " entropy_v1 " << sq_lattice_p.entropy_v1() <<
-                 " entropy_v2 " << sq_lattice_p.entropy_v2() <<
+                 " entropy_v1 " << H1 <<
+                 " entropy_v2 " << H2 <<
                  " order " << sq_lattice_p.order_param_wrapping() << endl;
             cout << "Wrapping detected ***************** <<<" << endl;
             break;
@@ -112,7 +124,7 @@ void run_ensemble_v13(int argc, char **argv){
     cout << "length        = argv[1]" << endl;
     cout << "ensemble size = argv[2]" << endl;
 //    cout << "rsbd l        = argv[3]" << endl;
-
+    if (argc <=2 ) cerr << "Not enough arguments " << endl;
     int length = stoi(argv[1]);
     int ensemble_size = stoi(argv[2]);
 

@@ -37,8 +37,12 @@ using namespace std;
 void run_in_main(int argc, char** argv){
     cout << "length = atoi(argv[1])" << endl;
     cout << "ensemble_size = atoi(argv[2])" << endl;
-    value_type length = atoi(argv[1]);
-    value_type ensemble_size = atoi(argv[2]);
+    value_type length = 5;
+    value_type ensemble_size = 5;
+    if (argc >=3) {
+        value_type length = atoi(argv[1]);
+        value_type ensemble_size = atoi(argv[2]);
+    }
 
 //    cmd_moment_conservation(argc, argv);
 
