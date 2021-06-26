@@ -12,6 +12,7 @@ void test_reset();
 
 using namespace std;
 
+void percolation_seed_length_pair(int length, value_type seed);
 
 void test_lattice() {
     int length = 6;
@@ -72,8 +73,28 @@ void test_detect_wrapping() {
 }
 
 void test_percolation() {
-//# take arguments from commandline
-    auto sq_lattice_p = SitePercolationL0_v13(6, 18, false);
+    std::random_device _rd;
+    value_type _random_state = _rd();
+    std::mt19937 _random_engine;
+
+    _random_engine.seed(_random_state); // seeding
+
+
+    int max_length = 100;
+    for (int i=0; i < 100; ++ i) {
+
+        int length = _random_engine() % max_length;
+        value_type seed = _random_engine();
+        cout << "Test run " << i <<  " => Length, seed " << max_length << ", " << seed << " ****************" << endl;
+        percolation_seed_length_pair(max_length, seed);
+        cout << "Test run " << i << " status : success" << endl;
+    }
+
+}
+
+void percolation_seed_length_pair(int length, value_type seed) {
+
+    auto sq_lattice_p = SitePercolationL0_v13(length, seed, false);
 //    sq_lattice_p.setRandomState(0, true);
 
 //# sq_lattice_p.viewLattice(3)
@@ -82,10 +103,10 @@ void test_percolation() {
     while (sq_lattice_p.place_one_site()) {
         double H1 = sq_lattice_p.entropy_v1();
         double H2 = sq_lattice_p.entropy_v2();
-        cout << "p= " << sq_lattice_p.occupation_prob() <<
-             " entropy_v1 " << H1 <<
-             " entropy_v2 " << H2 <<
-             " order " << sq_lattice_p.order_param_wrapping() << endl;
+//        cout << "p= " << sq_lattice_p.occupation_prob() <<
+//             " entropy_v1 " << H1 <<
+//             " entropy_v2 " << H2 <<
+//             " order " << sq_lattice_p.order_param_wrapping() << endl;
 //        sq_lattice_p.viewLattice(3);
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
@@ -96,8 +117,8 @@ void test_percolation() {
         }
 
 #endif
-        sq_lattice_p.viewCluster(1);
-        i += 1;
+//        sq_lattice_p.viewCluster(1);
+//        i += 1;
         sq_lattice_p.detect_wrapping();
 //        if (i > 8) break;
 
@@ -124,7 +145,7 @@ void test_percolation() {
     }
 
 #endif
-    sq_lattice_p.viewLattice(3);
+//    sq_lattice_p.viewLattice(3);
 //    sq_lattice_p.viewLattice(4);
 //    sq_lattice_p.viewLattice(1);
 //    sq_lattice_p.viewCluster();

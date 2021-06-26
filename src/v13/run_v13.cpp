@@ -45,6 +45,7 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
         auto t_start = std::chrono::system_clock::now();
 
         percolation.reset();
+//        SitePercolationL0_v13 percolation(length, 0, true);
 //        percolation.viewCluster(1);
         percolation.run_once();
 //        percolation.viewCluster(1);

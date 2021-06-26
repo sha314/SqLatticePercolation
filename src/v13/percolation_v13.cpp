@@ -284,6 +284,13 @@ bool SitePercolation_v13::place_one_site() {
 //# self.lattice_ref.set_site_gid_by_id(selected_id, merged_cluster_index)
 //# self.cluster_pool_ref.add_sites(merged_cluster_index, selected_id)
         occupied_site_count += 1;
+
+#ifdef UNIT_TEST
+        if ( bond_neighbors.size() != 4){
+            cout << "Number of bond neighbor must be 4 : " << __LINE__ << endl;
+            exit(-1);
+        }
+#endif
     }
     return flag;
 }
@@ -605,8 +612,8 @@ void SitePercolationL0_v13::run_once() {
     }
 
 #ifdef UNIT_TEST
-    P2 = order_param_wrapping();
-    P1 = order_param_largest_clstr();
+//    P2 = order_param_wrapping();
+//    P1 = order_param_largest_clstr();
 
     if (abs(P1-1.0) > 1e-6){
         cout << "Error : order parameter P1 not equal to 1.0. line " << __LINE__ << endl;
