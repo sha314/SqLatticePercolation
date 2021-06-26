@@ -45,7 +45,7 @@ void test_detect_wrapping() {
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
-    if (abs(H1-H2) > 1e-5){
+    if (abs(H1-H2) > 1e-6){
         cout << "Error : entropy not equal " << __LINE__ << endl;
         exit(-1);
     }
@@ -71,9 +71,69 @@ void test_detect_wrapping() {
 //    sq_lattice_p.viewCluster();
 }
 
+void test_percolation() {
+//# take arguments from commandline
+    auto sq_lattice_p = SitePercolationL0_v13(6, 18, false);
+//    sq_lattice_p.setRandomState(0, true);
+
+//# sq_lattice_p.viewLattice(3)
+//# sq_lattice_p.viewCluster()
+    int i = 0;
+    while (sq_lattice_p.place_one_site()) {
+        double H1 = sq_lattice_p.entropy_v1();
+        double H2 = sq_lattice_p.entropy_v2();
+        cout << "p= " << sq_lattice_p.occupation_prob() <<
+             " entropy_v1 " << H1 <<
+             " entropy_v2 " << H2 <<
+             " order " << sq_lattice_p.order_param_wrapping() << endl;
+//        sq_lattice_p.viewLattice(3);
+//        sq_lattice_p.viewLattice(4);
+//        sq_lattice_p.lattice_ref.print_bonds();
+#ifdef UNIT_TEST
+        if (abs(H1-H2) > 1e-6){
+            cout << "Error : entropy not equal " << __LINE__ << endl;
+            exit(-1);
+        }
+
+#endif
+        sq_lattice_p.viewCluster(1);
+        i += 1;
+        sq_lattice_p.detect_wrapping();
+//        if (i > 8) break;
+
+    }
+#ifdef UNIT_TEST
+    double P2 = sq_lattice_p.order_param_wrapping();
+    double P1 = sq_lattice_p.order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter P1 not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    double p = sq_lattice_p.occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+#endif
+    sq_lattice_p.viewLattice(3);
+//    sq_lattice_p.viewLattice(4);
+//    sq_lattice_p.viewLattice(1);
+//    sq_lattice_p.viewCluster();
+}
+
 void test_v13(int argc, char **argv) {
 //    test_lattice();
 //    test_detect_wrapping();
+//    test_percolation();
 //    test_reset();
     run_ensemble_v13(argc, argv);
 }

@@ -604,5 +604,28 @@ void SitePercolationL0_v13::run_once() {
         order_largest_list.push_back(P2);
     }
 
+#ifdef UNIT_TEST
+    P2 = order_param_wrapping();
+    P1 = order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter P1 not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    p = occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+#endif
+
     first_run = false;
 }
