@@ -170,10 +170,9 @@ void SitePercolation_v13::reset() {
     occupied_site_count = 0;
     site_count_pc = 0;
     selected_id =-1;
-    cluster_count = -1;
+    cluster_count = lattice_ref.get_bond_count();
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
-    max_entropy = 0;
     entropy_value = max_entropy;
     after_wrapping = false;
     wrapping_cluster_id = -1;
@@ -188,16 +187,24 @@ double SitePercolation_v13::entropy_v1() {
     int empty_count = 0;
     for(int i=0; i < cluster_count;++i){
         double b_count = cluster_pool_ref.get_cluster_bond_count(i);
-        double mu = b_count / lattice_ref.get_bond_count();
-        if (mu==0) {
+        if (b_count==0) {
             empty_count += 1;
             continue;
         }
+        double mu = b_count / lattice_ref.get_bond_count();
         double log_mu = log(mu);
         H += mu * log_mu;
     }
 //    cout << "empty cluster count " << empty_count << endl;
-
+#ifdef UNIT_TEST
+    if (cluster_count <= 0){
+        cout << "Error. Cluster count can't be zero : " << __LINE__ << " file " << __FILE__ << endl;
+        cout << "cluster_count " << cluster_count << endl;
+    }
+    if (empty_count == cluster_count){
+        cout << "Error. All clusters are empty?! : " << __LINE__ << " file " << __FILE__ << endl;
+    }
+#endif
     return -H;
 }
 
@@ -637,6 +644,17 @@ void SitePercolationL0_v13::run_once() {
         entropy_list.push_back(H);
         order_wrapping_list.push_back(P1);
         order_largest_list.push_back(P2);
+#ifdef UNIT_TEST
+        double  H1 = entropy_v1();
+        double  H2 = entropy_v2();
+        if(abs(H1 - H2) > 1e-6){
+            cout << "Error : Entropy v1 and v2 are not equal : " << __LINE__ << endl;
+            cout << "H1 = " << H1 << endl;
+            cout << "H2 = " << H2 << endl;
+            cout << "max_entropy  " << max_entropy << endl;
+            exit(-1);
+        }
+#endif
     }
 
 #ifdef UNIT_TEST

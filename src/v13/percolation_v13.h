@@ -69,6 +69,8 @@ class SitePercolation_v13: public Percolation_v13{
     long cluster_count = -1;
     long largest_cluster_sz = 0;
     int largest_cluster_id = -1;
+
+protected:
     double max_entropy = 0;
     double entropy_value = 0;
     bool after_wrapping = false;
