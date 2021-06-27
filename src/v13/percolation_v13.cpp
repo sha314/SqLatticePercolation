@@ -34,14 +34,22 @@ RelativeIndex_v13 Percolation_v13::get_change_in_relative_index(RelativeIndex_v1
     return RelativeIndex_v13(change);
 }
 
+/**
+ * Get the gid of the bonds given in the argument.
+ * @param bond_ids : ids of bonds
+ * @return gids of bonds
+ */
 vector<int> Percolation_v13::get_bond_gids(std::vector<int> &bond_ids) {
-    set<int> gids;
+//    set<int> gids;
+    vector<int> gids;
     for (auto bb : bond_ids) {
         int gid = lattice_ref.get_bond_by_id(bb).get_gid();
-        gids.insert(gid);
+//        gids.insert(gid);
+        gids.push_back(gid);
     }
-    vector<int> vec(gids.begin(), gids.end());
-    return vec;
+//    vector<int> vec(gids.begin(), gids.end());
+//    return vec;
+    return gids;
 }
 
 vector<int> Percolation_v13::get_site_gids(std::vector<int> &site_ids) {
@@ -444,12 +452,12 @@ int SitePercolation_v13::merge_clusters(std::vector<int> &bond_neighbors) {
 
 /**
  * merging with relabeling relative indices
- * @param bond_neighbor
+ * @param bond_neighbor_ids
  * @return
  */
-int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
+int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor_ids) {
 
-    auto bond_neighbors = uniqe_gid_bond_neighbors(bond_neighbor);
+    auto bond_neighbors = uniqe_gid_bond_neighbors(bond_neighbor_ids);
     auto bond_gids = get_bond_gids(bond_neighbors);
 //# site_gids = self.get_site_gids(site_neighbors)
 //# print("site_gids ", site_gids)
@@ -460,13 +468,14 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
 
 //# print("set minus ", set(site_gids) - set(bond_gids))
 //# print("merging clusters ", bond_gids)
-    int ref_sz = 0,    root_clstr = bond_gids[0];
+    int root_clstr = bond_gids[0];
+    value_type ref_sz = 0;
     for (auto bbg : bond_gids) {
         if(after_wrapping && bbg == wrapping_cluster_id){
             root_clstr = wrapping_cluster_id;
             break;
         }
-        int sz = cluster_pool_ref.get_cluster_bond_count(bbg);
+        value_type sz = cluster_pool_ref.get_cluster_bond_count(bbg);
         if (sz >= ref_sz) {
             root_clstr = bbg;
             ref_sz = sz;
@@ -481,6 +490,12 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
                 exit(-1);
             }
         }
+    }
+
+    set<int> tmp(bond_gids.begin(), bond_gids.end());
+    if(tmp.size() != bond_gids.size()){
+        cout << "Error. duplicate gids " << __LINE__ << endl;
+        exit(-1);
     }
 
 #endif
@@ -544,11 +559,16 @@ int SitePercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor) {
 
 }
 
-std::vector<int> SitePercolation_v13::uniqe_gid_bond_neighbors(std::vector<int> &bond_neighbors) {
+/**
+ * Return bonds ids with unique gids.
+ * @param bond_neighbors_ids : bond ids.
+ * @return bonds ids
+ */
+std::vector<int> SitePercolation_v13::uniqe_gid_bond_neighbors(std::vector<int> &bond_neighbors_ids) {
 //    cout << "bond_neighbors {";
 //    print_vectors(bond_neighbors, "}\n");
     vector<int> gids, unique_bond_ids;
-    for (int bb : bond_neighbors) {
+    for (int bb : bond_neighbors_ids) {
         int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
         if (find_elm(gids, bbg))  continue;
         else {

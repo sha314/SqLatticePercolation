@@ -154,9 +154,9 @@ void percolation_seed_length_pair(int length, value_type seed) {
 void test_v13(int argc, char **argv) {
 //    test_lattice();
 //    test_detect_wrapping();
-//    test_percolation();
+    test_percolation();
 //    test_reset();
-    run_ensemble_v13(argc, argv);
+//    run_ensemble_v13(argc, argv);
 }
 
 void test_reset() {
