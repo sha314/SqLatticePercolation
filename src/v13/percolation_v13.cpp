@@ -274,25 +274,25 @@ std::vector<int> SitePercolation_v13::get_connected_sites(Site_v13 site, std::ve
     return neighbor_sites;
 }
 
-bool SitePercolation_v13::select_site() {
+P_STATUS SitePercolation_v13::select_site() {
 
     if (current_idx >= lattice_ref.get_site_count()) {
-//# print("No sites to occupy")
-        return false;
+        cout << "No sites to occupy" << endl;
+        return P_STATUS::EMPTY_SITE_LIST;
     }
     selected_id = site_ids_indices[current_idx];
     current_idx += 1;
 //    current_site = lattice_ref.get_site_by_id(selected_id);
 //    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
 //    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
-    return true;
+    return P_STATUS::SUCESS;
 
 }
 
 bool SitePercolation_v13::place_one_site() {
 //    cout << "************************ place_one_site. count " << current_idx << endl;
     auto flag = select_site();
-    if(flag) {
+    if(flag == P_STATUS::SUCESS) {
 
 //        cout << "selected site ", self.current_site.get_index(), " id ", self.current_site.get_id())
         lattice_ref.init_relative_index(selected_id);  // initialize        relative index
@@ -318,8 +318,11 @@ bool SitePercolation_v13::place_one_site() {
             exit(-1);
         }
 #endif
+        return true;
+    }else if(flag == P_STATUS::EMPTY_SITE_LIST){
+        return false;
     }
-    return flag;
+
 }
 
 void SitePercolation_v13::track_largest_cluster(int new_cluster) {

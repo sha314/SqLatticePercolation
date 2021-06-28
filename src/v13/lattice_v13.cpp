@@ -410,3 +410,30 @@ void Lattice_v13::view_site_gids() {
     cout << "<--Relative index - VIEW END-->" << endl;
 
 }
+
+vector<int> Lattice_v13::get_all_neighbor_sites(int central_site_id) {
+    auto bonds = get_neighbor_bonds(central_site_id);
+    vector<int> four_neighbors;
+    for(auto bid: bonds){
+        auto connected_sites = get_neighbor_sites(bid);
+        vector<int> tmp(connected_sites.begin(), connected_sites.end());
+        if (tmp.size() != 2){
+            cout << "func:get_all_neighbor_sites -> len(connected_sites) != 1" << endl;
+//            cout << get_bond_by_id(bid) << endl;
+            exit(-1);
+        }
+        for(auto aa: tmp){
+            if(aa == central_site_id) continue;
+            four_neighbors.push_back(aa);
+        }
+
+    }
+
+    if(four_neighbors.size() != 4){
+        cout << "Number of neighbors must be 4" << endl;
+        exit(-1);
+    }
+
+
+    return four_neighbors;
+}

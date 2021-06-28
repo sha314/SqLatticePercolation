@@ -11,7 +11,7 @@ class Element_v13{
     int g_id = -1;
 
 public:
-    void reset(){
+    virtual void reset(){
         g_id = -1;
 //        id = -1;
     }

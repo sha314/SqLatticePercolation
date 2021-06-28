@@ -108,5 +108,7 @@ public:
     void init_relative_index(int id);
     void set_relative_index(int id, RelativeIndex_v13 relative_index);
 
+    std::vector<int> get_all_neighbor_sites(int central_site_id);
+
 };
 #endif //SQLATTICEPERCOLATION_LATTICE_V13_H

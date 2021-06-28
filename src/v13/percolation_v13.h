@@ -12,6 +12,7 @@
 #include <set>
 #include <algorithm>
 #include <random>
+#include "status.h"
 
 class Percolation_v13{
 
@@ -60,17 +61,21 @@ public:
 
 class SitePercolation_v13: public Percolation_v13{
     std::string signature = "SitePercolation";
-    std::vector<int> site_ids_indices;
-    int current_idx = 0;
-    int occupied_site_count = 0;
+
+
+
     size_t site_count_pc = 0;
 //    Site_v13 current_site;
-    int selected_id =-1;
+
     long cluster_count = -1;
     long largest_cluster_sz = 0;
     int largest_cluster_id = -1;
 
 protected:
+    int occupied_site_count = 0;
+    int current_idx = 0;
+    std::vector<int> site_ids_indices;
+    int selected_id =-1;
     double max_entropy = 0;
     double entropy_value = 0;
     bool after_wrapping = false;
@@ -91,7 +96,7 @@ public:
     int get_neighbor_site(int central_id, int connecting_bond_id);
     std::vector<int> get_connected_sites(Site_v13 site, std::vector<int>& bond_neighbors);
 
-    bool select_site();
+    virtual P_STATUS select_site();
     bool place_one_site();
     void track_largest_cluster(int new_cluster);
     void entropy_subtract(std::vector<int>& bond_neighbors);

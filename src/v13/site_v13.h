@@ -17,6 +17,9 @@ class Site_v13: public Element_v13{
     Index_v13 index;
     RelativeIndex_v13 relativeIndex;
 
+    int first_nn_count = 4;
+    int second_directional_nn_count = 4;
+
 public:
     Site_v13() = default;
     Site_v13(int row, int col){
@@ -27,12 +30,14 @@ public:
         Element_v13::reset();
 //        connecting_bond_ids.clear();
         relativeIndex = RelativeIndex_v13();
+        first_nn_count = 4;
+        second_directional_nn_count = 4;
     }
 
     Index_v13 get_index(){ return index;}
     RelativeIndex_v13 get_relative_index(){ return relativeIndex;}
-    int get_gid(){ return Element_v13::get_gid();}
-    int get_id(){ return Element_v13::get_id();}
+//    int get_gid(){ return Element_v13::get_gid();}
+//    int get_id(){ return Element_v13::get_id();}
     std::string get_str(int formatt=0){
         std::stringstream ss;
         if (formatt == 1){
@@ -74,6 +79,25 @@ public:
     void set_relative_index(RelativeIndex_v13 ri){relativeIndex = ri;}
 
     bool is_root(){return relativeIndex.x_coord() == 0 && relativeIndex.y_coord() == 0;}
+
+    bool is_occupied(){ return get_id() >= 0;}
+
+    void reduce_1st_nn(){
+        if (first_nn_count <=0)        return;
+        first_nn_count -= 1;
+    }
+
+    /**
+     *
+     * @param type 1 -> L1 and 2 -> L2 percolation
+     *
+     * @return
+     */
+    bool is_removable(int type){
+        if (type == 1)  return first_nn_count == 0;
+        else if (type == 2) return second_directional_nn_count == 0;
+        return false;
+    }
 };
 
 
