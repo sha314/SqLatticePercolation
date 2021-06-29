@@ -204,6 +204,12 @@ void Lattice_v13::print_sites(){
 
 
 Site_v13& Lattice_v13::get_site_by_id(int  id) {
+#ifdef UNIT_TEST
+    if (id >= site_matrix.size()){
+        cout << "index out of range [" << id  << "] : " << __FILE__<< " : " << __LINE__  << endl;
+        exit(-1);
+    }
+#endif
 //    cout << "return site[" << id << "] => " << site_matrix[id].get_str(0) << endl;
     return site_matrix[id];
 }

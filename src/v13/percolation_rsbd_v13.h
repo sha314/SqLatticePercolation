@@ -24,6 +24,8 @@ public:
     SitePercolationL1_v13(SitePercolationL1_v13&&) = default;
     std::string get_signature() override { return SitePercolation_v13::get_signature() + "L1_";};
 
+    void reset() {SitePercolation_v13::reset(); x_occupied=0;}
+
 
     P_STATUS select_site() override;
 
@@ -47,4 +49,4 @@ public:
 
 
 
-#endif //SQLATTICEPERCOLATION_PERCOLATION_H
+#endif //SQLATTICEPERCOLATION_PERCOLATION_RSBD_H

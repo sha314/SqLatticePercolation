@@ -3,6 +3,7 @@
 //
 
 #include "percolation_rsbd_v13.h"
+#include "percolation_v13.h"
 #include "status.h"
 
 using namespace std;
@@ -20,12 +21,23 @@ P_STATUS SitePercolationL1_v13::select_site() {
         cout << "No sites to occupy" << endl;
         return P_STATUS::EMPTY_SITE_LIST;
     }
-    value_type rnd = current_idx + _random_engine() % site_ids_indices.size();
-
+    value_type rnd = random_int(current_idx, site_ids_indices.size());
+    if(rnd >= site_ids_indices.size()){
+        cout << "index out of range " << __LINE__ << endl;
+        cout << rnd << endl;
+        cout << site_ids_indices.size() << endl;
+    }
     auto central_X = site_ids_indices[rnd];
+    cout << "central_X " << central_X << endl;
 
+//    int gid = lattice_ref.get_site_by_id(central_X).get_gid();
+//    cout << "gid " << gid << endl;
     if(lattice_ref.get_site_by_id(central_X).is_occupied()){
+//        viewLattice(0);
+//        viewLattice(1);
+//        viewLattice(2);
         cout << "X is occupied" << endl;
+//        exit(-1);
         ++x_occupied;
 
         auto sites = lattice_ref.get_all_neighbor_sites(central_X);
@@ -46,7 +58,13 @@ P_STATUS SitePercolationL1_v13::select_site() {
             }
             return P_STATUS::CURRENT_SITE_NOT_EMPTY;
         }
+        else {
+            selected_id = central2;
+        }
 
+    }
+    else {
+        selected_id = central_X;
     }
 
 
@@ -55,13 +73,17 @@ P_STATUS SitePercolationL1_v13::select_site() {
     occupied_site_count += 1;
 
 //    current_site = lattice_ref.get_site_by_id(selected_id);
-//    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
-//    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
+    cout << "selected id " << selected_id << " site " << lattice_ref.get_site_by_id(selected_id).get_str() << endl;
+    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
     return P_STATUS::SUCESS;
 
 
 
 
 
+}
+
+SitePercolationL1_v13::SitePercolationL1_v13(int length, value_type seed, bool generate_seed):SitePercolation_v13(length, seed) {
+    setRandomState(seed, generate_seed);
 }
 

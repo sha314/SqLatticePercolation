@@ -44,7 +44,8 @@ public:
             ss << "[" << std::setw(5) << get_gid() << "," << std::setw(5) << get_id() << "]";
         }
         else{
-            ss << std::setw(5) << get_id() <<  "(" << std::setw(5) << index.row() << ","
+            int iidd = Element_v13::get_id();
+            ss << std::setw(5) << iidd  <<  "(" << std::setw(5) << index.row() << ","
                << std::setw(5) << index.col() << ")";
         }
 
@@ -80,7 +81,11 @@ public:
 
     bool is_root(){return relativeIndex.x_coord() == 0 && relativeIndex.y_coord() == 0;}
 
-    bool is_occupied(){ return get_id() >= 0;}
+    bool is_occupied(){
+        int gid = get_gid();
+//        std::cout << "gid " << gid << std::endl;
+        return gid >= 0;
+    }
 
     void reduce_1st_nn(){
         if (first_nn_count <=0)        return;

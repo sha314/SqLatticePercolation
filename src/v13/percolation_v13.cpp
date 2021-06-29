@@ -319,10 +319,12 @@ bool SitePercolation_v13::place_one_site() {
         }
 #endif
         return true;
-    }else if(flag == P_STATUS::EMPTY_SITE_LIST){
+    }
+    else if(flag == P_STATUS::EMPTY_SITE_LIST){
         return false;
     }
 
+    return true; // to keep the loop running
 }
 
 void SitePercolation_v13::track_largest_cluster(int new_cluster) {

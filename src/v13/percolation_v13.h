@@ -122,6 +122,14 @@ public:
     bool detect_wrapping();
     Site_v13& get_current_site(); // TODO
     int find_root_cluster(const std::vector<int> &bond_gids) ;
+
+    value_type random_int(int min, int max){
+        if (min <0 || max <0 || max >= min){
+            std::cout << "Error. random_int. wrong range" << std::endl;
+            return size_t(min);
+        }
+        return min + _random_engine() % (max - min);
+    }
 };
 
 
