@@ -16,7 +16,7 @@
 
 
 
-class SitePercolationL1_v13: public SitePercolation_v13{
+class SitePercolationL1_v13: public SitePercolationL0_v13{
     int x_occupied = 0;
 public:
 
@@ -24,7 +24,7 @@ public:
     SitePercolationL1_v13(SitePercolationL1_v13&&) = default;
     std::string get_signature() override { return SitePercolation_v13::get_signature() + "L1_";};
 
-    void reset() {SitePercolation_v13::reset(); x_occupied=0;}
+    void reset() {SitePercolationL0_v13::reset(); x_occupied=0;}
 
 
     P_STATUS select_site() override;

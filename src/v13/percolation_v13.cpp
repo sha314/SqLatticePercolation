@@ -291,8 +291,8 @@ P_STATUS SitePercolation_v13::select_site() {
 
 bool SitePercolation_v13::place_one_site() {
 //    cout << "************************ place_one_site. count " << current_idx << endl;
-    auto flag = select_site();
-    if(flag == P_STATUS::SUCESS) {
+    status = select_site();
+    if(status == P_STATUS::SUCESS) {
 
 //        cout << "selected site ", self.current_site.get_index(), " id ", self.current_site.get_id())
         lattice_ref.init_relative_index(selected_id);  // initialize        relative index
@@ -320,7 +320,7 @@ bool SitePercolation_v13::place_one_site() {
 #endif
         return true;
     }
-    else if(flag == P_STATUS::EMPTY_SITE_LIST){
+    else if(status == P_STATUS::EMPTY_SITE_LIST){
         return false;
     }
 
@@ -837,6 +837,78 @@ void SitePercolationL0_v13::run_once() {
         exit(-1);
     }
 
+    cout << "entropy_list {" << endl;
+    for(auto hh: entropy_list){
+        cout << hh << endl;
+    }
+    cout << "              }" << endl;
+#endif
+
+    first_run = false;
+}
+
+/**
+ * make use of STATUS. Since for L1 and L2 we can have place_one_site() returning true but no site was allocated.
+ */
+void SitePercolationL0_v13::run_once_v2() {
+//# sq_lattice_p.viewLattice(3)
+//# sq_lattice_p.viewCluster()
+    double p, H, P1, P2;
+
+    while (place_one_site()) {
+        if (status != P_STATUS::SUCESS) continue;
+        detect_wrapping();
+        if (first_run) {
+            p = occupation_prob();
+            occupation_prob_list.push_back(p);
+        }
+        H = entropy();
+        P1 = order_param_wrapping();
+        P2 = order_param_largest_clstr();
+
+        entropy_list.push_back(H);
+        order_wrapping_list.push_back(P1);
+        order_largest_list.push_back(P2);
+#ifdef UNIT_TEST
+        double  H1 = entropy_v1();
+        double  H2 = entropy_v2();
+        if(abs(H1 - H2) > 1e-6){
+            cout << "Error : Entropy v1 and v2 are not equal : " << __LINE__ << endl;
+            cout << "H1 = " << H1 << endl;
+            cout << "H2 = " << H2 << endl;
+            cout << "max_entropy  " << max_entropy << endl;
+            exit(-1);
+        }
+#endif
+    }
+
+#ifdef UNIT_TEST
+//    P1 = order_param_wrapping();
+//    P2 = order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter wrapping P1 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P1 = " << P1 << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter largest P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    p = occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    cout << "entropy_list {" << endl;
+    for(auto hh: entropy_list){
+        cout << hh << endl;
+    }
+    cout << "              }" << endl;
 #endif
 
     first_run = false;

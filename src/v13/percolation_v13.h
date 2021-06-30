@@ -72,6 +72,9 @@ class SitePercolation_v13: public Percolation_v13{
     int largest_cluster_id = -1;
 
 protected:
+    P_STATUS status; // holds the current status of percolation.
+    // if site occupation was successful or not... Helpful for L1, L2 percolation RSBD
+
     int occupied_site_count = 0;
     int current_idx = 0;
     std::vector<int> site_ids_indices;
@@ -155,6 +158,7 @@ public:
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
 
     void run_once();
+    void run_once_v2();
 
 };
 

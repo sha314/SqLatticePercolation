@@ -85,10 +85,10 @@ void percolation_seed_length_pairL1(int length, value_type seed) {
     while (sq_lattice_p.place_one_site()) {
         double H1 = sq_lattice_p.entropy_v1();
         double H2 = sq_lattice_p.entropy_v2();
-//        cout << "p= " << sq_lattice_p.occupation_prob() <<
-//             " entropy_v1 " << H1 <<
-//             " entropy_v2 " << H2 <<
-//             " order " << sq_lattice_p.order_param_wrapping() << endl;
+        cout << "p= " << sq_lattice_p.occupation_prob() <<
+             " entropy_v1 " << H1 <<
+             " entropy_v2 " << H2 <<
+             " order " << sq_lattice_p.order_param_wrapping() << endl;
 //        sq_lattice_p.viewLattice(3);
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
@@ -244,10 +244,10 @@ void test_v13(int argc, char **argv) {
 //    test_lattice();
 //    test_detect_wrapping();
 //    test_percolation_L0();
-    test_percolation_L1();
+//    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-//    run_ensemble_v13(argc, argv);
+    run_ensemble_v13(argc, argv);
 }
 
 void test_reset() {
@@ -308,8 +308,8 @@ void run_ensemble_v13(int argc, char **argv){
 //    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-    run_v13_rsbd_L0(length, ensemble_size);
-//    run_v13_rsbd_L1(length, ensemble_size);
+//    run_v13_rsbd_L0(length, ensemble_size);
+    run_v13_rsbd_L1(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 

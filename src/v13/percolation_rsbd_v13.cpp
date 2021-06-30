@@ -16,6 +16,7 @@ using namespace std;
  * @return
  */
 P_STATUS SitePercolationL1_v13::select_site() {
+//    cout << "Entry SitePercolationL1_v13::select_site " << endl;
 
     if (current_idx >= lattice_ref.get_site_count()) {
 //        cout << "No sites to occupy" << endl;
@@ -85,7 +86,7 @@ P_STATUS SitePercolationL1_v13::select_site() {
 
 }
 
-SitePercolationL1_v13::SitePercolationL1_v13(int length, value_type seed, bool generate_seed):SitePercolation_v13(length, seed) {
-    setRandomState(seed, generate_seed);
+SitePercolationL1_v13::SitePercolationL1_v13(int length, value_type seed, bool generate_seed):SitePercolationL0_v13(length, seed, generate_seed) {
+//    setRandomState(seed, generate_seed);
 }
 
