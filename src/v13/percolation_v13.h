@@ -131,6 +131,8 @@ public:
         }
         return min + _random_engine() % (max - min);
     }
+
+    size_t maxIterationLimit(){ return _length*_length;}
 };
 
 
@@ -153,7 +155,7 @@ public:
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
 
     void run_once();
-    size_t maxIterationLimit(){ return _length*_length;}
+
 };
 
 

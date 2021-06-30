@@ -18,15 +18,17 @@ using namespace std;
 P_STATUS SitePercolationL1_v13::select_site() {
 
     if (current_idx >= lattice_ref.get_site_count()) {
-        cout << "No sites to occupy" << endl;
+//        cout << "No sites to occupy" << endl;
         return P_STATUS::EMPTY_SITE_LIST;
     }
     value_type rnd = random_int(current_idx, site_ids_indices.size());
+#ifdef UNIT_TEST
     if(rnd >= site_ids_indices.size()){
         cout << "index out of range " << __LINE__ << endl;
         cout << rnd << endl;
         cout << site_ids_indices.size() << endl;
     }
+#endif
     auto central_X = site_ids_indices[rnd];
 //    cout << "central_X " << central_X << endl;
 

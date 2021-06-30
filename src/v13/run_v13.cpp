@@ -4,6 +4,7 @@
 
 #include "run_v13.h"
 #include "percolation_v13.h"
+#include "percolation_rsbd_v13.h"
 
 using namespace std;
 

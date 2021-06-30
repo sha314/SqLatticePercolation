@@ -309,6 +309,8 @@ void run_ensemble_v13(int argc, char **argv){
 
 //    int rsbd_l = stoi(argv[3]);
     run_v13_rsbd_L0(length, ensemble_size);
+//    run_v13_rsbd_L1(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
+//    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 
 }
