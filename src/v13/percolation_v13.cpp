@@ -432,6 +432,13 @@ void SitePercolation_v13::relabel_relative_indices(int connecting_bond_id) {
 }
 
 double SitePercolation_v13::occupation_prob() {
+#ifdef UNIT_TEST
+    if(occupied_site_count > _length*_length){
+        cout << "this many sites cannot be occupied : " << __FILE__ << ": " << __LINE__ << endl;
+        cout << "occupied_site_count " << occupied_site_count << endl;
+        exit(-1);
+    }
+#endif
     return double(occupied_site_count) / lattice_ref.get_site_count();
 }
 

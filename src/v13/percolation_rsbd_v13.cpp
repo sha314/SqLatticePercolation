@@ -28,7 +28,7 @@ P_STATUS SitePercolationL1_v13::select_site() {
         cout << site_ids_indices.size() << endl;
     }
     auto central_X = site_ids_indices[rnd];
-    cout << "central_X " << central_X << endl;
+//    cout << "central_X " << central_X << endl;
 
 //    int gid = lattice_ref.get_site_by_id(central_X).get_gid();
 //    cout << "gid " << gid << endl;
@@ -36,7 +36,7 @@ P_STATUS SitePercolationL1_v13::select_site() {
 //        viewLattice(0);
 //        viewLattice(1);
 //        viewLattice(2);
-        cout << "X is occupied" << endl;
+//        cout << "X is occupied" << endl;
 //        exit(-1);
         ++x_occupied;
 
@@ -70,11 +70,11 @@ P_STATUS SitePercolationL1_v13::select_site() {
 
 //    current_site = lattice_ref.get_site_by_id(selected_id);
 //# print("selected id ", self.selected_id)
-    occupied_site_count += 1;
+//    occupied_site_count += 1;
 
 //    current_site = lattice_ref.get_site_by_id(selected_id);
-    cout << "selected id " << selected_id << " site " << lattice_ref.get_site_by_id(selected_id).get_str() << endl;
-    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
+//    cout << "selected id " << selected_id << " site " << lattice_ref.get_site_by_id(selected_id).get_str() << endl;
+//    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
     return P_STATUS::SUCESS;
 
 

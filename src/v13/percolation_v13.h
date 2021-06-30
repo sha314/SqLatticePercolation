@@ -124,8 +124,9 @@ public:
     int find_root_cluster(const std::vector<int> &bond_gids) ;
 
     value_type random_int(int min, int max){
-        if (min <0 || max <0 || max >= min){
-            std::cout << "Error. random_int. wrong range" << std::endl;
+        if (min <0 || max <0 || max <= min){
+            std::cout << "Error. random_int. wrong range " << __FILE__ << " :" << __LINE__ << std::endl;
+            std::cout << "min, max = " << min << "," << max << std::endl;
             return size_t(min);
         }
         return min + _random_engine() % (max - min);
