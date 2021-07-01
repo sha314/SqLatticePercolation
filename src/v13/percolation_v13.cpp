@@ -816,7 +816,7 @@ int SitePercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
             }
 
             for(auto ss: sites){
-                auto gid = lattice_ref.get_site_gid_by_id(bb);
+                auto gid = lattice_ref.get_site_gid_by_id(ss);
                 if(gid != root_clstr){
                     cerr << "Error. gid of sites mismatch" << endl;
                     exit(-1);
