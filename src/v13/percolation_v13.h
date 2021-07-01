@@ -121,10 +121,12 @@ public:
     std::vector<int> uniqe_gid_bond_neighbors(std::vector<int>& bond_neighbors_ids);
     int merge_clusters_v2(std::vector<int>& bond_neighbor_ids);
     int merge_clusters_v3(std::vector<int>& bond_neighbor_ids);
+    int merge_clusters_v4(std::vector<int>& bond_neighbor_ids);
     void relabel_relative_indices(int connecting_bond_id);
     bool detect_wrapping();
     Site_v13& get_current_site(); // TODO
     int find_root_cluster(const std::vector<int> &bond_gids) ;
+    int find_bonds_connected_to_root_cluster(const std::vector<int> &bond_ids) ;
 
     value_type random_int(int min, int max){
         if (min <0 || max <0 || max <= min){

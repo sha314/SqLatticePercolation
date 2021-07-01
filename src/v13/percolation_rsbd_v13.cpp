@@ -88,5 +88,6 @@ P_STATUS SitePercolationL1_v13::select_site() {
 
 SitePercolationL1_v13::SitePercolationL1_v13(int length, value_type seed, bool generate_seed):SitePercolationL0_v13(length, seed, generate_seed) {
 //    setRandomState(seed, generate_seed);
+    cout << "class : SitePercolationL1_v13" << endl;
 }
 
