@@ -96,7 +96,7 @@ public:
     }
     int get_length(){ return lattice_ref.get_length();}
     void reset() override;
-    int get_neighbor_site(int central_id, int connecting_bond_id);
+    int get_neighbor_site(int central_site_id, int connecting_bond_id);
     std::vector<int> get_connected_sites(Site_v13 site, std::vector<int>& bond_neighbors);
 
     virtual P_STATUS select_site();

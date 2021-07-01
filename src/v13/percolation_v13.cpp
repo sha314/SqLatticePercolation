@@ -233,7 +233,7 @@ double SitePercolation_v13::order_param_wrapping() {
     return 0;
 }
 
-int SitePercolation_v13::get_neighbor_site(int central_id, int connecting_bond_id) {
+int SitePercolation_v13::get_neighbor_site(int central_site_id, int connecting_bond_id) {
 //# central_id = current_site.get_id()
 //# print("central site id : ", central_id)
 
@@ -245,13 +245,44 @@ int SitePercolation_v13::get_neighbor_site(int central_id, int connecting_bond_i
 //            break;
 //        }
 //    }
-    remove_vector_element(connected_sites, central_id);
+    remove_vector_element(connected_sites, central_site_id);
     if(connected_sites.size() != 1){
         cout << "Number of neighbors must be exactly 1 : get_connected_sites()" << endl;
     }
+    int found_neighbor = connected_sites[0];
+
+#ifdef UNIT_TEST
+// test if the found neighbor is actually a neighbor
+    auto siteA = lattice_ref.get_site_by_id(central_site_id).get_index();
+    auto siteB = lattice_ref.get_site_by_id(found_neighbor).get_index();
+    auto bondAB = lattice_ref.get_bond_by_id(connecting_bond_id);
+//    cout << "A, B =connected by bond > AB. " << siteA.get_str()
+//         << ", " << siteB.get_str()
+//         << " => AB " << bondAB.get_str() << endl;
+    int dRow = abs(siteA.row() - siteB.row());
+    int dCol = abs(siteA.col() - siteB.col());
+    if((dRow+1) == _length){
+        dRow = 1;
+    }
+    if((dCol+1) == _length){
+        dCol = 1;
+    }
+//    cout << "dRow, dCol " << dRow << ", " << dCol << endl;
+    if(dRow == 1 && dCol == 0){
+//        cout << "Ok" << endl;
+    }
+    else if(dRow == 0 && dCol == 1){
+//        cout << "Ok" << endl;
+    }
+    else{
+        cout << "Error not a neighbor" << endl;
+        cout << "lattice length " << _length << endl;
+        exit(-1);
+    }
+#endif
 
 //# print("neighbor site ids ", neighbor_sites)
-    return connected_sites[0];
+    return found_neighbor ;
 //    pass
 }
 
@@ -722,7 +753,7 @@ int SitePercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
     cluster_pool_ref.add_sites(root_clstr, {selected_id});
 //# relabeling current site. relative index
 //            auto neighbor_site = get_neighbor_site(current_site.get_id(), bb);
-    auto neighbor_site = get_neighbor_site(get_current_site().get_id(), suitable_bond_id);
+    auto neighbor_site = get_neighbor_site(selected_id, suitable_bond_id);
 //            cout << "central site " << selected_id << " neighbor site " << neighbor_site << endl;
     if (lattice_ref.get_site_gid_by_id(neighbor_site) >= 0) {
 //# relabel selected site with respect to neighbor site. so neighbor_site is the central site
