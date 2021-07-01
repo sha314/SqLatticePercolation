@@ -228,6 +228,13 @@ void Lattice_v13::set_bond_gid_by_id(int id, int gid) {
 }
 
 int Lattice_v13::get_site_gid_by_id(int id) {
+#ifdef UNIT_TEST
+    if(id >= site_matrix.size()){
+        cerr << "Error. site id index out of range " << endl;
+        cout << "id " << id << " length " << length << " site_matrix size " << site_matrix.size();
+        exit(-1);
+    }
+#endif
     return site_matrix[id].get_gid();
 }
 

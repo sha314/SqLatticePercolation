@@ -788,13 +788,44 @@ int SitePercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
     }
 //    cout << "*************************************DONE relabeling" << endl;
 
-    for (int bbg : bond_gids) {
-        if (bbg == root_clstr) {
-//            cout << "bb " << bbg << " is a root cluster" << endl;
-            continue;
+
+#ifdef UNIT_TEST
+// check new cluster for errors
+    for (auto bb : bond_neighbors) {
+
+        int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
+        if (bbg != root_clstr) {
+            // these clsuters must be empty
+            value_type bonds_c = cluster_pool_ref.get_cluster_bond_count(bbg);
+            value_type sites_c = cluster_pool_ref.get_cluster_site_count(bbg);
+            if(bonds_c > 0 || sites_c > 0){
+                cerr << "Error " << " Cluster wasn't cleared properly" << endl;
+                exit(-1);
+            }
+        }else{
+            // root cluster
+            // check for gid of bonds and sites. and relative indices of the sites
+            auto bonds = cluster_pool_ref.get_bonds(bbg);
+            auto sites = cluster_pool_ref.get_sites(bbg);
+            for(auto bb: bonds){
+                auto gid = lattice_ref.get_bond_gid_by_id(bb);
+                if(gid != root_clstr){
+                    cerr << "Error. gid of bonds mismatch" << endl;
+                    exit(-1);
+                }
+            }
+
+            for(auto ss: sites){
+                auto gid = lattice_ref.get_site_gid_by_id(bb);
+                if(gid != root_clstr){
+                    cerr << "Error. gid of sites mismatch" << endl;
+                    exit(-1);
+                }
+            }
         }
-        cluster_pool_ref.clear_cluster(bbg);
+
     }
+#endif
 
     return root_clstr;
 

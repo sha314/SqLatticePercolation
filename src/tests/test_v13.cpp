@@ -244,7 +244,7 @@ void test_v13(int argc, char **argv) {
 //    test_lattice();
 //    test_detect_wrapping();
     test_percolation_L0();
-    test_percolation_L1();
+//    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
 //    run_ensemble_v13(argc, argv);
