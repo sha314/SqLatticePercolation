@@ -60,6 +60,10 @@ public:
 
     std::vector<int> get_connected_sites(){ return connected_site_ids;}
 
+    int get_row(){ return _row;}
+    int get_col(){ return _col;}
+    int get_type(){ return _type;}
+
 };
 
 

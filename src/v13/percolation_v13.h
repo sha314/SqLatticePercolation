@@ -57,6 +57,8 @@ public:
 
     void setRandomState(size_t seed, bool generate_seed=true);
     value_type getRandomState() { return _random_state;}
+
+    void test_lattice(){lattice_ref.test_id_index_conversion();}
 };
 
 class SitePercolation_v13: public Percolation_v13{

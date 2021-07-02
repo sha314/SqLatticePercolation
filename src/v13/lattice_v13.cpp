@@ -33,7 +33,10 @@ void Lattice_v13::init_lattice() {
 
 }
 
-void Lattice_v13::init_ids() {
+/**
+ * Which site is neighbor to which bond and vice versa.
+ */
+void Lattice_v13::init_neighbor_ids() {
 
     for (int rr=0; rr < length; ++rr) {
         for (int cc = 0; cc < length; ++cc) {
@@ -449,4 +452,38 @@ vector<int> Lattice_v13::get_all_neighbor_sites(int central_site_id) {
 
 
     return four_neighbors;
+}
+
+void Lattice_v13::test_id_index_conversion() {
+    int sq_length = length*length;
+    for(int i=0; i < length; ++i){
+
+        size_t rnd = rand() % sq_length;
+        auto id1 = site_ids[rnd];
+        auto id2 = site_matrix[id1].get_id();
+        auto index = site_matrix[id1].get_index();
+        auto id3 = index.row() * length + index.col();
+        if(id1 != id2 || id1 != id3){
+            cout << "Error. Site  " << endl;
+            exit(-1);
+        }
+
+    }
+
+    for(int i=0; i < length; ++i){
+
+        size_t rnd = rand() % sq_length;
+        auto id1 = bond_ids[rnd];
+        auto id2 = bond_matrix[id1].get_id();
+        auto rr = bond_matrix[id1].get_row();
+        auto cc = bond_matrix[id1].get_col();
+        auto tt = bond_matrix[id1].get_type();
+        auto id3 = tt * sq_length + rr* length + cc;
+        if(id1 != id2 || id1 != id3){
+            cout << "Error. Bond  " << endl;
+            exit(-1);
+        }
+
+    }
+
 }

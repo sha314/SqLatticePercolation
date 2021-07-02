@@ -23,6 +23,7 @@ void test_lattice() {
     lattice.view(2);
     lattice.view_relative_index();
     lattice.view_site_gids();
+    lattice.test_id_index_conversion();
 }
 
 void test_detect_wrapping() {
@@ -212,6 +213,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 //        if (i > 8) break;
 
     }
+    sq_lattice_p.test_lattice();
 #ifdef UNIT_TEST
     double P2 = sq_lattice_p.order_param_wrapping();
     double P1 = sq_lattice_p.order_param_largest_clstr();
@@ -309,7 +311,7 @@ void run_ensemble_v13(int argc, char **argv){
 
 //    int rsbd_l = stoi(argv[3]);
 //    run_v13_rsbd_L0(length, ensemble_size);
-    run_v13_rsbd_L1(length, ensemble_size);
+//    run_v13_rsbd_L1(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 

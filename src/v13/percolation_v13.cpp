@@ -308,7 +308,7 @@ std::vector<int> SitePercolation_v13::get_connected_sites(Site_v13 site, std::ve
 P_STATUS SitePercolation_v13::select_site() {
 
     if (current_idx >= lattice_ref.get_site_count()) {
-        cout << "No sites to occupy" << endl;
+//        cout << "No sites to occupy" << endl;
         return P_STATUS::EMPTY_SITE_LIST;
     }
     selected_id = site_ids_indices[current_idx];

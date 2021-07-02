@@ -44,13 +44,13 @@ public:
 
         init_lattice();
 //        std::cout << "reached " << __LINE__ << std::endl;
-        init_ids();
+        init_neighbor_ids();
 //        std::cout << "reached " << __LINE__ << std::endl;
     }
     int get_length() { return length;}
     void reset();
     void init_lattice();
-    void init_ids();
+    void init_neighbor_ids();
     long get_bond_count(){ return bond_count;}
     long get_site_count(){ return site_count;}
     int bottom_bond_of_site(int s0_index);
@@ -109,6 +109,8 @@ public:
     void set_relative_index(int id, RelativeIndex_v13 relative_index);
 
     std::vector<int> get_all_neighbor_sites(int central_site_id);
+
+    void test_id_index_conversion();
 
 };
 #endif //SQLATTICEPERCOLATION_LATTICE_V13_H
