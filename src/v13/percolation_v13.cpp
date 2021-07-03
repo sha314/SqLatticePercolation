@@ -1127,15 +1127,19 @@ void SitePercolationL0_v13::test_cluster() {
                 cerr << "gid mismatch. Site. " << __FILE__ << " : " << __LINE__ << endl;
                 exit(-1);
             }
-            auto rr = lattice_ref.get_site_by_id(ss).get_relative_index();
+            auto sitesite = lattice_ref.get_site_by_id(ss);
+            auto rr = sitesite.get_relative_index();
             if(rr.col() == 0 && rr.row() == 0){
-                cout << "root site found " << endl;
+//                cout << "root site found " << endl;
                 root_site_id = ss;
                 root_count++;
+//                cout << "id " << sitesite.get_id() << " index "
+//                     << sitesite.get_index().get_str() << " gid " << sitesite.get_gid()
+//                     << " relative index " << sitesite.get_relative_index().get_str() << endl;
             }
         }
         if(site_ids.size() > 0) {
-            if (root_count > 0) {
+            if (root_count > 1) {
                 cout << "More than 1 root site. " << __FILE__ << " : " << __LINE__ << endl;
                 exit(-1);
             }
