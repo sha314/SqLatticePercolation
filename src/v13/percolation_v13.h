@@ -164,6 +164,8 @@ public:
     void run_once();
     void run_once_v2();
 
+    void test_cluster();
+
 };
 
 

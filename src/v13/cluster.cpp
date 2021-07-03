@@ -103,6 +103,16 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
 }
 
+size_t ClusterPool::cluster_count(bool all) {
+    if (all)  return _cluster_list.size();
+    size_t count = 0;
+    for(size_t i{}; i < _cluster_list.size(); ++i){
+        if(_cluster_list[i].is_empty()) continue;
+        count++;
+    }
+    return count;
+}
+
 /**
  *
  * @param view_mode : if 0 then only culsters with non-zero sites and bonds will be shown.

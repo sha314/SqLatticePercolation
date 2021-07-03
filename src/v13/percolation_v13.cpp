@@ -1101,3 +1101,59 @@ void SitePercolationL0_v13::run_once_v2() {
 
     first_run = false;
 }
+
+void SitePercolationL0_v13::test_cluster() {
+    size_t count = cluster_pool_ref.cluster_count(true);
+    for(size_t i{}; i < count; ++i){
+        auto clstr = cluster_pool_ref.get_cluster(i);
+        if(clstr.is_empty()){
+            if(clstr.get_site_count() != 0 || clstr.get_bond_count() != 0){
+                cerr << "Empty cluster contains something : " << __FILE__ << ": " << __LINE__ << endl;
+                exit(-1);
+            }
+        }
+
+        auto gid_cluster = clstr.get_gid();
+        auto id_cluster = clstr.get_id();
+        if(id_cluster != gid_cluster){
+            cout << "id and gid of a cluster does not match. " << __FILE__ << " : " << __LINE__ << endl;
+        }
+        auto site_ids = clstr.get_sites();
+        int root_site_id = -1;
+        int root_count = 0;
+        for(auto ss: site_ids){
+            auto gid = lattice_ref.get_site_gid_by_id(ss);
+            if(gid != gid_cluster){
+                cerr << "gid mismatch. Site. " << __FILE__ << " : " << __LINE__ << endl;
+                exit(-1);
+            }
+            auto rr = lattice_ref.get_site_by_id(ss).get_relative_index();
+            if(rr.col() == 0 && rr.row() == 0){
+                cout << "root site found " << endl;
+                root_site_id = ss;
+                root_count++;
+            }
+        }
+        if(site_ids.size() > 0) {
+            if (root_count > 0) {
+                cout << "More than 1 root site. " << __FILE__ << " : " << __LINE__ << endl;
+                exit(-1);
+            }
+            if (root_site_id < 0) {
+                cout << "Root site not found. " << __FILE__ << " : " << __LINE__ << endl;
+            }
+        }
+        auto bond_ids = clstr.get_bonds();
+        for(auto bb: bond_ids){
+            auto gid = lattice_ref.get_bond_gid_by_id(bb);
+            if(gid != gid_cluster){
+                cerr << "gid mismatch. Bond. " << __FILE__ << " : " << __LINE__ << endl;
+                exit(-1);
+            }
+        }
+
+        // now check the relatice index of all sites given the root site.
+
+    }
+
+}

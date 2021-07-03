@@ -100,6 +100,7 @@ public:
     void create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref);
     void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13& lattice_ref);
     void view(int view_mode=0);
+    size_t cluster_count(bool all=false);
 
 };
 
