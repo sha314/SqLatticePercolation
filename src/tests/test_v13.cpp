@@ -170,7 +170,7 @@ void test_percolation_L0() {
     _random_engine.seed(_random_state); // seeding
 
 
-    int max_length = 100;
+    int max_length = 6;
     for (int i=0; i < 100; ++ i) {
 
         int length = 5 + _random_engine() % max_length;
@@ -189,7 +189,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 
 //# sq_lattice_p.viewLattice(3)
 //# sq_lattice_p.viewCluster()
-//    int i = 0;
+    int i = 0;
     while (sq_lattice_p.place_one_site()) {
         double H1 = sq_lattice_p.entropy_v1();
         double H2 = sq_lattice_p.entropy_v2();
@@ -208,10 +208,11 @@ void percolation_seed_length_pair(int length, value_type seed) {
 
 #endif
 //        sq_lattice_p.viewCluster(1);
-//        i += 1;
+        i += 1;
         sq_lattice_p.detect_wrapping();
-//        if (i > 8) break;
+
         sq_lattice_p.test_cluster();
+        if (i > 8) break;
 
     }
     sq_lattice_p.test_lattice();

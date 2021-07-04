@@ -1103,6 +1103,7 @@ void SitePercolationL0_v13::run_once_v2() {
 }
 
 void SitePercolationL0_v13::test_cluster() {
+    cout << "SitePercolationL0_v13::test_cluster << Entry" << endl;
     size_t count = cluster_pool_ref.cluster_count(true);
     for(size_t i{}; i < count; ++i){
         auto clstr = cluster_pool_ref.get_cluster(i);
@@ -1111,6 +1112,7 @@ void SitePercolationL0_v13::test_cluster() {
                 cerr << "Empty cluster contains something : " << __FILE__ << ": " << __LINE__ << endl;
                 exit(-1);
             }
+            continue;
         }
 
         auto gid_cluster = clstr.get_gid();
@@ -1155,8 +1157,28 @@ void SitePercolationL0_v13::test_cluster() {
                 exit(-1);
             }
         }
-
+        if(clstr.get_site_count() <= 0) continue; // no site is there
         // now check the relatice index of all sites given the root site.
+        if(root_site_id < 0){
+            cout << "Not ready for this test! " << endl;
+            exit(-1);
+//            return;
+        }
+        viewLattice(4);
+        viewLattice_clsuter_k(gid_cluster);
+        auto root_site_index = lattice_ref.get_site_by_id(root_site_id).get_index();
+        for(size_t rr{}; rr < _length ; ++rr){
+            for(size_t cc{}; cc < _length; ++cc){
+                auto site = lattice_ref.get_site_by_index(rr, cc);
+                if(site.get_gid() != gid_cluster) continue;
+
+                auto rel_index = site.get_relative_index();
+                auto index = site.get_index();
+                auto diff = index - root_site_index;
+                cout << index.get_str() << " " << root_site_index.get_str() << " = " << diff.get_str() << " and relative index ";
+                cout << "rel_index "<< rel_index.get_str() << endl;
+            }
+        }
 
     }
 

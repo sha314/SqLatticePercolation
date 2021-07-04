@@ -82,7 +82,7 @@ public:
 
     int get_bond_gid_by_id(int id);
 
-    Site_v13 get_site_by_index(int row, int col) ;
+    Site_v13 get_site_by_index(size_t row, size_t col) ;
 
 
     /**
@@ -101,6 +101,8 @@ public:
     void view_relative_index();
     void view_site_gids();
     void print_row_separator(int str_sz=10);
+
+    void viewLattice_clsuter_k(int cluster_gid);
 
     std::vector<std::string> get_row_str(int row, int format=0);
     std::vector<std::string> get_row_v_str(int row, int format=0);

@@ -43,6 +43,10 @@ public:
     }
 
     void viewLattice(int formatt=0);
+    void viewLattice_clsuter_k(int cluster_gid){
+        // view only the cluster of gid k in the lattice
+        lattice_ref.viewLattice_clsuter_k(cluster_gid);
+    }
     void viewCluster(int view_mode) {
         cluster_pool_ref.view(view_mode);
     }

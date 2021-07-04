@@ -246,8 +246,8 @@ int Lattice_v13::get_bond_gid_by_id(int id){
     return bond_matrix[id].get_gid();
 }
 
-Site_v13 Lattice_v13::get_site_by_index(int row, int col) {
-    int s0_index = row * length + col;
+Site_v13 Lattice_v13::get_site_by_index(size_t row, size_t col) {
+    size_t s0_index = row * length + col;
     return site_matrix[s0_index];
 }
 
@@ -485,5 +485,47 @@ void Lattice_v13::test_id_index_conversion() {
         }
 
     }
+
+}
+
+void Lattice_v13::viewLattice_clsuter_k(int cluster_gid) {
+    cout << "Upper Left corner is <0,0>"<< endl;
+    cout << "<x,y> means relative index"<< endl;
+    cout << "90 degree Clockwise rotated Coordinate system"<< endl;
+    cout << "y value increases as we go rightward. Like columns"<< endl;
+    cout << "x value increases as we go downward . Like rows"<< endl;
+    cout << "Format 'gid<x,y>'"<< endl;
+    cout << "<--Relative index - VIEW BEGIN-->"<< endl;
+
+    int row_unit_str = 5;
+    print_row_separator(row_unit_str);
+    cout << setw(5) << right << "|";
+    for(int cc=0; cc < length; ++cc) {
+
+        cout << setw(3) << left << cc << right << "|";
+    }
+    cout << endl;
+    print_row_separator(row_unit_str);
+
+    for(int rr=0; rr < length; ++rr) {
+        cout << setw(3) << rr << " |";
+        for (int cc = 0; cc < length; ++cc) {
+            int s_index = rr * length + cc;
+            auto site_s = site_matrix[s_index];
+//            RelativeIndex_v13 a = site_s.get_relative_index();
+            int gidvalue = site_s.get_gid();
+            if (gidvalue != -1 && gidvalue != cluster_gid){
+                gidvalue = -2;
+            }
+            cout << setw(3) << gidvalue << "|";
+//# print("{:7}".foramt(a), end=' |')
+
+        }
+        cout << endl;
+    }
+
+    print_row_separator(row_unit_str);
+    cout << "<--Relative index - VIEW END-->" << endl;
+
 
 }
