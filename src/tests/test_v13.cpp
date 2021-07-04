@@ -212,7 +212,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
         sq_lattice_p.detect_wrapping();
 
         sq_lattice_p.test_cluster();
-        if (i > 8) break;
+        if (i > 16) break;
 
     }
     sq_lattice_p.test_lattice();

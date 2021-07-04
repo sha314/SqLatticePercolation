@@ -1164,7 +1164,7 @@ void SitePercolationL0_v13::test_cluster() {
             exit(-1);
 //            return;
         }
-        viewLattice(4);
+//        viewLattice(4);
         viewLattice_clsuter_k(gid_cluster);
         auto root_site_index = lattice_ref.get_site_by_id(root_site_id).get_index();
         for(size_t rr{}; rr < _length ; ++rr){
@@ -1175,8 +1175,19 @@ void SitePercolationL0_v13::test_cluster() {
                 auto rel_index = site.get_relative_index();
                 auto index = site.get_index();
                 auto diff = index - root_site_index;
-                cout << index.get_str() << " " << root_site_index.get_str() << " = " << diff.get_str() << " and relative index ";
-                cout << "rel_index "<< rel_index.get_str() << endl;
+//                cout << index.get_str() << " " << root_site_index.get_str() << " = " << diff.get_str() << " and relative index ";
+//                cout << "rel_index "<< rel_index.get_str() << endl;
+                if(diff.row() != rel_index.row() || diff.col() != rel_index.col()){
+                    cout << "Either wrong or wrapped index " << endl;
+                    cout << index.get_str() << " " << root_site_index.get_str() << " = " << diff.get_str() << " and relative index ";
+                    cout << "rel_index "<< rel_index.get_str() << endl;
+                    if(abs(index.row() - root_site_index.row()) == (_length - 1)){
+                        cout << "Vertical Wrapping" << endl;
+                    }
+                    if(abs(index.col() - root_site_index.col()) == (_length - 1)){
+                        cout << "Horizontal Wrapping" << endl;
+                    }
+                }
             }
         }
 
