@@ -8,6 +8,33 @@
 
 using namespace std;
 
+/**
+ * horizontal axis->y axis. y increases as you move right. columns
+ * vertical axis->x axis. x increases as you move down. rows
+ * L = length of the lattice
+ *
+ * we can get id from (row,col)=(x,y)
+ * id of site = col + L * row
+ *
+ * or we can get row and col from id
+ * row = id%L
+ * col = id - L*row
+ *
+ *
+ *
+ * There can be two types of bonds. Horizontal bonds (0) and vertical bonds(1). If we associate only right and bottom bond
+ * to a site then left and top bond can be found if we look for right and bottom bond of left and top sites.
+ * Or,
+ * right bond of left site = left bond of current site.
+ * bottom bond of top site = top bond of current site.
+ *
+ * Horizontal bonds will have the same id as the site associated with it. So, there will be L^2 number of horizontal bonds.
+ * To ensure unique ids, we need to add L^2 to all the ids of vertical bonds.
+ * site id        = s
+ * right bond id  = s
+ * bottom bond id = s + L^2
+ *
+ */
 void Lattice_v13::init_lattice() {
     int length_squared = length*length;
     for (int rr=0; rr < length; ++rr){
@@ -35,6 +62,11 @@ void Lattice_v13::init_lattice() {
 
 /**
  * Which site is neighbor to which bond and vice versa.
+ *
+ * Each bond connects two sites. And each site is connected to four bonds.
+ *
+ * Each site will contain id of four bonds it's connected to.
+ * Each bond will contain id of the two sites it is connecting.
  */
 void Lattice_v13::init_neighbor_ids() {
 
@@ -107,6 +139,22 @@ int Lattice_v13::get_col_from_id(int s0_index) {
     return col;
 }
 
+/**
+ * There can be two types of bonds. Horizontal bonds (0) and vertical bonds(1). If we associate only right and bottom bond
+ * to a site then left and top bond can be found if we look for right and bottom bond of left and top sites.
+ * Or,
+ * right bond of left site = left bond of current site.
+ * bottom bond of top site = top bond of current site.
+ *
+ * Horizontal bonds will have the same id as the site associated with it. So, there will be L^2 number of horizontal bonds.
+ * To ensure unique ids, we need to add L^2 to all the ids of vertical bonds.
+ * site id        = s
+ * right bond id  = s
+ * bottom bond id = s + L^2
+ *
+ * @param s0_index : current site id
+ * @return
+ */
 std::vector<int> Lattice_v13::find_neighbor_bonds(int s0_index) {
     int right_bond = right_bond_of_site(s0_index);
 //# bottom_bond = s0_index + self.site_count
