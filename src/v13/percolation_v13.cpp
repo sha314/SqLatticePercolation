@@ -136,6 +136,7 @@ void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
     }else{
         cerr << "generate_seed = false : line " << __LINE__ << endl;
     }
+    cout << "_random_state " << _random_state << endl;
     _random_engine.seed(_random_state); // seeding
     cout << "seeding with " << _random_state << endl;
 }

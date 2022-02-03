@@ -12,6 +12,7 @@
 #include <vector>
 #include <map>
 #include <initializer_list>
+#include <iostream>
 
 
 template <typename T>
@@ -92,5 +93,13 @@ void print_h_barrier(size_t n, char common, char special, size_t initial_pos, si
  */
 void print_h_barrier(size_t n, const std::string& initial, const std::string& middles, const std::string& end="\n");
 
+template <class T>
+void print_list(std::vector<T> list){
+    std::cout << "{";
+    for(auto ll: list){
+        std::cout << ll << ", ";
+    }
+    std::cout << "}" << std::endl;
+}
 #endif //PERCOLATION_PRINTER_H
 

@@ -315,6 +315,9 @@ Bond_v13 Lattice_v13::get_bond_by_index(int row, int col, int hv_flag) {
 
 void Lattice_v13::init_relative_index(int id) {
     int s_index = site_ids[id];
+    if (id != s_index) {
+        cout << id << " != " << s_index << endl;
+    }
     site_matrix[s_index].init_relative_index();
 }
 
@@ -379,7 +382,13 @@ void Lattice_v13::print_row_separator(int str_sz) {
 }
 
 void Lattice_v13::view(int formatt) {
-    cout << "format : " << endl;
+    if (formatt == 1){
+        cout << "[gid, id]" << endl;
+    } else if(formatt == 2){
+        cout << "gid(row, col)" << endl;
+    }
+
+    cout << "format : " << formatt << endl;
     cout << "{site}           {horizontal bond}"<< endl;
     cout << "{vertical bond}  {               }"<< endl;
     cout << "The Lattice_v13 : " << endl;
@@ -575,5 +584,17 @@ void Lattice_v13::viewLattice_clsuter_k(int cluster_gid) {
     print_row_separator(row_unit_str);
     cout << "<--Relative index - VIEW END-->" << endl;
 
+
+}
+
+void Lattice_v13::print_site_bond_list() {
+    for (auto ss=0; ss < site_matrix.size(); ss++){
+        cout << "[" << setw(3) << ss << "]" << site_matrix[ss].get_gid() << site_matrix[ss].get_index().get_str()
+             << ": {";
+        for(auto i: site_matrix[ss].get_connecting_bonds()){
+            cout << setw(3) << i << bond_matrix[i].get_str() << ",";
+        }
+        cout << "}" << endl;
+    }
 
 }

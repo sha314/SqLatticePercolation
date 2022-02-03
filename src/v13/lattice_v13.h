@@ -103,6 +103,7 @@ public:
     void print_row_separator(int str_sz=10);
 
     void viewLattice_clsuter_k(int cluster_gid);
+    void print_site_bond_list();
 
     std::vector<std::string> get_row_str(int row, int format=0);
     std::vector<std::string> get_row_v_str(int row, int format=0);

@@ -16,7 +16,7 @@ using namespace std;
 void percolation_seed_length_pair(int length, value_type seed);
 
 void test_lattice() {
-    int length = 6;
+    int length = 4;
     auto lattice = Lattice_v13(length);
     lattice.view(0);
     lattice.view(1);
@@ -24,6 +24,7 @@ void test_lattice() {
     lattice.view_relative_index();
     lattice.view_site_gids();
     lattice.test_id_index_conversion();
+    lattice.print_site_bond_list();
 }
 
 void test_detect_wrapping() {
@@ -251,7 +252,7 @@ void test_v13(int argc, char **argv) {
 //    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-//    run_ensemble_v13(argc, argv);
+    run_ensemble_v13(argc, argv);
 }
 
 void test_reset() {
