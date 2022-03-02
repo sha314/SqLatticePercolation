@@ -315,14 +315,19 @@ Bond_v13 Lattice_v13::get_bond_by_index(int row, int col, int hv_flag) {
 
 void Lattice_v13::init_relative_index(int id) {
     int s_index = site_ids[id];
-    if (id != s_index) {
-        cout << id << " != " << s_index << endl;
-    }
+    check_if_it_is_not_equal(id, s_index, __LINE__);
     site_matrix[s_index].init_relative_index();
+}
+
+void Lattice_v13::check_if_it_is_not_equal(int id, int s_index, int line) const {
+    if (id != s_index) {
+        cout << id << " != " << s_index << " : line " << line << endl;
+    }
 }
 
 void Lattice_v13::set_relative_index(int id, RelativeIndex_v13 relative_index){
     int s_index = site_ids[id];
+    check_if_it_is_not_equal(id, s_index, __LINE__);
     site_matrix[s_index].set_relative_index(relative_index);
 }
 
@@ -517,6 +522,7 @@ void Lattice_v13::test_id_index_conversion() {
 
         size_t rnd = rand() % sq_length;
         auto id1 = site_ids[rnd];
+        check_if_it_is_not_equal(rnd, id1, __LINE__);
         auto id2 = site_matrix[id1].get_id();
         auto index = site_matrix[id1].get_index();
         auto id3 = index.row() * length + index.col();

@@ -960,7 +960,8 @@ void SitePercolationL0_v13::reset() {
 //    order_largest_list.resize(l_squared);
 }
 
-SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool generate_seed) : SitePercolation_v13(length, seed) {
+SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool generate_seed) :
+        SitePercolation_v13(length, seed) {
     cout << "class : SitePercolationL0_v13" << endl;
     first_run = true;
 
@@ -1027,9 +1028,9 @@ void SitePercolationL0_v13::run_once() {
     }
 
     cout << "entropy_list {" << endl;
-    for(auto hh: entropy_list){
-        cout << hh << endl;
-    }
+//    for(auto hh: entropy_list){
+//        cout << hh << endl;
+//    }
     cout << "              }" << endl;
 #endif
 

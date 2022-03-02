@@ -99,11 +99,11 @@ public:
     void init_clusters();
     void shuffle_indices() {
 //        std::cout << "shuffle_indices not set up" << std::endl;
-        std::cout << "Before shuffle" << std::endl;
-        print_list(site_ids_indices);
+//        std::cout << "Before shuffle" << std::endl;
+//        print_list(site_ids_indices);
         std::shuffle(site_ids_indices.begin(), site_ids_indices.end(), _random_engine);
-        std::cout << "after shuffle " << __LINE__<< std::endl;
-        print_list(site_ids_indices);
+//        std::cout << "after shuffle " << __LINE__<< std::endl;
+//        print_list(site_ids_indices);
     }
     int get_length(){ return lattice_ref.get_length();}
     void reset() override;
