@@ -105,5 +105,91 @@ public:
     }
 };
 
+/**
+ * Prefer calculating information rather than storing it.
+ * If ID is known and the lattice size then connected bonds and index can be calculated.
+ * Bond information is not stored, rather calculated
+ */
+class Site_v14: public Element_v13{
+
+    std::string classname = "Site_v14";
+    Index_v13 index;
+    RelativeIndex_v13 relativeIndex;
+
+    int first_nn_count = 4;
+    int second_directional_nn_count = 4;
+
+public:
+    Site_v14() = default;
+    Site_v14(int row, int col){
+        index = Index_v13(row, col);
+        relativeIndex = RelativeIndex_v13();
+    }
+    void reset(){
+        Element_v13::reset();
+//        connecting_bond_ids.clear();
+        relativeIndex = RelativeIndex_v13();
+        first_nn_count = 4;
+        second_directional_nn_count = 4;
+    }
+
+    Index_v13 get_index_v14(int length);
+
+    Index_v13 get_index();
+    RelativeIndex_v13 get_relative_index(){ return relativeIndex;}
+//    int get_gid(){ return Element_v13::get_gid();}
+//    int get_id(){ return Element_v13::get_id();}
+    std::string get_str(int formatt=0){
+        std::stringstream ss;
+        if (formatt == 1){
+            ss << "[" << std::setw(5) << get_gid() << "," << std::setw(5) << get_id() << "]";
+        }
+        else{
+            int iidd = Element_v13::get_id();
+            ss << std::setw(5) << iidd  <<  "(" << std::setw(5) << index.row() << ","
+               << std::setw(5) << index.col() << ")";
+        }
+
+        return ss.str();
+    }
+
+    int right_bond_of_site(int length);
+    int bottom_bond_of_site(int length);
+    int left_bond_of_site(int length);
+    int top_bond_of_site(int length);
+
+
+    std::vector<int> get_connecting_bonds(int site_count);
+
+    void init_relative_index(){relativeIndex = RelativeIndex_v13(0, 0);}
+
+    void set_relative_index(RelativeIndex_v13 ri){relativeIndex = ri;}
+
+    bool is_root(){return relativeIndex.x_coord() == 0 && relativeIndex.y_coord() == 0;}
+
+    bool is_occupied(){
+        int gid = get_gid();
+//        std::cout << "gid " << gid << std::endl;
+        return gid >= 0;
+    }
+
+    void reduce_1st_nn(){
+        if (first_nn_count <=0)        return;
+        first_nn_count -= 1;
+    }
+
+    /**
+     *
+     * @param type 1 -> L1 and 2 -> L2 percolation
+     *
+     * @return
+     */
+    bool is_removable(int type){
+        if (type == 1)  return first_nn_count == 0;
+        else if (type == 2) return second_directional_nn_count == 0;
+        return false;
+    }
+};
+
 
 #endif //SQLATTICEPERCOLATION_SITE_H

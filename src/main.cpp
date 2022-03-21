@@ -23,6 +23,7 @@
 #include "tests/test_v9.h"
 #include "tests/test_v10.h"
 #include "tests/test_v13.h"
+#include "tests/test_v14.h"
 
 
 using namespace std;
@@ -103,6 +104,7 @@ void run_in_main(int argc, char** argv){
 //    test_v9(argc, argv);
 //    test_v10(argc, argv);
     test_v13(argc, argv);
+    test_v14(argc, argv);
 }
 
 

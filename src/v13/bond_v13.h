@@ -67,5 +67,51 @@ public:
 };
 
 
+/**
+ * Prefer calculating information rather than storing it.
+ * If ID is known and the lattice size then connected sites and index can be calculated.
+ * Bond information is not stored, rather calculated
+ */
+class Bond_v14: public Element_v13 {
+    int _row = -1;
+    int _col = -1;
+    int _type = -1; // 0 means horizontal and 1 means vertical
+    std::string classname = "Bond_v14";
+
+public:
+    Bond_v14() = default;
+    Bond_v14(int row, int col, int type):Element_v13(){
+        _row = row;
+        _col = col;
+        _type = type;
+    }
+
+    void reset(){
+        Element_v13::reset();
+//        connected_site_ids.clear();
+    }
+
+    std::string get_str(int formatt=0){
+        std::stringstream ss;
+        if (formatt == 1){
+            ss << "[" << std::setw(5) << get_gid() << "," << std::setw(5) << get_id() << "]";
+        } else if(formatt == 2){
+            ss << std::setw(5) << get_id() << "(" << std::setw(5) << _row << "," << std::setw(5) << _col << ")";
+        }else{
+            ss << "(" << std::setw(5) << _row << "," << std::setw(5) << _col << ", " << _type << ")";
+        }
+
+        return ss.str();
+    }
+
+    std::vector<int> get_connected_sites();
+
+    int get_row(){ return _row;}
+    int get_col(){ return _col;}
+    int get_type(){ return _type;}
+
+};
+
+
 
 #endif //SQLATTICEPERCOLATION_BOND_H

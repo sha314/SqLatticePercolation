@@ -8,9 +8,9 @@ set(CMAKE_CXX_STANDARD 11)
 #set (CMAKE_MAKE_PROGRAM             /usr/bin/make)
 #SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG")
 #SET( CMAKE_CXX_FLAGS  "-Wall -D UNIT_TEST")
-#SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
+SET( CMAKE_CXX_FLAGS  "-Wall -D DEBUG_FLAG -D UNIT_TEST")
 #SET( CMAKE_CXX_FLAGS  "-Wall")
-SET( CMAKE_CXX_FLAGS  "-Wall -O3 -DCMAKE_BUILD_TYPE=RELEASE")
+#SET( CMAKE_CXX_FLAGS  "-Wall -O3 -DCMAKE_BUILD_TYPE=RELEASE")
 #SET( CMAKE_CXX_FLAGS  "-Wall -O3 -pthread -fopenmp")
 #SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${GCC_COVERAGE_LINK_FLAGS}" )
 
@@ -115,6 +115,11 @@ set(SOURCE_FILES
         src/v13/run_v13.h
         src/v13/percolation_rsbd_v13.h
         src/v13/status.h
-        src/v13/percolation_rsbd_v13.cpp)
+        src/v13/percolation_rsbd_v13.cpp
+        src/tests/test_v14.cpp
+        src/tests/test_v14.h
+        src/v13/lattice_v14.cpp
+        src/v13/lattice_v14.h
+        )
 
 add_executable(sqlattice ${SOURCE_FILES})
