@@ -37,18 +37,44 @@ Index_v13 Site_v14::get_index_v14(int length) {
 }
 
 
-
 std::vector<int> Site_v14::get_connecting_bonds(int length) {
-    int right_bond = right_bond_of_site(length);
-//# bottom_bond = s0_index + self.site_count
-    int bottom_bond = bottom_bond_of_site(length);
-//# left_bond = (s0_index + self.length - 1) % self.length
-    int left_bond = left_bond_of_site(length);
+    int site_count = length*length;
+    int bond_count = site_count*2;
+
+    int right_bond = get_id();
+    int bottom_bond = right_bond + site_count;
+
+    // left_bond is the right_bond of left_site
+    int left_site_id = get_id() - 1;
+    if (get_id()%length == 0){ // for first column elements
+        left_site_id += length;
+    }
+    int left_bond = left_site_id;
+
+    // top_bond is the bottom_bond of top_site
+    int top_site_id = get_id() - length;
+    if (get_id() < length){
+        // top row elements
+//        top_site_id = get_id() - length + site_count;
+        top_site_id += site_count;
+    }
 //# top_bond = (s0_index+self.bond_count-self.length)%self.site_count + self.site_count
-    int top_bond = top_bond_of_site(length);
+    int top_bond = top_site_id + site_count;
     return {right_bond, bottom_bond, left_bond, top_bond};
 
 }
+
+//std::vector<int> Site_v14::get_connecting_bonds(int length) {
+//    int right_bond = right_bond_of_site(length);
+////# bottom_bond = s0_index + self.site_count
+//    int bottom_bond = bottom_bond_of_site(length);
+////# left_bond = (s0_index + self.length - 1) % self.length
+//    int left_bond = left_bond_of_site(length);
+////# top_bond = (s0_index+self.bond_count-self.length)%self.site_count + self.site_count
+//    int top_bond = top_bond_of_site(length);
+//    return {right_bond, bottom_bond, left_bond, top_bond};
+//
+//}
 
 
 int Site_v14::bottom_bond_of_site(int length) {
@@ -66,11 +92,13 @@ int Site_v14::top_bond_of_site(int length) {
     int site_count = length*length;
     int bond_count = site_count*2;
     int of_bottom_site = (get_id()+bond_count-length)%site_count;
-    return bottom_bond_of_site(of_bottom_site);
+    int x = bottom_bond_of_site(of_bottom_site);
+    cout << "top bond of site " << get_id() << " is " << x << endl;
+    return x;
 }
 
-int Site_v14::right_bond_of_site(int s0_index) {
-    return s0_index;
+int Site_v14::right_bond_of_site(int length) {
+    return get_id();
 }
 
 /***

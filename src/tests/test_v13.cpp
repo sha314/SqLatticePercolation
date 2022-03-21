@@ -16,7 +16,7 @@ using namespace std;
 void percolation_seed_length_pair(int length, value_type seed);
 
 void test_lattice() {
-    int length = 3;
+    int length = 4;
     auto lattice = Lattice_v13(length);
     lattice.view(0);
     lattice.view(1);
@@ -246,7 +246,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 }
 
 void test_v13(int argc, char **argv) {
-    test_lattice();
+//    test_lattice();
 //    test_detect_wrapping();
 //    test_percolation_L0();
 //    test_percolation_L1();

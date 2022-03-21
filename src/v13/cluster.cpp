@@ -20,7 +20,7 @@ void ClusterPool::view(int view_mode) {
 
 }
 
-void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int> &bond_ids, Lattice_v13 &lattice_ref) {
+void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int> &bond_ids, Lattice_v14 &lattice_ref) {
 //# print("method : create_new_cluster")
     auto clsstr = OneCluster();
     clsstr.add_sites(site_ids);
@@ -43,7 +43,7 @@ void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int
     _cluster_list.push_back(clsstr);
 }
 
-void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref) {
+void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref) {
 //# print("method : create_new_cluster")
     auto clsstr = OneCluster();
 
@@ -73,7 +73,7 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
  * @param cluster_B_id : the other cluster that will be merged to this cluster
  * @param lattice_ref  : so that it gid of sites and bonds can be modified here
  */
-void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13 &lattice_ref) {
+void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v14 &lattice_ref) {
 //    cout << "merge_cluster_with" << endl;
     int gid = _cluster_list[cluster_A_id].get_gid();
 //    cout << "cluster " << cluster_A_id << " gid " << gid << endl;

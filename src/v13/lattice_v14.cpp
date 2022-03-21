@@ -172,7 +172,7 @@ std::vector<int> Lattice_v14::get_neighbor_bonds(int s0_index) {
 }
 
 std::vector<int> Lattice_v14::get_neighbor_sites(int b0_index) {
-    return bond_matrix[b0_index].get_connected_sites();
+    return bond_matrix[b0_index].get_connected_sites(length);
 }
 
 std::vector<int> Lattice_v14::get_site_neighbor_of_site(int s0_index) {
@@ -223,7 +223,7 @@ void Lattice_v14::print_bonds() {
     cout << "print_bonds" << endl;
     for(auto i: bond_ids) {
         auto bbonds = bond_matrix[i];
-        auto c_sites = bbonds.get_connected_sites();
+        auto c_sites = bbonds.get_connected_sites(length);
         if (c_sites.size() != 2) {
             cout << "warning : number of connected sites must be 2" << endl;
         }
@@ -595,10 +595,12 @@ void Lattice_v14::viewLattice_clsuter_k(int cluster_gid) {
 }
 
 void Lattice_v14::print_site_bond_list() {
+    cout << "print_site_bond_list" << endl;
     for (auto ss=0; ss < site_matrix.size(); ss++){
         cout << "[" << setw(3) << ss << "]" << site_matrix[ss].get_gid() << site_matrix[ss].get_index().get_str()
              << ": {";
-        for(auto i: site_matrix[ss].get_connecting_bonds(length)){
+        auto bonds = site_matrix[ss].get_connecting_bonds(length);
+        for(auto i: bonds){
             cout << setw(3) << i << bond_matrix[i].get_str() << ",";
         }
         cout << "}" << endl;

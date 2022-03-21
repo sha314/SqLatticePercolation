@@ -104,7 +104,7 @@ public:
         return ss.str();
     }
 
-    std::vector<int> get_connected_sites();
+    std::vector<int> get_connected_sites(int length);
 
     int get_row(){ return _row;}
     int get_col(){ return _col;}

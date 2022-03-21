@@ -7,6 +7,7 @@
 
 
 #include "lattice_v13.h"
+#include "lattice_v14.h"
 #include "cluster.h"
 #include "../types.h"
 #include <set>
@@ -26,13 +27,13 @@ public:
     value_type _random_state = 0;
     std::mt19937 _random_engine;
 
-    Lattice_v13 lattice_ref;
+    Lattice_v14 lattice_ref;
     ClusterPool cluster_pool_ref;
 
     Percolation_v13(int length, int seed=-1){
         _length = length;
         _seed = seed;
-        lattice_ref = Lattice_v13(_length);
+        lattice_ref = Lattice_v14(_length);
         cluster_pool_ref = ClusterPool();
     }
 
@@ -135,7 +136,7 @@ public:
     int merge_clusters_v4(std::vector<int>& bond_neighbor_ids);
     void relabel_relative_indices(int connecting_bond_id);
     bool detect_wrapping();
-    Site_v13& get_current_site(); // TODO
+    Site_v14& get_current_site(); // TODO
     int find_root_cluster(const std::vector<int> &bond_gids) ;
     int find_bonds_connected_to_root_cluster(const std::vector<int> &bond_ids) ;
 

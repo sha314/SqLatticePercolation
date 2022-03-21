@@ -294,7 +294,7 @@ std::vector<int> SitePercolation_v13::get_connected_sites(Site_v13 site, std::ve
     vector<int> neighbor_sites;
     for(auto bb : bond_neighbors) {
         auto sb2 = lattice_ref.get_bond_by_id(bb);
-        auto connected_sites = sb2.get_connected_sites();
+        auto connected_sites = sb2.get_connected_sites(_length);
 //# print("connected ", connected_sites)
         remove_vector_element(connected_sites, central_id);
         if (connected_sites.size() > 1) {
@@ -330,7 +330,7 @@ bool SitePercolation_v13::place_one_site() {
         lattice_ref.init_relative_index(selected_id);  // initialize        relative index
 //        auto bond_neighbors = current_site.get_connecting_bonds();
 
-        auto bond_neighbors = get_current_site().get_connecting_bonds();
+        auto bond_neighbors = get_current_site().get_connecting_bonds(_length);
 //# site_neighbors = self.get_connected_sites(self.current_site, bond_neighbors)
 
         entropy_subtract(bond_neighbors);
@@ -936,7 +936,7 @@ bool SitePercolation_v13::detect_wrapping() {
     return false;
 }
 
-Site_v13 &SitePercolation_v13::get_current_site() {
+Site_v14 &SitePercolation_v13::get_current_site() {
     return lattice_ref.get_site_by_id(selected_id);
 }
 

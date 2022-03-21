@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "lattice_v13.h"
+#include "lattice_v14.h"
 
 class OneCluster{
     std::vector<int> _site_ids, _bond_ids;
@@ -96,9 +97,9 @@ public:
         _cluster_list[cluster_id].clear();
     }
 
-    void create_new_cluster(std::vector<int> &site_ids, std::vector<int> &bond_ids, Lattice_v13 &lattice_ref);
-    void create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref);
-    void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13& lattice_ref);
+    void create_new_cluster(std::vector<int> &site_ids, std::vector<int> &bond_ids, Lattice_v14 &lattice_ref);
+    void create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref);
+    void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v14& lattice_ref);
     void view(int view_mode=0);
     size_t cluster_count(bool all=false);
 
