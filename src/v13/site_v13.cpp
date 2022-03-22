@@ -28,12 +28,12 @@ Index_v13 Site_v14::get_index_v14(int length) {
     int row = get_id() / length;
     int col = get_id() % length;
 #ifdef UNIT_TEST
-    if (index.row() != row){
-        std::cout << "row not equal" << std::endl;
-    }
-    if (index.col() != col){
-        std::cout << "column not equal" << std::endl;
-    }
+//    if (index.row() != row){
+//        std::cout << "row not equal" << std::endl;
+//    }
+//    if (index.col() != col){
+//        std::cout << "column not equal" << std::endl;
+//    }
 
 
 #endif

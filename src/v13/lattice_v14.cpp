@@ -337,7 +337,7 @@ vector<string> Lattice_v14::get_row_str(int row, int format) {
     for(int cc =0; cc < length; ++cc){
         int s_index = row * length + cc;
         string str1 = site_matrix[s_index].get_str(length, format);
-        string str2 = bond_matrix[s_index].get_str(format);
+        string str2 = bond_matrix[s_index].get_str(length, format);
         stringstream str0;
         int tmp_l = str2.size() - str1.size();
         for (int i=0; i < tmp_l ; ++i){
@@ -357,8 +357,8 @@ vector<string> Lattice_v14::get_row_v_str(int row, int format) {
     for(int cc =0; cc < length; ++cc){
         int s_index = row * length + cc;
         int v_bond_index = s_index + length * length;
-        string str1 = site_matrix[s_index].get_str(format);
-        string str3 = bond_matrix[v_bond_index].get_str(format);
+        string str1 = site_matrix[s_index].get_str(length, format);
+        string str3 = bond_matrix[v_bond_index].get_str(length, format);
         stringstream str4;
         for(auto s: str1){
             str4 << " ";
@@ -539,9 +539,9 @@ void Lattice_v14::test_id_index_conversion() {
         size_t rnd = rand() % sq_length;
         auto id1 = bond_ids[rnd];
         auto id2 = bond_matrix[id1].get_id();
-        auto rr = bond_matrix[id1].get_row();
-        auto cc = bond_matrix[id1].get_col();
-        auto tt = bond_matrix[id1].get_type();
+        auto rr = bond_matrix[id1].get_row(length);
+        auto cc = bond_matrix[id1].get_col(length);
+        auto tt = bond_matrix[id1].get_type(length);
         auto id3 = tt * sq_length + rr* length + cc;
         if(id1 != id2 || id1 != id3){
             cout << "Error. Bond  " << endl;
@@ -601,7 +601,7 @@ void Lattice_v14::print_site_bond_list() {
              << ": {";
         auto bonds = site_matrix[ss].get_connecting_bonds(length);
         for(auto i: bonds){
-            cout << setw(3) << i << bond_matrix[i].get_str() << ",";
+            cout << setw(3) << i << bond_matrix[i].get_str(length) << ",";
         }
         cout << "}" << endl;
     }

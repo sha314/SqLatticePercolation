@@ -73,17 +73,17 @@ public:
  * Bond information is not stored, rather calculated
  */
 class Bond_v14: public Element_v13 {
-    int _row = -1;
-    int _col = -1;
-    int _type = -1; // 0 means horizontal and 1 means vertical
+//    int _row = -1;
+//    int _col = -1;
+//    int _type = -1; // 0 means horizontal and 1 means vertical
 //    std::string classname = "Bond_v14";
 
 public:
     Bond_v14() = default;
     Bond_v14(int row, int col, int type):Element_v13(){
-        _row = row;
-        _col = col;
-        _type = type;
+//        _row = row;
+//        _col = col;
+//        _type = type;
     }
 
     void reset(){
@@ -91,14 +91,32 @@ public:
 //        connected_site_ids.clear();
     }
 
-    std::string get_str(int formatt=0){
+    int get_row(int length);
+    int get_col(int length);
+    int get_type(int length);
+
+//    void set_id(int id){
+//        Element_v13::set_id(id);
+//
+//        if (get_row(5) != _row){
+//            std::cout << "row checking failed" << std::endl;
+//        }
+//        if (get_col(4) != _col){
+//            std::cout << "col checking failed" << std::endl;
+//        }
+//        if (get_type(4) != _type){
+//            std::cout << "type checking failed" << std::endl;
+//        }
+//    }
+
+    std::string get_str(int length, int formatt=0){
         std::stringstream ss;
         if (formatt == 1){
             ss << "[" << std::setw(5) << get_gid() << "," << std::setw(5) << get_id() << "]";
         } else if(formatt == 2){
-            ss << std::setw(5) << get_id() << "(" << std::setw(5) << _row << "," << std::setw(5) << _col << ")";
+            ss << std::setw(5) << get_id() << "(" << std::setw(5) << get_row(length) << "," << std::setw(5) << get_col(length) << ")";
         }else{
-            ss << "(" << std::setw(5) << _row << "," << std::setw(5) << _col << ", " << _type << ")";
+            ss << "(" << std::setw(5) << get_row(length) << "," << std::setw(5) << get_col(length) << ", " << get_type(length) << ")";
         }
 
         return ss.str();
@@ -106,9 +124,9 @@ public:
 
     std::vector<int> get_connected_sites(int length);
 
-    int get_row(){ return _row;}
-    int get_col(){ return _col;}
-    int get_type(){ return _type;}
+//    int get_row(){ return _row;}
+//    int get_col(){ return _col;}
+//    int get_type(){ return _type;}
 
 };
 

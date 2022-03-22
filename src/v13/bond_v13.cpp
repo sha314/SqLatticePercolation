@@ -37,3 +37,17 @@ std::vector<int> Bond_v14::get_connected_sites(int length) {
 
     return {site_0, site_1};
 }
+
+int Bond_v14::get_row(int length) {
+    return get_id() / length;
+}
+
+int Bond_v14::get_type(int length) {
+    return get_id() / (length*length);
+}
+
+int Bond_v14::get_col(int length) {
+    return get_id() % length;
+}
+
+
