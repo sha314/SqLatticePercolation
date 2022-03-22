@@ -15,16 +15,22 @@ using namespace std;
 
 void percolation_seed_length_pair(int length, value_type seed);
 
-void test_lattice() {
-    int length = 3;
+void test_lattice(int argc, char** argv) {
+    cout << "length        = argv[1]" << endl;
+    cout << "ensemble size = argv[2]" << endl;
+//    cout << "rsbd l        = argv[3]" << endl;
+    if (argc <=2 ) cerr << "Not enough arguments " << endl;
+    int length = stoi(argv[1]);
+    int ensemble_size = stoi(argv[2]);
+
     auto lattice = Lattice_v13(length);
-    lattice.view(0);
-    lattice.view(1);
-    lattice.view(2);
-    lattice.view_relative_index();
-    lattice.view_site_gids();
-    lattice.test_id_index_conversion();
-    lattice.print_site_bond_list();
+//    lattice.view(0);
+//    lattice.view(1);
+//    lattice.view(2);
+//    lattice.view_relative_index();
+//    lattice.view_site_gids();
+//    lattice.test_id_index_conversion();
+//    lattice.print_site_bond_list();
 }
 
 void test_detect_wrapping() {
@@ -246,7 +252,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 }
 
 void test_v13(int argc, char **argv) {
-//    test_lattice();
+//    test_lattice(argc, argv);
 //    test_detect_wrapping();
 //    test_percolation_L0();
 //    test_percolation_L1();
