@@ -76,7 +76,7 @@ class Bond_v14: public Element_v13 {
     int _row = -1;
     int _col = -1;
     int _type = -1; // 0 means horizontal and 1 means vertical
-    std::string classname = "Bond_v14";
+//    std::string classname = "Bond_v14";
 
 public:
     Bond_v14() = default;

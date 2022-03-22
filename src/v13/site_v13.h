@@ -112,8 +112,8 @@ public:
  */
 class Site_v14: public Element_v13{
 
-    std::string classname = "Site_v14";
-    Index_v13 index;
+//    std::string classname = "Site_v14";
+//    Index_v13 index;
     RelativeIndex_v13 relativeIndex;
 
     int first_nn_count = 4;
@@ -122,7 +122,7 @@ class Site_v14: public Element_v13{
 public:
     Site_v14() = default;
     Site_v14(int row, int col){
-        index = Index_v13(row, col);
+//        index = Index_v13(row, col);
         relativeIndex = RelativeIndex_v13();
     }
     void reset(){
@@ -139,25 +139,27 @@ public:
     RelativeIndex_v13 get_relative_index(){ return relativeIndex;}
 //    int get_gid(){ return Element_v13::get_gid();}
 //    int get_id(){ return Element_v13::get_id();}
-    std::string get_str(int formatt=0){
+    std::string get_str(int length, int formatt=0){
         std::stringstream ss;
         if (formatt == 1){
             ss << "[" << std::setw(5) << get_gid() << "," << std::setw(5) << get_id() << "]";
         }
         else{
             int iidd = Element_v13::get_id();
-            ss << std::setw(5) << iidd  <<  "(" << std::setw(5) << index.row() << ","
-               << std::setw(5) << index.col() << ")";
+            ss << std::setw(5) << iidd  <<  "(" << std::setw(5) << get_row(length) << ","
+               << std::setw(5) << get_col(length) << ")";
         }
 
         return ss.str();
     }
 
-    int right_bond_of_site(int length);
-    int bottom_bond_of_site(int length);
-    int left_bond_of_site(int length);
-    int top_bond_of_site(int length);
+//    int right_bond_of_site(int length);
+//    int bottom_bond_of_site(int length);
+//    int left_bond_of_site(int length);
+//    int top_bond_of_site(int length);
 
+    int get_row(int length);
+    int get_col(int length);
 
     std::vector<int> get_connecting_bonds(int site_count);
     std::vector<int> get_connecting_bonds_v2(int site_count);

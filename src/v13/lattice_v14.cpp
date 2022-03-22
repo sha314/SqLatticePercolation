@@ -336,7 +336,7 @@ vector<string> Lattice_v14::get_row_str(int row, int format) {
     vector<string> r_string;
     for(int cc =0; cc < length; ++cc){
         int s_index = row * length + cc;
-        string str1 = site_matrix[s_index].get_str(format);
+        string str1 = site_matrix[s_index].get_str(length, format);
         string str2 = bond_matrix[s_index].get_str(format);
         stringstream str0;
         int tmp_l = str2.size() - str1.size();
@@ -525,7 +525,7 @@ void Lattice_v14::test_id_index_conversion() {
         auto id1 = site_ids[rnd];
         check_if_it_is_not_equal(rnd, id1, __LINE__);
         auto id2 = site_matrix[id1].get_id();
-        auto index = site_matrix[id1].get_index();
+        auto index = site_matrix[id1].get_index_v14(length);
         auto id3 = index.row() * length + index.col();
         if(id1 != id2 || id1 != id3){
             cout << "Error. Site  " << endl;
@@ -597,7 +597,7 @@ void Lattice_v14::viewLattice_clsuter_k(int cluster_gid) {
 void Lattice_v14::print_site_bond_list() {
     cout << "print_site_bond_list" << endl;
     for (auto ss=0; ss < site_matrix.size(); ss++){
-        cout << "[" << setw(3) << ss << "]" << site_matrix[ss].get_gid() << site_matrix[ss].get_index().get_str()
+        cout << "[" << setw(3) << ss << "]" << site_matrix[ss].get_gid() << site_matrix[ss].get_index_v14(length).get_str()
              << ": {";
         auto bonds = site_matrix[ss].get_connecting_bonds(length);
         for(auto i: bonds){

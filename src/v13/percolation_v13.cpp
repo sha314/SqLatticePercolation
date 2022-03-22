@@ -109,8 +109,8 @@ Index_v13 Percolation_v13::wrapping_correction_relative_index(Index_v13 delta_X)
 RelativeIndex_v13 Percolation_v13::get_relative_index(int central_site_id, int neighbor_site_id) {
 //    cout << "central_site_id " << central_site_id << endl;
 //    cout << "neighbor_site_id " << neighbor_site_id << endl;
-    Index_v13 central_index = lattice_ref.get_site_by_id(central_site_id).get_index();
-    Index_v13 neighbor_index = lattice_ref.get_site_by_id(neighbor_site_id).get_index();
+    Index_v13 central_index = lattice_ref.get_site_by_id(central_site_id).get_index_v14(_length);
+    Index_v13 neighbor_index = lattice_ref.get_site_by_id(neighbor_site_id).get_index_v14(_length);
 //    cout << "central_index " << central_index.get_str() << endl;
 //    cout << "neighbor_index " << neighbor_index.get_str() << endl;
     Index_v13 idx = neighbor_index.subtract(central_index);
@@ -1168,14 +1168,14 @@ void SitePercolationL0_v13::test_cluster() {
         }
 //        viewLattice(4);
         viewLattice_clsuter_k(gid_cluster);
-        auto root_site_index = lattice_ref.get_site_by_id(root_site_id).get_index();
+        auto root_site_index = lattice_ref.get_site_by_id(root_site_id).get_index_v14(_length);
         for(size_t rr{}; rr < _length ; ++rr){
             for(size_t cc{}; cc < _length; ++cc){
                 auto site = lattice_ref.get_site_by_index(rr, cc);
                 if(site.get_gid() != gid_cluster) continue;
 
                 auto rel_index = site.get_relative_index();
-                auto index = site.get_index();
+                auto index = site.get_index_v14(_length);
                 auto diff = index - root_site_index;
 //                cout << index.get_str() << " " << root_site_index.get_str() << " = " << diff.get_str() << " and relative index ";
 //                cout << "rel_index "<< rel_index.get_str() << endl;

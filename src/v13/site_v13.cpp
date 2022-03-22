@@ -8,12 +8,18 @@
 
 using namespace std;
 
+int Site_v14::get_row(int length){
+    return get_id() / length;
 
+}
+int Site_v14::get_col(int length){
+    return get_id() % length;
+}
 Index_v13 Site_v14::get_index() {
 
 
-
-    return index;
+    cout << "Not defined " << __LINE__ << endl;
+    return {};
 
 }
 
@@ -38,32 +44,33 @@ Index_v13 Site_v14::get_index_v14(int length) {
 
 
 std::vector<int> Site_v14::get_connecting_bonds(int length) {
-    int row = get_id() / length;
-    int col = get_id() % length;
-
-    int site_count = length*length;
-    int bond_count = site_count*2;
-
-    int right_bond = get_id();
-    int bottom_bond = right_bond + site_count;
-
-    // left_bond is the right_bond of left_site
-    int left_site_id = get_id() - 1;
-    if (get_id()%length == 0){ // for first column elements
-        left_site_id += length;
-    }
-    int left_bond = left_site_id;
-
-    // top_bond is the bottom_bond of top_site
-    int top_site_id = get_id() - length;
-    if (get_id() < length){
-        // top row elements
-//        top_site_id = get_id() - length + site_count;
-        top_site_id += site_count;
-    }
-//# top_bond = (s0_index+self.bond_count-self.length)%self.site_count + self.site_count
-    int top_bond = top_site_id + site_count;
-    return {right_bond, bottom_bond, left_bond, top_bond};
+    return get_connecting_bonds_v2(length);
+//    int row = get_id() / length;
+//    int col = get_id() % length;
+//
+//    int site_count = length*length;
+//    int bond_count = site_count*2;
+//
+//    int right_bond = get_id();
+//    int bottom_bond = right_bond + site_count;
+//
+//    // left_bond is the right_bond of left_site
+//    int left_site_id = get_id() - 1;
+//    if (get_id()%length == 0){ // for first column elements
+//        left_site_id += length;
+//    }
+//    int left_bond = left_site_id;
+//
+//    // top_bond is the bottom_bond of top_site
+//    int top_site_id = get_id() - length;
+//    if (get_id() < length){
+//        // top row elements
+////        top_site_id = get_id() - length + site_count;
+//        top_site_id += site_count;
+//    }
+////# top_bond = (s0_index+self.bond_count-self.length)%self.site_count + self.site_count
+//    int top_bond = top_site_id + site_count;
+//    return {right_bond, bottom_bond, left_bond, top_bond};
 
 }
 
@@ -116,40 +123,40 @@ std::vector<int> Site_v14::get_neighbor_sites(int length) {
 //}
 
 
-int Site_v14::bottom_bond_of_site(int length) {
-    return get_id() + length*length;
-}
-
-/**
- * top index of a site 'm' is the bottom index of some other site 'n'.
-            n = (m + 2*L*L - L) (mod L*L)
-
- * @param s0_index
- * @return
- */
-int Site_v14::top_bond_of_site(int length) {
-    int site_count = length*length;
-    int bond_count = site_count*2;
-    int of_bottom_site = (get_id()+bond_count-length)%site_count;
-    int x = bottom_bond_of_site(of_bottom_site);
-    cout << "top bond of site " << get_id() << " is " << x << endl;
-    return x;
-}
-
-int Site_v14::right_bond_of_site(int length) {
-    return get_id();
-}
-
-/***
-left index of a site 'm' is the right index of some other site 'n'.
-n =
-*/
-int Site_v14::left_bond_of_site(int length) {
-
-    int row = get_id() / length;
-    int col = get_id() % length;
-
-    int left_site = row*length + (col + length - 1) % length;
-//# print("left of ", s0_index, " is the right of ", left_site)
-    return right_bond_of_site(left_site);
-}
+//int Site_v14::bottom_bond_of_site(int length) {
+//    return get_id() + length*length;
+//}
+//
+///**
+// * top index of a site 'm' is the bottom index of some other site 'n'.
+//            n = (m + 2*L*L - L) (mod L*L)
+//
+// * @param s0_index
+// * @return
+// */
+//int Site_v14::top_bond_of_site(int length) {
+//    int site_count = length*length;
+//    int bond_count = site_count*2;
+//    int of_bottom_site = (get_id()+bond_count-length)%site_count;
+//    int x = bottom_bond_of_site(of_bottom_site);
+//    cout << "top bond of site " << get_id() << " is " << x << endl;
+//    return x;
+//}
+//
+//int Site_v14::right_bond_of_site(int length) {
+//    return get_id();
+//}
+//
+///***
+//left index of a site 'm' is the right index of some other site 'n'.
+//n =
+//*/
+//int Site_v14::left_bond_of_site(int length) {
+//
+//    int row = get_id() / length;
+//    int col = get_id() % length;
+//
+//    int left_site = row*length + (col + length - 1) % length;
+////# print("left of ", s0_index, " is the right of ", left_site)
+//    return right_bond_of_site(left_site);
+//}
