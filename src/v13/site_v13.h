@@ -160,6 +160,8 @@ public:
 
 
     std::vector<int> get_connecting_bonds(int site_count);
+    std::vector<int> get_connecting_bonds_v2(int site_count);
+    std::vector<int> get_neighbor_sites(int length);
 
     void init_relative_index(){relativeIndex = RelativeIndex_v13(0, 0);}
 

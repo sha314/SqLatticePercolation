@@ -38,6 +38,9 @@ Index_v13 Site_v14::get_index_v14(int length) {
 
 
 std::vector<int> Site_v14::get_connecting_bonds(int length) {
+    int row = get_id() / length;
+    int col = get_id() % length;
+
     int site_count = length*length;
     int bond_count = site_count*2;
 
@@ -61,6 +64,42 @@ std::vector<int> Site_v14::get_connecting_bonds(int length) {
 //# top_bond = (s0_index+self.bond_count-self.length)%self.site_count + self.site_count
     int top_bond = top_site_id + site_count;
     return {right_bond, bottom_bond, left_bond, top_bond};
+
+}
+
+std::vector<int> Site_v14::get_connecting_bonds_v2(int length) {
+    int row = get_id() / length;
+    int col = get_id() % length;
+
+    int site_count = length*length;
+    int bond_count = site_count*2;
+
+    int right_bond = get_id();
+    int bottom_bond = right_bond + site_count;
+
+    // left_bond is the right_bond of left_site
+    int CX_L = (length + col - 1) % length;
+    int left_bond = CX_L + length*row;
+
+    // top_bond is the bottom_bond of top_site
+    int RX_T = (length + row - 1) % length;
+    int top_bond = col + length*RX_T + site_count;
+    return {right_bond, bottom_bond, left_bond, top_bond};
+
+}
+
+std::vector<int> Site_v14::get_neighbor_sites(int length) {
+    int row = get_id() / length;
+    int col = get_id() % length;
+    int CX_R = (col + 1) % length; // column of right site
+    int CX_L = (length + col - 1) % length; // column of left site
+    int RX_B = (row + 1) % length; // row of bottom site
+    int RX_T = (length + row - 1) % length; // row of top site
+
+    return {CX_R + length*row,
+            CX_L + length*row,
+            col + length*RX_B,
+            col + length*RX_T};
 
 }
 
