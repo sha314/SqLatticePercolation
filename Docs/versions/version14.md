@@ -24,3 +24,12 @@ Time=6.7 sec per iteration
 L=1000 Mem=390340 KB = 381 MB
 L=2000 Mem=1550680 KB = 1514 MB
 
+
+### Log 2022.03.24
+Just creating SitePercolationL0_v13 object takes 1.02 GB RAM. then another ~500 MB for running the rest of the code.
+I think there are multiple copies of same things in the program, need to clean it.
+
+commented "first_nn_count" and "second_directional_nn_count" in Site.
+L=2000 Mem=1.50 GB RAM by "run_v13_rsbd_L0" method using V14 Site/Bond. 6.3 sec per iteration.
+L=2000 Mem=??? GB RAM by "run_v13_rsbd_L0" method using V13 Site/Bond
+

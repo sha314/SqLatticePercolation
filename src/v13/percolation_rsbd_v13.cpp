@@ -49,8 +49,9 @@ P_STATUS SitePercolationL1_v13::select_site() {
         auto central2 = sites[_random_engine()% sites.size()];
 
         if (lattice_ref.get_site_by_id(central2).is_occupied()){
-            lattice_ref.get_site_by_id(central_X).reduce_1st_nn();
-            if (lattice_ref.get_site_by_id(central_X).is_removable(1)){
+//            lattice_ref.get_site_by_id(central_X).reduce_1st_nn();
+//            if (lattice_ref.get_site_by_id(central_X).is_removable(1)){ // remove
+            if(lattice_ref.isRemovable(central_X, 1)){
 //# print("is_removable")
 //# print("self.site_ids_indices before ", self.site_ids_indices)
 //# print("rnd ", rnd, " self.current_idx ", self.current_idx)

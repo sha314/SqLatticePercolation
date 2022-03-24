@@ -33,24 +33,30 @@ void test_lattice(int argc, char** argv) {
 //    lattice.print_site_bond_list();
 }
 
-void test_detect_wrapping() {
+void test_detect_wrapping(int argc, char **argv) {
+    cout << "length        = argv[1]" << endl;
+    cout << "ensemble size = argv[2]" << endl;
+//    cout << "rsbd l        = argv[3]" << endl;
+    if (argc <=2 ) cerr << "Not enough arguments " << endl;
+    int length = stoi(argv[1]);
+    int ensemble_size = stoi(argv[2]);
 //# take arguments from commandline
-    cout << "Got here " << __LINE__ << endl;
-    auto sq_lattice_p = SitePercolationL0_v13(6, 18, false);
-    cout << "Got here " << __LINE__ << endl;
+//    cout << "Got here " << __LINE__ << endl;
+    auto sq_lattice_p = SitePercolationL0_v13(length, 18, false);
+//    cout << "Got here " << __LINE__ << endl;
 //    sq_lattice_p.setRandomState(0, true);
 
 //# sq_lattice_p.viewLattice(3)
 //# sq_lattice_p.viewCluster()
     int i = 0;
-    cout << "Got here " << __LINE__ << endl;
+//    cout << "Got here " << __LINE__ << endl;
     while (sq_lattice_p.place_one_site()) {
         double H1 = sq_lattice_p.entropy_v1();
         double H2 = sq_lattice_p.entropy_v2();
-        cout << "p= " << sq_lattice_p.occupation_prob() <<
-             " entropy_v1 " << H1 <<
-             " entropy_v2 " << H2 <<
-             " order " << sq_lattice_p.order_param_wrapping() << endl;
+//        cout << "p= " << sq_lattice_p.occupation_prob() <<
+//             " entropy_v1 " << H1 <<
+//             " entropy_v2 " << H2 <<
+//             " order " << sq_lattice_p.order_param_wrapping() << endl;
 //        sq_lattice_p.viewLattice(3);
 //        sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
@@ -61,7 +67,7 @@ void test_detect_wrapping() {
     }
 
 #endif
-        sq_lattice_p.viewCluster(1);
+//        sq_lattice_p.viewCluster(1);
         i += 1;
         if (sq_lattice_p.detect_wrapping()) {
             cout << "p= " << sq_lattice_p.occupation_prob() <<
@@ -75,7 +81,7 @@ void test_detect_wrapping() {
 //        if (i > 8) break;
 
     }
-    sq_lattice_p.viewLattice(3);
+//    sq_lattice_p.viewLattice(3);
 //    sq_lattice_p.viewLattice(4);
 //    sq_lattice_p.viewLattice(1);
 //    sq_lattice_p.viewCluster();
@@ -253,7 +259,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 
 void test_v13(int argc, char **argv) {
 //    test_lattice(argc, argv);
-//    test_detect_wrapping();
+//    test_detect_wrapping(argc, argv);
 //    test_percolation_L0();
 //    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);

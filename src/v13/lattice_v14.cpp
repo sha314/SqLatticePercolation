@@ -5,6 +5,7 @@
 #include <set>
 #include "lattice_v14.h"
 #include "bond_v13.h"
+#include "../index/index.h"
 
 
 using namespace std;
@@ -513,6 +514,23 @@ vector<int> Lattice_v14::get_all_neighbor_sites(int central_site_id) {
         exit(-1);
     }
 
+#ifdef DEBUG_FLAG
+    cout << "Checking four neighbor finder : Lattice_v14::get_all_neighbor_sites :" << __LINE__ << endl;
+    auto neighbors = get_site_by_id(central_site_id).get_neighbor_sites(length);
+
+    for(auto a: four_neighbors){
+        bool found = false;
+        for(auto b: neighbors){
+            if (a == b){
+                found = true;
+                break;
+            }
+        }
+        if(!found){
+            cout << "One or more neighbor missing" << endl;
+        }
+    }
+#endif
 
     return four_neighbors;
 }
@@ -605,5 +623,24 @@ void Lattice_v14::print_site_bond_list() {
         }
         cout << "}" << endl;
     }
+
+}
+
+bool Lattice_v14::isRemovable(int site, int type) {
+    if (type == 1) {
+        // RSBD l=1
+        auto neightbors = get_site_by_id(site).get_neighbor_sites(length);
+        for (auto a : neightbors){
+            if (!get_site_by_id(a).is_occupied()) return false;
+        }
+        return true;
+    }
+    else if (type == 2) {
+        // RSBD l=2
+        cout << "Not implemented yet : Lattice_v14::isRemovable : " << __LINE__ << endl;
+//        get_all_2nn_in_1nn_s_direction()
+//        return second_directional_nn_count == 0;
+    }
+    return false;
 
 }
