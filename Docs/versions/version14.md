@@ -35,5 +35,10 @@ L=2000 Mem=1.50 GB RAM by "run_v13_rsbd_L0" method using V14 Site/Bond. 6.3 sec 
 L=2000 Mem=2.67 GB RAM by "run_v13_rsbd_L0" method using V13 Site/Bond. 8.5 sec per iteration.
 
 L=2000 Mem=1.48 GB RAM by "run_v13_rsbd_L1" method using V14 Site/Bond. 11.8 sec per iteration.
+L=2000 Mem=2.66 GB RAM by "run_v13_rsbd_L1" method using V13 Site/Bond. 30.0 sec per iteration.
+
+So, V14 is both memory efficient and fast. Reason: it takes non-zero finite amount of time to get data from RAM and if you do it
+millions of times then the total time is huge and does not improve performance. If it took zero time to get data from RAM, then, I guess,
+v13 would have performed better.
 
 
