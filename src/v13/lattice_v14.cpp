@@ -626,21 +626,21 @@ void Lattice_v14::print_site_bond_list() {
 
 }
 
-bool Lattice_v14::isRemovable(int site, int type) {
-    if (type == 1) {
-        // RSBD l=1
-        auto neightbors = get_site_by_id(site).get_neighbor_sites(length);
-        for (auto a : neightbors){
-            if (!get_site_by_id(a).is_occupied()) return false;
-        }
-        return true;
-    }
-    else if (type == 2) {
-        // RSBD l=2
-        cout << "Not implemented yet : Lattice_v14::isRemovable : " << __LINE__ << endl;
-//        get_all_2nn_in_1nn_s_direction()
-//        return second_directional_nn_count == 0;
-    }
-    return false;
-
-}
+//bool Lattice_v14::isRemovable(int site, int type) {
+//    if (type == 1) {
+//        // RSBD l=1
+//        auto neightbors = get_site_by_id(site).get_neighbor_sites(length);
+//        for (auto a : neightbors){
+//            if (!get_site_by_id(a).is_occupied()) return false;
+//        }
+//        return true;
+//    }
+//    else if (type == 2) {
+//        // RSBD l=2
+//        cout << "Not implemented yet : Lattice_v14::isRemovable : " << __LINE__ << endl;
+////        get_all_2nn_in_1nn_s_direction()
+////        return second_directional_nn_count == 0;
+//    }
+//    return false;
+//
+//}

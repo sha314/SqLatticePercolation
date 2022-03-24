@@ -114,7 +114,7 @@ public:
 
     void check_if_it_is_not_equal(int id, int s_index, int line) const;
 
-    bool isRemovable(int site, int type);
+//    bool isRemovable(int site, int type);
 };
 
 #endif //SQLATTICEPERCOLATION_LATTICE_V14_H

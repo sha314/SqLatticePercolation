@@ -42,3 +42,8 @@ millions of times then the total time is huge and does not improve performance. 
 v13 would have performed better.
 
 
+### log 2022.03.24
+Using "first_nn_count" and "second_directional_nn_count" in Site. and V14 Site/Bond we get
+L=2000 Mem=1.51 GB RAM by "run_v13_rsbd_L1" method using V14 Site/Bond. 9.76 sec per iteration. While, L1 is almost unchanged.
+So, using it is better. Check for for L2. TODO
+
