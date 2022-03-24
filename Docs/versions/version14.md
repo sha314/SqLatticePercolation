@@ -30,6 +30,10 @@ Just creating SitePercolationL0_v13 object takes 1.02 GB RAM. then another ~500 
 I think there are multiple copies of same things in the program, need to clean it.
 
 commented "first_nn_count" and "second_directional_nn_count" in Site.
+
 L=2000 Mem=1.50 GB RAM by "run_v13_rsbd_L0" method using V14 Site/Bond. 6.3 sec per iteration.
-L=2000 Mem=??? GB RAM by "run_v13_rsbd_L0" method using V13 Site/Bond
+L=2000 Mem=2.67 GB RAM by "run_v13_rsbd_L0" method using V13 Site/Bond. 8.5 sec per iteration.
+
+L=2000 Mem=1.48 GB RAM by "run_v13_rsbd_L1" method using V14 Site/Bond. 11.8 sec per iteration.
+
 
