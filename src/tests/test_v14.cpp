@@ -25,7 +25,7 @@ void test_lattice_v14() {
     lattice.view_relative_index();
     lattice.view_site_gids();
     lattice.test_id_index_conversion();
-    lattice.print_site_bond_list();
+//    lattice.print_site_bond_list();
 }
 
 

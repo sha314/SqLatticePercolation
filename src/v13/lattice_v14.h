@@ -10,6 +10,20 @@
 #include "bond_v13.h"
 
 class Lattice_v14{
+#ifdef DESTRUCTOR_CHECK
+private:
+    int random_ID = 0;
+    int call_count = 0;
+public:
+    ~Lattice_v14(){
+        std::cout << "~Lattice_v14() " << random_ID << " call_count " << call_count<< std::endl;
+        call_count += 1;
+    }
+    Lattice_v14(Lattice_v14&)= default;
+    Lattice_v14(Lattice_v14&&)= default;
+    Lattice_v14& operator=(Lattice_v14&)= default;
+    Lattice_v14& operator=(Lattice_v14&&)= default;
+#endif
     int length = 0;
     long bond_count = 0;
     long site_count = 0;
@@ -43,6 +57,10 @@ public:
 //        std::cout << "reached " << __LINE__ << std::endl;
 //        init_neighbor_ids();
 //        std::cout << "reached " << __LINE__ << std::endl;
+#ifdef DESTRUCTOR_CHECK
+        random_ID = rand();
+        std::cout << "Lattice_v14() " << random_ID << std::endl;
+#endif
     }
     int get_length() { return length;}
     void reset();

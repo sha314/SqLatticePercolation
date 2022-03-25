@@ -17,6 +17,18 @@
 #include "../util/printer.h"
 
 class Percolation_v13{
+#ifdef DESTRUCTOR_CHECK
+private:
+    int random_ID = 0;
+public:
+    ~Percolation_v13(){
+        std::cout << "~Percolation_v13() " << random_ID << std::endl;
+    }
+    Percolation_v13(Percolation_v13&)= default;
+    Percolation_v13(Percolation_v13&&)= default;
+    Percolation_v13& operator=(Percolation_v13 &)= default;
+    Percolation_v13& operator=(Percolation_v13&&)= default;
+#endif
 
 public:
     int _length = 0;
@@ -35,6 +47,11 @@ public:
         _seed = seed;
         lattice_ref = Lattice_v14(_length);
         cluster_pool_ref = ClusterPool();
+
+#ifdef DESTRUCTOR_CHECK
+        random_ID = rand();
+        std::cout << "Percolation_v13() " << random_ID << std::endl;
+#endif
     }
 
     virtual void reset() {
@@ -68,6 +85,19 @@ public:
 };
 
 class SitePercolation_v13: public Percolation_v13{
+#ifdef DESTRUCTOR_CHECK
+private:
+    int random_ID = 0;
+public:
+    ~SitePercolation_v13(){
+        std::cout << "~SitePercolation_v13() " << random_ID << std::endl;
+    }
+    SitePercolation_v13(SitePercolation_v13&)= default;
+    SitePercolation_v13(SitePercolation_v13&&)= default;
+    SitePercolation_v13& operator=(SitePercolation_v13 &)= default;
+    SitePercolation_v13& operator=(SitePercolation_v13&&)= default;
+#endif
+
     std::string signature = "SitePercolation";
 
 
@@ -154,6 +184,19 @@ public:
 
 
 class SitePercolationL0_v13: public SitePercolation_v13{
+#ifdef DESTRUCTOR_CHECK
+private:
+    int random_ID = 0;
+public:
+    ~SitePercolationL0_v13(){
+        std::cout << "~SitePercolationL0_v13() " << random_ID << std::endl;
+    }
+    SitePercolationL0_v13(SitePercolationL0_v13&)= default;
+//    SitePercolationL0_v13(SitePercolationL0_v13&&)= default;
+    SitePercolationL0_v13& operator=(SitePercolationL0_v13 &)= default;
+    SitePercolationL0_v13& operator=(SitePercolationL0_v13&&)= default;
+#endif
+
     bool first_run;
     std::vector<double> occupation_prob_list;
     std::vector<double> entropy_list;

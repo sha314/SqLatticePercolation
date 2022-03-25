@@ -132,6 +132,9 @@ int main(int argc, char** argv) {
 #ifdef UNIT_TEST
     cout << "flag UNIT_TEST is defined !" << endl;
 #endif
+#ifdef DESTRUCTOR_CHECK
+    cout << "flag DESTRUCTOR_CHECK is defined !" << endl;
+#endif
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;
     std::time_t end_time = std::chrono::system_clock::to_time_t(t_end);

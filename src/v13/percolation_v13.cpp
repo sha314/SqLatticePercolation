@@ -161,6 +161,11 @@ SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolat
     entropy_value = max_entropy;
     after_wrapping = false;
     wrapping_cluster_id = -1;
+
+#ifdef DESTRUCTOR_CHECK
+    random_ID = rand();
+    std::cout << "SitePercolation_v13() " << random_ID << std::endl;
+#endif
 }
 
 void SitePercolation_v13::init_clusters() {
@@ -972,6 +977,11 @@ SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool g
 //    order_wrapping_list.resize(l_squared);
 //    order_largest_list.resize(l_squared);
     setRandomState(seed, generate_seed);
+
+#ifdef DESTRUCTOR_CHECK
+    random_ID = rand();
+    std::cout << "SitePercolationL0_v13() " << random_ID << std::endl;
+#endif
 }
 
 void SitePercolationL0_v13::run_once() {
