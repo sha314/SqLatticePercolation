@@ -39,6 +39,11 @@ std::vector<int> Bond_v14::get_connected_sites(int length) {
 }
 
 int Bond_v14::get_row(int length) {
+    auto tt = get_type(length);
+    if (tt == 1){
+        auto ad = get_id() - (length*length);
+        return ad / length;
+    }
     return get_id() / length;
 }
 
@@ -47,6 +52,11 @@ int Bond_v14::get_type(int length) {
 }
 
 int Bond_v14::get_col(int length) {
+    auto tt = get_type(length);
+    if (tt == 1){
+        auto ad = get_id() - (length*length);
+        return ad % length;
+    }
     return get_id() % length;
 }
 

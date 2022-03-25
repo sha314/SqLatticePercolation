@@ -563,6 +563,8 @@ void Lattice_v14::test_id_index_conversion() {
         auto id3 = tt * sq_length + rr* length + cc;
         if(id1 != id2 || id1 != id3){
             cout << "Error. Bond  " << endl;
+            cout << bond_matrix[id1].get_str(length) << endl;
+            cout << id1 << " vs " << id2 << " vs " << id3 << endl;
             exit(-1);
         }
 
