@@ -45,7 +45,8 @@ public:
     Percolation_v13(int length, int seed=-1){
         _length = length;
         _seed = seed;
-        lattice_ref = Lattice_v14(_length);
+//        lattice_ref = Lattice_v14(_length);
+        lattice_ref.create_lattice(_length);
         cluster_pool_ref = ClusterPool();
 
 #ifdef DESTRUCTOR_CHECK

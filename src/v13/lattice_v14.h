@@ -8,6 +8,8 @@
 
 #include "site_v13.h"
 #include "bond_v13.h"
+#include "../../../../../../usr/include/c++/11/vector"
+#include "../../../../../../usr/include/c++/11/iostream"
 
 class Lattice_v14{
 #ifdef DESTRUCTOR_CHECK
@@ -36,6 +38,34 @@ public:
 
 public:
     explicit Lattice_v14(int length=3){
+//        if (length < 0){
+//            std::cout << "length cannot be negative" << std::endl;
+//        }
+//        this->length = length;
+//        site_count = length*length;
+//        bond_count = 2*site_count;
+////        std::cout << "reached " << __LINE__ << std::endl;
+//        site_matrix = std::vector<Site_v14>(site_count);
+////        site_ids = std::vector<int>(site_count);
+//        bond_matrix = std::vector<Bond_v14>(bond_count);
+////        bond_ids = std::vector<int>(bond_count);
+////        std::cout << "reached " << __LINE__ << std::endl;
+////        site_matrix.resize(site_count);
+////        _site_ids.resize(site_count);
+////        bond_matrix.resize(bond_count);
+////        bond_ids.resize(bond_count);
+//
+//        init_lattice();
+////        std::cout << "reached " << __LINE__ << std::endl;
+////        init_neighbor_ids();
+////        std::cout << "reached " << __LINE__ << std::endl;
+#ifdef DESTRUCTOR_CHECK
+        random_ID = rand();
+        std::cout << "Lattice_v14() " << random_ID << std::endl;
+#endif
+    }
+
+    void create_lattice(int length=3){
         if (length < 0){
             std::cout << "length cannot be negative" << std::endl;
         }
@@ -57,10 +87,6 @@ public:
 //        std::cout << "reached " << __LINE__ << std::endl;
 //        init_neighbor_ids();
 //        std::cout << "reached " << __LINE__ << std::endl;
-#ifdef DESTRUCTOR_CHECK
-        random_ID = rand();
-        std::cout << "Lattice_v14() " << random_ID << std::endl;
-#endif
     }
     int get_length() { return length;}
     void reset();
