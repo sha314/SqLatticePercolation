@@ -18,6 +18,8 @@
 void run_v13_rsbd_L0(int length, int ensemble_size);
 void run_v13_rsbd_L1(int length, int ensemble_size);
 
+void run_v13_rsbd_L2(int length, int ensemble_size);
+
 template<class PType>
 void run_v13_rsbd(int length, int ensemble_size){
     std::cout << "length " << length << " ensemble_size " << ensemble_size << std::endl;

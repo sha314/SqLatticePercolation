@@ -10,6 +10,7 @@
 #include "cluster.h"
 #include "percolation_v13.h"
 #include "../types.h"
+#include "../../../../../../usr/include/c++/11/string"
 #include <set>
 #include <algorithm>
 #include <random>
@@ -34,7 +35,7 @@ public:
 
 
 
-class SitePercolationL2_v13: public SitePercolation_v13{
+class SitePercolationL2_v13: public SitePercolationL0_v13{
 
 public:
 
@@ -42,6 +43,7 @@ public:
     SitePercolationL2_v13(SitePercolationL2_v13&&) = default;
     std::string get_signature() override { return SitePercolation_v13::get_signature() + "L2_";};
 
+    int get_2nn_in_1nn_direction(int central_X_id, int nn_1_id);
 
     P_STATUS select_site();
 

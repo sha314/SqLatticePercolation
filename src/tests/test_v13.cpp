@@ -15,6 +15,8 @@ using namespace std;
 
 void percolation_seed_length_pair(int length, value_type seed);
 
+void test_2nn_in_1nn_direction();
+
 void test_lattice(int argc, char** argv) {
     cout << "length        = argv[1]" << endl;
     cout << "ensemble size = argv[2]" << endl;
@@ -265,6 +267,33 @@ void test_v13(int argc, char **argv) {
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
     run_ensemble_v13(argc, argv);
+//    test_2nn_in_1nn_direction();
+}
+
+void test_2nn_in_1nn_direction() {
+    int length = 4;
+    SitePercolationL2_v13 pq4(length, 0, true);
+    pq4.setRandomState(0, true);
+    pq4.viewLattice();
+    cout << "get_2nn_in_1nn_direction " << pq4.get_2nn_in_1nn_direction(5,6) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq4.get_2nn_in_1nn_direction(5,9) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq4.get_2nn_in_1nn_direction(5,1) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq4.get_2nn_in_1nn_direction(5,4) << endl;
+
+    cout << "get_2nn_in_1nn_direction " << pq4.get_2nn_in_1nn_direction(4,7) << endl;
+
+
+    length = 6;
+    SitePercolationL2_v13 pq6(length, 0, true);
+    pq6.setRandomState(0, true);
+    pq6.viewLattice();
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(27,21) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(27,28) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(27,33) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(27,26) << endl;
+
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(18,19) << endl;
+    cout << "get_2nn_in_1nn_direction " << pq6.get_2nn_in_1nn_direction(18,23) << endl;
 }
 
 void test_reset() {
@@ -325,8 +354,9 @@ void run_ensemble_v13(int argc, char **argv){
 //    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-    run_v13_rsbd_L0(length, ensemble_size);
+//    run_v13_rsbd_L0(length, ensemble_size);
 //    run_v13_rsbd_L1(length, ensemble_size);
+    run_v13_rsbd_L2(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 

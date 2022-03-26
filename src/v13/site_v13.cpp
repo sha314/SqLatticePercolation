@@ -15,11 +15,10 @@ int Site_v14::get_row(int length){
 int Site_v14::get_col(int length){
     return get_id() % length;
 }
-Index_v13 Site_v14::get_index() {
+Index_v13 Site_v14::get_index(int length) {
 
-
-    cout << "Not defined " << __LINE__ << endl;
-    return {};
+//    cout << "Not defined " << __LINE__ << endl;
+    return {get_row(length), get_col(length)};
 
 }
 

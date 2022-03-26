@@ -135,7 +135,7 @@ public:
 
     Index_v13 get_index_v14(int length);
 
-    Index_v13 get_index();
+    Index_v13 get_index(int length);
     RelativeIndex_v13 get_relative_index(){ return relativeIndex;}
 //    int get_gid(){ return Element_v13::get_gid();}
 //    int get_id(){ return Element_v13::get_id();}
@@ -180,6 +180,10 @@ public:
     void reduce_1st_nn(){
         if (first_nn_count <=0)        return;
         first_nn_count -= 1;
+    }
+    void reduce_2nd_nn(){
+        if (second_directional_nn_count <=0)        return;
+        second_directional_nn_count -= 1;
     }
 
     /**
