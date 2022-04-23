@@ -198,6 +198,7 @@ public:
     SitePercolationL0_v13& operator=(SitePercolationL0_v13&&)= default;
 #endif
 
+protected:
     bool first_run;
     std::vector<double> occupation_prob_list;
     std::vector<double> entropy_list;

@@ -42,7 +42,7 @@ P_STATUS SitePercolationL1_v13::select_site() {
 //        viewLattice(2);
 //        cout << "X is occupied" << endl;
 //        exit(-1);
-        ++x_occupied;
+        // ++x_occupied;
 
         auto sites = lattice_ref.get_all_neighbor_sites(central_X);
 
@@ -50,7 +50,7 @@ P_STATUS SitePercolationL1_v13::select_site() {
         auto central2 = sites[_random_engine()% sites.size()];
 
         if (lattice_ref.get_site_by_id(central2).is_occupied()){
-            lattice_ref.get_site_by_id(central_X).reduce_1st_nn();// remove
+            lattice_ref.get_site_by_id(central_X).reduce_1st_nn();
             if (lattice_ref.get_site_by_id(central_X).is_removable(1)){ // remove
 //            if(lattice_ref.isRemovable(central_X, 1)){
 //# print("is_removable")
@@ -64,11 +64,15 @@ P_STATUS SitePercolationL1_v13::select_site() {
             return P_STATUS::CURRENT_SITE_NOT_EMPTY;
         }
         else {
+            // 1st nearest neighbor selected
+            // cout << "1st nearest neighbor selected" << endl;
+            nn_1st_count += 1;
             selected_id = central2;
         }
 
     }
     else {
+        original_count += 1;
         selected_id = central_X;
     }
 
