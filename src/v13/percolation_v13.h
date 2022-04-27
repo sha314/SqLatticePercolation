@@ -110,6 +110,12 @@ public:
     long largest_cluster_sz = 0;
     int largest_cluster_id = -1;
 
+// 0-th element = largest cluster
+// 1-st element = 2nd largest cluster
+// 2-rd element = 3rd largest cluster
+    std::vector<long> cluster_sizes_sorted;
+    std::vector<int> cluster_sizes_sorted_ids;
+
 protected:
     P_STATUS status; // holds the current status of percolation.
     // if site occupation was successful or not... Helpful for L1, L2 percolation RSBD
@@ -145,6 +151,7 @@ public:
     virtual P_STATUS select_site();
     bool place_one_site();
     void track_largest_cluster(int new_cluster);
+    void track_largest_clusters_v2(int new_cluster);
     void entropy_subtract(std::vector<int>& bond_neighbors);
     void entropy_add(int new_cluster_id);
 

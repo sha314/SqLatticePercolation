@@ -194,6 +194,13 @@ void SitePercolation_v13::reset() {
 //# print("Initial entropy ", self.entropy_value)
     init_clusters();
     shuffle_indices();
+
+    cluster_sizes_sorted.clear();
+    cluster_sizes_sorted_ids.clear();
+
+    cluster_sizes_sorted.resize(3);
+    cluster_sizes_sorted_ids.resize(3);
+
 }
 
 double SitePercolation_v13::entropy_v1() {
@@ -365,12 +372,63 @@ bool SitePercolation_v13::place_one_site() {
 }
 
 void SitePercolation_v13::track_largest_cluster(int new_cluster) {
+    track_largest_clusters_v2(new_cluster);
+//     auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
+// //# self.cluster_pool_ref.get_cluster_site_count(new_cluster)
+//     if (new_size > largest_cluster_sz) {
+//         largest_cluster_id = new_cluster;
+//         largest_cluster_sz = new_size;
+//     }
+}
+
+
+void SitePercolation_v13::track_largest_clusters_v2(int new_cluster) {
+#ifdef DEBUG_FLAG
+cout << "cluster_sizes_sorted . before -> ";
+
+for (int i=0; i < cluster_sizes_sorted.size(); ++i){
+    cout << cluster_sizes_sorted[i] << ",";
+}
+cout << endl;
+#endif
+
     auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
-//# self.cluster_pool_ref.get_cluster_site_count(new_cluster)
-    if (new_size > largest_cluster_sz) {
-        largest_cluster_id = new_cluster;
-        largest_cluster_sz = new_size;
+    for (int i=0; i < cluster_sizes_sorted.size(); ++i){
+        if(new_size >= cluster_sizes_sorted[i]) {
+            // larger cluster for the first time
+            
+            cluster_sizes_sorted[i] = new_size;
+            cluster_sizes_sorted_ids[i] = new_cluster;
+
+            // what happens to stored information if the clsuter does not exists anymore? do a checking.
+            // Or, we can update remaining cluster sizes from the ids. If the cluster does not exist then 
+            // count will return zero.
+            for (int j_inside=i; j_inside < cluster_sizes_sorted.size(); ++j_inside){
+                new_size = cluster_pool_ref.get_cluster_bond_count(cluster_sizes_sorted_ids[j_inside]);
+                if(new_size != cluster_sizes_sorted[j_inside]){
+                    // cluster updated. set it to zero
+                    cluster_sizes_sorted[j_inside] = 0;
+                }
+                
+            }
+            // sorting ??
+
+
+            break;
+        } else {
+
+        }
     }
+
+#ifdef DEBUG_FLAG
+    cout << "cluster_sizes_sorted . after -> ";
+
+    for (int i=0; i < cluster_sizes_sorted.size(); ++i){
+        cout << cluster_sizes_sorted[i] << ",";
+    }
+    cout << " total cluster " << cluster_pool_ref.cluster_count_v2() << endl;
+#endif
+    
 }
 
 void SitePercolation_v13::entropy_subtract(std::vector<int> &bond_neighbors) {
