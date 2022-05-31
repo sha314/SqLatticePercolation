@@ -5,7 +5,10 @@
 #ifndef SITEPERCOLATION_FLAGS_H
 #define SITEPERCOLATION_FLAGS_H
 
+// #define DEBUG_FLAG
+// #define UNIT_TEST
+// #define DESTRUCTOR_CHECK
+#define track_largest_clusters_FLAG
 
-
-
+#define randomization_off_FLAG  // comment it if you want randomization. Only enable it while debugging
 #endif //SITEPERCOLATION_FLAGS_H

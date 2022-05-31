@@ -6,6 +6,8 @@
 #include <set>
 #include <random>
 #include "percolation_v13.h"
+#include "../util/checking.h"
+#include "../flags.h"
 
 using namespace std;
 
@@ -127,6 +129,10 @@ RelativeIndex_v13 Percolation_v13::get_relative_index(int central_site_id, int n
 }
 
 void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
+#ifdef randomization_off_FLAG
+    cerr << "automatic seeding is commented by 'randomization_off_FLAG'  flag. Check the flags.h file : line " << __LINE__ << endl;
+#endif
+#ifndef randomization_off_FLAG
 //    size_t seed = 0;
 //    cerr << "automatic seeding is commented : line " << __LINE__ << endl;
     _random_state = seed;
@@ -139,6 +145,8 @@ void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
     cout << "_random_state " << _random_state << endl;
     _random_engine.seed(_random_state); // seeding
     cout << "seeding with " << _random_state << endl;
+
+#endif
 }
 
 SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolation_v13(length, seed) {
@@ -200,6 +208,11 @@ void SitePercolation_v13::reset() {
 
     cluster_sizes_sorted.resize(3);
     cluster_sizes_sorted_ids.resize(3);
+
+    cluster_size_n.clear();
+    cluster_size_n.resize(10);
+    cluster_size_n_ids.clear();
+    cluster_size_n_ids.resize(10);
 
 }
 
@@ -372,7 +385,9 @@ bool SitePercolation_v13::place_one_site() {
 }
 
 void SitePercolation_v13::track_largest_cluster(int new_cluster) {
-    track_largest_clusters_v2(new_cluster);
+    // track_largest_clusters_v2(new_cluster);
+    // track_largest_clusters_v3(new_cluster);
+    track_largest_clusters_v4(new_cluster);
 //     auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
 // //# self.cluster_pool_ref.get_cluster_site_count(new_cluster)
 //     if (new_size > largest_cluster_sz) {
@@ -382,12 +397,297 @@ void SitePercolation_v13::track_largest_cluster(int new_cluster) {
 }
 
 
+void SitePercolation_v13::track_largest_clusters_v3(int new_cluster) {
+
+    auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
+//# self.cluster_pool_ref.get_cluster_site_count(new_cluster)
+    if (new_size >= largest_cluster_sz) {
+        largest_cluster_id = new_cluster;
+        largest_cluster_sz = new_size;
+        if(largest_2nd_cluster_ids.find(largest_cluster_id) == largest_2nd_cluster_ids.end()){
+            cout << "2nd largest cluster is not valid anyome xxxxxxxxxxxxx*********" << endl;
+            largest_2nd_cluster_ids.clear(); // meaning the 2nd largest cluster does not exist.
+            largest_2nd_cluster_size = 0;
+        }
+#ifdef DEBUG_FLAG
+    cout << "Found largest cluster [" << new_cluster << "] " << new_size << endl;
+#endif
+    }else if(new_size == largest_2nd_cluster_size){
+        largest_2nd_cluster_ids.insert(new_cluster); // to avoid repetition
+#ifdef DEBUG_FLAG
+    cout << "Found 2nd largest cluster with same size " << new_size;
+    cout << " and ids [";
+    for(auto elm: largest_2nd_cluster_ids){
+        cout << elm << ", ";
+    }
+    cout << "]" << endl;
+#endif
+
+    }else if(new_size > largest_2nd_cluster_size){
+        largest_2nd_cluster_size=new_size;
+        largest_2nd_cluster_ids.clear();
+        largest_2nd_cluster_ids.insert(new_cluster);
+#ifdef DEBUG_FLAG
+    cout << "Found new 2nd largest cluster [" << new_cluster << "] " << new_size;
+    cout << " and ids [";
+    for(auto elm: largest_2nd_cluster_ids){
+        cout << elm << ", ";
+    }
+    cout << "]" << endl;
+#endif
+    }
+}
+
+
+/**
+ * @brief Tracking largest clsuter is easy. But tracking 2nd largest clsuter is difficult.
+ * Since a 2nd largest cluster can be the largest one and then we will need to replace the 2nd largest cluster's place by another one.
+ * But the number of this incident is not very large. So, if we keep track of top few largest clusters then probably it can be done.
+ * Initially we will keep track of all clsusters.
+ * 
+ * @param new_cluster 
+ */
+void SitePercolation_v13::track_largest_clusters_v4(int new_cluster) {
+// #ifdef track_largest_clusters_FLAG
+// cout << "Entry *********************" << endl;
+//     for(int i=0; i < 10; ++i){
+
+//         cout << "[" << i << "] Cluster Size " << cluster_size_n[i];
+//         cout << " and ids [";
+//         for(auto elm: cluster_size_n_ids[i]){
+//             cout << elm << ", ";
+//         }
+//         cout << "]" << endl;
+
+//     }
+// #endif
+
+    auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
+    
+    for(auto mc: merging_cluster_ids){
+        // out of 4 merging cluster. 3 will not exist anymore
+        // if (mc == new_cluster) continue; // dont erase root cluster id
+        for(int i=0; i < 10; ++i){
+            auto pp = cluster_size_n_ids[i].find(mc);
+            if(pp != cluster_size_n_ids[i].end()){
+                // element found. so erase it
+                cout << "element found [" << mc << "] so erase it" << endl;
+                cluster_size_n_ids[i].erase(pp);
+            }
+
+        }
+    }
+
+// #ifdef track_largest_clusters_FLAG
+// cout << "after erasing merging cluster " << endl;
+//     for(int i=0; i < 10; ++i){
+
+//         cout << "[" << i << "] Cluster Size " << cluster_size_n[i];
+//         cout << " and ids [";
+//         for(auto elm: cluster_size_n_ids[i]){
+//             cout << elm << ", ";
+//         }
+//         cout << "]" << endl;
+
+//     }
+// #endif
+
+    // for(int i=0; i < 9; ++i){
+    //     if(cluster_size_n_ids[i].empty()){
+    //         // no need to assume that the next [i] valued element will be non-empty. Find the non-empty element manually
+    //         cluster_size_n_ids[i] = cluster_size_n_ids[i+1];
+    //         cluster_size_n[i] = cluster_size_n[i+1];
+
+    //         cluster_size_n[i+1] = 0;
+    //         cluster_size_n_ids[i+1].clear();
+    //     }
+    // }
+
+
+
+
+    // vector<int> non_empty_list;
+    // for(int i=0; i < 10; ++i){
+    //     if(cluster_size_n_ids[i].empty()){
+            
+    //     }else{
+    //         non_empty_list.push_back(i);
+    //     }
+    // }
+    // for(int j=0; j<non_empty_list.size(); ++j){
+    //     cluster_size_n_ids[j] = cluster_size_n_ids[non_empty_list[j]];
+    //     cluster_size_n[j] = cluster_size_n[non_empty_list[j]];
+
+    //     cluster_size_n[non_empty_list[j]] = 0;
+    //     cluster_size_n_ids[non_empty_list[j]].clear();
+    // }
+
+
+
+
+    // for(int i=0; i < 9; ++i){
+    //     int current_empty = i;
+    //     if(cluster_size_n_ids[current_empty].empty()){
+
+    //         int next_non_empty = i;
+    //         while(cluster_size_n_ids[next_non_empty].empty()){
+    //             next_non_empty += 1;
+    //             if (next_non_empty > 9){
+    //                 break;
+    //             }
+    //         }
+    //         if (next_non_empty > 9){
+    //             break;
+    //         }
+    //         cout << "current_empty " << current_empty << endl;
+    //         cout << "next_non_empty " << next_non_empty << endl;
+    //         cluster_size_n_ids[current_empty] = cluster_size_n_ids[next_non_empty];
+    //         cluster_size_n[current_empty] = cluster_size_n[next_non_empty];
+
+    //         cluster_size_n[next_non_empty] = 0;
+    //         cluster_size_n_ids[next_non_empty].clear();
+    //         i = next_non_empty;
+    //     }
+    // }
+
+
+    
+    // for(int i = 0; i < 9; ++i){
+    //     int current_empty = i;
+    //     int next_non_empty = i+1;
+    //     while(cluster_size_n_ids[current_empty].empty()){
+
+    //         cout << "current_empty " << current_empty << endl;
+    //         cout << "next_non_empty " << next_non_empty << endl;
+    //         cluster_size_n_ids[current_empty] = cluster_size_n_ids[next_non_empty];
+    //         cluster_size_n[current_empty] = cluster_size_n[next_non_empty];
+
+    //         cluster_size_n[next_non_empty] = 0;
+    //         cluster_size_n_ids[next_non_empty].clear();
+    //         current_empty = next_non_empty;
+    //         next_non_empty += 1;
+
+
+    //         if (next_non_empty > 9){
+    //             break;
+    //         }
+    //     }
+    // }
+
+
+    for(int i = 0; i < 8; ++i){
+        int current_empty = i;
+        if(cluster_size_n_ids[current_empty].empty()){
+            int next_non_empty = i+1;
+            while(cluster_size_n_ids[next_non_empty].empty()){
+                cluster_size_n[next_non_empty] = 0; // it's empty anyway.
+                next_non_empty += 1; // increase index after assigning size.
+                if (next_non_empty >= 9) break;
+            }
+
+            cout << "current_empty " << current_empty << endl;
+            cout << "next_non_empty " << next_non_empty << endl;
+            cluster_size_n_ids[current_empty] = cluster_size_n_ids[next_non_empty];
+            cluster_size_n[current_empty] = cluster_size_n[next_non_empty];
+
+            cluster_size_n[next_non_empty] = 0;
+            cluster_size_n_ids[next_non_empty].clear();
+
+            // i = next_non_empty;
+        }
+    }
+        
+    
+
+// #ifdef track_largest_clusters_FLAG
+// cout << "after clearing empty id list " << endl;
+//     for(int i=0; i < 10; ++i){
+
+//         cout << "[" << i << "] Cluster Size " << cluster_size_n[i];
+//         cout << " and ids [";
+//         for(auto elm: cluster_size_n_ids[i]){
+//             cout << elm << ", ";
+//         }
+//         cout << "]" << endl;
+
+//     }
+// #endif
+
+    // check if the new cluster already exists in old list. If so, erase that list?
+    // for(int i=0; i < 10; ++i){
+
+    //     if(ispresent(cluster_size_n_ids[i], new_cluster)){
+    //         // 
+    //         cout << "Reassigning lists to previous element" << endl;
+    //         for(int j=i+1; j<10; ++j){
+    //             cluster_size_n_ids[j-1].clear();
+    //             cluster_size_n_ids[j-1] = cluster_size_n_ids[j];
+    //             cluster_size_n[j-1] = cluster_size_n[j];
+    //         }
+    //         // cluster_size_n_ids[i].clear();
+    //         // cluster_size_n[i] = 0;
+
+    //         break;
+    //     }
+    // }
+    bool push_flag = false;
+    for(int i=0; i < 10; ++i){
+        if(new_size == cluster_size_n[i]){
+            cluster_size_n_ids[i].insert(new_cluster);
+            break;
+        }else if (new_size > cluster_size_n[i])
+        {
+            // try to reassign to next element of the list first
+            // found larger one. So push everything downward
+            push_flag = true;
+            if (cluster_size_n[i] != 0){
+                cout << cluster_size_n[i] << " So push everything downward" << endl;
+                for(int jj=9; jj >= i; --jj){
+                    cluster_size_n[jj] = cluster_size_n[jj-1];
+                    cluster_size_n_ids[jj]  = cluster_size_n_ids[jj-1];
+                    
+                }
+            }
+
+
+        cluster_size_n[i]=new_size;
+        cluster_size_n_ids[i].clear();
+        cluster_size_n_ids[i].insert(new_cluster);
+            break;
+        }else{
+            cout << "to next iteration" << endl;
+        }
+
+    }
+
+
+    
+
+
+#ifdef track_largest_clusters_FLAG
+cout << "Exit " << endl;
+    for(int i=0; i < 10; ++i){
+
+        cout << "[" << i << "] Cluster Size " << cluster_size_n[i];
+        cout << " and ids [";
+        for(auto elm: cluster_size_n_ids[i]){
+            cout << elm << ", ";
+        }
+        cout << "]" << endl;
+
+    }
+    // if(push_flag and new_size==34) exit(0);
+#endif
+    
+}
+
+
 void SitePercolation_v13::track_largest_clusters_v2(int new_cluster) {
 #ifdef DEBUG_FLAG
 cout << "cluster_sizes_sorted . before -> ";
 
 for (int i=0; i < cluster_sizes_sorted.size(); ++i){
-    cout << cluster_sizes_sorted[i] << ",";
+    cout << "[" << cluster_sizes_sorted_ids[i] << "]=" << cluster_sizes_sorted[i] << "; ";
 }
 cout << endl;
 #endif
@@ -420,11 +720,31 @@ cout << endl;
         }
     }
 
+
+#ifdef DEBUG_FLAG
+    cout << "cluster_sizes_sorted . before cross checking with merging_cluster_ids -> ";
+
+    for (int i=0; i < cluster_sizes_sorted.size(); ++i){
+        cout << "[" << cluster_sizes_sorted_ids[i] << "]=" << cluster_sizes_sorted[i] << "; ";
+    }
+    cout << " total cluster " << cluster_pool_ref.cluster_count_v2() << endl;
+#endif
+
+    //// Check if old clusters exist or not
+    // for (int i=0; i < merging_cluster_ids.size(); ++i){
+    //     if(ispresent(cluster_sizes_sorted_ids, merging_cluster_ids[i])){
+    //         cout << "This cluster should not exits " << merging_cluster_ids[i] << endl;
+    //         // cluster_sizes_sorted_ids[merging_cluster_ids[i]] = -1;
+    //         cluster_sizes_sorted[merging_cluster_ids[i]] = 0;
+    //     }
+        
+    // }
+
 #ifdef DEBUG_FLAG
     cout << "cluster_sizes_sorted . after -> ";
 
     for (int i=0; i < cluster_sizes_sorted.size(); ++i){
-        cout << cluster_sizes_sorted[i] << ",";
+        cout << "[" << cluster_sizes_sorted_ids[i] << "]=" << cluster_sizes_sorted[i] << "; ";
     }
     cout << " total cluster " << cluster_pool_ref.cluster_count_v2() << endl;
 #endif
@@ -837,10 +1157,12 @@ int SitePercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
 
 //    cout << "Relabel all cluster according to root cluster and selected site" << endl;
     int i = 0;
+    merging_cluster_ids.clear();
     for (auto bb : bond_neighbors) {
 //        cout << "relabeling attempt [" << i << "]" << endl;
         i+= 1;
         int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
+        merging_cluster_ids.push_back(bbg); // keep a list of merging cluster ids
         if (bbg == root_clstr) {
 //            cout << "bb " << bbg << " is a root cluster" << endl;
             continue;
