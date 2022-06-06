@@ -5,6 +5,8 @@
 #include "run_v13.h"
 #include "percolation_v13.h"
 #include "percolation_rsbd_v13.h"
+#include "../flags.h"
+
 
 using namespace std;
 
@@ -12,6 +14,9 @@ void plus_equal(vector<double> &left_vec, const vector<double> &right_vec){
     if (left_vec.size() != right_vec.size()){
         cout << "Size mismatch : " << __FILE__ << " : " << __LINE__ << endl;
         cout << left_vec.size() << " != " << right_vec.size() << endl;
+        #ifdef SIZE_Mismatch
+            exit(-1);
+        #endif
         return;
     }
     for(size_t i{}; i < right_vec.size(); ++i){
@@ -164,14 +169,14 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
  * @param length 
  * @param ensemble_size 
  */
-void run_v13_rsbd_L0_largest_clusters(int length, int ensemble_size){
+void run_v13_rsbd_largest_clusters(int length, int ensemble_size){
     
     std::cout << "length " << length << " ensemble_size " << ensemble_size << std::endl;
 
     size_t length_squared = length*length;
     size_t twice_length_squared = 2 * length_squared;
 
-    SitePercolationL0_v13 percolation(length, 0, true);
+    SitePercolationL1_v13 percolation(length, 0, true);
     percolation.setRandomState(0, true);
 //    percolation.init();
 
@@ -193,19 +198,21 @@ void run_v13_rsbd_L0_largest_clusters(int length, int ensemble_size){
 
         percolation.reset();
 //        SitePercolationL0_v13 percolation(length, 0, true);
-//        percolation.viewCluster(1);
+    //    percolation.viewCluster(1);
+    //    percolation.viewClusterLeastSize(4, 1);
+        // percolation.run_once();
         percolation.run_once_v2();
 //        percolation.viewCluster(1);
 
-//        cout << "entropy " << endl;
+    //    cout << "entropy " << endl;
         tmp = percolation.get_entropy_array();
         plus_equal(entropy, tmp);
 
-//        cout << "order param " << endl;
+    //    cout << "order param " << endl;
         tmp = percolation.get_order_param_wrapping_array();
         plus_equal(order_wraping, tmp);
 
-//        cout << "order " << endl;
+    //    cout << "order " << endl;
         tmp = percolation.get_order_param_largest_array();
         plus_equal(order_largest, tmp);
 

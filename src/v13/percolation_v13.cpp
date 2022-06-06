@@ -347,7 +347,7 @@ P_STATUS SitePercolation_v13::select_site() {
 }
 
 bool SitePercolation_v13::place_one_site() {
-//    cout << "************************ place_one_site. count " << current_idx << endl;
+//    cout << "Entry******************* place_one_site(). count " << current_idx << endl;
     status = select_site();
     if(status == P_STATUS::SUCESS) {
 
@@ -390,8 +390,8 @@ void SitePercolation_v13::track_largest_cluster(int new_cluster) {
 // //# self.cluster_pool_ref.get_cluster_site_count(new_cluster)
 //     if (new_size > largest_cluster_sz) {
 //         largest_cluster_id = new_cluster;
-//         largest_cluster_sz = new_size;
-//     }
+        // largest_cluster_sz = new_size;
+    // }
 }
 
 
@@ -405,8 +405,8 @@ void SitePercolation_v13::track_largest_cluster(int new_cluster) {
  * @param new_cluster 
  */
 void SitePercolation_v13::track_largest_clusters_v4(int new_cluster) {
-    cout << "Enter track_largest_clusters_v4() " << endl;
-    cout << "line " << __LINE__ << endl;
+    // cout << "Enter track_largest_clusters_v4() " << endl;
+    // cout << "line " << __LINE__ << endl;
 // #ifdef track_largest_clusters_FLAG
 // cout << "Entry *********************" << endl;
 //     for(int i=0; i < 10; ++i){
@@ -422,7 +422,7 @@ void SitePercolation_v13::track_largest_clusters_v4(int new_cluster) {
 // #endif
 
     auto new_size = cluster_pool_ref.get_cluster_bond_count(new_cluster);
-    cout << " new_size " << new_size << " new_cluster " << new_cluster << endl;
+    // cout << " new_size " << new_size << " new_cluster " << new_cluster << endl;
     for(auto mc: merging_cluster_ids){
         // out of 4 merging cluster. 3 will not exist anymore
         // if (mc == new_cluster) continue; // dont erase root cluster id
@@ -436,7 +436,7 @@ void SitePercolation_v13::track_largest_clusters_v4(int new_cluster) {
 
         }
     }
-cout << "line " << __LINE__ << endl;
+// cout << "line " << __LINE__ << endl;
 
 // #ifdef track_largest_clusters_FLAG
 // cout << "after erasing merging cluster " << endl;
@@ -535,14 +535,19 @@ cout << "line " << __LINE__ << endl;
     // }
 
 
-    for(int i = 0; i < 8; ++i){
+    for(int i = 0; i < 9; ++i){
         int current_empty = i;
         if(cluster_size_n_ids[current_empty].empty()){
             int next_non_empty = i+1;
+            // cout << " next_non_empty " << next_non_empty << endl;
             while(cluster_size_n_ids[next_non_empty].empty()){
                 cluster_size_n[next_non_empty] = 0; // it's empty anyway.
                 next_non_empty += 1; // increase index after assigning size.
-                if (next_non_empty >= 9) break;
+                // cout << " next_non_empty " << next_non_empty << endl;
+                if (next_non_empty > 9) {
+                    next_non_empty = 9; // max allowed
+                    break;
+                }
             }
 
             // cout << "current_empty " << current_empty << endl;
@@ -557,7 +562,7 @@ cout << "line " << __LINE__ << endl;
         }
     }
         
-    cout << "line " << __LINE__ << endl;
+    // cout << "line " << __LINE__ << endl;
 
 
 // #ifdef track_largest_clusters_FLAG
@@ -593,29 +598,29 @@ cout << "line " << __LINE__ << endl;
     // }
     bool push_flag = false;
     for(int i=0; i < 10; ++i){
-        cout << "line " << __LINE__ << " i= " << i << endl;
+        // cout << "line " << __LINE__ << " i= " << i << endl;
         if(new_size == cluster_size_n[i]){
-            cout << "line " << __LINE__ << "inside if() " << i << endl;
+            // cout << "line " << __LINE__ << "inside if() " << i << endl;
             cluster_size_n_ids[i].insert(new_cluster);
             break;
         }else if (new_size > cluster_size_n[i])
         {
-            cout << "line " << __LINE__ << " inside else if() " << i << " cluster_size_n size " << cluster_size_n.size() << endl;
+            // cout << "line " << __LINE__ << " inside else if() " << i << " cluster_size_n size " << cluster_size_n.size() << endl;
             // try to reassign to next element of the list first
             // found larger one. So push everything downward
             push_flag = true;
             if (cluster_size_n[i] != 0){
                 // cout << cluster_size_n[i] << " So push everything downward" << endl;
-                cout << "jj = " ;
+                // cout << "jj = " ;
                 for(int jj=9; jj > i; --jj){
-                    cout << jj << ",";
+                    // cout << jj << ",";
                     cluster_size_n[jj] = cluster_size_n[jj-1];
                     cluster_size_n_ids[jj]  = cluster_size_n_ids[jj-1];
                     
                 }
-                cout << " end jj" << endl;
+                // cout << " end jj" << endl;
             }
-        cout << "line " << __LINE__ << endl;    
+        // cout << "line " << __LINE__ << endl;    
 
         cluster_size_n[i]=new_size;
         cluster_size_n_ids[i].clear();
@@ -628,7 +633,7 @@ cout << "line " << __LINE__ << endl;
     }
 
 
-cout << "line " << __LINE__ << endl;
+// cout << "line " << __LINE__ << endl;
 
     largest_cluster_id = *cluster_size_n_ids[0].begin();
     largest_cluster_sz = cluster_size_n[0];
@@ -647,7 +652,7 @@ cout << "Exit " << endl;
     }
     // if(push_flag and new_size==34) exit(0);
 #endif
-    cout << "Exit track_largest_clusters_v4() " << endl;
+    // cout << "Exit track_largest_clusters_v4() " << endl;
 }
 
 
@@ -1269,10 +1274,22 @@ SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool g
 #endif
 }
 
+void SitePercolationL0_v13::clear_list(){
+    entropy_list.clear();
+    order_wrapping_list.clear();
+    order_largest_list.clear();
+
+    larest_1st_list.clear();
+    larest_2nd_list.clear();
+    larest_3rd_list.clear();
+}
+
 void SitePercolationL0_v13::run_once() {
 //# sq_lattice_p.viewLattice(3)
 //# sq_lattice_p.viewCluster()
     double p, H, P1, P2;
+
+    clear_list();
 
     while (place_one_site()) {
         detect_wrapping();
@@ -1336,10 +1353,12 @@ void SitePercolationL0_v13::run_once() {
  * make use of STATUS. Since for L1 and L2 we can have place_one_site() returning true but no site was allocated.
  */
 void SitePercolationL0_v13::run_once_v2() {
+    // cout << "Entry run_once_v2()" << endl;
 //# sq_lattice_p.viewLattice(3)
 //# sq_lattice_p.viewCluster()
     double p, H, P1, P2;
-
+    double bond_count = 2*_length*_length;
+    clear_list();
     while (place_one_site()) {
         if (status != P_STATUS::SUCESS) continue;
         detect_wrapping();
@@ -1355,9 +1374,11 @@ void SitePercolationL0_v13::run_once_v2() {
         order_wrapping_list.push_back(P1);
         order_largest_list.push_back(P2);
 
-        larest_1st_list.push_back(largest_cluster());
-        larest_2nd_list.push_back(largest_2nd_cluster());
-        larest_3rd_list.push_back(largest_3rd_cluster());
+        larest_1st_list.push_back(largest_cluster()/bond_count);
+        larest_2nd_list.push_back(largest_2nd_cluster()/bond_count);
+        larest_3rd_list.push_back(largest_3rd_cluster()/bond_count);
+
+        // viewClusterLeastSize(4, 1); // for debugging only
 
 #ifdef UNIT_TEST
         double  H1 = entropy_v1();
@@ -1402,6 +1423,7 @@ void SitePercolationL0_v13::run_once_v2() {
 #endif
 
     first_run = false;
+    // cout << "Exit run_once_v2()" << endl;
 }
 
 void SitePercolationL0_v13::test_cluster() {

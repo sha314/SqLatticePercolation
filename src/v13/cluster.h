@@ -104,6 +104,7 @@ public:
     void create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref);
     void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v14& lattice_ref);
     void view(int view_mode=0);
+    void view_least_size(int least_size, int view_mode=0);
     int cluster_count_v2();
     size_t cluster_count(bool all);
 

@@ -70,6 +70,9 @@ public:
     void viewCluster(int view_mode) {
         cluster_pool_ref.view(view_mode);
     }
+    void viewClusterLeastSize(int least_size, int view_mode) {
+        cluster_pool_ref.view_least_size(least_size, view_mode);
+    }
 
     std::vector<int>  get_bond_gids(std::vector<int>& bond_ids);
     std::vector<int>  get_site_gids(std::vector<int>& site_ids);
@@ -247,6 +250,8 @@ public:
     void run_once_v2();
 
     void test_cluster();
+
+    void clear_list();
 
 };
 

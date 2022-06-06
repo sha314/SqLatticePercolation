@@ -130,6 +130,21 @@ int ClusterPool::cluster_count_v2() {
     return cluster_counter;
 }
 
+void ClusterPool::view_least_size(int least_size, int view_mode){
+cout << "view_least_size() < BEGIN" << endl;
+//# print("self.cluster_list ", self.cluster_list)
+    int counter = 0;
+    for (auto clstr : _cluster_list) {
+        if(clstr.get_bond_count() >= least_size){
+//# print("clstr ", clstr)
+            counter += clstr.view(view_mode);
+        }
+    }
+
+    cout << "\n View cluster END >" << endl;
+    cout << "Number of clusters " << counter << endl;
+}
+
 
 /**
  *

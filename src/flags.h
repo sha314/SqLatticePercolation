@@ -8,7 +8,9 @@
 // #define DEBUG_FLAG
 // #define UNIT_TEST
 // #define DESTRUCTOR_CHECK
-#define track_largest_clusters_FLAG
+// #define track_largest_clusters_FLAG
 
-#define randomization_off_FLAG  // comment it if you want randomization. Only enable it while debugging
+// #define randomization_off_FLAG  // comment it if you want randomization. Only enable it while debugging
+
+// #define SIZE_Mismatch
 #endif //SITEPERCOLATION_FLAGS_H
