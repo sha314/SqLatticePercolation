@@ -42,7 +42,6 @@ void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
     cluster_counter += 1;
-    cluster_id_sorted_map.push_back(cluster_id);
 }
 
 void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref) {
@@ -68,15 +67,9 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v14 &latt
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
     cluster_counter += 1;
-    cluster_id_sorted_map.push_back(cluster_id);
+
 }
 
-void ClusterPool::sort_cluster(int clstr_A, int clstr_B){
-    // TODO
-    int last = cluster_id_sorted_map.size()-1;
-    cluster_id_sorted_map[clstr_B] = cluster_id_sorted_map[last];
-    cluster_id_sorted_map[last] = clstr_B;
-}
 
 /**
  *
@@ -113,7 +106,6 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
 //# print("after ", self.cluster_list[cluster_A_id].site_ids)
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
     cluster_counter -= 1;
-    sort_cluster(cluster_A_id, cluster_B_id);
 }
 
 size_t ClusterPool::cluster_count(bool all) {

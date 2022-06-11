@@ -45,8 +45,7 @@ class ClusterPool {
     std::vector<OneCluster> _cluster_list;
     int cluster_id = 0;
     int cluster_counter = 0;
-    std::vector<int> cluster_id_sorted_map;
-    std::vector<int> cluster_sizes; // size is measured using number of bonds
+
 public:
     ClusterPool() = default;
 
@@ -107,8 +106,6 @@ public:
     void view_least_size(int least_size, int view_mode=0);
     int cluster_count_v2();
     size_t cluster_count(bool all);
-
-    void sort_cluster(int clstr_A, int clstr_B);
 
 };
 
