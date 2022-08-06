@@ -8,8 +8,8 @@
 
 #include "site_v13.h"
 #include "bond_v13.h"
-#include "../../../../../../usr/include/c++/11/vector"
-#include "../../../../../../usr/include/c++/11/iostream"
+#include <vector>
+#include <iostream>
 
 class Lattice_v14{
 #ifdef DESTRUCTOR_CHECK

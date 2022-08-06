@@ -10,7 +10,7 @@
 #include "cluster.h"
 #include "percolation_v13.h"
 #include "../types.h"
-#include "../../../../../../usr/include/c++/11/string"
+#include <string>
 #include <set>
 #include <algorithm>
 #include <random>
