@@ -15,7 +15,7 @@
 #include "../site_position.h"
 #include "../../lattice/connector.h"
 #include "../../index/delta.h"
-#include <omp.h>
+// #include <omp.h>
 #include <thread>
 #include <algorithm>
 
