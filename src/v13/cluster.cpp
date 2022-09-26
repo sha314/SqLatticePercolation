@@ -6,6 +6,19 @@
 
 using namespace std;
 
+void ClusterPool::view_larger_than(int view_mode) {
+        cout << "View cluster < BEGIN" << endl;
+//# print("self.cluster_list ", self.cluster_list)
+    for (auto clstr : _cluster_list) {
+//# print("clstr ", clstr)
+        clstr.view_larger_than(view_mode);
+    }
+
+    cout << "\n View cluster END >" << endl;
+
+}
+
+
 void ClusterPool::view(int view_mode) {
     cout << "View cluster < BEGIN" << endl;
 //# print("self.cluster_list ", self.cluster_list)
@@ -141,6 +154,34 @@ int OneCluster::view(int view_mode) {
     cout << "}" << endl;
 
     return 1;
+}
+
+/**
+ *
+ * @param min_size : view only if the cluster contains `min_size`  or greater amount of sites or bonds 
+ * @return
+ */
+void OneCluster::view_larger_than(int min_size) {
+    if (is_empty()) {
+        return;
+    }
+    bool the_flag = (_site_ids.size() >= min_size)  ||  (_bond_ids.size() >= min_size);
+    if(!the_flag){
+        return;
+    }
+    cout <<  "cluster[" << setw(3) <<  _id << "] (gid " << _gid << ") :{" << endl;
+    cout << "  sites (" << _site_ids.size() << ") {";
+    for(auto aa: _site_ids){
+        cout << aa << ",";
+    }
+    cout << "}" << endl;
+
+    cout << "  bonds (" << _bond_ids.size() << ") {";
+    for(auto aa: _bond_ids){
+        cout << aa << ",";
+    }
+    cout << "}" << endl;
+
 }
 
 void OneCluster::add_bonds(std::vector<int> &bond_ids) {

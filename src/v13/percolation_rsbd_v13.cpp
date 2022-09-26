@@ -16,7 +16,7 @@ using namespace std;
  * @return
  */
 P_STATUS SitePercolationL1_v13::select_site() {
-//    cout << "Entry SitePercolationL1_v13::select_site " << endl;
+   cout << "Entry SitePercolationL1_v13::select_site " << current_idx << endl;
 
     if (current_idx >= lattice_ref.get_site_count()) {
 //        cout << "No sites to occupy" << endl;
@@ -31,34 +31,39 @@ P_STATUS SitePercolationL1_v13::select_site() {
     }
 #endif
     auto central_X = site_ids_indices[rnd];
-//    cout << "central_X " << central_X << endl;
+   cout << "central_X " << central_X << endl;
 
-//    int gid = lattice_ref.get_site_by_id(central_X).get_gid();
-//    cout << "gid " << gid << endl;
+   int gid = lattice_ref.get_site_by_id(central_X).get_gid();
+   cout << "gid " << gid << endl;
     if(lattice_ref.get_site_by_id(central_X).is_occupied()){
 //        viewLattice(0);
 //        viewLattice(1);
 //        viewLattice(2);
-//        cout << "X is occupied" << endl;
+       cout << "X is occupied" << endl;
 //        exit(-1);
         ++x_occupied;
 
         auto sites = lattice_ref.get_all_neighbor_sites(central_X);
-
+        cout << "Neighbors are {";
+        for (auto a: sites){
+            cout << a << ", ";
+        }
+        cout << "}  ";
 
         auto central2 = sites[_random_engine()% sites.size()];
-
+        cout << " selected " << central2 << endl;
         if (lattice_ref.get_site_by_id(central2).is_occupied()){
             lattice_ref.get_site_by_id(central_X).reduce_1st_nn();
             if (lattice_ref.get_site_by_id(central_X).is_removable(1)){
 //# print("is_removable")
 //# print("self.site_ids_indices before ", self.site_ids_indices)
 //# print("rnd ", rnd, " self.current_idx ", self.current_idx)
-
+                cout << "replacing [" << rnd << "]=" << site_ids_indices[rnd] << " with [" << current_idx << "] = " <<site_ids_indices[current_idx] << endl;
                 site_ids_indices[rnd] = site_ids_indices[current_idx];
 
                 current_idx += 1;
             }
+            cout << "returning CURRENT_SITE_NOT_EMPTY" << endl;
             return P_STATUS::CURRENT_SITE_NOT_EMPTY;
         }
         else {

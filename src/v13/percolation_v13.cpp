@@ -325,6 +325,7 @@ bool SitePercolation_v13::place_one_site() {
 //    cout << "************************ place_one_site. count " << current_idx << endl;
     status = select_site();
     if(status == P_STATUS::SUCESS) {
+        view_site_id_list();   // selected site will be inside angle bracket <>
 
 //        cout << "selected site ", self.current_site.get_index(), " id ", self.current_site.get_id())
         lattice_ref.init_relative_index(selected_id);  // initialize        relative index

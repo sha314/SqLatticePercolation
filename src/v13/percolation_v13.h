@@ -48,7 +48,11 @@ public:
         // view only the cluster of gid k in the lattice
         lattice_ref.viewLattice_clsuter_k(cluster_gid);
     }
-    void viewCluster(int view_mode) {
+    void viewCluster(int view_mode, bool by_size=false) {
+        if(by_size){
+            cluster_pool_ref.view_larger_than(view_mode);
+            return;
+        }
         cluster_pool_ref.view(view_mode);
     }
 
@@ -149,6 +153,45 @@ public:
     }
 
     size_t maxIterationLimit(){ return _length*_length;}
+
+    /**
+     * @brief view site id list in curly brace {}.
+     *  The unoccupied sites are inside square bracket [].
+     * The site with angle bracket is the currenlty selected site <>.
+     * 
+     */
+    void view_site_id_list(){
+        std::cout << "view_site_id_list() {";
+        auto got_selected_site_flag = false;
+        for(int i=0; i< site_ids_indices.size(); ++i){
+            if (i == current_idx){
+                if(got_selected_site_flag){
+                    // 0 for background Color(Black)
+                    // 4 for text color(Red)
+                    system("Color 04");
+                    std::cerr << "How can the current site be outside the unoccupied sites?" << std::endl;
+                    std::cout << "Probably you are calling view_site_id_list without occupying any new sites" << std::endl;
+                    // exit(0);
+                }
+                std::cout << "[";
+            }
+            auto a = site_ids_indices[i];
+            if(a == selected_id){
+                std::cout <<"<" << a << ">,";
+                got_selected_site_flag = true;
+                continue;
+            }
+            std::cout << a << ",";
+        }
+        // for(auto a: site_ids_indices){
+        //     if(a == selected_id){
+        //         std::cout <<"<" << a << ">,";
+        //         continue;
+        //     }
+        //     std::cout << a << ",";
+        // }
+        std::cout << "]}" << std::endl;
+    }
 };
 
 

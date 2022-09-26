@@ -37,6 +37,7 @@ public:
     void clear(){_site_ids.clear();_bond_ids.clear();_gid=-1;_id=-1;}
 
     int view(int view_mode=0);
+    void view_larger_than(int min_size);
 
 };
 
@@ -52,6 +53,8 @@ public:
         _cluster_list.clear();
 //        std::cout << "clear cluster " << _cluster_list.size() << std::endl;
     }
+
+    void view_larger_than(int view_mode);
 
     size_t get_cluster_bond_count(int id) {
 //        auto tmp =

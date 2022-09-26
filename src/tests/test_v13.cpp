@@ -97,8 +97,8 @@ void percolation_seed_length_pairL1(int length, value_type seed) {
 //             " entropy_v1 " << H1 <<
 //             " entropy_v2 " << H2 <<
 //             " order " << sq_lattice_p.order_param_wrapping() << endl;
-//        sq_lattice_p.viewLattice(3);
-//        sq_lattice_p.viewLattice(4);
+    //    sq_lattice_p.viewLattice(3);
+       sq_lattice_p.viewLattice(1);
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
         if (abs(H1-H2) > 1e-6){
@@ -107,11 +107,13 @@ void percolation_seed_length_pairL1(int length, value_type seed) {
         }
 
 #endif
-//        sq_lattice_p.viewCluster(1);
+    //    sq_lattice_p.viewCluster(0);
+    //    sq_lattice_p.viewCluster(2, true);
         iteration_count += 1;
         sq_lattice_p.detect_wrapping();
-//        if (i > 8) break;
-
+    //    if (iteration_count >40) break;
+        // cout << "Press Enter to continue..." << endl;
+        // cin.get();
     }
 
 #ifdef UNIT_TEST
@@ -150,22 +152,24 @@ void percolation_seed_length_pairL1(int length, value_type seed) {
 //    sq_lattice_p.viewCluster();
 }
 void test_percolation_L1() {
-    std::random_device _rd;
-    value_type _random_state = _rd();
-    std::mt19937 _random_engine;
+    percolation_seed_length_pairL1(5, 1);
 
-    _random_engine.seed(_random_state); // seeding
+    // std::random_device _rd;
+    // value_type _random_state = _rd();
+    // std::mt19937 _random_engine;
+
+    // _random_engine.seed(_random_state); // seeding
 
 
-    int max_length = 100;
-    for (int i=0; i < 100; ++ i) {
+    // int max_length = 100;
+    // for (int i=0; i < 100; ++ i) {
 
-        int length = 5 +_random_engine() % (max_length - 5);
-        value_type seed = _random_engine();
-        cout << "Test run " << i <<  " => Length, seed " << length << ", " << seed << " ****************" << endl;
-        percolation_seed_length_pairL1(length, seed);
-        cout << "Test run " << i << " status : success" << endl;
-    }
+    //     int length = 5 +_random_engine() % (max_length - 5);
+    //     value_type seed = _random_engine();
+    //     cout << "Test run " << i <<  " => Length, seed " << length << ", " << seed << " ****************" << endl;
+    //     percolation_seed_length_pairL1(length, seed);
+    //     cout << "Test run " << i << " status : success" << endl;
+    // }
 
 }
 
@@ -219,7 +223,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
         sq_lattice_p.detect_wrapping();
 
         sq_lattice_p.test_cluster();
-        if (i > 16) break;
+        // if (i > 16) break;
 
     }
     sq_lattice_p.test_lattice();
@@ -255,10 +259,10 @@ void test_v13(int argc, char **argv) {
 //    test_lattice(argc, argv);
 //    test_detect_wrapping();
 //    test_percolation_L0();
-//    test_percolation_L1();
+   test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-    run_ensemble_v13(argc, argv);
+    // run_ensemble_v13(argc, argv);
 }
 
 void test_reset() {
@@ -319,8 +323,8 @@ void run_ensemble_v13(int argc, char **argv){
 //    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-    run_v13_rsbd_L0(length, ensemble_size);
-//    run_v13_rsbd_L1(length, ensemble_size);
+    // run_v13_rsbd_L0(length, ensemble_size);
+   run_v13_rsbd_L1(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 
