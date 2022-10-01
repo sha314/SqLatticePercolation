@@ -259,10 +259,11 @@ void test_v13(int argc, char **argv) {
 //    test_lattice(argc, argv);
 //    test_detect_wrapping();
 //    test_percolation_L0();
-   test_percolation_L1();
+//    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
     // run_ensemble_v13(argc, argv);
+    percolation_fractalDimension_by_spanning_site_v13(1000, 100, 1000, 100);
 }
 
 void test_reset() {
@@ -328,4 +329,45 @@ void run_ensemble_v13(int argc, char **argv){
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
 
+}
+
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only.
+ * To measure the fractal dimension df or d_f
+ */
+void percolation_fractalDimension_by_spanning_site_v13(
+        value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L
+)
+{
+    double M{}, tc{};
+    
+    ofstream fout("fractal_dimension_-"+currentTime()+".txt");
+    fout << "#Measuring fractal dimension by only spanning site_index_sequence" << endl;
+    fout << "#MSitePercolationL1_v13" << endl;
+    fout << "#<Length>\t<Mass>\t<tc>" << endl;
+    clock_t t, t_outer;
+    for(value_type len{L_start}; len <= l_end ; len += delta_L){
+        cout << "Length " << len << " : " << endl;
+        SitePercolationL1_v13 sp(len);
+        M = 0;
+        tc=0;
+        t_outer = clock();
+        for(value_type i{} ; i != ensemble_size ; ++i){
+            t = clock();
+            sp.reset();
+            while(!sp.detect_wrapping()){
+                sp.place_one_site();
+            }
+            tc += sp.occupation_prob();
+            // M += sp.numberOfSitesInTheSpanningClusters();
+            M += sp.get_wrapping_cluster_site_count_at_pc();
+            cout << "\t\tIteration " << i << " . birthTime " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+        }
+        fout << len << '\t' << M / double(ensemble_size) << '\t' << tc/ensemble_size << endl; // writing data to file
+        cout << "Length " << len << " . Time taken "
+             << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
+    }
+    fout.close();
 }
