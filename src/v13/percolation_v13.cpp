@@ -137,11 +137,19 @@ void Percolation_v13::setRandomState(size_t seed, bool generate_seed) {
         cerr << "generate_seed = false : line " << __LINE__ << endl;
     }
     cout << "_random_state " << _random_state << endl;
+    cout << "random numbers : " << _random_engine() << _random_engine() 
+    << ", " << _random_engine() 
+    << ", " << _random_engine() 
+    << ", " << _random_engine() << endl;
     _random_engine.seed(_random_state); // seeding
+    cout << "random numbers : " << _random_engine() << _random_engine() 
+    << ", " << _random_engine() 
+    << ", " << _random_engine() 
+    << ", " << _random_engine() << endl;
     cout << "seeding with " << _random_state << endl;
 }
 
-SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolation_v13(length, seed) {
+SitePercolation_v13::SitePercolation_v13(int length, value_type seed, value_type generate_seed) : Percolation_v13(length, seed) {
     cout << "class : SitePercolation_v13" << endl;
     init_clusters();
 
@@ -152,6 +160,7 @@ SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolat
 //    }
 //    cout << "}" << endl;
     int current_idx = 0;
+    setRandomState(seed, generate_seed);
     shuffle_indices();
     selected_id = -1;
     cluster_count = lattice_ref.get_bond_count();
@@ -161,6 +170,7 @@ SitePercolation_v13::SitePercolation_v13(int length, value_type seed) : Percolat
     entropy_value = max_entropy;
     after_wrapping = false;
     wrapping_cluster_id = -1;
+    
 }
 
 void SitePercolation_v13::init_clusters() {
@@ -885,6 +895,86 @@ int SitePercolation_v13::find_bonds_connected_to_root_cluster(const vector<int> 
     return selected_id;
 }
 
+/**
+     * @brief view site id list in curly brace {}.
+     *  The unoccupied sites are inside square bracket [].
+     * The site with angle bracket is the currenlty selected site <>.
+     * 
+     */
+    void SitePercolation_v13::view_site_id_list(){
+        std::cout << "view_site_id_list() {";
+        auto got_selected_site_flag = false;
+        for(int i=0; i< site_ids_indices.size(); ++i){
+            if (i == current_idx){
+                if(got_selected_site_flag){
+                    // 0 for background Color(Black)
+                    // 4 for text color(Red)
+                    system("Color 04");
+                    std::cerr << "How can the current site be outside the unoccupied sites?" << std::endl;
+                    std::cout << "Probably you are calling view_site_id_list without occupying any new sites" << std::endl;
+                    // exit(0);
+                }
+                std::cout << "[";
+            }
+            auto a = site_ids_indices[i];
+            if(a == selected_id){
+                std::cout <<"<" << a << ">,";
+                got_selected_site_flag = true;
+                continue;
+            }
+            std::cout << a << ",";
+        }
+        // for(auto a: site_ids_indices){
+        //     if(a == selected_id){
+        //         std::cout <<"<" << a << ">,";
+        //         continue;
+        //     }
+        //     std::cout << a << ",";
+        // }
+        std::cout << "]}" << std::endl;
+    }
+
+
+/**
+ * @brief 
+ * 
+ * cluster size is measured by number of bonds in it.
+ * @return const std::vector<double> 
+ */
+const std::vector<double> SitePercolation_v13::clusterSizeDistribution(){
+    vector<double> cluster_counts;
+    size_t n, sz;
+    auto cluster_count = cluster_pool_ref.cluster_count_v2();
+    // if (cluster_count != cluster_pool_ref.cluster_count()){
+    //    cout << "number of clusters " << cluster_pool_ref.cluster_count() << " vs " << cluster_count << endl;
+    //    exit(0);
+    // }
+    size_t mx_n{}, total_bonds{};
+    
+    for(size_t i{}; i < cluster_count; ++i){
+//         if(_clusters[i].empty())   continue;
+// //        cout << i << " th cluster ";
+        
+        n = cluster_pool_ref.get_cluster_bond_count(i);
+        total_bonds += n;
+        if(n > mx_n){
+            mx_n = n;
+        }
+        sz = cluster_counts.size();
+        if (n >= sz){
+            cluster_counts.resize(n+1);
+        }
+//        cout << cluster_counts[n];
+        ++cluster_counts[n]; // increase cluster count
+
+//        cout << endl;
+    }
+    // since isolated bonds forms cluster of unit size and it might not be in the cluster
+    cluster_counts[1] +=  lattice_ref.get_bond_count() - total_bonds;
+//    cout << "before returning " << mx_n << endl;
+    return cluster_counts;
+}
+
 
 /**
  * Return bonds ids with unique gids.
@@ -920,7 +1010,7 @@ bool SitePercolation_v13::detect_wrapping() {
         auto delta_x = central_r_index.x_coord() - rss.x_coord();
         auto delta_y = central_r_index.y_coord() - rss.y_coord();
         if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
-//            cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
+           cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
 //            cout << "indices are " << lattice_ref.get_site_by_id(selected_id).get_index().get_str() <<
 //           " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
 //            cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
@@ -962,7 +1052,7 @@ void SitePercolationL0_v13::reset() {
 }
 
 SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool generate_seed) :
-        SitePercolation_v13(length, seed) {
+        SitePercolation_v13(length, seed, generate_seed) {
     cout << "class : SitePercolationL0_v13" << endl;
     first_run = true;
 
@@ -972,7 +1062,7 @@ SitePercolationL0_v13::SitePercolationL0_v13(int length, value_type seed, bool g
 //    entropy_list.resize(l_squared);
 //    order_wrapping_list.resize(l_squared);
 //    order_largest_list.resize(l_squared);
-    setRandomState(seed, generate_seed);
+    
 }
 
 void SitePercolationL0_v13::run_once() {

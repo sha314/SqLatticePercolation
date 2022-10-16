@@ -97,17 +97,17 @@ protected:
 
 public:
     SitePercolation_v13() = default;
-    explicit SitePercolation_v13(int length, value_type seed=0);
+    explicit SitePercolation_v13(int length, value_type seed=0,  value_type generate_seed=true);
 
     virtual std::string get_signature(){return signature;}
     void init_clusters();
     void shuffle_indices() {
 //        std::cout << "shuffle_indices not set up" << std::endl;
-//        std::cout << "Before shuffle" << std::endl;
-//        print_list(site_ids_indices);
+    //    std::cout << "Before shuffle" << std::endl;
+    //    print_list(site_ids_indices);
         std::shuffle(site_ids_indices.begin(), site_ids_indices.end(), _random_engine);
-//        std::cout << "after shuffle " << __LINE__<< std::endl;
-//        print_list(site_ids_indices);
+    //    std::cout << "after shuffle " << __LINE__<< std::endl;
+    //    print_list(site_ids_indices);
     }
     int get_length(){ return lattice_ref.get_length();}
     void reset() override;
@@ -160,38 +160,46 @@ public:
      * The site with angle bracket is the currenlty selected site <>.
      * 
      */
-    void view_site_id_list(){
-        std::cout << "view_site_id_list() {";
-        auto got_selected_site_flag = false;
-        for(int i=0; i< site_ids_indices.size(); ++i){
-            if (i == current_idx){
-                if(got_selected_site_flag){
-                    // 0 for background Color(Black)
-                    // 4 for text color(Red)
-                    system("Color 04");
-                    std::cerr << "How can the current site be outside the unoccupied sites?" << std::endl;
-                    std::cout << "Probably you are calling view_site_id_list without occupying any new sites" << std::endl;
-                    // exit(0);
-                }
-                std::cout << "[";
-            }
-            auto a = site_ids_indices[i];
-            if(a == selected_id){
-                std::cout <<"<" << a << ">,";
-                got_selected_site_flag = true;
-                continue;
-            }
-            std::cout << a << ",";
-        }
-        // for(auto a: site_ids_indices){
-        //     if(a == selected_id){
-        //         std::cout <<"<" << a << ">,";
-        //         continue;
-        //     }
-        //     std::cout << a << ",";
-        // }
-        std::cout << "]}" << std::endl;
-    }
+    void view_site_id_list();
+    // {
+    //     std::cout << "view_site_id_list() {";
+    //     auto got_selected_site_flag = false;
+    //     for(int i=0; i< site_ids_indices.size(); ++i){
+    //         if (i == current_idx){
+    //             if(got_selected_site_flag){
+    //                 // 0 for background Color(Black)
+    //                 // 4 for text color(Red)
+    //                 system("Color 04");
+    //                 std::cerr << "How can the current site be outside the unoccupied sites?" << std::endl;
+    //                 std::cout << "Probably you are calling view_site_id_list without occupying any new sites" << std::endl;
+    //                 // exit(0);
+    //             }
+    //             std::cout << "[";
+    //         }
+    //         auto a = site_ids_indices[i];
+    //         if(a == selected_id){
+    //             std::cout <<"<" << a << ">,";
+    //             got_selected_site_flag = true;
+    //             continue;
+    //         }
+    //         std::cout << a << ",";
+    //     }
+    //     // for(auto a: site_ids_indices){
+    //     //     if(a == selected_id){
+    //     //         std::cout <<"<" << a << ">,";
+    //     //         continue;
+    //     //     }
+    //     //     std::cout << a << ",";
+    //     // }
+    //     std::cout << "]}" << std::endl;
+    // }
+
+    /**
+ * Not normalized
+ * @return an array : index of the array is the cluster size.
+ *                    value of the array is the number of times that cluster appears
+ */
+const std::vector<double> clusterSizeDistribution();
 };
 
 

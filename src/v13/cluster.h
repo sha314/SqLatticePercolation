@@ -44,12 +44,13 @@ public:
 class ClusterPool {
     std::vector<OneCluster> _cluster_list;
     int cluster_id = 0;
-
+    long non_empty_cluster_count = 0;
 public:
     ClusterPool() = default;
 
     void reset() {
         cluster_id = 0;
+        non_empty_cluster_count = 0;
         _cluster_list.clear();
 //        std::cout << "clear cluster " << _cluster_list.size() << std::endl;
     }
@@ -96,6 +97,7 @@ public:
     }
 
     void clear_cluster(int cluster_id) {
+        non_empty_cluster_count -= 1;
         _cluster_list[cluster_id].clear();
     }
 
@@ -104,6 +106,7 @@ public:
     void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v13& lattice_ref);
     void view(int view_mode=0);
     size_t cluster_count(bool all=false);
+    long cluster_count_v2();
 
 };
 

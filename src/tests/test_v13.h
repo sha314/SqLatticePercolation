@@ -14,4 +14,9 @@ void test_v13(int argc, char** argv);
 void run_ensemble_v13(int argc, char** argv);
 
 void percolation_fractalDimension_by_spanning_site_v13(value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L);
+void quantities_at_pc_v13(
+        int argc, char **argv
+);
+
+void visualize_lattice(int length);
 #endif //SQLATTICEPERCOLATION_TEST_V13_H

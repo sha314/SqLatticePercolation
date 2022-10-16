@@ -263,7 +263,8 @@ void test_v13(int argc, char **argv) {
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
     // run_ensemble_v13(argc, argv);
-    percolation_fractalDimension_by_spanning_site_v13(1000, 100, 1000, 100);
+    // percolation_fractalDimension_by_spanning_site_v13(1000, 100, 500, 100);
+    quantities_at_pc_v13(argc, argv);
 }
 
 void test_reset() {
@@ -335,7 +336,9 @@ void run_ensemble_v13(int argc, char **argv){
 /**
  * data for log(Mass) vs log(Length) curve
  * for spanning sites only.
- * To measure the fractal dimension df or d_f
+ * To measure the fractal dimension df or d_f from log(M_pc) vs log(L) graph.
+ * M_pc = number of sites in wrapping cluster at pc.
+ * 
  */
 void percolation_fractalDimension_by_spanning_site_v13(
         value_type ensemble_size, value_type L_start, value_type l_end, value_type delta_L
@@ -370,4 +373,149 @@ void percolation_fractalDimension_by_spanning_site_v13(
              << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
     }
     fout.close();
+}
+
+
+/**
+ * data for log(Mass) vs log(Length) curve
+ * for spanning sites only.
+ * To measure the fractal dimension df or d_f from log(M_pc) vs log(L) graph.
+ * M_pc = number of sites in wrapping cluster at pc.
+ * 
+ * Cluster size distribution for exponent tau?
+ * at pc
+ * 
+ * s = 1,2,3,.... cluster sizes
+ * n(s) = number of cluster of size `s`
+ * s vs n(s) gives tau. Ofcourse you need to normalize n(s) by dividing it by the total number of clusters
+ */
+void quantities_at_pc_v13(
+        int argc, char **argv
+)
+{
+    cout << "length        = argv[1]" << endl;
+    cout << "ensemble size = argv[2]" << endl;
+//    cout << "rsbd l        = argv[3]" << endl;
+    if (argc <=2 ) cerr << "Not enough arguments " << endl;
+    int length = stoi(argv[1]);
+    int ensemble_size = stoi(argv[2]);
+
+    double M{}, tc{};
+    std::vector<double> tmp, cluster_sz_dist;
+    std::string tm = getCurrentTime();
+    
+
+    
+    clock_t t, t_outer;
+
+    SitePercolationL1_v13 sp(length);
+    auto signature = sp.get_signature();
+    std::string extension = signature + "_L" + std::to_string(length) + '_' + tm + ".txt";
+
+    M = 0;
+    tc=0;
+    t_outer = clock();
+    for(value_type i{} ; i != ensemble_size ; ++i){
+        t = clock();
+        // SitePercolationL1_v13 sp(length);
+        sp.reset();
+        while(!sp.detect_wrapping()){
+            sp.place_one_site();
+        }
+        tmp = sp.clusterSizeDistribution(); // TODO
+        if (tmp.size() > cluster_sz_dist.size()){
+            cluster_sz_dist.resize(tmp.size());
+        }
+        for(int i=0; i < tmp.size(); ++i){
+            cluster_sz_dist[i] += tmp[i];
+        }
+        tc += sp.occupation_prob();
+        // M += sp.numberOfSitesInTheSpanningClusters();
+        M += sp.get_wrapping_cluster_site_count_at_pc();
+        cout << "\t\tIteration " << i << " . time taken " << (clock() - t) / double(CLOCKS_PER_SEC) << " sec" << endl;
+    }
+    std::ostringstream header_info;
+    header_info << "{"
+                << R"("length":)" << length
+                << R"(,"ensemble_size":)" << ensemble_size
+                << R"(,"En":)" << ensemble_size
+                << R"(,"random_seed":)" << sp.getRandomState()
+                << R"(,"signature":")" << sp.get_signature() << "\""
+                << R"(,"datetime":")" << tm << "\""
+                //                << R"(,"cols":)" << R"(["S","n_S"])"
+                << "}";
+
+    ofstream fout("fractal_dimension_"+extension);
+    fout << "#" << header_info.str() << endl;
+    fout << "#Measuring fractal dimension by only spanning site_index_sequence" << endl;
+    fout << "#" << signature << endl;
+    fout << "#<Length>\t<Mass>\t<tc>" << endl;
+    fout << length << '\t' << M / double(ensemble_size) << '\t' << tc/ensemble_size << endl; // writing data to file
+    fout.close();
+
+
+    ofstream fout2("cluster_size_dist_pc_"+extension);
+    fout2 << "#" << header_info.str() << endl;
+    fout2 << "#Measuring fractal dimension by only spanning site_index_sequence" << endl;
+    fout2 << "#" << signature << endl;
+    fout2 << "#<s>,<n(s)>" << endl;
+    for(int i=1; i < cluster_sz_dist.size(); ++i){
+        if (cluster_sz_dist[i] == 0) continue;
+        fout2 << i << "\t" << cluster_sz_dist[i]/(ensemble_size) << endl;
+    }
+    fout2.close();
+    
+    cout << "Length " << length << " . Time taken "
+            << getFormattedTime((clock() - t_outer) / double(CLOCKS_PER_SEC)) << endl;
+    
+    
+}
+/**
+ * @brief Plotting the state of lattice at pc
+ * showing sites of same cluster in same color for visual appeal
+ * 
+ * @param length 
+ */
+
+void visualize_lattice(int length){
+    cout << "length        = argv[1]   : " << length << endl;
+
+
+    SitePercolationL0_v13 sp(length);
+    auto signature = sp.get_signature();
+    std::string tm = getCurrentTime();
+    std::string extension = signature + "_L" + std::to_string(length) + '_' + tm + ".txt";
+
+    while(!sp.detect_wrapping()){
+        sp.place_one_site();
+    }
+    
+    std::ostringstream header_info;
+    header_info << "{"
+                << R"("length":)" << length
+                << R"(,"random_seed":)" << sp.getRandomState()
+                << R"(,"signature":")" << sp.get_signature() << "\""
+                << R"(,"datetime":")" << tm << "\""
+                //                << R"(,"cols":)" << R"(["S","n_S"])"
+                << "}";
+
+    ofstream fout("sq_lattice_site_percolation_visual_"+extension);
+    fout << "#" << header_info.str() << endl;
+    fout << "#Only non empty site info are recorded" << endl;
+    fout << "#x and y coordinate and the color of the site" << endl;
+    fout << "#" << signature << endl;
+    fout << "#<x>\t<y>\t<color>" << endl;
+
+    int max_bonds = length*length;
+    cout << "Writing data to file" << endl;
+    for (int i=0; i < max_bonds; ++i){
+        auto site = sp.lattice_ref.get_site_by_id(i);
+        if(site.is_occupied()){
+            fout << site.get_index().row() << "\t" << site.get_index().col() << "\t" << site.get_gid() << endl;
+        }
+    }
+
+    fout.close();
+
+    
 }

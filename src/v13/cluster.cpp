@@ -54,6 +54,7 @@ void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int
 //# print("clsstr ")
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
+    non_empty_cluster_count += 1;
 }
 
 void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &lattice_ref) {
@@ -78,6 +79,7 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
 //# print("clsstr ")
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
+    non_empty_cluster_count += 1;
 }
 
 /**
@@ -114,6 +116,7 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
     _cluster_list[cluster_A_id].add_sites(sites);
 //# print("after ", self.cluster_list[cluster_A_id].site_ids)
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
+    non_empty_cluster_count -= 1;
 }
 
 size_t ClusterPool::cluster_count(bool all) {
@@ -124,6 +127,15 @@ size_t ClusterPool::cluster_count(bool all) {
         count++;
     }
     return count;
+}
+
+/**
+ * @brief Automatically ignores empty cluster since it uses a private variable.
+ * 
+ * @return size_t 
+ */
+long ClusterPool::cluster_count_v2() {
+    return non_empty_cluster_count;
 }
 
 /**
