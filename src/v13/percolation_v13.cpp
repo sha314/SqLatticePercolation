@@ -997,6 +997,13 @@ std::vector<int> SitePercolation_v13::uniqe_gid_bond_neighbors(std::vector<int> 
 
 }
 
+/**
+ * @brief Detect Wrapping
+ * 
+ * Remember to call this method whn at least one site is occupied
+ * @return true 
+ * @return false 
+ */
 bool SitePercolation_v13::detect_wrapping() {
     if (after_wrapping) return true;
 
@@ -1024,6 +1031,7 @@ bool SitePercolation_v13::detect_wrapping() {
             return true;
         }
     }
+    // cout << "SitePercolation_v13::detect_wrapping() | Got to Line " << __LINE__ << endl;
     return false;
 }
 

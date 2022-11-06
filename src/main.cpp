@@ -103,8 +103,8 @@ void run_in_main(int argc, char** argv){
 
 //    test_v9(argc, argv);
 //    test_v10(argc, argv);
-    // test_v13(argc, argv);
-    visualize_lattice(length); // 2022.10.15
+    test_v13(argc, argv);
+    // visualize_lattice(length); // 2022.10.15
 }
 
 

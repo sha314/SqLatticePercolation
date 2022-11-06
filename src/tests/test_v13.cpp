@@ -419,8 +419,13 @@ void quantities_at_pc_v13(
         t = clock();
         // SitePercolationL1_v13 sp(length);
         sp.reset();
-        while(!sp.detect_wrapping()){
+        auto flag = true;
+        while(flag){
             sp.place_one_site();
+            // cout << "Got to Line " << __LINE__ << endl;
+            flag = !sp.detect_wrapping();
+            // cout << "Got to Line " << __LINE__ << endl;
+
         }
         tmp = sp.clusterSizeDistribution(); // TODO
         if (tmp.size() > cluster_sz_dist.size()){

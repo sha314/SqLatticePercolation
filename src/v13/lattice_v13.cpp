@@ -195,7 +195,10 @@ std::vector<int> Lattice_v13::get_site_neighbor_of_site(int s0_index) {
 }
 
 std::vector<int> Lattice_v13::get_sites_for_wrapping_test(int s0_index) {
-//# print("get_site_neighbor_of_site : ", s0_index)
+    if(s0_index < 0){
+        cout << "get_site_neighbor_of_site : " <<  s0_index << endl;
+    }
+
     auto central_site = site_matrix[s0_index];
     int gid_central = central_site.get_gid();
     auto bonds = central_site.get_connecting_bonds();
