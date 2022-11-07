@@ -262,9 +262,9 @@ void test_v13(int argc, char **argv) {
 //    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-    // run_ensemble_v13(argc, argv);
+    run_ensemble_v13(argc, argv);
     // percolation_fractalDimension_by_spanning_site_v13(1000, 100, 500, 100);
-    quantities_at_pc_v13(argc, argv);
+    // quantities_at_pc_v13(argc, argv);
 }
 
 void test_reset() {

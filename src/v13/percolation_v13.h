@@ -68,6 +68,8 @@ public:
     value_type getRandomState() { return _random_state;}
 
     void test_lattice(){lattice_ref.test_id_index_conversion();}
+
+    int getLength(){return _length;}
 };
 
 class SitePercolation_v13: public Percolation_v13{
@@ -131,6 +133,8 @@ public:
     long largest_cluster(){return largest_cluster_sz;}
     double order_param_largest_clstr(){ return double(largest_cluster_sz) / lattice_ref.get_bond_count();}
     double order_param_wrapping();
+
+    double mean_cluster_size();
 
     int merge_clusters(std::vector<int>& bond_neighbors);
     std::vector<int> uniqe_gid_bond_neighbors(std::vector<int>& bond_neighbors_ids);
@@ -209,6 +213,7 @@ class SitePercolationL0_v13: public SitePercolation_v13{
     std::vector<double> entropy_list;
     std::vector<double> order_wrapping_list;
     std::vector<double> order_largest_list;
+    std::vector<double> mean_cluster_sz_list;
 public:
 
     SitePercolationL0_v13(int length, value_type seed=0, bool generate_seed=true);
@@ -220,6 +225,8 @@ public:
     std::vector<double> get_occupation_prob_array(){ return occupation_prob_list;}
     std::vector<double> get_order_param_wrapping_array(){ return order_wrapping_list;}
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
+    std::vector<double> get_mean_cluster_size_array(){ return mean_cluster_sz_list;}
+
 
     void run_once();
     void run_once_v2();

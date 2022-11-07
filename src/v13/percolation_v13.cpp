@@ -244,6 +244,25 @@ double SitePercolation_v13::order_param_wrapping() {
     return 0;
 }
 
+/**
+ * @brief see ## 1# in Docs/definitions.md
+ * 
+ * @return double 
+ */
+double SitePercolation_v13::mean_cluster_size(){
+    double sum_s = 0;
+    double sum_s2 = 0; // sum of s squared
+    int max_clusters = lattice_ref.get_bond_count();
+    for(int i=0; i<max_clusters; ++i){
+        double s = cluster_pool_ref.get_cluster_site_count(i);
+        if(s>=largest_cluster_sz) continue;  // excluding largest cluster
+        sum_s += s;
+        sum_s2 += s*s;
+    }
+    return sum_s2/sum_s;
+}
+
+
 int SitePercolation_v13::get_neighbor_site(int central_site_id, int connecting_bond_id) {
 //# central_id = current_site.get_id()
 //# print("central site id : ", central_id)
@@ -317,7 +336,7 @@ std::vector<int> SitePercolation_v13::get_connected_sites(Site_v13 site, std::ve
 }
 
 P_STATUS SitePercolation_v13::select_site() {
-
+    // cout << "SitePercolation_v13::select_site() " << endl;
     if (current_idx >= lattice_ref.get_site_count()) {
 //        cout << "No sites to occupy" << endl;
         return P_STATUS::EMPTY_SITE_LIST;
@@ -1017,7 +1036,7 @@ bool SitePercolation_v13::detect_wrapping() {
         auto delta_x = central_r_index.x_coord() - rss.x_coord();
         auto delta_y = central_r_index.y_coord() - rss.y_coord();
         if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
-           cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
+        //    cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
 //            cout << "indices are " << lattice_ref.get_site_by_id(selected_id).get_index().get_str() <<
 //           " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
 //            cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
@@ -1052,6 +1071,7 @@ void SitePercolationL0_v13::reset() {
     entropy_list.clear();
     order_wrapping_list.clear();
     order_largest_list.clear();
+    mean_cluster_sz_list.clear();
 
 
 //    entropy_list.resize(l_squared);
@@ -1158,6 +1178,7 @@ void SitePercolationL0_v13::run_once_v2() {
         entropy_list.push_back(H);
         order_wrapping_list.push_back(P1);
         order_largest_list.push_back(P2);
+        mean_cluster_sz_list.push_back(mean_cluster_size());
 #ifdef UNIT_TEST
         double  H1 = entropy_v1();
         double  H2 = entropy_v2();
