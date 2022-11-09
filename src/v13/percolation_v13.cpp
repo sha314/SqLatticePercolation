@@ -179,6 +179,9 @@ void SitePercolation_v13::init_clusters() {
     for (auto bb: bonds){
         cluster_pool_ref.create_new_cluster(-1, bb, lattice_ref);
     }
+    // all clusters have length one initially. and no need to exclude largest cluster initially
+    sum_cluster_size_squared = 2*_length*_length;
+    sum_cluster_size = 2*_length*_length;
 }
 
 void SitePercolation_v13::reset() {
@@ -247,21 +250,35 @@ double SitePercolation_v13::order_param_wrapping() {
 /**
  * @brief see ## 1# in Docs/definitions.md
  * 
+ * doing the sum every time is time consuming. use v2 for that
  * @return double 
  */
-double SitePercolation_v13::mean_cluster_size(){
+double SitePercolation_v13::get_mean_cluster_size(){
     double sum_s = 0;
     double sum_s2 = 0; // sum of s squared
     int max_clusters = lattice_ref.get_bond_count();
     for(int i=0; i<max_clusters; ++i){
-        double s = cluster_pool_ref.get_cluster_site_count(i);
-        if(s>=largest_cluster_sz) continue;  // excluding largest cluster
-        sum_s += s;
+        double s = cluster_pool_ref.get_cluster_bond_count(i);
+        // sum_s += s;
         sum_s2 += s*s;
     }
+    // cout << "total bonds " << sum_s << endl;
+    sum_s2 -= largest_cluster_sz*largest_cluster_sz;
+    // sum_s -= largest_cluster_sz;
+    sum_s = lattice_ref.get_bond_count() - largest_cluster_sz;
     return sum_s2/sum_s;
 }
 
+/**
+ * @brief Largest cluster is not excluded from the private variables. that is done here.
+ * 
+ * @return double 
+ */
+double SitePercolation_v13::get_mean_cluster_size_v2(){
+    auto a = sum_cluster_size_squared - largest_cluster_sz*largest_cluster_sz;
+    auto b = sum_cluster_size - largest_cluster_sz;
+    return a/b;
+}
 
 int SitePercolation_v13::get_neighbor_site(int central_site_id, int connecting_bond_id) {
 //# central_id = current_site.get_id()
@@ -398,9 +415,12 @@ void SitePercolation_v13::track_largest_cluster(int new_cluster) {
     }
 }
 
-void SitePercolation_v13::entropy_subtract(std::vector<int> &bond_neighbors) {
+void SitePercolation_v13::entropy_subtract(std::vector<int> &bonds) {
 //# print("entropy_subtract")
-    auto bonds = lattice_ref.get_neighbor_bonds(selected_id);
+    // cout << "{"; for(auto a: bonds) {cout << a << ",";} cout << "} vs " << endl;
+    // auto bonds = lattice_ref.get_neighbor_bonds(selected_id);
+    // cout << "{"; for(auto a: bonds) {cout << a << ",";} cout << "}" << endl;
+
 //# print(self.current_site, " neighbors => ", sites)
     set<int> gids;
     for(auto bb: bonds) {
@@ -417,6 +437,13 @@ void SitePercolation_v13::entropy_subtract(std::vector<int> &bond_neighbors) {
 
         mu = b_count / bc;
         H += mu * log(mu);
+
+        /*****For Mean Cluster size. begin*****/
+        
+        sum_cluster_size_squared -= b_count*b_count;
+        sum_cluster_size -= b_count;
+
+        /*****Ended the quest for mean cluster size*/
     }
 //# print("before ", self.entropy_value)
     entropy_value += H;
@@ -431,6 +458,14 @@ void SitePercolation_v13::entropy_add(int new_cluster_id) {
 //# print("before ", self.entropy_value)
     entropy_value -= mu*log(mu);
 //# print("after ", self.entropy_value)
+
+
+    /*****For Mean Cluster size. begin*****/
+    
+    sum_cluster_size_squared += b_count*b_count;
+    sum_cluster_size += b_count;
+
+    /*****Ended the quest for mean cluster size*/
 }
 
 double SitePercolation_v13::entropy() {
@@ -1178,7 +1213,13 @@ void SitePercolationL0_v13::run_once_v2() {
         entropy_list.push_back(H);
         order_wrapping_list.push_back(P1);
         order_largest_list.push_back(P2);
-        mean_cluster_sz_list.push_back(mean_cluster_size());
+
+        auto mcs2 = get_mean_cluster_size_v2();
+        // auto mcs1 = get_mean_cluster_size();
+        // if(abs(mcs1-mcs2) > 1e-6 ){
+        //     cout << "Mean cluster size is not equal? " << mcs1 << "!=" << mcs2 << endl;
+        // }
+        mean_cluster_sz_list.push_back(mcs2);
 #ifdef UNIT_TEST
         double  H1 = entropy_v1();
         double  H2 = entropy_v2();

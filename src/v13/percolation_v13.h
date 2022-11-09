@@ -97,6 +97,9 @@ protected:
     bool after_wrapping = false;
     int wrapping_cluster_id = -1;
 
+    double sum_cluster_size_squared=0;
+    double sum_cluster_size=0;
+
 public:
     SitePercolation_v13() = default;
     explicit SitePercolation_v13(int length, value_type seed=0,  value_type generate_seed=true);
@@ -134,7 +137,8 @@ public:
     double order_param_largest_clstr(){ return double(largest_cluster_sz) / lattice_ref.get_bond_count();}
     double order_param_wrapping();
 
-    double mean_cluster_size();
+    double get_mean_cluster_size();
+    double get_mean_cluster_size_v2();
 
     int merge_clusters(std::vector<int>& bond_neighbors);
     std::vector<int> uniqe_gid_bond_neighbors(std::vector<int>& bond_neighbors_ids);
