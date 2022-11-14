@@ -40,7 +40,9 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
     value_type counter{};
     std::vector<double> entropy(percolation.maxIterationLimit());
     std::vector<double> order_wraping(percolation.maxIterationLimit()),
-            order_largest(percolation.maxIterationLimit());
+            order_largest(percolation.maxIterationLimit()),
+            mean_cluster_sz(percolation.maxIterationLimit());
+
     vector<double> tmp;
 
     for(value_type i{} ; i != ensemble_size ; ++i){
@@ -49,7 +51,7 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
         percolation.reset();
 //        SitePercolationL0_v13 percolation(length, 0, true);
 //        percolation.viewCluster(1);
-        percolation.run_once();
+        percolation.run_once_v2();
 //        percolation.viewCluster(1);
 
         pcs[i] = percolation.get_pc();
@@ -68,6 +70,8 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
         tmp = percolation.get_order_param_largest_array();
         plus_equal(order_largest, tmp);
 
+        tmp = percolation.get_mean_cluster_size_array();
+        plus_equal(mean_cluster_sz, tmp);
 
         auto t_end = std::chrono::system_clock::now();
         std::cout << "Iteration " << i
@@ -151,7 +155,8 @@ void run_v13_rsbd_L0(int length, int ensemble_size){
         fout << (i + 1) / double(percolation.maxIterationLimit()) << delimiter;
         fout << entropy[i] / double(ensemble_size) << delimiter;
         fout << order_largest[i] / double(ensemble_size) << delimiter;
-        fout << order_wraping[i] / double(ensemble_size) ;
+        fout << order_wraping[i] / double(ensemble_size) << delimiter;
+        fout << mean_cluster_sz[i] / double(ensemble_size) ;
         fout << std::endl;
     }
     fout.close();

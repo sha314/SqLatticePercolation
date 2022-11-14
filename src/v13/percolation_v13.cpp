@@ -277,6 +277,10 @@ double SitePercolation_v13::get_mean_cluster_size(){
 double SitePercolation_v13::get_mean_cluster_size_v2(){
     auto a = sum_cluster_size_squared - largest_cluster_sz*largest_cluster_sz;
     auto b = sum_cluster_size - largest_cluster_sz;
+    if(b==0) {
+        // cout << "b is zero" << endl;
+        return 0;
+    }
     return a/b;
 }
 
