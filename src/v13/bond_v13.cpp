@@ -30,7 +30,7 @@ std::vector<int> Bond_v14::get_connected_sites(int length) {
 #ifdef DEBUG_FLAG
     cout << "connected sites of bond " << get_id() << " is ";
     cout << site_0 << ", " << site_1 << endl;
-    if (site_0 < 0 || site_1 << 0){
+    if (site_0 < 0 || site_1 < 0){
         cout << "They cannot be negative" << endl;
     }
 #endif

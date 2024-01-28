@@ -44,6 +44,7 @@ public:
 class ClusterPool {
     std::vector<OneCluster> _cluster_list;
     int cluster_id = 0;
+    int cluster_counter = 0;
 
 public:
     ClusterPool() = default;
@@ -51,6 +52,7 @@ public:
     void reset() {
         cluster_id = 0;
         _cluster_list.clear();
+        cluster_counter = _cluster_list.size();
 //        std::cout << "clear cluster " << _cluster_list.size() << std::endl;
     }
 
@@ -101,7 +103,9 @@ public:
     void create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref);
     void merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice_v14& lattice_ref);
     void view(int view_mode=0);
-    size_t cluster_count(bool all=false);
+    void view_least_size(int least_size, int view_mode=0);
+    int cluster_count_v2();
+    size_t cluster_count(bool all);
 
 };
 

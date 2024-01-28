@@ -70,6 +70,9 @@ public:
     void viewCluster(int view_mode) {
         cluster_pool_ref.view(view_mode);
     }
+    void viewClusterLeastSize(int least_size, int view_mode) {
+        cluster_pool_ref.view_least_size(least_size, view_mode);
+    }
 
     std::vector<int>  get_bond_gids(std::vector<int>& bond_ids);
     std::vector<int>  get_site_gids(std::vector<int>& site_ids);
@@ -109,6 +112,22 @@ public:
     long cluster_count = -1;
     long largest_cluster_sz = 0;
     int largest_cluster_id = -1;
+    std::vector<int> merging_cluster_ids;
+
+// 0-th element = largest cluster
+// 1-st element = 2nd largest cluster
+// 2-rd element = 3rd largest cluster
+    // std::vector<long> cluster_sizes_sorted;
+    // std::vector<int> cluster_sizes_sorted_ids;
+    
+
+    // std::set<int> largest_2nd_cluster_ids; // 2nd largest cluster ids. As there could be more than one 2nd largest clusters
+    // long largest_2nd_cluster_size=0; // 2nd largest clsuter
+
+    
+    
+    std::vector<int> cluster_size_n; // list of cluster sizes
+    std::vector<std::set<int>> cluster_size_n_ids; // corresponding ids
 
 protected:
     P_STATUS status; // holds the current status of percolation.
@@ -145,6 +164,8 @@ public:
     virtual P_STATUS select_site();
     bool place_one_site();
     void track_largest_cluster(int new_cluster);
+    void track_largest_clusters_v4(int new_cluster);
+    
     void entropy_subtract(std::vector<int>& bond_neighbors);
     void entropy_add(int new_cluster_id);
 
@@ -157,6 +178,8 @@ public:
     double entropy_v1();
     double entropy_v2();
     long largest_cluster(){return largest_cluster_sz;}
+    long largest_2nd_cluster(){return cluster_size_n[1];} // second largest clsuter
+    long largest_3rd_cluster(){return cluster_size_n[2];} // 3rd largest clsuter
     double order_param_largest_clstr(){ return double(largest_cluster_sz) / lattice_ref.get_bond_count();}
     double order_param_wrapping();
 
@@ -204,6 +227,10 @@ protected:
     std::vector<double> entropy_list;
     std::vector<double> order_wrapping_list;
     std::vector<double> order_largest_list;
+
+    std::vector<double> larest_1st_list;
+    std::vector<double> larest_2nd_list;
+    std::vector<double> larest_3rd_list;
 public:
 
     SitePercolationL0_v13(int length, value_type seed=0, bool generate_seed=true);
@@ -215,11 +242,16 @@ public:
     std::vector<double> get_occupation_prob_array(){ return occupation_prob_list;}
     std::vector<double> get_order_param_wrapping_array(){ return order_wrapping_list;}
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
+    std::vector<double> get_1st_largest_cluster_array() {return larest_1st_list;}
+    std::vector<double> get_2nd_largest_cluster_array() {return larest_2nd_list;}
+    std::vector<double> get_3rd_largest_cluster_array() {return larest_3rd_list;}
 
     void run_once();
     void run_once_v2();
 
     void test_cluster();
+
+    void clear_list();
 
 };
 

@@ -24,7 +24,7 @@
 #include "tests/test_v10.h"
 #include "tests/test_v13.h"
 #include "tests/test_v14.h"
-
+#include "flags.h"
 
 using namespace std;
 
@@ -134,6 +134,9 @@ int main(int argc, char** argv) {
 #endif
 #ifdef DESTRUCTOR_CHECK
     cout << "flag DESTRUCTOR_CHECK is defined !" << endl;
+#endif
+#ifdef track_largest_clusters_FLAG
+    cout << "flag track_largest_clusters_FLAG is defined !" << endl;
 #endif
     auto t_end= std::chrono::system_clock::now();
     std::chrono::duration<double> drtion = t_end - t_start;

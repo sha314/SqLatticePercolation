@@ -16,6 +16,8 @@
 
 
 void run_v13_rsbd_L0(int length, int ensemble_size);
+void run_v13_rsbd_largest_clusters(int length, int ensemble_size);
+
 void run_v13_rsbd_L1(int length, int ensemble_size);
 
 void run_v13_rsbd_L2(int length, int ensemble_size);

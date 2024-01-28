@@ -41,6 +41,7 @@ void ClusterPool::create_new_cluster(std::vector<int> &site_ids, std::vector<int
 //# print("clsstr ")
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
+    cluster_counter += 1;
 }
 
 void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v14 &lattice_ref) {
@@ -65,7 +66,10 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v14 &latt
 //# print("clsstr ")
 //# print(clsstr)
     _cluster_list.push_back(clsstr);
+    cluster_counter += 1;
+
 }
+
 
 /**
  *
@@ -101,6 +105,7 @@ void ClusterPool::merge_cluster_with(int cluster_A_id, int cluster_B_id, Lattice
     _cluster_list[cluster_A_id].add_sites(sites);
 //# print("after ", self.cluster_list[cluster_A_id].site_ids)
     _cluster_list[cluster_B_id].clear(); // clear redundent cluster
+    cluster_counter -= 1;
 }
 
 size_t ClusterPool::cluster_count(bool all) {
@@ -112,6 +117,26 @@ size_t ClusterPool::cluster_count(bool all) {
     }
     return count;
 }
+
+int ClusterPool::cluster_count_v2() {
+    return cluster_counter;
+}
+
+void ClusterPool::view_least_size(int least_size, int view_mode){
+cout << "view_least_size() < BEGIN" << endl;
+//# print("self.cluster_list ", self.cluster_list)
+    int counter = 0;
+    for (auto clstr : _cluster_list) {
+        if(clstr.get_bond_count() >= least_size){
+//# print("clstr ", clstr)
+            counter += clstr.view(view_mode);
+        }
+    }
+
+    cout << "\n View cluster END >" << endl;
+    cout << "Number of clusters " << counter << endl;
+}
+
 
 /**
  *
