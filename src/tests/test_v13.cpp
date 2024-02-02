@@ -5,6 +5,7 @@
 #include "test_v13.h"
 #include "../v13/lattice_v13.h"
 #include "../v13/percolation_v13.h"
+#include "../v13/percolation_v13_bond.h"
 #include "../v13/run_v13.h"
 #include "../v13/percolation_rsbd_v13.h"
 #include <iostream>
@@ -182,7 +183,7 @@ void test_percolation_L0() {
 
 
     int max_length = 6;
-    for (int i=0; i < 100; ++ i) {
+    for (int i=0; i < 1; ++ i) {
 
         int length = 5 + _random_engine() % max_length;
         value_type seed = _random_engine();
@@ -255,6 +256,68 @@ void percolation_seed_length_pair(int length, value_type seed) {
 //    sq_lattice_p.viewCluster();
 }
 
+void test_percolation_bond(){
+    int length=5;
+    value_type seed=0;
+    auto sq_lattice_p = BondPercolation_v13(length, seed, false);
+//    sq_lattice_p.setRandomState(0, true);
+    // sq_lattice_p.viewLattice(3);
+    // sq_lattice_p.viewCluster();
+    int i = 0;
+    while (sq_lattice_p.place_one_bond()) {
+        // double H1 = sq_lattice_p.entropy_v1();
+        // double H2 = sq_lattice_p.entropy_v2();
+//        cout << "p= " << sq_lattice_p.occupation_prob() <<
+//             " entropy_v1 " << H1 <<
+//             " entropy_v2 " << H2 <<
+//             " order " << sq_lattice_p.order_param_wrapping() << endl;
+//        sq_lattice_p.viewLattice(3);
+//        sq_lattice_p.viewLattice(4);
+//        sq_lattice_p.lattice_ref.print_bonds();
+#ifdef UNIT_TEST
+        if (abs(H1-H2) > 1e-6){
+            cout << "Error : entropy not equal " << __LINE__ << endl;
+            exit(-1);
+        }
+
+#endif
+//        sq_lattice_p.viewCluster(1);
+        i += 1;
+        // sq_lattice_p.detect_wrapping();
+
+        // sq_lattice_p.test_cluster();
+        // if (i > 16) break;
+
+    }
+    // sq_lattice_p.test_lattice();
+#ifdef UNIT_TEST
+    double P2 = sq_lattice_p.order_param_wrapping();
+    double P1 = sq_lattice_p.order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter P1 not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    double p = sq_lattice_p.occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+#endif
+//    sq_lattice_p.viewLattice(3);
+//    sq_lattice_p.viewLattice(4);
+//    sq_lattice_p.viewLattice(1);
+//    sq_lattice_p.viewCluster();
+}
+
 void test_v13(int argc, char **argv) {
 //    test_lattice(argc, argv);
 //    test_detect_wrapping();
@@ -262,9 +325,12 @@ void test_v13(int argc, char **argv) {
 //    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-    run_ensemble_v13(argc, argv);
+    // run_ensemble_v13(argc, argv);
     // percolation_fractalDimension_by_spanning_site_v13(1000, 100, 500, 100);
     // quantities_at_pc_v13(argc, argv);
+
+    // 2024.02.01
+    test_percolation_bond();
 }
 
 void test_reset() {

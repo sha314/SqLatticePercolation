@@ -19,4 +19,7 @@ void quantities_at_pc_v13(
 );
 
 void visualize_lattice(int length);
+
+void test_percolation_bond();
+
 #endif //SQLATTICEPERCOLATION_TEST_V13_H

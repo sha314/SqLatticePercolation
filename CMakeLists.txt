@@ -115,6 +115,9 @@ set(SOURCE_FILES
         src/v13/run_v13.h
         src/v13/percolation_rsbd_v13.h
         src/v13/status.h
-        src/v13/percolation_rsbd_v13.cpp)
+        src/v13/percolation_rsbd_v13.cpp
+        src/v13/percolation_v13_bond.h
+        src/v13/percolation_v13_bond.cpp
+        )
 
 add_executable(sqlattice ${SOURCE_FILES})
