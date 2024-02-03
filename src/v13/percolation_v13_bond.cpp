@@ -279,10 +279,10 @@ bool BondPercolation_v13::place_one_bond() {
         }
         cout << endl;
 //# site_neighbors = self.get_connected_sites(self.current_site, bond_neighbors)
-        exit(0);
+        
         // entropy_subtract(site_neighbors);
 
-        // auto merged_cluster_index = merge_clusters_v4(site_neighbors);
+        auto merged_cluster_index = merge_clusters_v4(site_neighbors);
 
         // track_largest_cluster(merged_cluster_index);
         // entropy_add(merged_cluster_index);
@@ -470,7 +470,7 @@ int BondPercolation_v13::merge_clusters(std::vector<int> &bond_neighbors) {
  */
 int BondPercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor_ids) {
 
-    auto bond_neighbors = uniqe_gid_bond_neighbors(bond_neighbor_ids);
+    auto bond_neighbors = uniqe_gid_site_neighbors(bond_neighbor_ids);
     auto bond_gids = get_bond_gids(bond_neighbors);
 //# site_gids = self.get_site_gids(site_neighbors)
 //# print("site_gids ", site_gids)
@@ -580,7 +580,7 @@ int BondPercolation_v13::merge_clusters_v2(std::vector<int> &bond_neighbor_ids) 
  */
 int BondPercolation_v13::merge_clusters_v3(std::vector<int> &bond_neighbor_ids) {
 
-    auto bond_neighbors = uniqe_gid_bond_neighbors(bond_neighbor_ids);
+    auto bond_neighbors = uniqe_gid_site_neighbors(bond_neighbor_ids);
     auto bond_gids = get_bond_gids(bond_neighbors);
 //# site_gids = self.get_site_gids(site_neighbors)
 //# print("site_gids ", site_gids)
@@ -672,14 +672,15 @@ int BondPercolation_v13::merge_clusters_v3(std::vector<int> &bond_neighbor_ids) 
 
 /**
  * merging with relabeling relative indices
- * @param bond_neighbor_ids
+ * In bond percolation, only two stes are connected by bonds
+ * @param two_site_ids
  * @return
  */
-int BondPercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) {
+int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
 
     int rootcounter = 0;
-    auto bond_neighbors = uniqe_gid_bond_neighbors(bond_neighbor_ids);
-    auto bond_gids = get_bond_gids(bond_neighbors);
+    auto site_neighbors = uniqe_gid_site_neighbors(two_site_ids);
+    
 //# site_gids = self.get_site_gids(site_neighbors)
 //# print("site_gids ", site_gids)
 //    cout << "bond_neighbors {";
@@ -690,7 +691,7 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
 //# print("set minus ", set(site_gids) - set(bond_gids))
 //# print("merging clusters ", bond_gids)
 //    int root_clstr = find_root_cluster(bond_gids);
-    int suitable_bond_id = find_bonds_connected_to_root_cluster(bond_neighbors);
+    int suitable_bond_id = find_sites_connected_to_root_cluster(site_neighbors);
     int root_clstr = lattice_ref.get_bond_by_id(suitable_bond_id).get_gid();
 
 #ifdef UNIT_TEST
@@ -712,47 +713,47 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &bond_neighbor_ids) 
 
 #endif
 
-//    cout << "root cluster is " << root_clstr << endl;
-//    cout << "Assign and relabel currently selected site" << endl;
-//# relabel and assign the current site here
-    lattice_ref.set_site_gid_by_id(selected_id, root_clstr);
-    cluster_pool_ref.add_sites(root_clstr, {selected_id});
-//# relabeling current site. relative index
-//            auto neighbor_site = get_neighbor_site(current_site.get_id(), bb);
-    auto neighbor_site = get_neighbor_site(selected_id, suitable_bond_id);
-//            cout << "central site " << selected_id << " neighbor site " << neighbor_site << endl;
-    if (lattice_ref.get_site_gid_by_id(neighbor_site) >= 0) {
-//# relabel selected site with respect to neighbor site. so neighbor_site is the central site
-        auto rri = get_relative_index(neighbor_site, selected_id);
-//# rri = self.get_relative_index(self.selected_id, neighbor_site)
+// //    cout << "root cluster is " << root_clstr << endl;
+// //    cout << "Assign and relabel currently selected site" << endl;
+// //# relabel and assign the current site here
+//     lattice_ref.set_site_gid_by_id(selected_id, root_clstr);
+//     cluster_pool_ref.add_sites(root_clstr, {selected_id});
+// //# relabeling current site. relative index
+// //            auto neighbor_site = get_neighbor_site(current_site.get_id(), bb);
+//     auto neighbor_site = get_neighbor_site(selected_id, suitable_bond_id);
+// //            cout << "central site " << selected_id << " neighbor site " << neighbor_site << endl;
+//     if (lattice_ref.get_site_gid_by_id(neighbor_site) >= 0) {
+// //# relabel selected site with respect to neighbor site. so neighbor_site is the central site
+//         auto rri = get_relative_index(neighbor_site, selected_id);
+// //# rri = self.get_relative_index(self.selected_id, neighbor_site)
 
-//# sitttte = self.lattice_ref.get_site_by_id(self.selected_id)
-//                cout << "relative index before " << neighbor_site << endl;
-//                cout << selected_id << " => rri " << rri.get_str() << endl;
+// //# sitttte = self.lattice_ref.get_site_by_id(self.selected_id)
+// //                cout << "relative index before " << neighbor_site << endl;
+// //                cout << selected_id << " => rri " << rri.get_str() << endl;
 
-        lattice_ref.set_relative_index(selected_id, rri);
-//                current_site.set_relative_index(rri); // local variable. needs to be updated
-    }else{
-//                cout << "Does not belong to any cluster yet" << endl;
-    }
+//         lattice_ref.set_relative_index(selected_id, rri);
+// //                current_site.set_relative_index(rri); // local variable. needs to be updated
+//     }else{
+// //                cout << "Does not belong to any cluster yet" << endl;
+//     }
 
 
-//    cout << "Relabel all cluster according to root cluster and selected site" << endl;
-    int i = 0;
-    for (auto bb : bond_neighbors) {
-//        cout << "relabeling attempt [" << i << "]" << endl;
-        i+= 1;
-        int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
-        if (bbg == root_clstr) {
-//            cout << "bb " << bbg << " is a root cluster" << endl;
-            continue;
-        }
-//        cout << "relabeling relative index of cluster " << bbg << endl;
-        relabel_relative_indices(bb);
-//        cout << "merging " << bbg << " to " << root_clstr << endl;
-        cluster_pool_ref.merge_cluster_with(root_clstr, bbg, lattice_ref);
-    }
-//    cout << "*************************************DONE relabeling" << endl;
+// //    cout << "Relabel all cluster according to root cluster and selected site" << endl;
+//     int i = 0;
+//     for (auto bb : bond_neighbors) {
+// //        cout << "relabeling attempt [" << i << "]" << endl;
+//         i+= 1;
+//         int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
+//         if (bbg == root_clstr) {
+// //            cout << "bb " << bbg << " is a root cluster" << endl;
+//             continue;
+//         }
+// //        cout << "relabeling relative index of cluster " << bbg << endl;
+//         relabel_relative_indices(bb);
+// //        cout << "merging " << bbg << " to " << root_clstr << endl;
+//         cluster_pool_ref.merge_cluster_with(root_clstr, bbg, lattice_ref);
+//     }
+// //    cout << "*************************************DONE relabeling" << endl;
 
 
 #ifdef UNIT_TEST
@@ -825,28 +826,27 @@ int BondPercolation_v13::find_root_cluster(const vector<int> &bond_gids)  {
  * bonds of bond_ids may be connected to different cluster. we need one of them that is connected to
  * he largest cluster or wrapping cluster.
  * wrapping cluster is preferred if after wrapping.
+ * 
+ * In bond percolation, only two sites are connected by a bond. 
+ * So a loop is not needed
  * @param bond_ids
  * @return
  */
-int BondPercolation_v13::find_bonds_connected_to_root_cluster(const vector<int> &bond_ids)  {
-    int selected_id = bond_ids[0];
-    int bbg = 0;
-
-    value_type ref_sz = 0;
-    for (auto bb : bond_ids) {
-        bbg = lattice_ref.get_bond_by_id(bb).get_gid();
-        if(after_wrapping && bbg == wrapping_cluster_id){
-//            selected_id = wrapping_cluster_id;
-            selected_id  = bb;
-            break;
+int BondPercolation_v13::find_sites_connected_to_root_cluster(const vector<int> &site_ids)  {
+    auto gid0=lattice_ref.get_site_by_id(site_ids[0]).get_gid();
+    auto gid1=lattice_ref.get_site_by_id(site_ids[1]).get_gid();
+    if(after_wrapping){
+        if(gid0 == wrapping_cluster_id){
+            return site_ids[0];
         }
-        value_type sz = cluster_pool_ref.get_cluster_bond_count(bbg);
-        if (sz >= ref_sz) {
-            selected_id = bb;
-            ref_sz = sz;
-        }
+        else return site_ids[1];
+    }else{
+        value_type sz0 = cluster_pool_ref.get_cluster_site_count(gid0);
+        value_type sz1 = cluster_pool_ref.get_cluster_site_count(gid1);
+        if(sz0 > sz1) return site_ids[0];
+        else return site_ids[1];
     }
-    return selected_id;
+
 }
 
 /**
@@ -931,24 +931,18 @@ const std::vector<double> BondPercolation_v13::clusterSizeDistribution(){
 
 
 /**
- * Return bonds ids with unique gids.
- * @param bond_neighbors_ids : bond ids.
- * @return bonds ids
+ * Return sites ids with unique gids.
+ * @param bond_neighbors_ids : site ids.
+ * @return site ids
  */
-std::vector<int> BondPercolation_v13::uniqe_gid_bond_neighbors(std::vector<int> &bond_neighbors_ids) {
+std::vector<int> BondPercolation_v13::uniqe_gid_site_neighbors(std::vector<int> &two_site_ids) {
 //    cout << "bond_neighbors {";
 //    print_vectors(bond_neighbors, "}\n");
-    vector<int> gids, unique_bond_ids;
-    for (int bb : bond_neighbors_ids) {
-        int bbg = lattice_ref.get_bond_by_id(bb).get_gid();
-        if (find_elm(gids, bbg))  continue;
-        else {
-            gids.push_back(bbg);
-            unique_bond_ids.push_back(bb);
-        }
-    }
-    return unique_bond_ids;
-
+    auto siteA = lattice_ref.get_site_by_id(two_site_ids[0]).get_gid();
+    auto siteB = lattice_ref.get_site_by_id(two_site_ids[1]).get_gid();
+    if (siteA == siteB){
+        return {two_site_ids[0]};
+    }else return two_site_ids;
 }
 
 /**

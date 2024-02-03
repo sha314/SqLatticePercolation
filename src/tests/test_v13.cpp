@@ -271,8 +271,8 @@ void test_percolation_bond(){
 //             " entropy_v1 " << H1 <<
 //             " entropy_v2 " << H2 <<
 //             " order " << sq_lattice_p.order_param_wrapping() << endl;
-//        sq_lattice_p.viewLattice(3);
-//        sq_lattice_p.viewLattice(4);
+       sq_lattice_p.viewLattice(3);
+       sq_lattice_p.viewLattice(4);
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
         if (abs(H1-H2) > 1e-6){
