@@ -47,3 +47,15 @@ Format 'gid<x,y>'
 1 |       |       | <0,0> |
 2 |
 4 |
+
+
+## 5# Merging Clusters. Bond Percolation
+A bond connects two sites.
+1. Fint the two connected sites by the selected bond.
+2. Find the group id of those sites to figure out which cluster they belong to.
+3. Relabel site and bond gids of smaller cluster.
+4. Relabel relative index of sites of smaller cluster.
+5. Add bonds and sites ids to larger cluster.
+6. Clear the smaller cluster.
+
+

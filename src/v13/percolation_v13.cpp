@@ -9,6 +9,16 @@
 
 using namespace std;
 
+/**
+ * @brief 
+ * 
+ * @param formatt : 
+ * (1) "[gid, id]"
+ * (2) "gid(row, col)"
+ * (3) view relative index
+ * (4) view site gid
+ * 
+ */
 void Percolation_v13::viewLattice(int formatt) {
         if (formatt < 0) {
             cout << "undefined format" << endl;

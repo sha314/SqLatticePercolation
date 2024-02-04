@@ -95,10 +95,8 @@ public:
     double get_mean_cluster_size();
     double get_mean_cluster_size_v2();
 
-    int merge_clusters(std::vector<int>& bond_neighbors);
     std::vector<int> uniqe_gid_site_neighbors(std::vector<int>& bond_neighbors_ids);
-    int merge_clusters_v2(std::vector<int>& bond_neighbor_ids);
-    int merge_clusters_v3(std::vector<int>& bond_neighbor_ids);
+    
     int merge_clusters_v4(std::vector<int>& bond_neighbor_ids);
     void relabel_relative_indices(int connecting_bond_id);
     bool detect_wrapping();

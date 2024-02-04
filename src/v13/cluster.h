@@ -68,7 +68,7 @@ public:
     }
 
 
-    void add_sites(int index, std::vector<int> &site_ids) {
+    void add_sites(int index, std::vector<int> site_ids) {
         _cluster_list[index].add_sites(site_ids);
     }
 
@@ -76,7 +76,7 @@ public:
         _cluster_list[index].add_site(site_ids);
     }
 
-    void add_bonds(int index, std::vector<int> &bond_ids){
+    void add_bonds(int index, std::vector<int> bond_ids){
         _cluster_list[index].add_bonds(bond_ids);
     }
 

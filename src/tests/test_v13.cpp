@@ -261,8 +261,9 @@ void test_percolation_bond(){
     value_type seed=0;
     auto sq_lattice_p = BondPercolation_v13(length, seed, false);
 //    sq_lattice_p.setRandomState(0, true);
-    // sq_lattice_p.viewLattice(3);
-    // sq_lattice_p.viewCluster();
+    sq_lattice_p.viewLattice(1);
+    sq_lattice_p.viewCluster(0);
+    
     int i = 0;
     while (sq_lattice_p.place_one_bond()) {
         // double H1 = sq_lattice_p.entropy_v1();
@@ -271,8 +272,9 @@ void test_percolation_bond(){
 //             " entropy_v1 " << H1 <<
 //             " entropy_v2 " << H2 <<
 //             " order " << sq_lattice_p.order_param_wrapping() << endl;
-       sq_lattice_p.viewLattice(3);
+       sq_lattice_p.viewLattice(1);
        sq_lattice_p.viewLattice(4);
+       sq_lattice_p.viewCluster(1);
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
         if (abs(H1-H2) > 1e-6){
@@ -286,7 +288,7 @@ void test_percolation_bond(){
         // sq_lattice_p.detect_wrapping();
 
         // sq_lattice_p.test_cluster();
-        // if (i > 16) break;
+        if (i > 2) break;
 
     }
     // sq_lattice_p.test_lattice();
