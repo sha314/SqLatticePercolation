@@ -63,6 +63,23 @@ public:
     }
 };
 
+/**
+ * @brief Relative index is a way to find the wrapping cluster.
+ * Notation: "<x,y>"
+ * We can choose rectangular coordinate system rotated by 90degree clockwise.
+ * In a 4x4 lattice...
+ * 
+ * y-> 0, 1, 2, 3
+ * x
+ * !
+ * -
+ * 0
+ * 1
+ * 2
+ * 3
+ * 
+ * 
+ */
 class RelativeIndex_v13: public Index_v13{
 
 
@@ -77,7 +94,7 @@ public:
     RelativeIndex_v13(RelativeIndex_v13& relI):Index_v13(relI.x_coord(), relI.y_coord()) {}
     RelativeIndex_v13& operator=(const RelativeIndex_v13& relI) = default;
 
-    explicit RelativeIndex_v13(Index_v13 index):Index_v13(index){
+    RelativeIndex_v13(Index_v13 index):Index_v13(index){
 
     }
 
