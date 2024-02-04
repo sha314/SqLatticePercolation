@@ -6,6 +6,7 @@
 #include <set>
 #include <random>
 #include "percolation_v13_bond.h"
+#include "../flags.h"
 
 using namespace std;
 
@@ -292,8 +293,8 @@ bool BondPercolation_v13::place_one_bond() {
         occupied_bond_count += 1;
 
 #ifdef UNIT_TEST
-        if ( site_neighbors.size() != 4){
-            cout << "Number of bond neighbor must be 4 : " << __LINE__ << endl;
+        if ( site_neighbors.size() != 2){
+            cout << "Number of site neighbor must be 2 : " << __LINE__ << endl;
             exit(-1);
         }
 #endif
@@ -430,9 +431,9 @@ void BondPercolation_v13::relabel_relative_indices(int connecting_bond_id) {
 
 double BondPercolation_v13::occupation_prob() {
 #ifdef UNIT_TEST
-    if(occupied_site_count > _length*_length){
+    if(occupied_bond_count > _length*_length*2){
         cout << "this many sites cannot be occupied : " << __FILE__ << ": " << __LINE__ << endl;
-        cout << "occupied_site_count " << occupied_site_count << endl;
+        cout << "occupied_site_count " << occupied_bond_count << endl;
         exit(-1);
     }
 #endif
@@ -464,7 +465,15 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
     
 
 #ifdef UNIT_TEST
-
+    cout << "<BEGIN> UNIT_TEST merge_clusters_v4()" << endl;
+    cout << "Two sites "<< root_site_id << ", " << other_site << endl;
+    auto cluster1 = cluster_pool_ref.get_cluster(root_clstr);
+    cluster1.view(1);
+    auto cluster2 = cluster_pool_ref.get_cluster(other_clstr);
+    cluster2.view(1);
+    
+    int total_sites_before = cluster_pool_ref.get_cluster_site_count(other_clstr) + cluster_pool_ref.get_cluster_site_count(root_clstr);
+    int total_bonds_before = cluster_pool_ref.get_cluster_bond_count(other_clstr) + cluster_pool_ref.get_cluster_bond_count(root_clstr);
 #endif
 
 //    cout << "root cluster is " << root_clstr << endl;
@@ -508,6 +517,30 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
     
 
     cluster_pool_ref.merge_cluster_with(root_clstr, other_clstr,lattice_ref);
+
+#ifdef UNIT_TEST
+    cout << "After merging" << endl;
+    cluster1 = cluster_pool_ref.get_cluster(root_clstr);
+    cluster1.view(1);
+    cluster2 = cluster_pool_ref.get_cluster(other_clstr);
+    cluster2.view(1);
+
+    // all sites and bonds are supposed to be in the root cluster
+    int total_sites_after = cluster_pool_ref.get_cluster_site_count(root_clstr);
+    int total_bonds_after = cluster_pool_ref.get_cluster_bond_count(root_clstr);
+
+    if(total_sites_before != total_sites_after){
+        cerr << "total_sites_before != total_sites_after" << __FILE__ << " : " << __LINE__ << endl;
+        exit(1);
+    }
+
+    if((total_bonds_before+1) != total_bonds_after){
+        cerr << "(total_bonds_before + 1) != total_bonds_after" << __FILE__ << " : " << __LINE__ << endl;
+        exit(1);
+    }
+    cout << "<END> UNIT_TEST merge_clusters_v4()" << endl;
+#endif
+
     return root_clstr;
 
 }
