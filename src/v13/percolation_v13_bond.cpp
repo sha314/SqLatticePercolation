@@ -484,40 +484,36 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
 
     // sites are in some clusters already. so we don't need to add sites manually, just merging
     // clusters willl do the trick. but we do need to relabel all sites.
+    // relabeling current site. relative index.
+    if(root_clstr != other_clstr){
+    // In bond percolation, we can use the relative index of the root site
+    // (one site that is in larger cluster and connected to the current bond)
+    // to relabel relative index
+        auto A=RelativeIndex_v13(lattice_ref.get_site_by_id(root_site_id).get_index());
+        auto B=RelativeIndex_v13(lattice_ref.get_site_by_id(other_site).get_index());
+        
+        RelativeIndex_v13 changeDelta = B - A;
+        RelativeIndex_v13 old_relative_idx = lattice_ref.get_site_by_id(other_site).get_relative_index();
+        RelativeIndex_v13 new_relative_idx =  old_relative_idx + changeDelta ;
 
+        // lattice_ref.set_relative_index(other_site, new_relative_idx); // we assign it in the loop
 
-// relabeling current site. relative index.
-// In bond percolation, we can use the relative index of the root site
-// (one site that is in larger cluster and connected to the current bond)
-// to relabel relative index
-    auto A=RelativeIndex_v13(lattice_ref.get_site_by_id(root_site_id).get_index());
-    auto B=RelativeIndex_v13(lattice_ref.get_site_by_id(other_site).get_index());
-    
-    RelativeIndex_v13 changeDelta = B - A;
-    RelativeIndex_v13 old_relative_idx = lattice_ref.get_site_by_id(other_site).get_relative_index();
-    RelativeIndex_v13 new_relative_idx =  old_relative_idx + changeDelta ;
+        auto sites_to_relabel = cluster_pool_ref.get_sites(other_clstr);
 
-    // lattice_ref.set_relative_index(other_site, new_relative_idx); // we assign it in the loop
-
-    auto sites_to_relabel = cluster_pool_ref.get_sites(other_clstr);
-
-    auto change = get_change_in_relative_index(old_relative_idx, new_relative_idx);
-    RelativeIndex_v13 changeR = RelativeIndex_v13(change);
-//        cout << "change " << change.get_str() << endl;
-//        cout << "old_relative_index "  << old_relative_idx.get_str() << endl;
-    for (auto ss : sites_to_relabel) {
-        RelativeIndex_v13 ss_relative_index = lattice_ref.get_site_by_id(ss).get_relative_index();
-        auto temp = ss_relative_index + changeR;
-        ss_relative_index = RelativeIndex_v13(temp) ;
-//            cout << "relative index after  : " << ss_relative_index.get_str() << endl;
-//            cout << "new_relative_index " << new_relative_index << endl;
-        lattice_ref.get_site_by_id(ss).set_relative_index(ss_relative_index);
-//            cout << "get relative index " << lattice_ref.get_site_by_id(ss).get_relative_index().get_str() << endl;
-    }
-    
-
-    cluster_pool_ref.merge_cluster_with(root_clstr, other_clstr,lattice_ref);
-
+        auto change = get_change_in_relative_index(old_relative_idx, new_relative_idx);
+        RelativeIndex_v13 changeR = RelativeIndex_v13(change);
+    //        cout << "change " << change.get_str() << endl;
+    //        cout << "old_relative_index "  << old_relative_idx.get_str() << endl;
+        for (auto ss : sites_to_relabel) {
+            RelativeIndex_v13 ss_relative_index = lattice_ref.get_site_by_id(ss).get_relative_index();
+            auto temp = ss_relative_index + changeR;
+            ss_relative_index = RelativeIndex_v13(temp) ;
+    //            cout << "relative index after  : " << ss_relative_index.get_str() << endl;
+    //            cout << "new_relative_index " << new_relative_index << endl;
+            lattice_ref.get_site_by_id(ss).set_relative_index(ss_relative_index);
+    //            cout << "get relative index " << lattice_ref.get_site_by_id(ss).get_relative_index().get_str() << endl;
+        }
+        cluster_pool_ref.merge_cluster_with(root_clstr, other_clstr,lattice_ref);
 #ifdef UNIT_TEST
     cout << "After merging" << endl;
     cluster1 = cluster_pool_ref.get_cluster(root_clstr);
@@ -535,11 +531,15 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
     }
 
     if((total_bonds_before+1) != total_bonds_after){
-        cerr << "(total_bonds_before + 1) != total_bonds_after" << __FILE__ << " : " << __LINE__ << endl;
+        cerr << "(total_bonds_before + 1) != total_bonds_after " << __FILE__ << " : " << __LINE__ << endl;
         exit(1);
     }
     cout << "<END> UNIT_TEST merge_clusters_v4()" << endl;
 #endif
+
+    }else{
+        // If both sites are in the same cluster then there's no need to relabel relative index
+    }
 
     return root_clstr;
 

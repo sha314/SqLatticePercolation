@@ -83,7 +83,7 @@ void ClusterPool::create_new_cluster(int site_id, int bond_id, Lattice_v13 &latt
 }
 
 /**
- *
+ * Merges two clusters and relabel gid of cluster_B using gid of cluster_A
  * @param cluster_A_id : the cluster. group id of cluster A will persist.
  * @param cluster_B_id : the other cluster that will be merged to this cluster
  * @param lattice_ref  : so that it gid of sites and bonds can be modified here

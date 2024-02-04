@@ -257,25 +257,25 @@ void percolation_seed_length_pair(int length, value_type seed) {
 }
 
 void test_percolation_bond(){
-    int length=5;
-    value_type seed=1;
-    auto sq_lattice_p = BondPercolation_v13(length, seed, false);
+    int length=100;
+    value_type seed=2;
+    auto sq_lattice_p = BondPercolation_v13(length, seed, true);
 //    sq_lattice_p.setRandomState(0, true);
-    sq_lattice_p.viewLattice(3);
-    sq_lattice_p.viewCluster(0);
+    // sq_lattice_p.viewLattice(3);
+    // sq_lattice_p.viewCluster(0);
     
     int i = 0;
     while (sq_lattice_p.place_one_bond()) {
-        cout << "Iteration " << i << "**************************************************************" << endl;
+        // cout << "Iteration " << i << "**************************************************************" << endl;
         // double H1 = sq_lattice_p.entropy_v1();
         // double H2 = sq_lattice_p.entropy_v2();
 //        cout << "p= " << sq_lattice_p.occupation_prob() <<
 //             " entropy_v1 " << H1 <<
 //             " entropy_v2 " << H2 <<
 //             " order " << sq_lattice_p.order_param_wrapping() << endl;
-       sq_lattice_p.viewCluster(0);
-       sq_lattice_p.viewLattice(1);
-       sq_lattice_p.viewLattice(3);
+    //    sq_lattice_p.viewCluster(0);
+    //    sq_lattice_p.viewLattice(1);
+    //    sq_lattice_p.viewLattice(3);
        
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
@@ -319,7 +319,7 @@ void test_percolation_bond(){
 //    sq_lattice_p.viewLattice(3);
 //    sq_lattice_p.viewLattice(4);
 //    sq_lattice_p.viewLattice(1);
-//    sq_lattice_p.viewCluster();
+//    sq_lattice_p.viewCluster(0);
 }
 
 void test_v13(int argc, char **argv) {
