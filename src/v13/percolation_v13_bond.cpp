@@ -26,10 +26,10 @@ BondPercolation_v13::BondPercolation_v13(int length, value_type seed, bool gener
     setRandomState(seed, generate_seed);
     shuffle_indices();
     selected_id = -1;
-    cluster_count = lattice_ref.get_bond_count();
+    cluster_count = lattice_ref.get_site_count();
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
-    max_entropy = log(lattice_ref.get_bond_count());
+    max_entropy = log(lattice_ref.get_site_count());
     entropy_value = max_entropy;
     after_wrapping = false;
     wrapping_cluster_id = -1;
@@ -281,12 +281,12 @@ bool BondPercolation_v13::place_one_bond() {
         // cout << endl;
 //# site_neighbors = self.get_connected_sites(self.current_site, bond_neighbors)
         
-        // entropy_subtract(site_neighbors);
+        entropy_subtract(site_neighbors);
 
         auto merged_cluster_index = merge_clusters_v4(site_neighbors);
 
-        // track_largest_cluster(merged_cluster_index);
-        // entropy_add(merged_cluster_index);
+        track_largest_cluster(merged_cluster_index);
+        entropy_add(merged_cluster_index);
 
 //# self.lattice_ref.set_site_gid_by_id(selected_id, merged_cluster_index)
 //# self.cluster_pool_ref.add_sites(merged_cluster_index, selected_id)
@@ -331,12 +331,12 @@ void BondPercolation_v13::entropy_subtract(std::vector<int> &sites) {
     }
 //# print("gids ", gids)
     double H = 0, mu;
-    double bc = lattice_ref.get_site_count();
+    double net_site = lattice_ref.get_site_count();
     for (auto gg : gids) {
         auto s_count = cluster_pool_ref.get_cluster_site_count(gg);
         if (s_count == 0)        continue;
 
-        mu = s_count / bc;
+        mu = s_count / net_site;
         H += mu * log(mu);
 
         /*****For Mean Cluster size. begin*****/
@@ -354,8 +354,8 @@ void BondPercolation_v13::entropy_subtract(std::vector<int> &sites) {
 
 void BondPercolation_v13::entropy_add(int new_cluster_id) {
 //# print("entropy_add")
-    double b_count = cluster_pool_ref.get_cluster_site_count(new_cluster_id);
-    double mu = b_count / lattice_ref.get_site_count();
+    double s_count = cluster_pool_ref.get_cluster_site_count(new_cluster_id);
+    double mu = s_count / lattice_ref.get_site_count();
 //# print("before ", self.entropy_value)
     entropy_value -= mu*log(mu);
 //# print("after ", self.entropy_value)
@@ -363,8 +363,8 @@ void BondPercolation_v13::entropy_add(int new_cluster_id) {
 
     /*****For Mean Cluster size. begin*****/
     
-    sum_cluster_size_squared += b_count*b_count;
-    sum_cluster_size += b_count;
+    sum_cluster_size_squared += s_count*s_count;
+    sum_cluster_size += s_count;
 
     /*****Ended the quest for mean cluster size*/
 }
@@ -374,9 +374,6 @@ double BondPercolation_v13::entropy() {
     return entropy_v2();
 }
 
-double BondPercolation_v13::entropy_v2() {
-    return entropy_value;
-}
 
 /**
  *

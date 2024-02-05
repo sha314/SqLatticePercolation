@@ -9,6 +9,7 @@
 #include "../v13/run_v13.h"
 #include "../v13/percolation_rsbd_v13.h"
 #include <iostream>
+#include "../flags.h"
 
 void test_reset();
 
@@ -257,7 +258,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 }
 
 void test_percolation_bond(){
-    int length=100;
+    int length=6;
     value_type seed=2;
     auto sq_lattice_p = BondPercolation_v13(length, seed, true);
 //    sq_lattice_p.setRandomState(0, true);
@@ -266,13 +267,13 @@ void test_percolation_bond(){
     
     int i = 0;
     while (sq_lattice_p.place_one_bond()) {
-        // cout << "Iteration " << i << "**************************************************************" << endl;
-        // double H1 = sq_lattice_p.entropy_v1();
-        // double H2 = sq_lattice_p.entropy_v2();
-//        cout << "p= " << sq_lattice_p.occupation_prob() <<
-//             " entropy_v1 " << H1 <<
-//             " entropy_v2 " << H2 <<
-//             " order " << sq_lattice_p.order_param_wrapping() << endl;
+        cout << "Iteration " << i << "**************************************************************" << endl;
+        double H1 = sq_lattice_p.entropy_v1();
+        double H2 = sq_lattice_p.entropy_v2();
+       cout << "p= " << sq_lattice_p.occupation_prob() <<
+            " entropy_v1 " << H1 <<
+            " entropy_v2 " << H2 <<
+            " order " << sq_lattice_p.order_param_wrapping() << endl;
     //    sq_lattice_p.viewCluster(0);
     //    sq_lattice_p.viewLattice(1);
     //    sq_lattice_p.viewLattice(3);

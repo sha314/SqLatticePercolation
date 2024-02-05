@@ -87,7 +87,7 @@ public:
 
     double entropy();
     double entropy_v1();
-    double entropy_v2();
+    double entropy_v2(){return entropy_value;}
     long largest_cluster(){return largest_cluster_sz;}
     double order_param_largest_clstr(){ return double(largest_cluster_sz) / lattice_ref.get_bond_count();}
     double order_param_wrapping();
