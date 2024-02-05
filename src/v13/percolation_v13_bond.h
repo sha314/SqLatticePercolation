@@ -81,7 +81,7 @@ public:
     void entropy_add(int new_cluster_id);
 
     double occupation_prob();
-    double get_pc(){ return double(bond_count_pc)/(_length*_length);}
+    double get_pc(){ return double(bond_count_pc)/lattice_ref.get_bond_count();}
     double get_wrapping_cluster_site_count_at_pc(){ return wrapping_cluster_site_count_pc;}
     double get_wrapping_cluster_bond_count_at_pc(){ return wrapping_cluster_bond_count_pc;}
 
@@ -113,7 +113,7 @@ public:
         return min + _random_engine() % (max - min);
     }
 
-    size_t maxIterationLimit(){ return _length*_length;}
+    size_t maxIterationLimit(){ return _length*_length*2;}
 
     /**
      * @brief view site id list in curly brace {}.
@@ -161,6 +161,14 @@ public:
  *                    value of the array is the number of times that cluster appears
  */
 const std::vector<double> clusterSizeDistribution();
+
+    void run_once();
+
+    std::vector<double> get_entropy_array(){ return entropy_list;}
+    std::vector<double> get_occupation_prob_array(){ return occupation_prob_list;}
+    std::vector<double> get_order_param_wrapping_array(){ return order_wrapping_list;}
+    std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
+    std::vector<double> get_mean_cluster_size_array(){ return mean_cluster_sz_list;}
 };
 
 #endif //SQLATTICEPERCOLATION_PERCOLATION_H

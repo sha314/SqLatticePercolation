@@ -259,7 +259,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 }
 
 void test_percolation_bond(){
-    int length=6;
+    int length=5;
     value_type seed=2;
     auto sq_lattice_p = BondPercolation_v13(length, seed, false);
 //    sq_lattice_p.setRandomState(0, true);
@@ -275,9 +275,9 @@ void test_percolation_bond(){
             " entropy_v1 " << H1 <<
             " entropy_v2 " << H2 <<
             " order " << sq_lattice_p.order_param_wrapping() << endl;
-    //    sq_lattice_p.viewCluster(0);
-    //    sq_lattice_p.viewLattice(1);
-    //    sq_lattice_p.viewLattice(3);
+       sq_lattice_p.viewCluster(0);
+       sq_lattice_p.viewLattice(1);
+       sq_lattice_p.viewLattice(3);
        
 //        sq_lattice_p.lattice_ref.print_bonds();
 #ifdef UNIT_TEST
@@ -289,7 +289,14 @@ void test_percolation_bond(){
 #endif
 //        sq_lattice_p.viewCluster(1);
         i += 1;
-        sq_lattice_p.detect_wrapping();
+        if(sq_lattice_p.detect_wrapping()){
+            cout << "Wrapping detected !! " << endl;
+            // sq_lattice_p.viewCluster(0);
+            // sq_lattice_p.viewLattice(1);
+            // sq_lattice_p.viewLattice(3);
+
+            break;
+        }
 
         // sq_lattice_p.test_cluster();
         // if (i > 5) break;
@@ -397,11 +404,11 @@ void run_ensemble_v13(int argc, char **argv){
 //    run_v10_regular(length, ensemble_size);
 
 //    int rsbd_l = stoi(argv[3]);
-    run_v13_rsbd_L0(length, ensemble_size);
+    // run_v13_rsbd_L0(length, ensemble_size);
 //    run_v13_rsbd_L1(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL0_v13>(length, ensemble_size);
 //    run_v13_rsbd<SitePercolationL1_v13>(length, ensemble_size);
-
+    run_v13_bond_percolation(length, ensemble_size);
 }
 
 

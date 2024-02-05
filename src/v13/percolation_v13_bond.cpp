@@ -248,7 +248,7 @@ std::vector<int> BondPercolation_v13::get_connected_sites(Site_v13 site, std::ve
 P_STATUS BondPercolation_v13::select_bond() {
     // cout << "BondPercolation_v13::select_bond() " << endl;
     if (current_idx >= lattice_ref.get_bond_count()) {
-        cout << "No bonds to occupy" << endl;
+        // cout << "No bonds to occupy" << endl;
         return P_STATUS::EMPTY_BOND_LIST;
     }
     selected_bond_id = bond_ids_indices[current_idx];
@@ -708,6 +708,12 @@ bool BondPercolation_v13::detect_wrapping() {
     auto site1_relative = lattice_ref.get_site_by_id(neighbors[1]).get_relative_index();
     auto delta_x = site0_relative.x_coord() - site1_relative.x_coord();
     auto delta_y = site0_relative.y_coord() - site1_relative.y_coord();
+
+#ifdef UNIT_TEST
+    cout << "sites are  " << neighbors[0] << ", " << neighbors[1] << endl;
+    cout << "delta x, delta y  " << delta_x << ", " << delta_y << endl;
+
+#endif
     if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
     //    cout << selected_bond_id << " and " << ss << " are connected via wrapping" << endl;
 //            cout << "indices are " << lattice_ref.get_site_by_id(selected_bond_id).get_index().get_str() <<
@@ -731,6 +737,77 @@ Bond_v13 &BondPercolation_v13::get_current_bond() {
     return lattice_ref.get_bond_by_id(selected_bond_id);
 }
 
+
+void BondPercolation_v13::run_once() {
+//# sq_lattice_p.viewLattice(3)
+//# sq_lattice_p.viewCluster()
+    double p, H, P1, P2;
+
+    while (place_one_bond()) {
+        if (status != P_STATUS::SUCESS) continue;
+        detect_wrapping();
+        if (first_run) {
+            p = occupation_prob();
+            occupation_prob_list.push_back(p);
+        }
+        H = entropy();
+        P1 = order_param_wrapping();
+        P2 = order_param_largest_clstr();
+
+        entropy_list.push_back(H);
+        order_wrapping_list.push_back(P1);
+        order_largest_list.push_back(P2);
+
+        auto mcs2 = get_mean_cluster_size_v2();
+        // auto mcs1 = get_mean_cluster_size();
+        // if(abs(mcs1-mcs2) > 1e-6 ){
+        //     cout << "Mean cluster size is not equal? " << mcs1 << "!=" << mcs2 << endl;
+        // }
+        mean_cluster_sz_list.push_back(mcs2);
+#ifdef UNIT_TEST
+        double  H1 = entropy_v1();
+        double  H2 = entropy_v2();
+        if(abs(H1 - H2) > 1e-6){
+            cout << "Error : Entropy v1 and v2 are not equal : " << __LINE__ << endl;
+            cout << "H1 = " << H1 << endl;
+            cout << "H2 = " << H2 << endl;
+            cout << "max_entropy  " << max_entropy << endl;
+            exit(-1);
+        }
+#endif
+    }
+
+#ifdef UNIT_TEST
+//    P1 = order_param_wrapping();
+//    P2 = order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter wrapping P1 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P1 = " << P1 << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter largest P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    p = occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    cout << "entropy_list {" << endl;
+    for(auto hh: entropy_list){
+        cout << hh << endl;
+    }
+    cout << "              }" << endl;
+#endif
+
+    first_run = false;
+}
 
 
 
