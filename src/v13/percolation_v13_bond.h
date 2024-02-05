@@ -37,7 +37,7 @@ protected:
     // std::vector<int> site_ids_indices;
     std::vector<int> bond_ids_indices;
 
-    int selected_id =-1;
+    int selected_bond_id =-1;
     double max_entropy = 0;
     double entropy_value = 0;
     bool after_wrapping = false;
@@ -138,7 +138,7 @@ public:
     //             std::cout << "[";
     //         }
     //         auto a = site_ids_indices[i];
-    //         if(a == selected_id){
+    //         if(a == selected_bond_id){
     //             std::cout <<"<" << a << ">,";
     //             got_selected_site_flag = true;
     //             continue;
@@ -146,7 +146,7 @@ public:
     //         std::cout << a << ",";
     //     }
     //     // for(auto a: site_ids_indices){
-    //     //     if(a == selected_id){
+    //     //     if(a == selected_bond_id){
     //     //         std::cout <<"<" << a << ">,";
     //     //         continue;
     //     //     }

@@ -169,7 +169,12 @@ std::vector<int> Lattice_v13::find_neighbor_bonds(int s0_index) {
 std::vector<int> Lattice_v13::get_neighbor_bonds(int s0_index) {
     return site_matrix[s0_index].get_connecting_bonds();
 }
-
+/**
+ * @brief 
+ * 
+ * @param b0_index bond id
+ * @return std::vector<int> 
+ */
 std::vector<int> Lattice_v13::get_neighbor_sites(int b0_index) {
     return bond_matrix[b0_index].get_connected_sites();
 }

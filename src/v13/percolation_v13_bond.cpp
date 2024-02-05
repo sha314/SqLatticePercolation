@@ -25,7 +25,7 @@ BondPercolation_v13::BondPercolation_v13(int length, value_type seed, bool gener
     int current_idx = 0;
     setRandomState(seed, generate_seed);
     shuffle_indices();
-    selected_id = -1;
+    selected_bond_id = -1;
     cluster_count = lattice_ref.get_site_count();
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
@@ -54,7 +54,7 @@ void BondPercolation_v13::reset() {
     current_idx = 0;
     occupied_bond_count = 0;
     bond_count_pc = 0;
-    selected_id =-1;
+    selected_bond_id =-1;
     cluster_count = lattice_ref.get_bond_count();
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
@@ -246,12 +246,12 @@ std::vector<int> BondPercolation_v13::get_connected_sites(Site_v13 site, std::ve
 }
 
 P_STATUS BondPercolation_v13::select_bond() {
-    // cout << "BondPercolation_v13::select_site() " << endl;
+    // cout << "BondPercolation_v13::select_bond() " << endl;
     if (current_idx >= lattice_ref.get_bond_count()) {
-       cout << "No bonds to occupy" << endl;
-        return P_STATUS::EMPTY_SITE_LIST;
+        cout << "No bonds to occupy" << endl;
+        return P_STATUS::EMPTY_BOND_LIST;
     }
-    selected_id = bond_ids_indices[current_idx];
+    selected_bond_id = bond_ids_indices[current_idx];
     current_idx += 1;
 //    current_site = lattice_ref.get_site_by_id(selected_id);
 //    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
@@ -263,6 +263,7 @@ P_STATUS BondPercolation_v13::select_bond() {
 bool BondPercolation_v13::place_one_bond() {
 //    cout << "************************ place_one_site. count " << current_idx << endl;
     status = select_bond();
+    // cout << "status " <<  (status == P_STATUS::EMPTY_BOND_LIST) << endl;
     if(status == P_STATUS::SUCESS) {
         // view_site_id_list();   // selected site will be inside angle bracket <>
 
@@ -300,7 +301,7 @@ bool BondPercolation_v13::place_one_bond() {
 #endif
         return true;
     }
-    else if(status == P_STATUS::EMPTY_SITE_LIST){
+    else if(status == P_STATUS::EMPTY_BOND_LIST){
         return false;
     }
 
@@ -476,8 +477,8 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
 //    cout << "root cluster is " << root_clstr << endl;
 //    cout << "Assign and relabel currently selected site" << endl;
 // relabel and assign the current bond here. This is a new bond without any gid.
-    lattice_ref.set_bond_gid_by_id(selected_id, root_clstr);
-    cluster_pool_ref.add_bonds(root_clstr, {selected_id});
+    lattice_ref.set_bond_gid_by_id(selected_bond_id, root_clstr);
+    cluster_pool_ref.add_bonds(root_clstr, {selected_bond_id});
 
     // sites are in some clusters already. so we don't need to add sites manually, just merging
     // clusters willl do the trick. but we do need to relabel all sites.
@@ -615,7 +616,7 @@ void BondPercolation_v13::view_site_id_list(){
             std::cout << "[";
         }
         auto a = bond_ids_indices[i];
-        if(a == selected_id){
+        if(a == selected_bond_id){
             std::cout <<"<" << a << ">,";
             got_selected_site_flag = true;
             continue;
@@ -623,7 +624,7 @@ void BondPercolation_v13::view_site_id_list(){
         std::cout << a << ",";
     }
     // for(auto a: bond_ids_indices){
-    //     if(a == selected_id){
+    //     if(a == selected_bond_id){
     //         std::cout <<"<" << a << ">,";
     //         continue;
     //     }
@@ -700,37 +701,34 @@ bool BondPercolation_v13::detect_wrapping() {
     if (after_wrapping) return true;
 
 //# print("detect_wrapping")
-    auto neighbors = lattice_ref.get_sites_for_wrapping_test(selected_id);
+    auto neighbors = lattice_ref.get_neighbor_sites(selected_bond_id);
+    
 //# print("neighbors of self.selected_id with same gid : ", neighbors)
-//    auto central_r_index = current_site.get_relative_index();
-    // auto central_r_index = get_current_bond().get_relative_index();
-    cout << "TODO  : there are no relative index of a bond. find two sites and then find relative index" 
-    << __FILE__ << " " << __LINE__ << endl;
-    for (auto ss : neighbors) {
-        auto rss = lattice_ref.get_site_by_id(ss).get_relative_index();
-        // auto delta_x = central_r_index.x_coord() - rss.x_coord();
-        // auto delta_y = central_r_index.y_coord() - rss.y_coord();
-//         if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
-//         //    cout << selected_id << " and " << ss << " are connected via wrapping" << endl;
-// //            cout << "indices are " << lattice_ref.get_site_by_id(selected_id).get_index().get_str() <<
-// //           " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
-// //            cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
+    auto site0_relative = lattice_ref.get_site_by_id(neighbors[0]).get_relative_index();
+    auto site1_relative = lattice_ref.get_site_by_id(neighbors[1]).get_relative_index();
+    auto delta_x = site0_relative.x_coord() - site1_relative.x_coord();
+    auto delta_y = site0_relative.y_coord() - site1_relative.y_coord();
+    if ((abs(delta_x) > 1) or (abs(delta_y) > 1)) {
+    //    cout << selected_bond_id << " and " << ss << " are connected via wrapping" << endl;
+//            cout << "indices are " << lattice_ref.get_site_by_id(selected_bond_id).get_index().get_str() <<
+//           " and " << lattice_ref.get_site_by_id(ss).get_index().get_str() << endl;
+//            cout << "relative " << central_r_index.get_str() << " - " << rss.get_str() << endl;
 
-//             after_wrapping = true;
-//             wrapping_cluster_id = lattice_ref.get_site_by_id(selected_id).get_gid();
-//             bond_count_pc = size_t(occupied_bond_count);
-//             wrapping_cluster_site_count_pc = cluster_pool_ref.get_cluster_site_count(wrapping_cluster_id);
-//             wrapping_cluster_bond_count_pc = cluster_pool_ref.get_cluster_bond_count(wrapping_cluster_id);
+        after_wrapping = true;
+        wrapping_cluster_id = lattice_ref.get_bond_by_id(selected_bond_id).get_gid();
+        bond_count_pc = size_t(occupied_bond_count);
+        wrapping_cluster_site_count_pc = cluster_pool_ref.get_cluster_site_count(wrapping_cluster_id);
+        wrapping_cluster_bond_count_pc = cluster_pool_ref.get_cluster_bond_count(wrapping_cluster_id);
 
-//             return true;
-//         }
+        return true;
     }
+    
     // cout << "SitePercolation_v13::detect_wrapping() | Got to Line " << __LINE__ << endl;
     return false;
 }
 
 Bond_v13 &BondPercolation_v13::get_current_bond() {
-    return lattice_ref.get_bond_by_id(selected_id);
+    return lattice_ref.get_bond_by_id(selected_bond_id);
 }
 
 

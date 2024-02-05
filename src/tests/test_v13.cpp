@@ -11,6 +11,7 @@
 #include <iostream>
 #include "../flags.h"
 
+
 void test_reset();
 
 using namespace std;
@@ -260,7 +261,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 void test_percolation_bond(){
     int length=6;
     value_type seed=2;
-    auto sq_lattice_p = BondPercolation_v13(length, seed, true);
+    auto sq_lattice_p = BondPercolation_v13(length, seed, false);
 //    sq_lattice_p.setRandomState(0, true);
     // sq_lattice_p.viewLattice(3);
     // sq_lattice_p.viewCluster(0);
@@ -288,7 +289,7 @@ void test_percolation_bond(){
 #endif
 //        sq_lattice_p.viewCluster(1);
         i += 1;
-        // sq_lattice_p.detect_wrapping();
+        sq_lattice_p.detect_wrapping();
 
         // sq_lattice_p.test_cluster();
         // if (i > 5) break;
