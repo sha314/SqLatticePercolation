@@ -61,6 +61,8 @@ public:
         ss << "(" << std::setw(3) << _component_1 << "," << std::setw(3) << _component_2 << ")";
         return ss.str();
     }
+
+
 };
 
 /**

@@ -58,7 +58,7 @@ public:
 
     std::vector<int>  get_bond_gids(std::vector<int>& bond_ids);
     std::vector<int>  get_site_gids(std::vector<int>& site_ids);
-    Index_v13 wrapping_correction_relative_index(Index_v13 delta_X);
+    Index_v13 transform_wrapping_correction_relative_index(Index_v13 delta_X);
     RelativeIndex_v13 wrapping_correction_relative_index(RelativeIndex_v13 delta_X);
 
     RelativeIndex_v13 get_relative_index(int central_site_id, int neighbor_site_id);

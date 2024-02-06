@@ -263,8 +263,8 @@ void test_percolation_bond(){
     value_type seed=2;
     auto sq_lattice_p = BondPercolation_v13(length, seed, false);
 //    sq_lattice_p.setRandomState(0, true);
-    // sq_lattice_p.viewLattice(3);
-    // sq_lattice_p.viewCluster(0);
+    sq_lattice_p.viewLattice(3);
+    sq_lattice_p.viewCluster(0);
     
     int i = 0;
     while (sq_lattice_p.place_one_bond()) {
@@ -289,17 +289,17 @@ void test_percolation_bond(){
 #endif
 //        sq_lattice_p.viewCluster(1);
         i += 1;
-        if(sq_lattice_p.detect_wrapping()){
-            cout << "Wrapping detected !! " << endl;
-            // sq_lattice_p.viewCluster(0);
-            // sq_lattice_p.viewLattice(1);
-            // sq_lattice_p.viewLattice(3);
+        // if(sq_lattice_p.detect_wrapping()){
+        //     cout << "Wrapping detected !! " << endl;
+        //     // sq_lattice_p.viewCluster(0);
+        //     // sq_lattice_p.viewLattice(1);
+        //     // sq_lattice_p.viewLattice(3);
 
-            break;
-        }
+        //     break;
+        // }
 
         // sq_lattice_p.test_cluster();
-        // if (i > 5) break;
+        if (i > 3) break;
 
     }
     // sq_lattice_p.test_lattice();

@@ -6,6 +6,7 @@
 #include <set>
 #include <random>
 #include "percolation_v13.h"
+#include "../flags.h"
 
 using namespace std;
 
@@ -93,8 +94,17 @@ RelativeIndex_v13 Percolation_v13::wrapping_correction_relative_index(RelativeIn
 //# print(type(xx), " and ", type(yy))
     return RelativeIndex_v13(xx, yy);
 }
-
-Index_v13 Percolation_v13::wrapping_correction_relative_index(Index_v13 delta_X) {
+/**
+ * @brief New Relative index of B Site is the sum of 
+ * (i) Old relative index of A site and 
+ * (ii) Transformed difference of the site indices.
+ * 
+ * transform_wrapping_correction_relative_index() is that transform
+ * 
+ * @param delta_X 
+ * @return Index_v13 
+ */
+Index_v13 Percolation_v13::transform_wrapping_correction_relative_index(Index_v13 delta_X) {
 //# LL = self.lattice_ref.length
     int xx = delta_X.row();
     int yy = delta_X.col();
@@ -125,7 +135,7 @@ RelativeIndex_v13 Percolation_v13::get_relative_index(int central_site_id, int n
 //    cout << "neighbor_index " << neighbor_index.get_str() << endl;
     Index_v13 idx = neighbor_index.subtract(central_index);
 //    cout << "idx " << idx.get_str() << endl;
-    idx = wrapping_correction_relative_index(idx);
+    idx = transform_wrapping_correction_relative_index(idx);
 //    cout << "after wrapping correction " << idx.get_str() << endl;
     Index_v13 old_relative_index = lattice_ref.get_site_by_id(central_site_id).get_relative_index();
 //# new_relative_index = self.lattice_ref.get_site_by_id(new_site_id).get_relative_index()
@@ -133,6 +143,24 @@ RelativeIndex_v13 Percolation_v13::get_relative_index(int central_site_id, int n
     auto new_relative_index = old_relative_index + idx;
 //# print("new_relative_index type ", type(new_relative_index))
 //# print("new_relative_index type ", type(RelativeIndex(index=new_relative_index)))
+#ifdef UNIT_TEST
+    cout << "UNIT_TEST: get_relative_index() " << endl; 
+   cout << "central_site_id " << central_site_id << endl;
+   cout << "neighbor_site_id " << neighbor_site_id << endl;
+    
+   cout << "central_index " << central_index.get_str() << endl;
+   cout << "neighbor_index " << neighbor_index.get_str() << endl;
+    
+   cout << "idx " << idx.get_str() << endl;
+    
+   cout << "after wrapping correction " << idx.get_str() << endl;
+    
+//# new_relative_index = self.lattice_ref.get_site_by_id(new_site_id).get_relative_index()
+//# print(old_relative_index, " old_relative_index type ", type(old_relative_index))
+    
+//# print("new_relative_index type ", type(new_relative_index))
+//# print("new_relative_index type ", type(RelativeIndex(index=new_relative_index)))
+#endif
     return RelativeIndex_v13(new_relative_index);
 }
 
