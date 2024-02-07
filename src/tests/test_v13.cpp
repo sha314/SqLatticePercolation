@@ -261,7 +261,7 @@ void percolation_seed_length_pair(int length, value_type seed) {
 void test_percolation_bond(){
     int length=6;
     value_type seed=1493541373;
-    auto sq_lattice_p = BondPercolation_v13(length, seed, false);
+    auto sq_lattice_p = BondPercolation_v13(length, seed, true);
 //    sq_lattice_p.setRandomState(0, true);
     sq_lattice_p.viewLattice(3);
     sq_lattice_p.viewCluster(0);
@@ -295,7 +295,7 @@ void test_percolation_bond(){
             // sq_lattice_p.viewLattice(1);
             // sq_lattice_p.viewLattice(3);
 
-            break;
+            // break;
         }
 
         // sq_lattice_p.test_cluster();
@@ -338,12 +338,12 @@ void test_v13(int argc, char **argv) {
 //    test_percolation_L1();
 //    percolation_seed_length_pairL1(6, 455251785);
 //    test_reset();
-    // run_ensemble_v13(argc, argv);
+    run_ensemble_v13(argc, argv);
     // percolation_fractalDimension_by_spanning_site_v13(1000, 100, 500, 100);
     // quantities_at_pc_v13(argc, argv);
 
     // 2024.02.01
-    test_percolation_bond();
+    // test_percolation_bond();
 }
 
 void test_reset() {
