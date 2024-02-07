@@ -477,7 +477,7 @@ int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
     }
     cout << "}" << endl;
 
-    int root_site_id = find_sites_connected_to_root_cluster(site_neighbors);
+    int root_site_id = find_sites_connected_to_root_cluster(two_site_ids);
     int root_clstr = lattice_ref.get_site_by_id(root_site_id).get_gid();
     auto root_relative_index=lattice_ref.get_site_by_id(root_site_id).get_relative_index();
 
@@ -614,6 +614,14 @@ int BondPercolation_v13::find_root_cluster(const vector<int> &bond_gids)  {
  * @return
  */
 int BondPercolation_v13::find_sites_connected_to_root_cluster(const vector<int> &site_ids)  {
+#ifdef UNIT_TEST
+    if(site_ids.size() != 2){
+        cout << "Error in BondPercolation_v13::find_sites_connected_to_root_cluster(). got one site, expected two. " 
+        << __FILE__ << ": " << __LINE__ << endl;
+        exit(1);
+    }
+#endif
+    cout << "two sites " << site_ids[0] << ", " << site_ids[1] << " size of vector " << site_ids.size() << endl;
     auto gid0=lattice_ref.get_site_by_id(site_ids[0]).get_gid();
     auto gid1=lattice_ref.get_site_by_id(site_ids[1]).get_gid();
     if(after_wrapping){
