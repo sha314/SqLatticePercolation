@@ -276,10 +276,11 @@ bool BondPercolation_v13::place_one_bond() {
          */
         // lattice_ref.init_relative_index(selected_id);  // initialize        relative index
         auto site_neighbors = get_current_bond().get_connected_sites();
-        // for( auto a: site_neighbors){
-        //     cout << a << ", ";
-        // }
-        // cout << endl;
+        cout << "site_neighbors {" << endl;
+        for( auto a: site_neighbors){
+            cout << a << ", ";
+        }
+        cout << "}" << endl;
 //# site_neighbors = self.get_connected_sites(self.current_site, bond_neighbors)
         
         entropy_subtract(site_neighbors);
@@ -318,6 +319,7 @@ void BondPercolation_v13::track_largest_cluster(int new_cluster) {
 }
 
 void BondPercolation_v13::entropy_subtract(std::vector<int> &sites) {
+    cout << "BondPercolation_v13::entropy_subtract" << endl;
 //# print("entropy_subtract")
     // cout << "{"; for(auto a: bonds) {cout << a << ",";} cout << "} vs " << endl;
     // auto bonds = lattice_ref.get_neighbor_bonds(selected_id);
@@ -325,12 +327,20 @@ void BondPercolation_v13::entropy_subtract(std::vector<int> &sites) {
 
 //# print(self.current_site, " neighbors => ", sites)
     set<int> gids;
+    cout << "subtracting entropy for {" << endl;
     for(auto ss: sites) {
         auto gid = lattice_ref.get_site_gid_by_id(ss);
+        cout << "id, gid (" << ss << ", " << gid << ") ";
         if (gid == -1)        continue;
         gids.insert(gid);
     }
-//# print("gids ", gids)
+    cout << "} inluded gids {" << endl;
+    for(auto gid: gids){
+        cout << gid << ", ";
+    }
+    cout << endl;
+
+
     double H = 0, mu;
     double net_site = lattice_ref.get_site_count();
     for (auto gg : gids) {
@@ -347,9 +357,9 @@ void BondPercolation_v13::entropy_subtract(std::vector<int> &sites) {
 
         /*****Ended the quest for mean cluster size*/
     }
-//# print("before ", self.entropy_value)
+    cout << "before " << entropy_value << endl;
     entropy_value += H;
-//# print("after ", self.entropy_value)
+    cout << "after " << entropy_value << endl;
 
 }
 
@@ -357,9 +367,10 @@ void BondPercolation_v13::entropy_add(int new_cluster_id) {
 //# print("entropy_add")
     double s_count = cluster_pool_ref.get_cluster_site_count(new_cluster_id);
     double mu = s_count / lattice_ref.get_site_count();
-//# print("before ", self.entropy_value)
+
+    cout << "before " << entropy_value << endl;
     entropy_value -= mu*log(mu);
-//# print("after ", self.entropy_value)
+    cout << "after " << entropy_value << endl;
 
 
     /*****For Mean Cluster size. begin*****/
@@ -451,20 +462,33 @@ double BondPercolation_v13::occupation_prob() {
 int BondPercolation_v13::merge_clusters_v4(std::vector<int> &two_site_ids) {
 
     int rootcounter = 0;
+    
+    cout << "two_site_ids {" << endl;
+    for(auto a: two_site_ids){
+        cout << a << ",";
+    }
+    cout << "}" << endl;
+
     auto site_neighbors = uniqe_gid_site_neighbors(two_site_ids);
     
+    cout << "site_neighbors {" << endl;
+    for(auto a: site_neighbors){
+        cout << a << ",";
+    }
+    cout << "}" << endl;
 
     int root_site_id = find_sites_connected_to_root_cluster(site_neighbors);
     int root_clstr = lattice_ref.get_site_by_id(root_site_id).get_gid();
     auto root_relative_index=lattice_ref.get_site_by_id(root_site_id).get_relative_index();
 
-    int other_site = (root_site_id == site_neighbors[0])? site_neighbors[1] : site_neighbors[0];
+    int other_site = (root_site_id == two_site_ids[0])? two_site_ids[1] : two_site_ids[0];
     int other_clstr = lattice_ref.get_site_by_id(other_site).get_gid();
+
     
 
 #ifdef UNIT_TEST
     cout << "<BEGIN> UNIT_TEST merge_clusters_v4()" << endl;
-    cout << "Two sites "<< root_site_id << ", " << other_site << endl;
+    cout << "Two sites ids "<< root_site_id << ", " << other_site << endl;
     auto cluster1 = cluster_pool_ref.get_cluster(root_clstr);
     cluster1.view(1);
     auto cluster2 = cluster_pool_ref.get_cluster(other_clstr);

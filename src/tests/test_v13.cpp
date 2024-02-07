@@ -268,14 +268,14 @@ void test_percolation_bond(){
     
     int i = 0;
     while (sq_lattice_p.place_one_bond()) {
-        cout << "Iteration " << i << "**************************************************************" << endl;
+        
         double H1 = sq_lattice_p.entropy_v1();
         double H2 = sq_lattice_p.entropy_v2();
        cout << "p= " << sq_lattice_p.occupation_prob() <<
             " entropy_v1 " << H1 <<
             " entropy_v2 " << H2 <<
             " order " << sq_lattice_p.order_param_wrapping() << endl;
-       sq_lattice_p.viewCluster(0);
+       sq_lattice_p.viewCluster(1);
        sq_lattice_p.viewLattice(1);
        sq_lattice_p.viewLattice(3);
        
@@ -300,7 +300,7 @@ void test_percolation_bond(){
 
         // sq_lattice_p.test_cluster();
         // if (i > 3) break;
-
+        cout << "Iteration " << i << "************************************************************** Ends here" << endl;
     }
     // sq_lattice_p.test_lattice();
 #ifdef UNIT_TEST
