@@ -18,6 +18,10 @@
 
 
 
+/**
+ * @brief Regular Bond Percolation
+ * 
+ */
 class BondPercolation_v13: public Percolation_v13{
     std::string signature = "BondPercolation_v13";
 
@@ -34,7 +38,6 @@ protected:
 
     int occupied_bond_count = 0;
     int current_idx = 0;
-    // std::vector<int> site_ids_indices;
     std::vector<int> bond_ids_indices;
 
     int selected_bond_id =-1;
@@ -170,5 +173,29 @@ const std::vector<double> clusterSizeDistribution();
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
     std::vector<double> get_mean_cluster_size_array(){ return mean_cluster_sz_list;}
 };
+
+
+/**
+ * @brief Instead of choosing any bond randomly, we choose `M` bonds and occupy the one that minimizes entropy
+ * 
+ * 
+ */
+class BondPercolationExplosive_v13: public BondPercolation_v13{
+private:
+    int _M_bond{2};
+    std::string signature = "BondPercolationExplosive_v13";
+
+public:
+    BondPercolationExplosive_v13() = default;
+    explicit BondPercolationExplosive_v13(int length, int M_value, value_type seed=0,  bool generate_seed=true)
+        :BondPercolation_v13(length, seed, generate_seed){_M_bond=M_value;}
+
+    virtual std::string get_signature(){return signature;}
+
+    virtual P_STATUS select_bond();
+    virtual uint link_for_min_cluster_sum_product(size_t start_at);
+    // void reset() override{bond_ids_indices = lattice_ref.get_bond_id_list();BondPercolation_v13::reset();}
+};
+
 
 #endif //SQLATTICEPERCOLATION_PERCOLATION_H

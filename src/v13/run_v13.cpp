@@ -528,7 +528,8 @@ void run_v13_bond_percolation(int length, int ensemble_size){
     size_t length_squared = length*length;
     size_t twice_length_squared = 2 * length_squared;
 
-    BondPercolation_v13 percolation(length, 0, false);
+    // BondPercolation_v13 percolation(length, 0, false);
+    BondPercolationExplosive_v13 percolation(length, 5, 0, false);
 
     percolation.setRandomState(0, true);
 //    percolation.init();

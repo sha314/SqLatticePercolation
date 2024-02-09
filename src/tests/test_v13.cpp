@@ -261,7 +261,8 @@ void percolation_seed_length_pair(int length, value_type seed) {
 void test_percolation_bond(){
     int length=6;
     value_type seed=1493541373;
-    auto sq_lattice_p = BondPercolation_v13(length, seed, true);
+    // auto sq_lattice_p = BondPercolation_v13(length, seed, true);
+    auto sq_lattice_p = BondPercolationExplosive_v13(length, 2, seed, true);
 //    sq_lattice_p.setRandomState(0, true);
     sq_lattice_p.viewLattice(3);
     sq_lattice_p.viewCluster(0);

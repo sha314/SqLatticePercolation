@@ -49,9 +49,9 @@ void Lattice_v13::init_lattice() {
             bond_matrix[v_bond_index] = Bond_v13(rr, cc, 1);
             bond_matrix[v_bond_index].set_id(v_bond_index)   ;
 
-            site_ids.push_back(s_index);
-            bond_ids.push_back(s_index);
-            bond_ids.push_back(v_bond_index);
+            site_ids.emplace_back(s_index);
+            bond_ids.emplace_back(s_index);
+            bond_ids.emplace_back(v_bond_index);
         }
     }
 
@@ -193,7 +193,7 @@ std::vector<int> Lattice_v13::get_site_neighbor_of_site(int s0_index) {
             }
         }
         out_list.insert(out_list.end(), nn.begin(), nn.end());
-        out_list.push_back(nn[0]);
+        out_list.emplace_back(nn[0]);
     }
 
     return out_list;
@@ -219,7 +219,7 @@ std::vector<int> Lattice_v13::get_sites_for_wrapping_test(int s0_index) {
         }
         int gid = site_matrix[nn[0]].get_gid();
         if (gid == gid_central) {
-            out_list.push_back(nn[0]);
+            out_list.emplace_back(nn[0]);
         }
     }
 
@@ -353,9 +353,9 @@ vector<string> Lattice_v13::get_row_str(int row, int format) {
 
         stringstream ss_main;
         ss_main << str1 << str0.str() << " " << str2 << " |";
-        r_string.push_back(ss_main.str());
+        r_string.emplace_back(ss_main.str());
     }
-    r_string.push_back("\n");
+    r_string.emplace_back("\n");
     return r_string;
 }
 
@@ -375,9 +375,9 @@ vector<string> Lattice_v13::get_row_v_str(int row, int format) {
         stringstream ss_main;
 //        ss_main << str3 << "  " << str4.str() << " |";
         ss_main << str4.str()<< " " << str3  << " |";
-        r_string.push_back(ss_main.str());
+        r_string.emplace_back(ss_main.str());
     }
-    r_string.push_back("\n");
+    r_string.emplace_back("\n");
     return r_string;
 }
 
@@ -510,7 +510,7 @@ vector<int> Lattice_v13::get_all_neighbor_sites(int central_site_id) {
         }
         for(auto aa: tmp){
             if(aa == central_site_id) continue;
-            four_neighbors.push_back(aa);
+            four_neighbors.emplace_back(aa);
         }
 
     }

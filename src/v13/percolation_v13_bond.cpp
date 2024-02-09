@@ -859,3 +859,85 @@ void BondPercolation_v13::run_once() {
 
 
 
+
+/**
+ * @brief Choose the bond that minimizes entropy or prouct of cluster sizes.
+ * 
+ * @return P_STATUS 
+ */
+P_STATUS BondPercolationExplosive_v13::select_bond() {
+    // cout << "BondPercolation_v13::select_bond() " << endl;
+    if (current_idx >= lattice_ref.get_bond_count()) {
+        // cout << "No bonds to occupy" << endl;
+        return P_STATUS::EMPTY_BOND_LIST;
+    }
+    selected_bond_id = link_for_min_cluster_sum_product(bond_ids_indices[current_idx]);
+    current_idx += 1;
+//    current_site = lattice_ref.get_site_by_id(selected_id);
+//    cout << "selected id " << selected_id << " site " << current_site.get_str() << endl;
+//    cout << "selected id " << selected_id << " site " << get_current_site().get_str() << endl;
+    return P_STATUS::SUCESS;
+
+}
+
+
+uint BondPercolationExplosive_v13::link_for_min_cluster_sum_product(size_t start_at){
+//    auto start = std::chrono::system_clock::now(); // time measurement
+    size_t index_randomized_link{0};
+
+    uint tmp_lnk_index;
+    int id1{-1}, id2{-1}, root1, root2;
+    long n_nodes=0;
+    long prod_sum = LONG_MAX; // so that it is very big before going into the loop
+//    cout << LONG_MAX << " vs " << prod_sum << endl;
+//    cout << ULONG_MAX << " vs " << prod_sum << endl;
+//    size_t limit = start_at + _M_link;
+    size_t r{};
+//    cout << "randomly between ("<< start_at <<"," << _link_count << ")={";
+    std::uniform_int_distribution<size_t> distribution(start_at, lattice_ref.get_bond_count()-1);
+    for(int i{0}; i < _M_bond; ++i){
+//        r = start_at + _random_generator() % (_link_count-start_at);
+        r = distribution(_random_engine);
+        auto sites = lattice_ref.get_neighbor_sites(bond_ids_indices[r]);
+#ifdef UNIT_TEST
+    if(sites.size() != 2){
+        cout << "Error " << __FILE__ << " : " << __LINE__ << endl;
+        exit(1);
+    }
+#endif
+        root1 = lattice_ref.get_site_gid_by_id(sites[0]);
+        root2 = lattice_ref.get_site_gid_by_id(sites[2]);
+        auto s1=long(cluster_pool_ref.get_cluster_site_count(root1));
+        auto s2=long(cluster_pool_ref.get_cluster_site_count(root2));
+        n_nodes =  s1*s2; // product rule.
+        // n_nodes =  s1+s2; // Sum rule.
+
+
+        if(n_nodes < prod_sum) { // since we are minimizing cluster sizes
+            prod_sum = n_nodes;
+            index_randomized_link = r;
+        }
+#ifdef DEBUG_FLAG
+        cout << "checking link _randomized_indices[" << r << "]=" << tmp_lnk_index << endl;
+        cout << " out of  id = " << id1 << " and " << id2 << " prod_sum = " << prod_sum << endl;
+#endif
+    }
+
+    if(index_randomized_link >= bond_ids_indices.size()){
+        cout << "out of bound : line " << __LINE__ << endl;
+    }
+//    cout << "}" << endl;
+#ifdef DEBUG_FLAG
+    cout << "selected _randomized_indices[" << index_randomized_link << "] = "
+         << _randomized_indices[index_randomized_link] << endl;
+#endif
+
+    uint pos = bond_ids_indices[index_randomized_link];
+
+    bond_ids_indices[index_randomized_link] = bond_ids_indices[current_idx];
+    // does not affect the result. use only when debugging so that we can identify easily
+    bond_ids_indices[current_idx] = 0;
+    return pos;
+
+}
+
