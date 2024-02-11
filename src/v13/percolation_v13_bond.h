@@ -198,7 +198,7 @@ public:
             _M_bond=M_value;
             }
 
-    virtual std::string get_signature(){return signature;}
+    virtual std::string get_signature(){return signature+"_M_"+std::to_string(_M_bond);}
 
     virtual P_STATUS select_bond();
     virtual uint link_for_min_cluster_sum_product(size_t start_at);
