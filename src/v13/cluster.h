@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include "lattice_v13.h"
+#include "../flags.h"
 
 class OneCluster{
     std::vector<int> _site_ids, _bond_ids;
@@ -58,45 +59,95 @@ public:
     void view_larger_than(int view_mode);
 
     size_t get_cluster_bond_count(int id) {
-//        auto tmp =
-//        std::cout << "get_cluster_bond_count : id " << id << " bond count = " << tmp << std::endl;
+#ifdef UNIT_TEST
+    if (id >= _cluster_list.size()){
+        std::cout << "id out of range" << std::endl;
+        exit(1);
+    }
+#endif
         return _cluster_list[id].get_bond_count();;
     }
 
     size_t get_cluster_site_count(int id) {
+#ifdef UNIT_TEST
+    if (id >= _cluster_list.size()){
+        std::cout << "get_cluster_site_count() id out of range" << std::endl;
+        exit(1);
+    }
+#endif
         return _cluster_list[id].get_site_count();
     }
 
 
     void add_sites(int index, std::vector<int> site_ids) {
+#ifdef UNIT_TEST
+    if (index >= _cluster_list.size()){
+        std::cout << "add_sites() index out of range" << std::endl;
+        exit(1);
+    }
+#endif
         _cluster_list[index].add_sites(site_ids);
     }
 
     void add_sites(int index, int site_ids) {
+#ifdef UNIT_TEST
+    if (index >= _cluster_list.size()){
+        std::cout << "add_sites() index out of range" << std::endl;
+        exit(1);
+    }
+#endif
         _cluster_list[index].add_site(site_ids);
     }
 
     void add_bonds(int index, std::vector<int> bond_ids){
+#ifdef UNIT_TEST
+    if (index >= _cluster_list.size()){
+        std::cout << "add_bonds() index out of range" << std::endl;
+        exit(1);
+    }
+#endif
         _cluster_list[index].add_bonds(bond_ids);
     }
 
     std::vector<int>  get_sites(int index) {
+#ifdef UNIT_TEST
+    if (index >= _cluster_list.size()){
+        std::cout << "get_sites() index out of range" << std::endl;
+        exit(1);
+    }
+#endif
         return _cluster_list[index].get_sites();
     }
 
     std::vector<int> get_bonds(int index) {
+#ifdef UNIT_TEST
+    if (index >= _cluster_list.size()){
+        std::cout << "get_bonds() index out of range" << std::endl;
+        exit(1);
+    }
+#endif
         return _cluster_list[index].get_bonds();
     }
 
     OneCluster& get_cluster(int cluster_id) {
-        if (cluster_id >= _cluster_list.size()) {
-            std::cout << "Cluster does not exists" << std::endl;
-        }
+#ifdef UNIT_TEST
+    if (cluster_id >= _cluster_list.size()) {
+        std::cout << "get_cluster() Cluster does not exists" << std::endl;
+        exit(1);
+    }
+#endif
+
 
         return _cluster_list[cluster_id];
     }
 
     void clear_cluster(int cluster_id) {
+#ifdef UNIT_TEST
+    if (cluster_id >= _cluster_list.size()) {
+        std::cout << "clear_cluster() Cluster does not exists" << std::endl;
+        exit(1);
+    }
+#endif
         non_empty_cluster_count -= 1;
         _cluster_list[cluster_id].clear();
     }

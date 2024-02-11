@@ -172,6 +172,8 @@ const std::vector<double> clusterSizeDistribution();
     std::vector<double> get_order_param_wrapping_array(){ return order_wrapping_list;}
     std::vector<double> get_order_param_largest_array(){ return order_largest_list;}
     std::vector<double> get_mean_cluster_size_array(){ return mean_cluster_sz_list;}
+
+    void check_system();
 };
 
 
@@ -185,16 +187,52 @@ private:
     int _M_bond{2};
     std::string signature = "BondPercolationExplosive_v13";
 
+
+    double _largest_jump_entropy{}, _previous_entropy{};
+    long largest_cluster_size{}, largest_jump_cluster_size{},_previous_cluster_size{};
+    double delta_H{}, delta_P{};
+    std::vector<double>  dHs;
+    std::vector<double> dPs;
+
 public:
     BondPercolationExplosive_v13() = default;
     explicit BondPercolationExplosive_v13(int length, int M_value, value_type seed=0,  bool generate_seed=true)
-        :BondPercolation_v13(length, seed, generate_seed){_M_bond=M_value;}
+        :BondPercolation_v13(length, seed, generate_seed){
+            _M_bond=M_value;
+            dHs.resize(lattice_ref.get_bond_count());
+            dPs.resize(lattice_ref.get_bond_count());
+            }
 
     virtual std::string get_signature(){return signature;}
 
     virtual P_STATUS select_bond();
     virtual uint link_for_min_cluster_sum_product(size_t start_at);
-    // void reset() override{bond_ids_indices = lattice_ref.get_bond_id_list();BondPercolation_v13::reset();}
+    void reset() override{
+        _largest_jump_entropy=0;
+        _previous_entropy=0;
+        largest_cluster_size=0;
+        largest_jump_cluster_size=0;
+        _previous_cluster_size=0;
+        delta_H=0; 
+        delta_P=0;
+
+        dHs.clear();
+        dPs.clear();
+
+        dHs.reserve(lattice_ref.get_bond_count());
+        dPs.reserve(lattice_ref.get_bond_count());
+
+        BondPercolation_v13::reset();
+    }
+
+    void jump();
+    void run_once();
+
+    long double jump_entropy() {return delta_H;}
+    long jump_largest_cluster() {return delta_P;}
+
+    const std::vector<double>& get_entropy_jump_array(){return dHs;}
+    const std::vector<double>& get_order_jump_array(){return dPs;}
 };
 
 

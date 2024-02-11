@@ -37,7 +37,7 @@ BondPercolation_v13::BondPercolation_v13(int length, value_type seed, bool gener
 }
 
 void BondPercolation_v13::init_clusters() {
-//    cluster_pool_ref.reset();
+   cluster_pool_ref.reset();
     auto sites = lattice_ref.get_site_id_list();
     for (auto ss: sites){
         cluster_pool_ref.create_new_cluster(ss, -1, lattice_ref);
@@ -55,7 +55,7 @@ void BondPercolation_v13::reset() {
     occupied_bond_count = 0;
     bond_count_pc = 0;
     selected_bond_id =-1;
-    cluster_count = lattice_ref.get_bond_count();
+    cluster_count = lattice_ref.get_site_count();
     largest_cluster_sz = 0;
     largest_cluster_id = -1;
     entropy_value = max_entropy;
@@ -73,7 +73,7 @@ void BondPercolation_v13::reset() {
 
     if (first_run) {
         occupation_prob_list.clear();
-//        occupation_prob_list.resize(l_squared);
+        occupation_prob_list.reserve(lattice_ref.get_bond_count());
     }
 
     entropy_list.clear();
@@ -81,27 +81,54 @@ void BondPercolation_v13::reset() {
     order_largest_list.clear();
     mean_cluster_sz_list.clear();
 
+    entropy_list.reserve(lattice_ref.get_bond_count());
+    order_wrapping_list.reserve(lattice_ref.get_bond_count());
+    order_largest_list.reserve(lattice_ref.get_bond_count());
+    mean_cluster_sz_list.reserve(lattice_ref.get_bond_count());
 
-//    entropy_list.resize(l_squared);
-//    order_wrapping_list.resize(l_squared);
-//    order_largest_list.resize(l_squared);
 }
+
+
+void BondPercolation_v13::check_system(){
+    cout << "site " << lattice_ref.get_site_count() << ", bonds";
+    cout << lattice_ref.get_bond_count() << endl;
+
+}
+
+
 
 double BondPercolation_v13::entropy_v1() {
     double H = 0;
     int empty_count = 0;
+#ifdef UNIT_TEST
+    if(cluster_count >= cluster_pool_ref.cluster_count()){
+        cout << "cluster_count >= cluster_pool_ref.cluster_count()" << endl;
+    }
+#endif
     for(int i=0; i < cluster_count;++i){
         double s_count = cluster_pool_ref.get_cluster_site_count(i);
+#ifdef UNIT_TEST
+        if(s_count > lattice_ref.get_site_count()){
+            cout << "You have wrong number of sites " << endl;
+            cout << "s_count " << s_count << " vs " << lattice_ref.get_site_count() << endl;
+            cluster_pool_ref.get_cluster(i).view();
+            check_system();
+            exit(0);
+        }
+#endif
         if (s_count==0) {
             empty_count += 1;
             continue;
         }
         double mu = s_count / lattice_ref.get_site_count();
         double log_mu = log(mu);
+
         H += mu * log_mu;
     }
-//    cout << "empty cluster count " << empty_count << endl;
+   
 #ifdef UNIT_TEST
+    cout << "empty cluster count " << empty_count << endl;
+    // cluster_pool_ref.view(1);
     if (cluster_count <= 0){
         cout << "Error. Cluster count can't be zero : " << __LINE__ << " file " << __FILE__ << endl;
         cout << "cluster_count " << cluster_count << endl;
@@ -109,6 +136,7 @@ double BondPercolation_v13::entropy_v1() {
     if (empty_count == cluster_count){
         cout << "Error. All clusters are empty?! : " << __LINE__ << " file " << __FILE__ << endl;
     }
+    cout << "Calculated Entropy " << -H << endl;
 #endif
     return -H;
 }
@@ -856,6 +884,26 @@ void BondPercolation_v13::run_once() {
     first_run = false;
 }
 
+/**
+ * Entropy and Order parameter jump
+ */
+void BondPercolationExplosive_v13::jump() {
+
+    if(current_idx > 1){
+        delta_H = entropy_value - _previous_entropy;
+        delta_P = largest_cluster_size - _previous_cluster_size;
+    }
+    _previous_entropy = entropy_value; // be ready for next step
+    _previous_cluster_size = largest_cluster_size;
+//    cout << "jump_v2 delta_H " << delta_H << endl;
+    if(abs(delta_H) > abs(_largest_jump_entropy)){
+        _largest_jump_entropy = delta_H;
+//        _entropy_jump_tc = relativeLinkDensity();
+    }
+    if(abs(delta_P) > abs(largest_jump_cluster_size)){
+        largest_jump_cluster_size = delta_P;
+    }
+}
 
 
 
@@ -941,3 +989,80 @@ uint BondPercolationExplosive_v13::link_for_min_cluster_sum_product(size_t start
 
 }
 
+
+void BondPercolationExplosive_v13::run_once() {
+//# sq_lattice_p.viewLattice(3)
+//# sq_lattice_p.viewCluster()
+    double p, H, P1, P2;
+
+    while (place_one_bond()) {
+        if (status != P_STATUS::SUCESS) continue;
+        detect_wrapping();
+        if (first_run) {
+            p = occupation_prob();
+            occupation_prob_list.push_back(p);
+        }
+        H = entropy();
+        P1 = order_param_wrapping();
+        P2 = order_param_largest_clstr();
+
+        entropy_list.push_back(H);
+        order_wrapping_list.push_back(P1);
+        order_largest_list.push_back(P2);
+
+        auto mcs2 = get_mean_cluster_size_v2();
+        // auto mcs1 = get_mean_cluster_size();
+        // if(abs(mcs1-mcs2) > 1e-6 ){
+        //     cout << "Mean cluster size is not equal? " << mcs1 << "!=" << mcs2 << endl;
+        // }
+        mean_cluster_sz_list.push_back(mcs2);
+
+        jump();
+
+        dHs.emplace_back(jump_entropy());
+        dPs.emplace_back(jump_largest_cluster());
+
+#ifdef UNIT_TEST
+        double  H1 = entropy_v1();
+        double  H2 = entropy_v2();
+        if(abs(H1 - H2) > 1e-6){
+            cout << "Error : Entropy v1 and v2 are not equal : " << __LINE__ << endl;
+            cout << "H1 = " << H1 << endl;
+            cout << "H2 = " << H2 << endl;
+            cout << "max_entropy  " << max_entropy << endl;
+            exit(-1);
+        }
+#endif
+    }
+
+#ifdef UNIT_TEST
+//    P1 = order_param_wrapping();
+//    P2 = order_param_largest_clstr();
+
+    if (abs(P1-1.0) > 1e-6){
+        cout << "Error : order parameter wrapping P1 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P1 = " << P1 << endl;
+        exit(-1);
+    }
+
+    if (abs(P2-1.0) > 1e-6){
+        cout << "Error : order parameter largest P2 not equal to 1.0. line " << __LINE__ << endl;
+        cout << "P2 = " << P2 << endl;
+        exit(-1);
+    }
+    p = occupation_prob();
+
+    if (abs(p-1.0) > 1e-6){
+        cout << "Error : occupation_prob p not equal to 1.0. line " << __LINE__ << endl;
+        exit(-1);
+    }
+
+    cout << "entropy_list {" << endl;
+    for(auto hh: entropy_list){
+        cout << hh << endl;
+    }
+    cout << "              }" << endl;
+#endif
+
+    first_run = false;
+}

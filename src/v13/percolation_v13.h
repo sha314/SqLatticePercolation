@@ -102,7 +102,7 @@ protected:
     double sum_cluster_size=0;
 
 public:
-    SitePercolation_v13() = default;
+    // SitePercolation_v13() = default;
     explicit SitePercolation_v13(int length, value_type seed=0,  value_type generate_seed=true);
 
     virtual std::string get_signature(){return signature;}

@@ -15,6 +15,7 @@
 #include "../util/time_tracking.h"
 
 void run_v13_bond_percolation(int length, int ensemble_size);
+void run_v13_bond_percolation_explosive(int length, int ensemble_size, int M_value);
 
 void run_v13_rsbd_L0(int length, int ensemble_size);
 void run_v13_rsbd_L1(int length, int ensemble_size);
