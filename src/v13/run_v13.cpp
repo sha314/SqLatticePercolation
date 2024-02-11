@@ -682,8 +682,8 @@ void run_v13_bond_percolation_explosive(int length, int ensemble_size, int M_val
     std::vector<double> order_wraping(percolation.maxIterationLimit()),
             order_largest(percolation.maxIterationLimit()),
             mean_cluster_sz(percolation.maxIterationLimit()), 
-            dHs(percolation.maxIterationLimit()),
-            dPs(percolation.maxIterationLimit());
+            dHs(ensemble_size),
+            dPs(ensemble_size);
 
     vector<double> tmp;
 
@@ -700,6 +700,8 @@ void run_v13_bond_percolation_explosive(int length, int ensemble_size, int M_val
         pcs[i] = percolation.get_pc();
         sites_pc[i] = percolation.get_wrapping_cluster_site_count_at_pc();
         bonds_pc[i] = percolation.get_wrapping_cluster_bond_count_at_pc();
+        dHs[i] = percolation.jump_entropy();
+        dPs[i] = percolation.jump_largest_cluster();
 
 //        cout << "entropy " << endl;
         tmp = percolation.get_entropy_array();
@@ -716,11 +718,6 @@ void run_v13_bond_percolation_explosive(int length, int ensemble_size, int M_val
         // tmp = percolation.get_mean_cluster_size_array();
         // plus_equal(mean_cluster_sz, tmp);
 
-        tmp = percolation.get_entropy_jump_array();
-        plus_equal(dHs, tmp);
-        
-        tmp = percolation.get_order_jump_array();
-        plus_equal(dPs, tmp);
 
         auto t_end = std::chrono::system_clock::now();
         std::cout << "Iteration " << i

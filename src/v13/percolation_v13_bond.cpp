@@ -891,10 +891,10 @@ void BondPercolationExplosive_v13::jump() {
 
     if(current_idx > 1){
         delta_H = entropy_value - _previous_entropy;
-        delta_P = largest_cluster_size - _previous_cluster_size;
+        delta_P = largest_cluster_sz - _previous_cluster_size;
     }
     _previous_entropy = entropy_value; // be ready for next step
-    _previous_cluster_size = largest_cluster_size;
+    _previous_cluster_size = largest_cluster_sz;
 //    cout << "jump_v2 delta_H " << delta_H << endl;
     if(abs(delta_H) > abs(_largest_jump_entropy)){
         _largest_jump_entropy = delta_H;
@@ -1019,8 +1019,6 @@ void BondPercolationExplosive_v13::run_once() {
 
         jump();
 
-        dHs.emplace_back(jump_entropy());
-        dPs.emplace_back(jump_largest_cluster());
 
 #ifdef UNIT_TEST
         double  H1 = entropy_v1();
