@@ -7,6 +7,7 @@
 #include <random>
 #include "percolation_v13_bond.h"
 #include "../flags.h"
+#include <climits>
 
 using namespace std;
 
